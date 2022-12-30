@@ -1,0 +1,48 @@
+# Auto detect text files and perform LF normalization
+
+-        text=auto
+
+# Force the following filetypes to have unix eols, so Windows does not break them
+
+_._ text eol=lf
+
+_.html text diff=html
+_.css text
+_.js text
+_.ts text
+_.sql text
+_.sh text diff=bash
+_.conf text
+_.json text
+\*.md text
+
+# These files are binary and should be left untouched
+
+_.png binary
+_.jpg binary
+_.jpeg binary
+_.gif binary
+_.ico binary
+_.mov binary
+_.mp4 binary
+_.mp3 binary
+_.flv binary
+_.fla binary
+_.swf binary
+_.gz binary
+_.zip binary
+_.7z binary
+_.ttf binary
+_.eot binary
+_.woff binary
+_.pyc binary
+_.pdf binary
+_.ez binary
+_.bz2 binary
+_.swp binary
+_.cur binary
+_.wav binary
+_.webp binary
+_.woff2 binary
+
+# related link https://gist.github.com/dpalomar/ebc64d6f56cfc25a3e5c20fe7cdfbd4f
