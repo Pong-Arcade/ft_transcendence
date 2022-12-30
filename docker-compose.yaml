@@ -1,0 +1,41 @@
+version: "3"
+
+services:
+  nginx:
+    image: nginx
+    container_name: nginx
+    volumes:
+      - ./nginx/:/etc/nginx/conf.d/
+    ports:
+      - "80:80"
+    restart: always
+    networks:
+      - pingpong
+
+  backend:
+    image: backend
+    container_name: backend
+    build:
+      context: ./backend
+      dockerfile: ./Dockerfile
+    ports:
+      - "3000:3000"
+    restart: always
+    networks:
+      - pingpong
+
+  frontend:
+    image: frontend
+    container_name: frontend
+    build:
+      context: ./frontend
+      dockerfile: ./Dockerfile
+    ports:
+      - "8000:8000"
+    restart: always
+    networks:
+      - pingpong
+
+networks:
+  pingpong:
+    driver: bridge

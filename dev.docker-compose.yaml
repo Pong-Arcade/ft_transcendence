@@ -1,0 +1,50 @@
+version: "3"
+
+services:
+  nginx:
+    image: nginx_dev
+    container_name: nginx_dev
+    volumes:
+      - ./nginx/:/etc/nginx/conf.d/
+    ports:
+      - "80:80"
+    restart: always
+    networks:
+      - pingpong
+
+  backend_dev:
+    image: backend_dev
+    container_name: backend_dev
+    build:
+      context: ./backend
+      dockerfile: ./Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend:/backend
+      - /backend/node_modules
+      - /backend/dist
+    restart: always
+    networks:
+      - pingpong
+
+  frontend_dev:
+    image: frontend_dev
+    container_name: frontend_dev
+    build:
+      context: ./frontend
+      dockerfile: ./Dockerfile.dev
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./frontend:/frontend
+      - /frontend/node_modules
+      - /frontend/dist
+      - /frontend/build
+    restart: always
+    networks:
+      - pingpong
+
+networks:
+  pingpong:
+    driver: bridge
