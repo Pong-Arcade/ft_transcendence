@@ -2,7 +2,7 @@ version: "3"
 
 services:
   nginx:
-    image: nginx_dev
+    image: nginx:latest
     container_name: nginx_dev
     volumes:
       - ./nginx/:/etc/nginx/conf.d/
