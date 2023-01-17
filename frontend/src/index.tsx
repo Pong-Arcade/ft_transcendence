@@ -5,12 +5,19 @@ import {
   Navigate,
   RouterProvider,
 } from "react-router-dom";
-import ErrorPage from "./ErrorPage";
-import Chat from "./pages/Chat";
-import Game from "./pages/Game";
-import Lobby from "./pages/Lobby";
-import Login from "./pages/Login";
+import { ThemeProvider } from "styled-components";
+import Chat from "./pages/Chat/index";
+import Game from "./pages/Game/index";
+import Lobby from "./pages/Lobby/index";
+import Login from "./pages/Login/index";
 import Root from "./pages/Root";
+import GlobalStyle from "./styles/GlobalStyle";
+import theme from "./styles/theme";
+
+// TODO: refactoring
+// TODO: input box
+// TODO: scrollbar design
+// TODO: input size
 
 const router = createBrowserRouter([
   {
@@ -47,6 +54,9 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <ThemeProvider theme={theme}>
+      <GlobalStyle />
+      <RouterProvider router={router} />
+    </ThemeProvider>
   </React.StrictMode>
 );
