@@ -18,6 +18,7 @@ const theme: DefaultTheme = {
     blueCola: "#0288d1",
     white: "white",
     darkGunmetal: "#1e272e",
+    spiroDiscoBall: "#0fbcf9",
   }
 }
 export default theme;

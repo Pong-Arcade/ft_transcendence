@@ -12,6 +12,7 @@ const LobbyLeftBoardStyled = styled(LobbyBackBoard)`
   width: 30%;
 `;
 
+// TODO: pagination 으로 개선
 const LobbyUserList = styled(LobbyFrontBoard)`
   height: 70%;
   flex-direction: column;
@@ -51,9 +52,7 @@ const Info = styled.p`
 const UserList = styled(List)`
   height: 89%;
 `;
-const User = styled(ListElement)`
-  font-size: 1.3vw;
-`;
+const User = styled(ListElement)``;
 
 const Infos = styled.div`
   display: flex;
@@ -62,7 +61,7 @@ const Infos = styled.div`
   align-items: center;
 `;
 let Users: string[] = [];
-for (let i = 0; i < 30; ++i) {
+for (let i = 0; i < 2; ++i) {
   Users.push("----- test user name overflow -----");
 }
 

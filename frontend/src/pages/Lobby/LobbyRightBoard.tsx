@@ -42,9 +42,7 @@ const RoomList = styled(List)`
   height: 39%;
 `;
 
-const Room = styled(ListElement)`
-  font-size: 1.3vw;
-`;
+const Room = styled(ListElement)``;
 
 const LobbyChatBoard = styled(ChatBoard)``;
 

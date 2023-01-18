@@ -19,6 +19,7 @@ declare module 'styled-components' {
       blueCola: string,
       white: string,
       darkGunmetal: string,
+      spiroDiscoBall: string,
     }
   }
 }

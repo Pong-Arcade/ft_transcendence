@@ -10,14 +10,13 @@ import Chat from "./pages/Chat/index";
 import Game from "./pages/Game/index";
 import Lobby from "./pages/Lobby/index";
 import Login from "./pages/Login/index";
+import Rank from "./pages/Rank/index";
 import Root from "./pages/Root";
 import GlobalStyle from "./styles/GlobalStyle";
 import theme from "./styles/theme";
 
 // TODO: refactoring
 // TODO: input box
-// TODO: scrollbar design
-// TODO: input size
 
 const router = createBrowserRouter([
   {
@@ -40,6 +39,10 @@ const router = createBrowserRouter([
       {
         path: "chat/:chatId",
         element: <Chat />,
+      },
+      {
+        path: "rank",
+        element: <Rank />,
       },
       {
         path: "*",
