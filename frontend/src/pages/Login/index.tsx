@@ -15,6 +15,7 @@ interface ITitle {
   fontSize: string;
 }
 
+// TODO: login 글씨 입체 효과
 const Title = styled.p<ITitle>`
   font-size: ${(props) => props.fontSize};
   color: ${(props) => props.theme.font.white};

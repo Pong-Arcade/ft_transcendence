@@ -14,7 +14,7 @@ const ChatStyled = styled(Board)`
   flex-direction: column;
   justify-content: start;
   padding: 2vh 4vh;
-  gap: 2vh;
+  gap: 1vh;
 `;
 
 const ChatTitle = styled(Board)`

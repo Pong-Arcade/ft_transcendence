@@ -3,8 +3,9 @@ import styled from "styled-components";
 
 const ListElement = styled.button`
   min-height: 6vh;
-  border: solid;
+  background-color: ${(props) => props.theme.colors.blueCola};
   text-align: start;
+  font-size: 1.1rem;
 `;
 
 export default ListElement;
