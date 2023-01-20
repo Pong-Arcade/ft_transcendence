@@ -7,6 +7,7 @@ import Button from "../../components/ui/buttons/Button";
 import ChatElement from "../../components/ui/chat/ChatElement";
 import ChatList from "../../components/ui/chat/ChatList";
 import ChatInput from "../../components/ui/chat/ChatInput";
+import ButtonGroup from "../../components/ui/buttons/ButtonGroup";
 
 const ChatStyled = styled(Board)`
   width: 100%;
@@ -15,10 +16,11 @@ const ChatStyled = styled(Board)`
   justify-content: start;
   padding: 2vh 4vh;
   gap: 1vh;
+  background-color: ${(props) => props.theme.background.back};
 `;
 
 const ChatTitle = styled(Board)`
-  background-color: ${(props) => props.theme.colors.freshAir};
+  background-color: ${(props) => props.theme.background.middle};
   width: 100%;
   height: 8%;
   justify-content: center;
@@ -27,7 +29,7 @@ const ChatTitle = styled(Board)`
 `;
 
 const UserInfos = styled(Board)`
-  background-color: ${(props) => props.theme.colors.vividCerulean};
+  background-color: ${(props) => props.theme.background.middle};
   width: 100%;
   height: 35%;
   justify-content: start;
@@ -37,7 +39,7 @@ const UserInfos = styled(Board)`
 `;
 
 const UserInfo = styled(Board)`
-  background-color: ${(props) => props.theme.colors.freshAir};
+  background-color: ${(props) => props.theme.background.back};
   height: 95%;
   min-width: 12vw;
   padding: 2vh;
@@ -50,7 +52,7 @@ const UserName = styled(Board)`
   width: 100%;
   height: 50%;
   font-size: 1.5vw;
-  background-color: ${(props) => props.theme.colors.vividCerulean};
+  background-color: ${(props) => props.theme.background.middle};
 `;
 
 const ChatChatBoard = styled(ChatBoard)``;
@@ -75,14 +77,10 @@ for (let i = 0; i < 30; ++i) {
   chatList.push("chat overflow ");
 }
 
-const ChatButtonGrop = styled.div`
-  display: flex;
-  justify-content: space-around;
-  width: 90%;
-`;
+const ChatButtonGrop = styled(ButtonGroup)``;
 
 const ChatButton = styled(Button).attrs({
-  fontSize: "1.8vw",
+  fontSize: "2rem",
   width: "25vw",
   height: "6vh",
 })``;

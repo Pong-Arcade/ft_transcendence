@@ -10,7 +10,12 @@ declare module 'styled-components' {
     },
     border: {
       board: string,
-    }
+    },
+    background: {
+      front: string,
+      middle: string,
+      back: string,
+    },
     colors: {
       gunmetal: string,
       chineseWhite: string,

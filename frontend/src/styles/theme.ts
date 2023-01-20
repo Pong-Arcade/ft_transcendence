@@ -10,6 +10,11 @@ const theme: DefaultTheme = {
   border: {
     board: "20px",
   },
+  background: {
+    front: "#0288d1", // blueCola
+    middle: "#03a9f4", // vividCerulean
+    back: "#b3e5fc", // freshAir
+  },
   colors: {
     gunmetal: "#263238",
     chineseWhite: "#e0e0e0",
