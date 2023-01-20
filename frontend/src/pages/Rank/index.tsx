@@ -1,7 +1,10 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 import Board from "../../components/ui/boards/Board";
 import Button from "../../components/ui/buttons/Button";
+import ButtonGroup from "../../components/ui/buttons/ButtonGroup";
+import CloseButton from "../../components/ui/buttons/CloseButton";
 import List from "../../components/ui/lists/List";
 import ListElement from "../../components/ui/lists/ListElement";
 
@@ -12,15 +15,17 @@ const RankStyled = styled(Board)`
   justify-content: start;
   padding: 2vh 4vh;
   gap: 1vh;
+  background-color: ${(props) => props.theme.background.back};
 `;
 
 const RankTitle = styled(Board)`
-  background-color: ${(props) => props.theme.colors.freshAir};
+  background-color: ${(props) => props.theme.background.middle};
   width: 100%;
   height: 8%;
   justify-content: center;
   align-items: center;
-  font-size: 3vw;
+  font-size: 3rem;
+  position: relative;
 `;
 
 // TODO: 순위 사진 아이디 승 패
@@ -29,11 +34,7 @@ const RankList = styled(List)`
   align-items: center;
 `;
 
-const RankChoiceButtonGroup = styled.div`
-  display: flex;
-  width: 100%;
-  justify-content: space-around;
-`;
+const RankChoiceButtonGroup = styled(ButtonGroup)``;
 
 const RankChoiceButton = styled(Button).attrs({
   fontSize: "1.5rem",
@@ -42,7 +43,7 @@ const RankChoiceButton = styled(Button).attrs({
 })``;
 
 const RankElement = styled(ListElement)`
-  background-color: white;
+  background-color: ${(props) => props.theme.background.front};
   min-height: 10vh;
   width: 99%;
 `;
@@ -56,23 +57,23 @@ const RankContentGroup = styled.div`
 const RankContent = styled.div`
   text-align: center;
   align-items: center;
-  color: black;
+  font-size: 1.5rem;
 `;
 
-const rankColumns: string[] = ["순위", "아이디", "승", "패"];
+const rankColumns: string[] = ["순위", "ID", "승", "패"];
 const RankColumns = styled(ListElement)`
-  background-color: ${(props) => props.theme.colors.chineseWhite};
+  background-color: ${(props) => props.theme.background.front};
   display: grid;
   grid-template-columns: 1fr repeat(3, 2fr);
   text-align: center;
   align-items: center;
   column-gap: 1vw;
-  min-height: 3vh;
+  min-height: 4vh;
   width: 99%;
 `;
 
 const RankColumn = styled.div`
-  color: black;
+  font-size: 1.5rem;
 `;
 
 let rankList: any[] = [];
@@ -89,7 +90,12 @@ for (let i = 0; i < num; ++i) {
 const Rank = () => {
   return (
     <RankStyled>
-      <RankTitle>Rank</RankTitle>
+      <RankTitle>
+        <Link to="/lobby">
+          <CloseButton>X</CloseButton>
+        </Link>
+        랭킹
+      </RankTitle>
 
       <RankList>
         <RankColumns>
@@ -109,8 +115,8 @@ const Rank = () => {
         ))}
       </RankList>
       <RankChoiceButtonGroup>
-        <RankChoiceButton>레더게임</RankChoiceButton>
         <RankChoiceButton>일반게임</RankChoiceButton>
+        <RankChoiceButton>레더게임</RankChoiceButton>
       </RankChoiceButtonGroup>
     </RankStyled>
   );

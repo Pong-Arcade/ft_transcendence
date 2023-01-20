@@ -4,20 +4,16 @@ import ChatBoard from "../../components/ui/chat/ChatBoard";
 import Button from "../../components/ui/buttons/Button";
 import List from "../../components/ui/lists/List";
 import ListElement from "../../components/ui/lists/ListElement";
-import LobbyBackBoard from "./components/LobbyBackboard";
-import LobbyButtonGroup from "./components/LobbyButtonGroup";
+import LobbyBackBoard from "./components/LobbyBackBoard";
 import LobbyFrontBoard from "./components/LobbyFrontBoard";
 import ChatElement from "../../components/ui/chat/ChatElement";
 import ChatList from "../../components/ui/chat/ChatList";
 import ChatInput from "../../components/ui/chat/ChatInput";
+import LobbyButtonGroup from "./components/LobbyButtonGroup";
+import RoomCreateButton from "./components/RoomCreateButton";
 
 const LobbyRightBoardStyled = styled(LobbyBackBoard)`
   width: 69%;
-`;
-
-const LobbyGameButtons = styled(LobbyFrontBoard)`
-  height: 9%;
-  align-items: center;
 `;
 
 const LobbyMain = styled(LobbyFrontBoard)`
@@ -26,14 +22,8 @@ const LobbyMain = styled(LobbyFrontBoard)`
   justify-content: space-around;
 `;
 
-const GameButton = styled(Button).attrs({
-  fontSize: "1.8vw",
-  width: "17vw",
-  height: "6vh",
-})``;
-
 const RoomChoiceButton = styled(Button).attrs({
-  fontSize: "1.8vw",
+  fontSize: "2rem",
   width: "17vw",
   height: "6vh",
 })``;
@@ -43,11 +33,8 @@ const RoomList = styled(List)`
 `;
 
 const Room = styled(ListElement)``;
-
 const LobbyChatBoard = styled(ChatBoard)``;
-
 const LobbyChatList = styled(ChatList)``;
-
 const LobbyChatElement = styled(ChatElement)``;
 const LobbyChatInput = styled(ChatInput)``;
 
@@ -66,13 +53,7 @@ for (let i = 0; i < 30; ++i) {
 const LobbyRightBoard = () => {
   return (
     <LobbyRightBoardStyled>
-      <LobbyGameButtons>
-        <LobbyButtonGroup>
-          <GameButton>채팅방만들기</GameButton>
-          <GameButton>일반게임</GameButton>
-          <GameButton>레더게임</GameButton>
-        </LobbyButtonGroup>
-      </LobbyGameButtons>
+      <RoomCreateButton />
       <LobbyMain>
         <LobbyButtonGroup>
           <RoomChoiceButton>채팅방목록</RoomChoiceButton>

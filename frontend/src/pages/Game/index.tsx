@@ -1,5 +1,6 @@
 import { Avatar } from "@mui/material";
 import React from "react";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 import Board from "../../components/ui/boards/Board";
 import Button from "../../components/ui/buttons/Button";
@@ -14,13 +15,13 @@ const GameStyled = styled(Board)`
   justify-content: space-between;
 `;
 const GameLeftBoard = styled(Board)`
-  background-color: ${(props) => props.theme.colors.darkGunmetal};
+  background-color: ${(props) => props.theme.background.middle};
   width: 79.5%;
   height: 100%;
   color: white;
 `;
 const GameRightBoard = styled(Board)`
-  background-color: ${(props) => props.theme.colors.freshAir};
+  background-color: ${(props) => props.theme.background.back};
   height: 100%;
   width: 20%;
   flex-direction: column;
@@ -30,12 +31,12 @@ const GameRightBoard = styled(Board)`
 const GameUserList = styled(Board)`
   width: 97%;
   height: 28%;
-  background-color: ${(props) => props.theme.colors.vividCerulean};
+  background-color: ${(props) => props.theme.background.middle};
   flex-direction: column;
   gap: 0.5vh;
 `;
 const GameUser = styled(Board)`
-  background-color: ${(props) => props.theme.colors.chineseWhite};
+  background-color: ${(props) => props.theme.background.front};
   height: 48%;
   width: 97%;
   justify-content: space-around;
@@ -43,6 +44,7 @@ const GameUser = styled(Board)`
 
 const Info = styled.p`
   white-space: nowrap;
+  font-size: 1.5rem;
 `;
 
 const GameChatBoard = styled(ChatBoard)`
@@ -89,7 +91,9 @@ const Game = () => {
           </GameChatList>
           <GameChatInput />
         </GameChatBoard>
-        <GameExitButton>나가기</GameExitButton>
+        <Link to="/lobby">
+          <GameExitButton>나가기</GameExitButton>
+        </Link>
       </GameRightBoard>
     </GameStyled>
   );
