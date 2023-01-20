@@ -1,4 +1,3 @@
-import { Avatar } from "@mui/material";
 import React from "react";
 import styled from "styled-components";
 import Board from "../../components/ui/boards/Board";
@@ -8,6 +7,8 @@ import ChatElement from "../../components/ui/chat/ChatElement";
 import ChatList from "../../components/ui/chat/ChatList";
 import ChatInput from "../../components/ui/chat/ChatInput";
 import ButtonGroup from "../../components/ui/buttons/ButtonGroup";
+import { Link } from "react-router-dom";
+import UserCardList from "./UserCardList";
 
 const ChatStyled = styled(Board)`
   width: 100%;
@@ -28,16 +29,6 @@ const ChatTitle = styled(Board)`
   font-size: 3vw;
 `;
 
-const UserInfos = styled(Board)`
-  background-color: ${(props) => props.theme.background.middle};
-  width: 100%;
-  height: 35%;
-  justify-content: start;
-  padding: 1vh 2vh;
-  gap: 1vh;
-  overflow-x: auto;
-`;
-
 const UserInfo = styled(Board)`
   background-color: ${(props) => props.theme.background.back};
   height: 95%;
@@ -46,6 +37,7 @@ const UserInfo = styled(Board)`
   flex-direction: column;
   justify-content: start;
   gap: 2vh;
+  cursor: pointer;
 `;
 
 const UserName = styled(Board)`
@@ -55,28 +47,6 @@ const UserName = styled(Board)`
   background-color: ${(props) => props.theme.background.middle};
 `;
 
-const ChatChatBoard = styled(ChatBoard)``;
-const ChatChatList = styled(ChatList)``;
-const ChatChatElement = styled(ChatElement)``;
-const ChatChatInput = styled(ChatInput)``;
-
-let userList: string[] = [
-  "kangkim",
-  "kangkim2",
-  "kangkim3",
-  "kangkim4",
-  "kangkim5",
-  "kangkim6",
-  "kangkim7",
-  "kangkim7",
-  "kangkim7",
-];
-
-let chatList: string[] = [];
-for (let i = 0; i < 30; ++i) {
-  chatList.push("chat overflow ");
-}
-
 const ChatButtonGrop = styled(ButtonGroup)``;
 
 const ChatButton = styled(Button).attrs({
@@ -85,29 +55,28 @@ const ChatButton = styled(Button).attrs({
   height: "6vh",
 })``;
 
+let chatList: string[] = [];
+for (let i = 0; i < 30; ++i) {
+  chatList.push("chat overflow ");
+}
 const Chat = () => {
   return (
     <ChatStyled>
       <ChatTitle>chatTitle</ChatTitle>
-      <UserInfos>
-        {userList.map((elem, idx) => (
-          <UserInfo key={idx}>
-            <Avatar sx={{ width: "8vw", height: "8vw" }} />
-            <UserName>{elem}</UserName>
-          </UserInfo>
-        ))}
-      </UserInfos>
-      <ChatChatBoard>
-        <ChatChatList>
+      <UserCardList />
+      <ChatBoard>
+        <ChatList>
           {chatList.map((elem, idx) => (
-            <ChatChatElement key={idx}>{elem}</ChatChatElement>
+            <ChatElement key={idx}>{elem}</ChatElement>
           ))}
-        </ChatChatList>
-        <ChatChatInput />
-      </ChatChatBoard>
+        </ChatList>
+        <ChatInput />
+      </ChatBoard>
       <ChatButtonGrop>
         <ChatButton>초대하기</ChatButton>
-        <ChatButton>나가기</ChatButton>
+        <Link to="/lobby">
+          <ChatButton>나가기</ChatButton>
+        </Link>
       </ChatButtonGrop>
     </ChatStyled>
   );

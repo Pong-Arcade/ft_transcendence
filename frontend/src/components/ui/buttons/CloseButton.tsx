@@ -2,13 +2,11 @@ import React from "react";
 import styled from "styled-components";
 
 interface ICloseButton {
-  // fontSize?: string;
   width?: string;
   height?: string;
   top?: string;
   right?: string;
 }
-// font-size: ${(props) => (props.fontSize ? props.fontSize : "1.5vw")};
 
 const CloseButton = styled.button<ICloseButton>`
   background-color: ${(props) => props.theme.background.middle};

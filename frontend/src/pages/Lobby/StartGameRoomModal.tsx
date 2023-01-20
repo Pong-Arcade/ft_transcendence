@@ -6,9 +6,7 @@ import Button from "../../components/ui/buttons/Button";
 import ModalTitle from "../../components/ui/modals/ModalTitle";
 import CreateRoomModal from "./components/CreateRoomModal";
 import CreateRoomModalContainer from "./components/CreateRoomModalContainer";
-import Board from "../../components/ui/boards/Board";
-import ContextList from "../../components/ui/lists/ContextList";
-import Context from "../../components/ui/lists/Context";
+import QuickGameModal from "./QuickGameModal";
 
 interface ICreateGameRoomModal {
   children: string;
@@ -28,99 +26,6 @@ const GameButton = styled(Button).attrs({
   height: "19vh",
 })``;
 
-const QuickGameModalContainer = styled(Modal)`
-  width: 40%;
-  height: 30%;
-  justify-content: space-between;
-`;
-
-const Loader = styled.div`
-  font-size: 0.8rem;
-  width: 1em;
-  height: 1em;
-  border-radius: 50%;
-  position: relative;
-  text-indent: -9999em;
-  animation: mulShdSpin 1.1s infinite ease;
-  transform: translateZ(0);
-
-  @keyframes mulShdSpin {
-    0%,
-    100% {
-      box-shadow: 0em -2.6em 0em 0em #ffffff,
-        1.8em -1.8em 0 0em rgba(255, 255, 255, 0.2),
-        2.5em 0em 0 0em rgba(255, 255, 255, 0.2),
-        1.75em 1.75em 0 0em rgba(255, 255, 255, 0.2),
-        0em 2.5em 0 0em rgba(255, 255, 255, 0.2),
-        -1.8em 1.8em 0 0em rgba(255, 255, 255, 0.2),
-        -2.6em 0em 0 0em rgba(255, 255, 255, 0.5),
-        -1.8em -1.8em 0 0em rgba(255, 255, 255, 0.7);
-    }
-    12.5% {
-      box-shadow: 0em -2.6em 0em 0em rgba(255, 255, 255, 0.7),
-        1.8em -1.8em 0 0em #ffffff, 2.5em 0em 0 0em rgba(255, 255, 255, 0.2),
-        1.75em 1.75em 0 0em rgba(255, 255, 255, 0.2),
-        0em 2.5em 0 0em rgba(255, 255, 255, 0.2),
-        -1.8em 1.8em 0 0em rgba(255, 255, 255, 0.2),
-        -2.6em 0em 0 0em rgba(255, 255, 255, 0.2),
-        -1.8em -1.8em 0 0em rgba(255, 255, 255, 0.5);
-    }
-    25% {
-      box-shadow: 0em -2.6em 0em 0em rgba(255, 255, 255, 0.5),
-        1.8em -1.8em 0 0em rgba(255, 255, 255, 0.7), 2.5em 0em 0 0em #ffffff,
-        1.75em 1.75em 0 0em rgba(255, 255, 255, 0.2),
-        0em 2.5em 0 0em rgba(255, 255, 255, 0.2),
-        -1.8em 1.8em 0 0em rgba(255, 255, 255, 0.2),
-        -2.6em 0em 0 0em rgba(255, 255, 255, 0.2),
-        -1.8em -1.8em 0 0em rgba(255, 255, 255, 0.2);
-    }
-    37.5% {
-      box-shadow: 0em -2.6em 0em 0em rgba(255, 255, 255, 0.2),
-        1.8em -1.8em 0 0em rgba(255, 255, 255, 0.5),
-        2.5em 0em 0 0em rgba(255, 255, 255, 0.7), 1.75em 1.75em 0 0em #ffffff,
-        0em 2.5em 0 0em rgba(255, 255, 255, 0.2),
-        -1.8em 1.8em 0 0em rgba(255, 255, 255, 0.2),
-        -2.6em 0em 0 0em rgba(255, 255, 255, 0.2),
-        -1.8em -1.8em 0 0em rgba(255, 255, 255, 0.2);
-    }
-    50% {
-      box-shadow: 0em -2.6em 0em 0em rgba(255, 255, 255, 0.2),
-        1.8em -1.8em 0 0em rgba(255, 255, 255, 0.2),
-        2.5em 0em 0 0em rgba(255, 255, 255, 0.5),
-        1.75em 1.75em 0 0em rgba(255, 255, 255, 0.7), 0em 2.5em 0 0em #ffffff,
-        -1.8em 1.8em 0 0em rgba(255, 255, 255, 0.2),
-        -2.6em 0em 0 0em rgba(255, 255, 255, 0.2),
-        -1.8em -1.8em 0 0em rgba(255, 255, 255, 0.2);
-    }
-    62.5% {
-      box-shadow: 0em -2.6em 0em 0em rgba(255, 255, 255, 0.2),
-        1.8em -1.8em 0 0em rgba(255, 255, 255, 0.2),
-        2.5em 0em 0 0em rgba(255, 255, 255, 0.2),
-        1.75em 1.75em 0 0em rgba(255, 255, 255, 0.5),
-        0em 2.5em 0 0em rgba(255, 255, 255, 0.7), -1.8em 1.8em 0 0em #ffffff,
-        -2.6em 0em 0 0em rgba(255, 255, 255, 0.2),
-        -1.8em -1.8em 0 0em rgba(255, 255, 255, 0.2);
-    }
-    75% {
-      box-shadow: 0em -2.6em 0em 0em rgba(255, 255, 255, 0.2),
-        1.8em -1.8em 0 0em rgba(255, 255, 255, 0.2),
-        2.5em 0em 0 0em rgba(255, 255, 255, 0.2),
-        1.75em 1.75em 0 0em rgba(255, 255, 255, 0.2),
-        0em 2.5em 0 0em rgba(255, 255, 255, 0.5),
-        -1.8em 1.8em 0 0em rgba(255, 255, 255, 0.7), -2.6em 0em 0 0em #ffffff,
-        -1.8em -1.8em 0 0em rgba(255, 255, 255, 0.2);
-    }
-    87.5% {
-      box-shadow: 0em -2.6em 0em 0em rgba(255, 255, 255, 0.2),
-        1.8em -1.8em 0 0em rgba(255, 255, 255, 0.2),
-        2.5em 0em 0 0em rgba(255, 255, 255, 0.2),
-        1.75em 1.75em 0 0em rgba(255, 255, 255, 0.2),
-        0em 2.5em 0 0em rgba(255, 255, 255, 0.2),
-        -1.8em 1.8em 0 0em rgba(255, 255, 255, 0.5),
-        -2.6em 0em 0 0em rgba(255, 255, 255, 0.7), -1.8em -1.8em 0 0em #ffffff;
-    }
-  }
-`;
 const StartGameRoomModal = ({
   children,
   setOpenModal,
@@ -156,17 +61,11 @@ const StartGameRoomModal = ({
         </CreateRoomModalContainer>
       )}
       {openQuickStart && (
-        <QuickGameModalContainer>
-          <ModalTitle
-            title={children}
-            setOpenModal={setOpenQuickStart}
-            titleFontSize={"2rem"}
-          />
-          <ContextList width="100%" height="79%" gap="6vh">
-            <Context fontSize="3rem">매칭 상대를 찾고 있습니다</Context>
-            <Loader />
-          </ContextList>
-        </QuickGameModalContainer>
+        <QuickGameModal
+          title={children}
+          setOpenModal={setOpenQuickStart}
+          titleFontSize="2rem"
+        />
       )}
     </>
   );

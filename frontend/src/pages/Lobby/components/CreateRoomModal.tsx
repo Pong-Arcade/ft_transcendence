@@ -37,7 +37,7 @@ const RowContext = styled.input`
 const CreateButton = styled(Button).attrs({
   height: "8vh",
   width: "20vw",
-  fontSize: "1.2rem",
+  fontSize: "2rem",
 })``;
 
 const CheckBoxList = styled(Board)`

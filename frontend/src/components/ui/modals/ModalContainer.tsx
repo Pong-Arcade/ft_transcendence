@@ -1,7 +1,11 @@
 import React from "react";
 import styled from "styled-components";
 
-const ModalContainer = styled.div`
+interface IModalContainer {
+  backgroundColor?: string;
+}
+
+const ModalContainer = styled.div<IModalContainer>`
   position: fixed;
   left: 0;
   top: 0;
@@ -10,7 +14,8 @@ const ModalContainer = styled.div`
   width: 100%;
   height: 100%;
   z-index: 1000;
-  background-color: rgba(0, 0, 0, 0.75);
+  background-color: ${(props) =>
+    props.backgroundColor ? props.backgroundColor : "rgba(0, 0, 0, 0.75)"};
   display: flex;
   justify-content: center;
   align-items: center;

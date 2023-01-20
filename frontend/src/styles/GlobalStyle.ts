@@ -15,7 +15,7 @@ const GlobalStyle = createGlobalStyle`
     0 -0.1rem ${(props) => props.theme.colors.blueCola};
     color: ${(props) => props.theme.colors.white};
     white-space: nowrap;
-
+    text-decoration: none;
   }
 
   input {

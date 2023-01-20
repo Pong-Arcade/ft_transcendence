@@ -33,11 +33,8 @@ const RoomList = styled(List)`
 `;
 
 const Room = styled(ListElement)``;
-
 const LobbyChatBoard = styled(ChatBoard)``;
-
 const LobbyChatList = styled(ChatList)``;
-
 const LobbyChatElement = styled(ChatElement)``;
 const LobbyChatInput = styled(ChatInput)``;
 

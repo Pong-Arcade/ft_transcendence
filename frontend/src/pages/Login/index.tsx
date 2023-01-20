@@ -3,6 +3,7 @@ import styled from "styled-components";
 import Board from "../../components/ui/boards/Board";
 import Button from "../../components/ui/buttons/Button";
 import { ReactComponent as Logo } from "../../assets/42logo.svg";
+import { Link } from "react-router-dom";
 
 const LoginStyled = styled(Board)`
   flex-direction: column;
@@ -22,7 +23,6 @@ const Title = styled.p<ITitle>`
 `;
 
 const LoginButton = styled(Button)`
-  margin-top: 10vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -39,10 +39,12 @@ const Login = () => {
     <LoginStyled>
       <Title fontSize={"20vw"}>PONG</Title>
       <Title fontSize={"15vw"}>Arcade</Title>
-      <LoginButton width={"30vw"} height={"6vh"} fontSize={"2vw"}>
-        <LoginLogo />
-        로그인
-      </LoginButton>
+      <Link to="/lobby">
+        <LoginButton width={"32vw"} height={"8vh"} fontSize={"3vw"}>
+          <LoginLogo />
+          로그인
+        </LoginButton>
+      </Link>
     </LoginStyled>
   );
 };

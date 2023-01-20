@@ -4,9 +4,7 @@ import CreateRoomModal from "./components/CreateRoomModal";
 import CreateRoomModalContainer from "./components/CreateRoomModalContainer";
 
 const CreateChatRoomModalStyled = styled(CreateRoomModalContainer)`
-  width: 50%;
-  height: 50%;
-  justify-content: center;
+  background-color: white;
 `;
 
 interface ICreateChatRoomModal {

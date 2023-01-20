@@ -1,5 +1,6 @@
 import { Avatar } from "@mui/material";
 import React from "react";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 import Board from "../../components/ui/boards/Board";
 import Button from "../../components/ui/buttons/Button";
@@ -90,7 +91,9 @@ const Game = () => {
           </GameChatList>
           <GameChatInput />
         </GameChatBoard>
-        <GameExitButton>나가기</GameExitButton>
+        <Link to="/lobby">
+          <GameExitButton>나가기</GameExitButton>
+        </Link>
       </GameRightBoard>
     </GameStyled>
   );
