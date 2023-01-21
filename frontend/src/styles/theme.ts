@@ -1,5 +1,4 @@
-import React from 'react';
-import { DefaultTheme } from 'styled-components';
+import { DefaultTheme } from "styled-components";
 
 const theme: DefaultTheme = {
   font: {
@@ -24,6 +23,6 @@ const theme: DefaultTheme = {
     white: "white",
     darkGunmetal: "#1e272e",
     spiroDiscoBall: "#0fbcf9",
-  }
-}
+  },
+};
 export default theme;
