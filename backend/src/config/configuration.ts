@@ -9,4 +9,7 @@ export default () => ({
     secret: process.env.FT_AUTH_SECRET,
     callback: process.env.FT_AUTH_CALLBACK,
   },
+  session: {
+    secret: process.env.SESSION_SECRET,
+  },
 });
