@@ -1,4 +1,4 @@
-import { Controller, Get, Logger, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Logger, Req, UseGuards } from '@nestjs/common';
 import { FtGuard } from './42/ft.guard';
 import { User } from 'src/decorator/user.decorator';
 import { UserDto } from 'src/dto/user.dto';
@@ -11,7 +11,9 @@ export class AuthController {
 
   @Get('login')
   @UseGuards(FtGuard)
-  login() {}
+  login() {
+    this.logger.log('Cannot be reached');
+  }
 
   @Get('login/callback')
   @UseGuards(FtGuard)
