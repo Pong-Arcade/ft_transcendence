@@ -12,6 +12,17 @@ services:
     networks:
       - pingpong
 
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    ports:
+      - "5433:5432"
+    env_file:
+      - ./postgres/postgres.env
+    restart: always
+    networks:
+      - pingpong
+
   backend_dev:
     image: backend_dev
     container_name: backend_dev
