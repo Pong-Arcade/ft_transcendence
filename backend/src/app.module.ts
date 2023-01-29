@@ -6,6 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import configuration from './config/configuration';
 import { SessionMiddleware } from './middleware/session.middleware';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserModule } from './user/user.module';
 import TypeOrmConfigService from './config/typeorm.config';
 
 @Module({
@@ -19,6 +20,7 @@ import TypeOrmConfigService from './config/typeorm.config';
       useClass: TypeOrmConfigService,
     }),
     AuthModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService, SessionMiddleware],
