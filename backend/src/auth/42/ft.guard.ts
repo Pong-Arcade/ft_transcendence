@@ -11,11 +11,4 @@ export class FtGuard extends AuthGuard('42') {
     await super.logIn(request);
     return result;
   }
-
-  handleRequest(err: any, user: any, info: any) {
-    if (err || !user) {
-      throw new UnauthorizedException({ err, info });
-    }
-    return user;
-  }
 }
