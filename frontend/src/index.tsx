@@ -12,6 +12,7 @@ import Lobby from "./pages/Lobby";
 import Login from "./pages/Login";
 import Rank from "./pages/Rank";
 import Root from "./pages/Root";
+import Stat from "./pages/Stat";
 import GlobalStyle from "./styles/GlobalStyle";
 import theme from "./styles/theme";
 
@@ -40,6 +41,10 @@ const router = createBrowserRouter([
       {
         path: "rank",
         element: <Rank />,
+      },
+      {
+        path: "stat/:userId",
+        element: <Stat />,
       },
       {
         path: "*",
