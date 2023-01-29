@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Avatar from "../components/atoms/Avatar";
 import Board from "../components/atoms/Board";
@@ -69,11 +68,6 @@ const GameRoom = () => {
     setOpenUserInfo(false);
   };
 
-  const navigate = useNavigate();
-  const onExit = () => {
-    navigate("/lobby");
-  };
-
   const userList = ["kangkim1", "kangkim2"];
 
   return (
@@ -93,7 +87,7 @@ const GameRoom = () => {
             ))}
           </UserProfileGroup>
           <Chat width="98%" height="57%" />
-          <Button width="98%" height="7%" boxShadow onClick={onExit}>
+          <Button width="22vw" height="6vh" boxShadow to="/lobby">
             나가기
           </Button>
         </Wrapper>
