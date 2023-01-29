@@ -6,23 +6,20 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import { ThemeProvider } from "styled-components";
-import Chat from "./pages/Chat/index";
-import Game from "./pages/Game/index";
-import Lobby from "./pages/Lobby/index";
-import Login from "./pages/Login/index";
-import Rank from "./pages/Rank/index";
+import ChatRoom from "./pages/ChatRoom";
+import GameRoom from "./pages/GameRoom";
+import Lobby from "./pages/Lobby";
+import Login from "./pages/Login";
+import Rank from "./pages/Rank";
 import Root from "./pages/Root";
 import GlobalStyle from "./styles/GlobalStyle";
 import theme from "./styles/theme";
-
-// TODO: refactoring
-// TODO: input box
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Root />,
-    // errorElement: <ErrorPage />,
+
     children: [
       {
         path: "",
@@ -33,12 +30,12 @@ const router = createBrowserRouter([
         element: <Lobby />,
       },
       {
-        path: "game/:gameId",
-        element: <Game />,
+        path: "game-rooms/:gameId",
+        element: <GameRoom />,
       },
       {
-        path: "chat/:chatId",
-        element: <Chat />,
+        path: "chat-rooms/:chatId",
+        element: <ChatRoom />,
       },
       {
         path: "rank",
