@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
-import { UserDto } from 'src/dto/user.dto';
 import MockStrategy from './mock.strategy';
 
 /**
