@@ -19,14 +19,12 @@ const GameBoard = styled(Board).attrs((props) => {
     boxShadow: true,
   };
 })``;
-const Wrapper = styled(Board).attrs((props) => {
-  return {
-    width: "24%",
-    height: "98%",
-    borderRadius: true,
-    flexDirection: "column",
-    justifyContent: "space-between",
-  };
+const Wrapper = styled(Board).attrs({
+  width: "24%",
+  height: "98%",
+  borderRadius: true,
+  flexDirection: "column",
+  justifyContent: "space-between",
 })``;
 
 const UserProfileGroup = styled(Board).attrs({
