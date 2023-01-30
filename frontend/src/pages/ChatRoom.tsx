@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
 import ChatRoomTemplate from "../components/templates/ChatRoomTemplate";
 import Title from "../components/modules/Title";
 import Chat from "../components/modules/Chat";
@@ -15,7 +14,7 @@ import UserInfoModal from "../components/modules/UserInfoModal";
 
 const Wrapper = styled(Board).attrs({
   width: "100%",
-  height: "79%",
+  height: "81%",
   flexDirection: "column",
   justifyContent: "space-between",
 })``;
@@ -68,11 +67,6 @@ const ChatRoom = () => {
     setOpenUserInfo(false);
   };
 
-  const navigate = useNavigate();
-  const onClose = () => {
-    navigate("/lobby");
-  };
-
   return (
     <>
       <ChatRoomTemplate>
@@ -92,10 +86,10 @@ const ChatRoom = () => {
           <Chat width="100%" height="55%" />
         </Wrapper>
         <ButtonGroup height="7%" width="100%" backgroundColor="secondary">
-          <Button fontSize="2rem" height="95%" width="30%">
+          <Button fontSize="2rem" height="7vh" width="30vw">
             초대하기
           </Button>
-          <Button fontSize="2rem" height="95%" width="30%" onClick={onClose}>
+          <Button fontSize="2rem" height="7vh" width="30vw" to="/lobby">
             나가기
           </Button>
         </ButtonGroup>

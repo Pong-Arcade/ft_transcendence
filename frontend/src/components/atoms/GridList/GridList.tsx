@@ -41,7 +41,8 @@ const GridTitleGroup = styled.div<GridTitleGroupProps>`
   display: grid;
   grid-template-columns: ${(props) =>
     props.gridTemplateColumns && props.gridTemplateColumns};
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: ${(props) =>
+    props.gridTemplateColumns || "repeat(5, 1fr)"};
   width: 100%;
   height: 12%;
   background-color: ${(props) => props.theme.background.front};
