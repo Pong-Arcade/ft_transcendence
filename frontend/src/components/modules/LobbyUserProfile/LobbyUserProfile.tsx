@@ -5,6 +5,7 @@ import Board from "../../atoms/Board";
 import Button from "../../atoms/Button";
 import Typography from "../../atoms/Typography";
 import ButtonGroup from "../ButtonGroup";
+import { ReactComponent as Logo } from "../../../assets/logout.svg";
 
 const LobbyUserProfileStyled = styled(Board).attrs((props) => {
   return {
@@ -34,9 +35,30 @@ const Wrapper = styled(Board).attrs({
   gap: 0.5rem;
 `;
 
+const LogoutLogo = styled(Logo)`
+  width: 100%;
+  height: 100%;
+`;
+
+const LogoutButton = styled(Button).attrs((props) => {
+  return {
+    width: "3.5%",
+    height: "4.5%",
+    backgroundColor: props.theme.background.middle,
+  };
+})`
+  position: absolute;
+  top: 2.5%;
+  left: 2%;
+  border: none;
+`;
+
 const LobbyUserProfile = () => {
   return (
     <LobbyUserProfileStyled>
+      <LogoutButton to="/">
+        <LogoutLogo />
+      </LogoutButton>
       <Avatar width={"10rem"} height={"10rem"} />
       <UserInfo>
         <Wrapper>
