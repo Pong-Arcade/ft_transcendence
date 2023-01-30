@@ -2,8 +2,7 @@ import { ExecutionContext } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 /**
- * passport-42의 기본 인증을 사용합니다.
- * NOTE: 추후 커스텀이 필요한 경우 handleRequest()를 오버라이드하여 구현하도록 하겠습니다.
+ * passport-42를 통해 session middleware에서 설정한대로 세션을 생성합니다.
  */
 export class FtGuard extends AuthGuard('42') {
   async canActivate(context: ExecutionContext): Promise<boolean> {
