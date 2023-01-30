@@ -9,10 +9,17 @@ const theme: DefaultTheme = {
   border: {
     board: "20px",
   },
+  box: {
+    shadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
+  },
   background: {
     front: "#0288d1", // blueCola
     middle: "#03a9f4", // vividCerulean
     back: "#b3e5fc", // freshAir
+  },
+  template: {
+    width: "98%",
+    height: "98%",
   },
   colors: {
     gunmetal: "#263238",
