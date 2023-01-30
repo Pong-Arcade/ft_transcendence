@@ -36,14 +36,14 @@ const Wrapper = styled(Board).attrs({
 `;
 
 const LogoutLogo = styled(Logo)`
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 100%;
+  height: 100%;
 `;
 
 const LogoutButton = styled(Button).attrs((props) => {
   return {
-    width: "3.5rem",
-    height: "3.5rem",
+    width: "3.5%",
+    height: "4.5%",
     backgroundColor: props.theme.background.middle,
   };
 })`
