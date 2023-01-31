@@ -1,29 +1,36 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import { ICreateRoomFormValues } from "../../../hooks/useCreateRoomForm";
 import Board from "../../atoms/Board";
 import CheckBox from "../../atoms/CheckBox";
+import Input from "../../atoms/Input";
 
 interface Props {
   titleList: string[];
   typeList: EContentType[];
+  values: ICreateRoomFormValues;
+  errors: ICreateRoomFormValues;
+  onChangeForm: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const ModalContentStyled = styled(Board).attrs({
-  width: "98%",
-  height: "24%",
-  borderRadius: true,
-  justifyContent: "space-between",
+const ModalContentStyled = styled(Board).attrs((props) => {
+  return {
+    width: "98%",
+    height: props.height,
+    borderRadius: true,
+    justifyContent: "space-between",
+  };
 })``;
 
-const ContentTitle = styled(Board).attrs((props) => {
-  return {
-    width: "20%",
-    height: "100%",
-    backgroundColor: props.theme.background.front,
-    borderRadius: true,
-  };
-})`
+const ContentLabel = styled.label`
+  width: 20%;
+  height: 100%;
+  background-color: ${(props) => props.theme.background.front};
+  border-radius: ${(props) => props.theme.border.board};
   font-size: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const Content = styled(Board).attrs((props) => {
@@ -42,33 +49,33 @@ export enum EContentType {
   NUMBER = "number",
 }
 
-enum ECheckedType {
+export enum ECheckedType {
   Public = "Public",
   Protected = "Protected",
   Private = "Private",
 }
 
-const InputBox = styled.input`
-  width: 100%;
-  height: 100%;
-  font-size: 3rem;
-  border-radius: ${(props) => props.theme.border.board};
-  background-color: ${(props) => props.theme.background.middle};
-  padding: 3rem;
-`;
+const InputBox = styled(Input).attrs((props) => {
+  return {
+    backgroundColor: props.theme.background.middle,
+    borderRadius: true,
+    padding: "3rem",
+    value: props.value && props.value,
+    name: props.name && props.name,
+  };
+})``;
 
-const NumberBox = styled.input.attrs({
-  type: "number",
-  placeholder: "1 ~ 10 숫자만 입력하세요",
+const NumberBox = styled(Input).attrs((props) => {
+  return {
+    backgroundColor: props.theme.background.middle,
+    borderRadius: true,
+    padding: "3rem",
+    placeholder: "1 ~ 10 숫자만 입력하세요",
+    type: "number",
+    value: props.value && props.value,
+  };
 })`
-  width: 100%;
-  height: 100%;
-  font-size: 3rem;
-  border-radius: ${(props) => props.theme.border.board};
-  background-color: ${(props) => props.theme.background.middle};
-  padding: 3rem;
   text-align: center;
-
   &::placeholder {
     color: white;
   }
@@ -83,7 +90,13 @@ const BlankBox = styled(Board).attrs((props) => {
   };
 })``;
 
-const ModalContent = ({ titleList, typeList }: Props) => {
+const ModalContent = ({
+  titleList,
+  typeList,
+  values,
+  // errors,
+  onChangeForm,
+}: Props) => {
   const [checkedType, setCheckedType] = useState<string>(ECheckedType.Public);
   const checkList = [
     ECheckedType.Public,
@@ -100,17 +113,11 @@ const ModalContent = ({ titleList, typeList }: Props) => {
     setCheckedType(e.currentTarget.id);
   };
 
-  const OnChange = (e: React.FormEvent<HTMLInputElement>) => {
-    if (e.currentTarget.value === "") return;
-    if (Number(e.currentTarget.value) > 10) e.currentTarget.value = "10";
-    else if (Number(e.currentTarget.value) < 1) e.currentTarget.value = "1";
-  };
-
   return (
     <>
       {titleList.map((title, idx) => (
-        <ModalContentStyled>
-          <ContentTitle>{title}</ContentTitle>
+        <ModalContentStyled height={`${100 / titleList.length}%`} key={idx}>
+          <ContentLabel htmlFor={title}>{title}</ContentLabel>
           <Content>
             {typeList[idx] === EContentType.RADIO &&
               checkList.map((title, idx) => {
@@ -120,23 +127,41 @@ const ModalContent = ({ titleList, typeList }: Props) => {
                     title={title}
                     defaultChecked={checkedType === title}
                     onClick={handleCheckedBox}
+                    onChange={onChangeForm}
+                    name="roomType"
                   />
                 );
               })}
             {typeList[idx] === EContentType.TITLE &&
               (checkedType !== ECheckedType.Private ? (
-                <InputBox />
+                <InputBox
+                  id={title}
+                  name="roomTitle"
+                  value={values.roomTitle}
+                  onChange={onChangeForm}
+                />
               ) : (
                 <BlankBox />
               ))}
             {typeList[idx] === EContentType.PASSWORD &&
               (checkedType === ECheckedType.Protected ? (
-                <InputBox />
+                <InputBox
+                  type="password"
+                  name="roomPassword"
+                  id={title}
+                  // value={values.roomPassword}
+                  onChange={onChangeForm}
+                />
               ) : (
                 <BlankBox />
               ))}
             {typeList[idx] === EContentType.NUMBER && (
-              <NumberBox onChange={OnChange} />
+              <NumberBox
+                name="maxUser"
+                id={title}
+                value={values.maxUser}
+                onChange={onChangeForm}
+              />
             )}
           </Content>
         </ModalContentStyled>

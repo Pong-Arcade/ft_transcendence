@@ -8,13 +8,16 @@ const CheckboxStyled = styled(Board).attrs({
   height: "100%",
   justifyContent: "space-around",
 })``;
+
 const CheckBoxLabel = styled.label`
   user-select: none;
   display: flex;
   align-items: center;
 `;
 
-const CheckBoxWrapper = styled.input.attrs({ type: "radio" })`
+const CheckBoxWrapper = styled.input.attrs((props) => {
+  return { type: "radio", value: props.value && props.value };
+})`
   appearance: none;
   width: 2rem;
   height: 2rem;
@@ -34,18 +37,30 @@ const CheckBoxWrapper = styled.input.attrs({ type: "radio" })`
 interface Props {
   title: string;
   onClick?: (e: React.FormEvent<HTMLInputElement>) => void;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   defaultChecked: boolean;
+  name?: string;
 }
 
-const CheckBox = ({ title, defaultChecked, onClick }: Props) => {
+const CheckBox = ({
+  title,
+  defaultChecked,
+  onClick,
+  onChange,
+  name,
+}: Props) => {
   return (
     <CheckboxStyled>
-      <CheckBoxLabel htmlFor={title} key={title}>
+      <CheckBoxLabel htmlFor={title}>
         <CheckBoxWrapper
           className="checkBox"
           onClick={onClick}
+          onChange={onChange}
           defaultChecked={defaultChecked}
+          name={name}
+          key={title}
           id={title}
+          value={title}
         />
         <Typography fontSize="2rem">{title}</Typography>
       </CheckBoxLabel>
