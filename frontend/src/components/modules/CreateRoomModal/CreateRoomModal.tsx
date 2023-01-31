@@ -1,5 +1,5 @@
 import React from "react";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import Board from "../../atoms/Board";
 import Button from "../../atoms/Button";
 import Modal from "../../atoms/Modal";
@@ -26,22 +26,6 @@ const ModalContentWrapper = styled(Board).attrs((props) => {
   };
 })`
   gap: 0.1vh;
-`;
-
-const SubmitButton = styled(Button).attrs((props) => {
-  return {
-    width: "30%",
-    height: "10%",
-    boxShadow: true,
-    type: "submit",
-    disabled: props.disabled && props.disabled,
-  };
-})`
-  ${(props) =>
-    props.disabled &&
-    css`
-      background-color: gray;
-    `}
 `;
 
 const CreateRoomForm = styled.form.attrs((props) => {
@@ -84,6 +68,7 @@ const CreateRoomModal = ({ buttonType, onClose }: Props) => {
       onSubmit: (values) => {
         console.log("----- Submit result -----");
         console.log(values);
+        onClose && onClose();
       },
       validate: createRoomFormValidate,
     });
@@ -103,7 +88,9 @@ const CreateRoomModal = ({ buttonType, onClose }: Props) => {
             typeList={typeList}
           />
         </ModalContentWrapper>
-        <SubmitButton disabled={submitting}>생성</SubmitButton>
+        <Button width="30%" height="10%" boxShadow type="submit">
+          생성
+        </Button>
       </CreateRoomForm>
     </Modal>
   );
