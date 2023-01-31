@@ -13,9 +13,16 @@ interface Props {
   to?: string;
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   border?: string;
+  disabled?: boolean;
+  type?: "button" | "reset" | "submit" | undefined;
 }
 
-const ButtonStyled = styled.button<Props>`
+const ButtonStyled = styled.button.attrs((props) => {
+  return {
+    disabled: props.disabled && props.disabled,
+    type: props.type || "button",
+  };
+})<Props>`
   width: ${(props) => props.width};
   height: ${(props) => props.height};
   font-size: ${(props) => props.fontSize || "1.5rem"};

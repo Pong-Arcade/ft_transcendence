@@ -18,7 +18,7 @@ const ContentStyled = styled(Board).attrs((props) => {
 
 const ContentTitle = styled(Board).attrs((props) => {
   return {
-    width: "20%",
+    width: "25%",
     height: "100%",
     backgroundColor: props.theme.background.front,
     borderRadius: true,
@@ -29,7 +29,7 @@ const ContentTitle = styled(Board).attrs((props) => {
 
 const Content = styled(Board).attrs((props) => {
   return {
-    width: "79%",
+    width: "74%",
     height: "100%",
     backgroundColor: props.theme.background.middle,
     borderRadius: true,
