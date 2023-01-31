@@ -48,7 +48,7 @@ const LobbyUserList = () => {
       <LobbyUserListStyled>
         <ButtonGroup width="100%" height="15%" alignItems="center">
           {buttonList.map((title, idx) => (
-            <Button width="27%" height="55%" boxShadow key={idx}>
+            <Button width="31%" height="55%" boxShadow key={idx}>
               {title}
             </Button>
           ))}
