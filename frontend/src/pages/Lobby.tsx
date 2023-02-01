@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import Board from "../components/atoms/Board";
 import Chat from "../components/modules/Chat";
@@ -8,6 +8,7 @@ import LobbyRoomTypeButtons from "../components/modules/LobbyRoomTypeButtons";
 import LobbyUserList from "../components/modules/LobbyUserList";
 import LobbyUserProfile from "../components/modules/LobbyUserProfile";
 import LobbyTemplate from "../components/templates/LobbyTemplate";
+import ChatSocket from "../utils/ChatSocket";
 
 const UserWrapper = styled(Board).attrs({
   width: "29%",
@@ -37,7 +38,19 @@ const RoomChat = styled(Board).attrs((props) => {
   };
 })``;
 
-const Lobby = () => {
+const Lobby = ({ socket }: { socket: ChatSocket }) => {
+  useEffect(() => {
+    if (socket === undefined) {
+      socket = new ChatSocket(1, "user" + Math.floor(Math.random() * 100));
+      console.log("recreated socket");
+    }
+    if (socket) {
+      socket.socket.emit("joinLobby", socket.userid);
+      const createRoom = ({ type, roomname, password, maxUser }: any) => {
+        socket.socket.emit("createRoom", { type, roomname, password, maxUser });
+      };
+    }
+  });
   return (
     <LobbyTemplate>
       <UserWrapper>
@@ -45,12 +58,12 @@ const Lobby = () => {
         <LobbyUserList />
       </UserWrapper>
       <RoomChatWrapper>
-        <LobbyCreateRoomButtons />
+        <LobbyCreateRoomButtons socket={socket} />
         <RoomChat>
           <LobbyRoomTypeButtons />
           <LobbyChatRoomList />
           {/* <LobbyGameRoomList /> */}
-          <Chat width="98%" height="40%" boxShadow />
+          <Chat socket={socket} width="98%" height="40%" boxShadow />
         </RoomChat>
       </RoomChatWrapper>
     </LobbyTemplate>

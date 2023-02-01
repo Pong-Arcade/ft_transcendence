@@ -9,10 +9,12 @@ import { EContentType } from "../ModalContent/ModalContent";
 import ModalTitle from "../ModalTitle";
 import useCreateRoomForm from "../../../hooks/useCreateRoomForm";
 import createRoomFormValidate from "../../../utils/createRoomFormValidate";
+import ChatSocket from "../../../utils/ChatSocket";
 
 interface Props {
   buttonType: string;
   onClose?: () => void;
+  onSubmit?: (values: any) => void;
 }
 
 const ModalContentWrapper = styled(Board).attrs((props) => {
@@ -41,7 +43,7 @@ const CreateRoomForm = styled.form.attrs((props) => {
   align-items: center;
 `;
 
-const CreateRoomModal = ({ buttonType, onClose }: Props) => {
+const CreateRoomModal = ({ buttonType, onClose, onSubmit }: Props) => {
   let titleList;
   let typeList;
   if (buttonType === ERoomCreateButtonName.ChatRoom) {
@@ -69,6 +71,7 @@ const CreateRoomModal = ({ buttonType, onClose }: Props) => {
         console.log("----- Submit result -----");
         console.log(values);
         onClose && onClose();
+        onSubmit && onSubmit(values);
       },
       validate: createRoomFormValidate,
     });
