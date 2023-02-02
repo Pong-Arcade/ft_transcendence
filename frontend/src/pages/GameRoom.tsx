@@ -9,6 +9,7 @@ import Chat from "../components/modules/Chat";
 import Menu from "../components/modules/Menu";
 import UserInfoModal from "../components/modules/UserInfoModal";
 import GameRoomTemplate from "../components/templates/GameRoomTemplate";
+import useMenu from "../hooks/useMenu";
 
 const GameBoard = styled(Board).attrs((props) => {
   return {
@@ -45,22 +46,13 @@ const UserProfile = styled(Button).attrs({
 `;
 
 const GameRoom = () => {
-  const [isOpenMenu, setOpenMenu] = useState(false);
   const [isOpenUserInfo, setOpenUserInfo] = useState(false);
-  const [positionX, setPositionX] = useState(0);
-  const [positionY, setPositionY] = useState(0);
+  const { isOpenMenu, onOpenMenu, onCloseMenu, positionX, positionY } =
+    useMenu();
 
-  const onOpenMenu = (e: React.MouseEvent<HTMLButtonElement>) => {
-    setPositionX(e.clientX);
-    setPositionY(e.clientY);
-    setOpenMenu(true);
-  };
-  const onClose = () => {
-    setOpenMenu(false);
-  };
   const onOpenMenuDetail = () => {
     setOpenUserInfo(true);
-    setOpenMenu(false);
+    onCloseMenu();
   };
   const onCloseMenuDetail = () => {
     setOpenUserInfo(false);
@@ -79,7 +71,7 @@ const GameRoom = () => {
                 <Avatar width="8rem" height="8rem" />
                 <Typography fontSize="2rem">{user}</Typography>
                 <Typography fontSize="1.2rem">
-                  {idx === 0 ? "(Left)" : "(Right)"}
+                  {idx === 0 ? "(RED)" : "(BLUE)"}
                 </Typography>
               </UserProfile>
             ))}
@@ -90,8 +82,8 @@ const GameRoom = () => {
           </Button>
         </Wrapper>
       </GameRoomTemplate>
-      {isOpenMenu && (
-        <ModalWrapper onClose={onClose} backgroundColor="none">
+      {isOpenMenu && ( // TODO: 정보보기 제외 다른 기능 추가 시 리팩토링 필요
+        <ModalWrapper onClose={onCloseMenu} backgroundColor="none">
           <Menu
             list={["정보보기", "귓속말", "친구추가", "차단하기"]}
             top={positionY}
