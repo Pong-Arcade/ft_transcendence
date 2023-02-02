@@ -7,7 +7,7 @@ import Typography from "../../atoms/Typography";
 import ModalTitle from "../ModalTitle";
 
 interface Props {
-  buttonType: string;
+  title: string;
   onClose?: () => void;
 }
 
@@ -23,7 +23,7 @@ const Wrapper = styled(Board).attrs((props) => {
   gap: 6vh;
 `;
 
-const QuickGameModal = ({ onClose, buttonType }: Props) => {
+const QuickGameModal = ({ onClose, title }: Props) => {
   return (
     <Modal width="30%" height="30%">
       <ModalTitle
@@ -32,7 +32,7 @@ const QuickGameModal = ({ onClose, buttonType }: Props) => {
         closeFontSize="1.5rem"
         height="20%"
       >
-        {buttonType}
+        {title}
       </ModalTitle>
       <Wrapper>
         <Typography fontSize="3rem">매칭 상대를 찾고 있습니다</Typography>

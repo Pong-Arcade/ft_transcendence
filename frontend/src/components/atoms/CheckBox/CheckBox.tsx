@@ -6,7 +6,6 @@ import Typography from "../Typography";
 const CheckboxStyled = styled(Board).attrs({
   width: "79%",
   height: "100%",
-  justifyContent: "space-around",
 })``;
 
 const CheckBoxLabel = styled.label`
@@ -36,19 +35,13 @@ const CheckBoxWrapper = styled.input.attrs((props) => {
 
 interface Props {
   title: string;
-  onClick?: (e: React.FormEvent<HTMLInputElement>) => void;
+  onClick: (e: React.FormEvent<HTMLInputElement>) => void;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  defaultChecked: boolean;
   name?: string;
+  checked: boolean;
 }
 
-const CheckBox = ({
-  title,
-  defaultChecked,
-  onClick,
-  onChange,
-  name,
-}: Props) => {
+const CheckBox = ({ title, onClick, onChange, name, checked }: Props) => {
   return (
     <CheckboxStyled>
       <CheckBoxLabel htmlFor={title}>
@@ -56,11 +49,10 @@ const CheckBox = ({
           className="checkBox"
           onClick={onClick}
           onChange={onChange}
-          defaultChecked={defaultChecked}
           name={name}
-          key={title}
           id={title}
           value={title}
+          checked={checked}
         />
         <Typography fontSize="2rem">{title}</Typography>
       </CheckBoxLabel>

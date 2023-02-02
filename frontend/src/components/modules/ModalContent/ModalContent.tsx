@@ -4,6 +4,7 @@ import { ICreateRoomFormValues } from "../../../hooks/useCreateRoomForm";
 import Board from "../../atoms/Board";
 import CheckBox from "../../atoms/CheckBox";
 import Input from "../../atoms/Input";
+import TextInput from "../../atoms/TextInput";
 
 interface Props {
   titleList: string[];
@@ -134,10 +135,10 @@ const ModalContent = ({
               })}
             {typeList[idx] === EContentType.TITLE &&
               (checkedType !== ECheckedType.Private ? (
-                <InputBox
-                  id={title}
-                  name="roomTitle"
-                  value={values.roomTitle}
+                <TextInput
+                  title={title}
+                  name={values.Title}
+                  value={values.Title}
                   onChange={onChangeForm}
                 />
               ) : (
