@@ -1,5 +1,5 @@
 import { Strategy } from 'passport';
-import { UserDto } from 'src/dto/user.dto';
+import { UserDto } from 'src/dto/ft.user.dto';
 
 export default class MockStrategy extends Strategy {
   private verify;

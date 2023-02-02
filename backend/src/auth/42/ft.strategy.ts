@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-42';
-import { UserDto } from 'src/dto/user.dto';
+import { UserDto } from 'src/dto/ft.user.dto';
 
 /**
  * passport-42의 전략을 구성합니다.
