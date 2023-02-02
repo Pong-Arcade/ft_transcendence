@@ -4,26 +4,26 @@ import CheckBox from "../../atoms/CheckBox";
 import InputLabel from "../../atoms/InputLabel";
 import InputWrapper from "../../atoms/InputWrapper/InputWrapper";
 
-export enum ERoomTypeCheckBoxTitle {
-  PUBLIC = "Public",
-  PROTECTED = "Protected",
-  PRIVATE = "Private",
-}
-
 interface Props {
   title: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
+export enum EChatRoomType {
+  PUBLIC = "PUBLIC",
+  PROTECTED = "PROTECTED",
+  PRIVATE = "PRIVATE",
+}
+
 const titleList = [
-  ERoomTypeCheckBoxTitle.PUBLIC,
-  ERoomTypeCheckBoxTitle.PROTECTED,
-  ERoomTypeCheckBoxTitle.PRIVATE,
+  EChatRoomType.PUBLIC,
+  EChatRoomType.PROTECTED,
+  EChatRoomType.PRIVATE,
 ];
 
 const RoomTypeCheckBoxGroup = ({ title, onChange }: Props) => {
   const [checkedType, setCheckedType] = React.useState<string>(
-    ERoomTypeCheckBoxTitle.PUBLIC
+    EChatRoomType.PUBLIC
   );
   const onClick = (e: React.FormEvent<HTMLInputElement>) => {
     setCheckedType(e.currentTarget.value);

@@ -12,7 +12,6 @@ import NumberInput from "../../atoms/NumberInput";
 import TextInput from "../../atoms/TextInput";
 import ModalInputListWrapper from "../ModalInputListWrapper";
 import ModalTitle from "../ModalTitle";
-import { ERoomTypeCheckBoxTitle } from "../RoomTypeCheckBoxGroup/RoomTypeCheckBoxGroup";
 
 interface Props {
   title?: string;
@@ -29,21 +28,20 @@ const CreateRoomForm = styled.form`
 `;
 
 const CreateGameRoomModal = ({ title, onClose }: Props) => {
-  // TODO: validate와 submitting 시 할 작업 추가
-  const { values, errors, submitting, onChangeForm, onSubmitForm } =
-    useCreateRoomForm({
-      initialValues: {
-        Title: "",
-        maxUser: "",
-      },
-      onSubmit: (values) => {
-        console.log("----- Submit result -----");
-        console.log(values);
-        onClose && onClose();
-      },
-      validate: createRoomFormValidate,
-      roomType: ECreateRoomFormValidate.GAME,
-    });
+  // TODO: errors, submitting 인자 받기
+  const { values, onChangeForm, onSubmitForm } = useCreateRoomForm({
+    initialValues: {
+      Title: "",
+      maxUser: "",
+    },
+    onSubmit: (values) => {
+      console.log("----- Submit result -----");
+      console.log(values);
+      onClose && onClose();
+    },
+    validate: createRoomFormValidate,
+    roomType: ECreateRoomFormValidate.GAME,
+  });
 
   return (
     <Modal width="50%" height="50%">
@@ -58,7 +56,6 @@ const CreateGameRoomModal = ({ title, onClose }: Props) => {
               name={ECreateRoomFormValues.TITLE}
               value={values.Title}
               onChange={onChangeForm}
-              disabled={values.Type === ERoomTypeCheckBoxTitle.PRIVATE}
             />
           </ModalInputWrapper>
           <ModalInputWrapper>

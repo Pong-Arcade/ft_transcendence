@@ -6,10 +6,10 @@ import ButtonGroup from "../ButtonGroup";
 import ChooseGameModal from "../ChooseGameModal";
 import CreateChatRoomModal from "../CreateChatRoomModal";
 
-export enum ERoomCreateButtonName {
-  ChatRoom = "채팅방만들기",
-  NormalGame = "일반게임",
-  LadderGame = "레더게임",
+enum ERoomCreateButtonName {
+  CHATROOM = "채팅방만들기",
+  NORMALGAME = "일반게임",
+  LADDERGAME = "레더게임",
 }
 
 const CreateRoomButton = styled(Button).attrs({
@@ -23,9 +23,9 @@ const LobbyCreateRoomButtons = () => {
   const [isOpenModal, setOpenModal] = useState(false);
   const [buttonTitle, setButtonTitle] = useState("");
   const roomCreateList = [
-    ERoomCreateButtonName.ChatRoom,
-    ERoomCreateButtonName.LadderGame,
-    ERoomCreateButtonName.NormalGame,
+    ERoomCreateButtonName.CHATROOM,
+    ERoomCreateButtonName.LADDERGAME,
+    ERoomCreateButtonName.NORMALGAME,
   ];
   const onCreateButton = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (!e.currentTarget.textContent) return;
@@ -47,9 +47,9 @@ const LobbyCreateRoomButtons = () => {
       </ButtonGroup>
       {isOpenModal && (
         <ModalWrapper onClose={onClose}>
-          {buttonTitle === ERoomCreateButtonName.ChatRoom ? (
+          {buttonTitle === ERoomCreateButtonName.CHATROOM ? (
             <CreateChatRoomModal onClose={onClose} title="채팅방만들기" />
-          ) : buttonTitle === ERoomCreateButtonName.LadderGame ? (
+          ) : buttonTitle === ERoomCreateButtonName.LADDERGAME ? (
             <ChooseGameModal onClose={onClose} buttonTitle="레더게임" />
           ) : (
             <ChooseGameModal onClose={onClose} buttonTitle="일반게임" />
