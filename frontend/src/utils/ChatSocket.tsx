@@ -5,6 +5,7 @@ class ChatSocket {
   socket: Socket;
   userid: number;
   username: string;
+  ignore_list: Array<number>;
 
   addMessage(msg: string) {
     const chatList = document.getElementById("");

@@ -50,6 +50,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     });
   }
 
+  /**
+   * 삭제예정
+   */
   @SubscribeMessage('createRoom')
   async onCreateRoom(client, info) {
     this.rooms.set(
@@ -67,6 +70,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.roomid++;
   }
 
+  /**
+   * 삭제예정
+   */
   @SubscribeMessage('joinLobby')
   async onJoinLobby(client, userid) {
     if (this.rooms.size == 0) {
@@ -76,24 +82,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.users.get(userid).location = 0;
   }
 
-  @SubscribeMessage('joinRoom')
-  async onJoinRoom(client, info) {
-    const room = this.rooms.get(info.roomid);
-    if (room === undefined) {
-      // error code 존재하지 않는 방
-    }
-    if (room.type === 1) {
-      if (room.password == info.password) {
-        client.emit('joinRoom', info.roomid);
-        room.Users.push(info.userid);
-      } else {
-        // error code 비밀번호 틀림
-      }
-    } else if (room.type === 2) {
-      // private 방
-    }
-  }
-
+  /**
+   * 삭제예정
+   */
   @SubscribeMessage('addUser')
   async onAddUser(client, info) {
     // client.userid = info.userid;
@@ -115,15 +106,24 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     } else {
       this.server
         .to(this.rooms.get(msg.roomid).roomname)
-        .emit('message', msg.msg);
+        .broadcast.emit('message', msg.msg);
     }
   }
   @SubscribeMessage('whisper')
   async onWhisper(client, msg) {
+    console.log(msg);
     this.users.forEach((value, key, map) => {
-      if (value.username == msg.username) {
-        this.server.to(value.socketid).emit('message', msg.msg);
+      if (value.username == msg.toName) {
+        this.server
+          .to(client.id)
+          .emit('message', msg.toName + '에게: ' + msg.msg);
+        this.server
+          .to(value.socketid)
+          .emit('message', msg.fromName + '로 부터: ' + msg.msg);
+        console.log('send');
+        return;
       }
     });
+    this.server.to(client.id).emit('system', '접속중이지 않은 유저입니다.');
   }
 }

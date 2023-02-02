@@ -36,22 +36,12 @@ const ChatBoard = styled(Board).attrs({
 const Chat = ({ socket, ...rest }: Props) => {
   const [list, setList] = useState<string[]>([]);
   const [msg, setMsg] = useState<string>();
-  // const list = [
-  //   "kangkim : test",
-  //   "kangkim : test",
-  //   "kangkim : test",
-  //   "kangkim : overflow test. overflow test. overflow test. overflow test. overflow test. overflow test. overflow test. overflow test. overflow test. ",
-  //   "kangkim : scroll test",
-  //   "kangkim : scroll test",
-  //   "kangkim : scroll test",
-  //   "kangkim : scroll test",
-  //   "kangkim : scroll test",
-  //   "kangkim : scroll test",
-  //   "kangkim : scroll test",
-  //   "kangkim : scroll test",
-  // ];
   useEffect(() => {
     const newMessage = (newMsg: string) => {
+      console.log(newMsg);
+      setList((prevList) => [...prevList, newMsg]);
+    };
+    const joinRoom = (newMsg: string) => {
       setList((prevList) => [...prevList, newMsg]);
     };
     if (socket) socket.socket.on("message", newMessage);
@@ -61,13 +51,10 @@ const Chat = ({ socket, ...rest }: Props) => {
       if (socket && msg != "") {
         if (msg && msg.split(" ")[0] === "/w") {
           socket.socket.emit("whisper", {
-            username: msg?.split(" ")[1],
-            msg:
-              socket.username +
-              ": " +
-              msg.substring(msg.split(" ")[1].length + 4),
+            fromName: socket.username,
+            toName: msg?.split(" ")[1],
+            msg: msg.substring(msg.split(" ")[1].length + 4),
           });
-          console.log(msg.substring(msg.split(" ")[1].length + 4));
         } else {
           socket.socket.emit("message", {
             roomid: 0,
