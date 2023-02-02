@@ -52,7 +52,7 @@ const LobbyUserProfile = () => {
             width="7vw"
             height="5vh"
             boxShadow
-            to="/rank"
+            to="/ranking"
             fontSize="1.5rem"
           >
             랭킹
