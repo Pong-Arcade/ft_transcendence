@@ -4,7 +4,7 @@ import { ReactComponent as Logo } from "../../../assets/logout.svg";
 import Button from "../../atoms/Button";
 
 interface Props {
-  to?: string;
+  onClick?: () => void;
 }
 
 const LogoutLogo = styled(Logo)`
@@ -22,9 +22,9 @@ const LogoutButtonStyled = styled(Button)`
   height: 4.5%;
 `;
 
-const LogoutButton = ({ to }: Props) => {
+const LogoutButton = ({ onClick }: Props) => {
   return (
-    <LogoutButtonStyled width="3.5%" height="4.5%" to={to}>
+    <LogoutButtonStyled width="3.5%" height="4.5%" onClick={onClick}>
       <LogoutLogo />
     </LogoutButtonStyled>
   );
