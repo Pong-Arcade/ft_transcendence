@@ -1,23 +1,41 @@
 import React, { useEffect, useState } from "react";
 
 export interface ICreateRoomFormValues {
-  roomType?: string;
-  roomTitle?: string;
-  roomPassword?: string;
+  Type?: string;
+  Title?: string;
+  Password?: string;
   maxUser?: string;
 }
 
-interface IUseCreateRoomForm {
-  initialValues: object;
-  onSubmit: (values: ICreateRoomFormValues) => void;
-  validate: (values: ICreateRoomFormValues) => object;
+export interface ICreateRoomFormValidate extends ICreateRoomFormValues {
+  roomType: string;
 }
 
-const useCreateRoomForm = ({
+export enum ECreateRoomFormValidate {
+  CHAT = "Chat",
+  GAME = "Game",
+}
+
+export enum ECreateRoomFormValues {
+  TYPE = "Type",
+  TITLE = "Title",
+  PASSWORD = "Password",
+  MAXUSER = "maxUser",
+}
+
+interface IUseCreateRoomForm {
+  initialValues: ICreateRoomFormValues;
+  onSubmit: (values: ICreateRoomFormValues) => void;
+  validate: (values: ICreateRoomFormValidate) => object;
+  roomType: string;
+}
+
+function useCreateRoomForm({
   initialValues,
   onSubmit,
   validate,
-}: IUseCreateRoomForm) => {
+  roomType,
+}: IUseCreateRoomForm) {
   const [values, setValues] = useState(initialValues);
   const [errors, setErrors] = useState<ICreateRoomFormValues>({});
   const [submitting, setSubmitting] = useState(false);
@@ -30,7 +48,7 @@ const useCreateRoomForm = ({
   const onSubmitForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmitting(true);
-    setErrors(validate(values));
+    setErrors(validate({ ...values, ["roomType"]: roomType }));
   };
 
   useEffect(() => {
@@ -40,7 +58,7 @@ const useCreateRoomForm = ({
     } else if (submitting && Object.keys(errors).length !== 0) {
       setSubmitting(false);
       alert(
-        `${errors?.roomType} ${errors?.roomTitle} ${errors?.roomPassword} ${errors?.maxUser}`
+        `${errors?.Type} ${errors?.Title} ${errors?.Password} ${errors?.maxUser}`
       );
     }
   }, [errors]);
@@ -52,6 +70,6 @@ const useCreateRoomForm = ({
     onChangeForm,
     onSubmitForm,
   };
-};
+}
 
 export default useCreateRoomForm;

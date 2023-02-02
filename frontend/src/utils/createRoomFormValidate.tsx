@@ -1,31 +1,44 @@
-import { ICreateRoomFormValues } from "../hooks/useCreateRoomForm";
-import { ECheckedType } from "../components/modules/ModalContent/ModalContent";
+import { EChatRoomType } from "../components/modules/RoomTypeCheckBoxGroup/RoomTypeCheckBoxGroup";
+import {
+  ECreateRoomFormValidate,
+  ICreateRoomFormValidate,
+  ICreateRoomFormValues,
+} from "../hooks/useCreateRoomForm";
 
 const createRoomFormValidate = ({
-  roomType,
-  roomTitle,
-  roomPassword,
+  Type,
+  Title,
+  Password,
   maxUser,
-}: ICreateRoomFormValues) => {
+  roomType,
+}: ICreateRoomFormValidate) => {
   const errors: ICreateRoomFormValues = {};
 
-  if (!roomType || roomType === "undefined") {
-    errors.roomType = "방유형을 선택해주세요";
-  } else if (!(roomType in ECheckedType)) {
-    errors.roomType = "방유형이 옳바르지 않습니다";
+  if (roomType === ECreateRoomFormValidate.CHAT) {
+    if (!Type || Type === "undefined") {
+      errors.Type = "방유형을 선택해주세요";
+    } else if (!(Type in EChatRoomType)) {
+      console.log(Type in EChatRoomType);
+      console.log(Type);
+      console.log(EChatRoomType);
+
+      errors.Type = "방유형이 옳바르지 않습니다";
+    }
+
+    if (Type === EChatRoomType.PROTECTED) {
+      if (!Password || Password.length === 0) {
+        errors.Password = "비밀번호를 입력해주세요";
+      } else if (Password.length > 10) {
+        errors.Password = "비밀번호는 10자 이내로 입력해주세요";
+      }
+    }
   }
 
-  if (!roomTitle || roomTitle.length === 0) {
-    errors.roomTitle = "방제목을 입력해주세요";
-  } else if (roomTitle.length > 20) {
-    errors.roomTitle = "방제목은 20자 이내로 입력해주세요";
-  }
-
-  if (roomType === ECheckedType.Protected) {
-    if (!roomPassword || roomPassword.length === 0) {
-      errors.roomPassword = "비밀번호를 입력해주세요";
-    } else if (roomPassword.length > 10) {
-      errors.roomPassword = "비밀번호는 10자 이내로 입력해주세요";
+  if (Type !== EChatRoomType.PRIVATE) {
+    if (!Title || Title.length === 0) {
+      errors.Title = "방제목을 입력해주세요";
+    } else if (Title.length > 20) {
+      errors.Title = "방제목은 20자 이내로 입력해주세요";
     }
   }
 

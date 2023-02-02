@@ -1,17 +1,24 @@
 import React, { useState } from "react";
+import styled from "styled-components";
 import Button from "../../atoms/Button";
 import Modal from "../../atoms/Modal";
 import ButtonGroup from "../ButtonGroup";
-import CreateRoomModal from "../CreateRoomModal";
+import CreateGameRoomModal from "../CreateGameRoomModal";
 import ModalTitle from "../ModalTitle";
 import QuickGameModal from "../QuickGameModal";
 
 interface Props {
-  buttonType: string;
+  buttonTitle: string;
   onClose?: () => void;
 }
 
-const ChooseGameModal = ({ buttonType, onClose }: Props) => {
+const ChooseGameButton = styled(Button).attrs({
+  width: "49.5%",
+  height: "100%",
+  fontSize: "2rem",
+})``;
+
+const ChooseGameModal = ({ buttonTitle, onClose }: Props) => {
   const [openCreateGame, setOpenCreateGame] = useState(false);
   const [openQuickStart, setOpenQuickStart] = useState(false);
 
@@ -21,6 +28,7 @@ const ChooseGameModal = ({ buttonType, onClose }: Props) => {
   const onQuickStartClick = () => {
     setOpenQuickStart(true);
   };
+  console.log(buttonTitle);
   return (
     <>
       <Modal width="30%" height="30%">
@@ -30,7 +38,7 @@ const ChooseGameModal = ({ buttonType, onClose }: Props) => {
           closeFontSize="1.5rem"
           height="20%"
         >
-          {buttonType}
+          {buttonTitle}
         </ModalTitle>
         <ButtonGroup
           height="79%"
@@ -38,29 +46,19 @@ const ChooseGameModal = ({ buttonType, onClose }: Props) => {
           backgroundColor="secondary"
           justifyContent="space-between"
         >
-          <Button
-            width="49.5%"
-            height="100%"
-            fontSize="2rem"
-            onClick={onCreateGameClick}
-          >
+          <ChooseGameButton onClick={onCreateGameClick}>
             방만들기
-          </Button>
-          <Button
-            width="49.5%"
-            height="100%"
-            fontSize="2rem"
-            onClick={onQuickStartClick}
-          >
+          </ChooseGameButton>
+          <ChooseGameButton onClick={onQuickStartClick}>
             빠른시작
-          </Button>
+          </ChooseGameButton>
         </ButtonGroup>
       </Modal>
       {openCreateGame && (
-        <CreateRoomModal onClose={onClose} buttonType={buttonType} />
+        <CreateGameRoomModal title={buttonTitle} onClose={onClose} />
       )}
       {openQuickStart && (
-        <QuickGameModal onClose={onClose} buttonType={buttonType} />
+        <QuickGameModal onClose={onClose} title={buttonTitle} />
       )}
     </>
   );

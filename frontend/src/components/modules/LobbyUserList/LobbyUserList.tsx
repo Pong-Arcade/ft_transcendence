@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import useMenu from "../../../hooks/useMenu";
 import Board from "../../atoms/Board";
 import Button from "../../atoms/Button";
 import ModalWrapper from "../../atoms/ModalWrapper";
@@ -22,22 +23,13 @@ const LobbyUserListStyled = styled(Board).attrs((props) => {
 
 const LobbyUserList = () => {
   const buttonList = ["접속중인유저", "친구목록", "차단목록"];
-  const [isOpenMenu, setOpenMenu] = useState(false);
+  const { isOpenMenu, onOpenMenu, onCloseMenu, positionX, positionY } =
+    useMenu();
   const [isOpenUserInfo, setOpenUserInfo] = useState(false);
-  const [positionX, setPositionX] = useState(0);
-  const [positionY, setPositionY] = useState(0);
 
-  const onOpenMenu = (e: React.MouseEvent<HTMLButtonElement>) => {
-    setPositionX(e.clientX);
-    setPositionY(e.clientY);
-    setOpenMenu(true);
-  };
-  const onClose = () => {
-    setOpenMenu(false);
-  };
   const onOpenMenuDetail = () => {
     setOpenUserInfo(true);
-    setOpenMenu(false);
+    onCloseMenu();
   };
   const onCloseMenuDetail = () => {
     setOpenUserInfo(false);
@@ -62,8 +54,8 @@ const LobbyUserList = () => {
           height="90%"
         />
       </LobbyUserListStyled>
-      {isOpenMenu && (
-        <ModalWrapper onClose={onClose} backgroundColor="none">
+      {isOpenMenu && ( // TODO: 정보보기 제외 다른 기능 추가 시 리팩토링 필요
+        <ModalWrapper onClose={onCloseMenu} backgroundColor="none">
           <Menu
             list={["정보보기", "귓속말", "친구추가", "차단하기"]}
             top={positionY}
