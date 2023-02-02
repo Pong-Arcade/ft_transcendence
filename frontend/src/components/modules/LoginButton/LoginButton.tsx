@@ -22,6 +22,8 @@ const ButtonStyled = styled(Button).attrs({
   gap: 1rem;
 `;
 
+// TODO: Login api 추가
+// TODO: User profile, nickname 설정(api??)
 const LoginButton = () => {
   return (
     <LoginButtonStyled>

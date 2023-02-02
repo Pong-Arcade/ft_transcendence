@@ -11,6 +11,7 @@ import Avatar from "../components/atoms/Avatar";
 import ModalWrapper from "../components/atoms/ModalWrapper";
 import Menu from "../components/modules/Menu";
 import UserInfoModal from "../components/modules/UserInfoModal";
+import useMenu from "../hooks/useMenu";
 
 const Wrapper = styled(Board).attrs({
   width: "100%",
@@ -46,22 +47,13 @@ for (let i = 0; i < 4; ++i) {
 }
 
 const ChatRoom = () => {
-  const [isOpenMenu, setOpenMenu] = useState(false);
   const [isOpenUserInfo, setOpenUserInfo] = useState(false);
-  const [positionX, setPositionX] = useState(0);
-  const [positionY, setPositionY] = useState(0);
+  const { isOpenMenu, onOpenMenu, onCloseMenu, positionX, positionY } =
+    useMenu();
 
-  const onOpenMenu = (e: React.MouseEvent<HTMLButtonElement>) => {
-    setPositionX(e.clientX);
-    setPositionY(e.clientY);
-    setOpenMenu(true);
-  };
-  const onMenuClose = () => {
-    setOpenMenu(false);
-  };
   const onOpenMenuDetail = () => {
     setOpenUserInfo(true);
-    setOpenMenu(false);
+    onCloseMenu();
   };
   const onCloseMenuDetail = () => {
     setOpenUserInfo(false);
@@ -94,8 +86,8 @@ const ChatRoom = () => {
           </Button>
         </ButtonGroup>
       </ChatRoomTemplate>
-      {isOpenMenu && (
-        <ModalWrapper onClose={onMenuClose} backgroundColor="none">
+      {isOpenMenu && ( // TODO: 정보보기 제외 다른 기능 추가 시 리팩토링 필요
+        <ModalWrapper onClose={onCloseMenu} backgroundColor="none">
           <Menu
             list={[
               "정보보기",

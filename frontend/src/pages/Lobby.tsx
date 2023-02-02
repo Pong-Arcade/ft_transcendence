@@ -4,7 +4,7 @@ import Board from "../components/atoms/Board";
 import Chat from "../components/modules/Chat";
 import LobbyChatRoomList from "../components/modules/LobbyChatRoomList";
 import LobbyCreateRoomButtons from "../components/modules/LobbyCreateRoomButtons";
-import LobbyRoomTypeButtons from "../components/modules/LobbyRoomTypeButtons";
+import LobbyRoomListTypeButtons from "../components/modules/LobbyRoomListTypeButtons";
 import LobbyUserList from "../components/modules/LobbyUserList";
 import LobbyUserProfile from "../components/modules/LobbyUserProfile";
 import LobbyTemplate from "../components/templates/LobbyTemplate";
@@ -17,7 +17,7 @@ const UserWrapper = styled(Board).attrs({
   justifyContent: "space-between",
 })``;
 
-const RoomChatWrapper = styled(Board).attrs({
+const RoomListChatWrapper = styled(Board).attrs({
   width: "69%",
   height: "98%",
   flexDirection: "column",
@@ -26,7 +26,7 @@ const RoomChatWrapper = styled(Board).attrs({
   justifyContent: "space-between",
 })``;
 
-const RoomChat = styled(Board).attrs((props) => {
+const RoomListChat = styled(Board).attrs((props) => {
   return {
     width: "100%",
     height: "89%",
@@ -57,15 +57,15 @@ const Lobby = ({ socket }: { socket: ChatSocket }) => {
         <LobbyUserProfile />
         <LobbyUserList />
       </UserWrapper>
-      <RoomChatWrapper>
-        <LobbyCreateRoomButtons socket={socket} />
-        <RoomChat>
-          <LobbyRoomTypeButtons />
+      <RoomListChatWrapper>
+        <LobbyCreateRoomButtons />
+        <RoomListChat>
+          <LobbyRoomListTypeButtons />
           <LobbyChatRoomList />
           {/* <LobbyGameRoomList /> */}
-          <Chat socket={socket} width="98%" height="40%" boxShadow />
-        </RoomChat>
-      </RoomChatWrapper>
+          <Chat width="98%" height="40%" boxShadow />
+        </RoomListChat>
+      </RoomListChatWrapper>
     </LobbyTemplate>
   );
 };

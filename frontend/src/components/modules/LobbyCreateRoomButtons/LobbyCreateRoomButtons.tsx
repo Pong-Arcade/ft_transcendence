@@ -1,81 +1,64 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
+import styled from "styled-components";
 import Button from "../../atoms/Button";
 import ModalWrapper from "../../atoms/ModalWrapper";
 import ButtonGroup from "../ButtonGroup";
 import ChooseGameModal from "../ChooseGameModal";
-import CreateRoomModal from "../CreateRoomModal";
 import ChatSocket from "../../../utils/ChatSocket";
+import CreateChatRoomModal from "../CreateChatRoomModal";
 
-export enum ERoomCreateButtonName {
-  ChatRoom = "채팅방만들기",
-  NormalGame = "일반게임",
-  LadderGame = "레더게임",
+enum ERoomCreateButtonName {
+  CHATROOM = "채팅방만들기",
+  NORMALGAME = "일반게임",
+  LADDERGAME = "레더게임",
 }
 
-const LobbyCreateRoomButtons = ({ socket }: { socket: ChatSocket }) => {
+const CreateRoomButton = styled(Button).attrs({
+  width: "25%",
+  height: "70%",
+  boxShadow: true,
+  fontSize: "2rem",
+})``;
+
+const LobbyCreateRoomButtons = () => {
   const [isOpenModal, setOpenModal] = useState(false);
-  const [buttonType, setButtonType] = useState("");
-  const navigate = useNavigate();
+  const [buttonTitle, setButtonTitle] = useState("");
   const roomCreateList = [
-    ERoomCreateButtonName.ChatRoom,
-    ERoomCreateButtonName.LadderGame,
-    ERoomCreateButtonName.NormalGame,
+    ERoomCreateButtonName.CHATROOM,
+    ERoomCreateButtonName.LADDERGAME,
+    ERoomCreateButtonName.NORMALGAME,
   ];
-  const handleCreateButton = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const onCreateButton = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (!e.currentTarget.textContent) return;
-    setButtonType(e.currentTarget.textContent);
+    setButtonTitle(e.currentTarget.textContent);
     setOpenModal(true);
   };
   const onClose = () => {
     setOpenModal(false);
   };
-  const createdRoom = (msg: any) => {
-    console.log("created ", msg);
-    if (msg.code == 201) {
-      navigate("/chat-rooms/" + msg.roomid);
-    }
-  };
-  useEffect(() => {
-    socket.socket.on("createdRoom", createdRoom);
-  });
-  const onSubmit = (values: any) => {
-    values.creator = socket.userid;
-    console.log("submit", values);
-    socket.socket.emit("createRoom", { values });
-    setOpenModal(false);
-  };
 
   return (
     <>
+      <ButtonGroup height="10%" width="100%" boxShadow>
+        {roomCreateList.map((elem, idx) => (
+          <CreateRoomButton key={idx} onClick={onCreateButton}>
+            {elem}
+          </CreateRoomButton>
+        ))}
+      </ButtonGroup>
       {isOpenModal && (
         <ModalWrapper onClose={onClose}>
-          {buttonType === ERoomCreateButtonName.ChatRoom ? (
-            <CreateRoomModal
-              onClose={onClose}
-              onSubmit={onSubmit}
-              buttonType={buttonType}
-            />
+          {buttonTitle === ERoomCreateButtonName.CHATROOM ? (
+            <CreateChatRoomModal onClose={onClose} title="채팅방만들기" />
+          ) : buttonTitle === ERoomCreateButtonName.LADDERGAME ? (
+            <ChooseGameModal onClose={onClose} buttonTitle="레더게임" />
           ) : (
-            <ChooseGameModal onClose={onClose} buttonType={buttonType} />
+            <ChooseGameModal onClose={onClose} buttonTitle="일반게임" />
           )}
         </ModalWrapper>
       )}
-      <ButtonGroup height="10%" width="100%" boxShadow>
-        {roomCreateList.map((elem, idx) => (
-          <Button
-            key={idx}
-            onClick={handleCreateButton}
-            width="25%"
-            height="70%"
-            boxShadow
-            fontSize="2rem"
-          >
-            {elem}
-          </Button>
-        ))}
-      </ButtonGroup>
     </>
   );
 };

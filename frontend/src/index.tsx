@@ -10,7 +10,7 @@ import ChatRoom from "./pages/ChatRoom";
 import GameRoom from "./pages/GameRoom";
 import Lobby from "./pages/Lobby";
 import Login from "./pages/Login";
-import Rank from "./pages/Rank";
+import Ranking from "./pages/Ranking";
 import Root from "./pages/Root";
 import Stat from "./pages/Stat";
 import GlobalStyle from "./styles/GlobalStyle";
@@ -46,8 +46,8 @@ const router = createBrowserRouter([
         element: <ChatRoom />,
       },
       {
-        path: "rank",
-        element: <Rank />,
+        path: "ranking",
+        element: <Ranking />,
       },
       {
         path: "stat/:userId",
