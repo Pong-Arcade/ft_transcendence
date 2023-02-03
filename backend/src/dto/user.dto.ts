@@ -5,5 +5,6 @@
 export class UserDto {
   userId: number;
   intraId: string;
+  imgUrl: string;
   email?: string;
 }

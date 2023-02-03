@@ -17,6 +17,7 @@ export default class MockStrategy extends Strategy {
       {
         userId: 1,
         intraId: 'sichoi',
+		imgUrl: 'qwe.jpg',	//	죄송..
         email: 'sichoi@student.42seoul.kr',
       },
       verified,

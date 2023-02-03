@@ -1,5 +1,6 @@
 import {
   Controller,
+//  UseControllers,
   Get,
   HttpCode,
   Logger,
@@ -10,11 +11,15 @@ import { SessionAuthGuard } from 'src/auth/session/session.guard';
 import { User } from 'src/decorator/user.decorator';
 import { UserDto } from 'src/dto/user.dto';
 
+import { UserFriendsController } from './user.friends/user.friends.controller';
+
 @Controller('/api/users')
 export class UserController {
   private logger = new Logger(UserController.name);
 
-  @Get('/online-users/')
+  //@UseControllers(UserFriendsController)
+
+  @Get()
   @UseGuards(SessionAuthGuard)
   @HttpCode(200)
   async getOnlineUsers(

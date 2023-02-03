@@ -20,6 +20,7 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
       profileFields: {
         userId: 'id',
         email: 'email',
+		imgUrl: 'photo',
         intraId: 'login',
       },
     });
@@ -40,6 +41,7 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
     const user: UserDto = {
       userId: profile.userId,
       intraId: profile.intraId,
+	  imgUrl: profile.imgUrl,
       email: profile.email,
     };
     cb(null, user);
