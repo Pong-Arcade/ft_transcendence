@@ -45,7 +45,7 @@ const UserInfoModal = ({ onClose, width, height }: Props) => {
         UserId
       </ModalTitle>
       <Info>
-        <Avatar width="15vw" height="15vw" />
+        <Avatar width="15vw" height="15vw" upload />
         <ContentListWrapper width="68%" height="100%">
           <ContentList titleList={titleList} contentList={contentList} />
         </ContentListWrapper>
