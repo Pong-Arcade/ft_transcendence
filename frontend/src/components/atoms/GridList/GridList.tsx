@@ -1,5 +1,5 @@
 import React from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 interface Props {
   titleList?: string[];
@@ -16,6 +16,8 @@ interface Props {
   gap?: string;
   gridTemplate?: string;
   onOpen?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  isStat?: boolean;
+  rowCount?: number;
 }
 
 const GridListStyled = styled.div<Props>`
@@ -62,6 +64,8 @@ const GridTitle = styled.div`
 
 interface GridContentGroupProps {
   gridTemplateColumns?: string;
+  gridTemplateRows?: string;
+  fullList?: boolean;
 }
 
 const GridContentGroup = styled.div<GridContentGroupProps>`
@@ -70,11 +74,19 @@ const GridContentGroup = styled.div<GridContentGroupProps>`
   height: 90%;
   grid-template-columns: ${(props) =>
     props.gridTemplateColumns && props.gridTemplateColumns};
+  grid-template-rows: ${(props) =>
+    props.gridTemplateRows && props.gridTemplateRows};
   background-color: ${(props) => props.theme.background.middle};
   border-radius: ${(props) => props.theme.border.board};
+  text-align: center;
 `;
 
-const GridContent = styled.div`
+interface GridContentProps {
+  isStat?: boolean;
+  win?: boolean;
+}
+
+const GridContent = styled.div<GridContentProps>`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -83,11 +95,30 @@ const GridContent = styled.div`
   height: 100%;
   font-size: 2rem;
   border-radius: ${(props) => props.theme.border.board};
+
+  ${(props) =>
+    props.isStat &&
+    (props.win
+      ? css`
+          color: #05f87f;
+        `
+      : css`
+          color: #f7f300;
+        `)}
 `;
 
-const GridList = ({ titleList, contentList, ...rest }: Props) => {
+const GridList = ({
+  titleList,
+  contentList,
+  rowCount,
+  isStat,
+  ...rest
+}: Props) => {
   if (!titleList || !contentList) return null;
+
   const gridTemplateColumns = `repeat(${titleList.length}, 1fr)`;
+  const gridTemplateRows = `repeat(${rowCount || contentList.length}, 1fr)`;
+
   return (
     <GridListStyled {...rest}>
       <GridTitleGroup gridTemplateColumns={gridTemplateColumns}>
@@ -95,11 +126,20 @@ const GridList = ({ titleList, contentList, ...rest }: Props) => {
           <GridTitle key={title}>{title}</GridTitle>
         ))}
       </GridTitleGroup>
-      <GridContentGroup gridTemplateColumns={gridTemplateColumns}>
+      <GridContentGroup
+        gridTemplateRows={gridTemplateRows}
+        gridTemplateColumns={gridTemplateColumns}
+      >
         {contentList.map((content) =>
-          content.map((item, idx) => (
-            <GridContent key={idx}>{item}</GridContent>
-          ))
+          content.map((item, idx) =>
+            isStat ? (
+              <GridContent isStat win={content[0] === "승"} key={idx}>
+                {item}
+              </GridContent>
+            ) : (
+              <GridContent key={idx}>{item}</GridContent>
+            )
+          )
         )}
       </GridContentGroup>
     </GridListStyled>
