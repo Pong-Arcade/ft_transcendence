@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import imageCompression from "browser-image-compression";
-import React, { useState } from "react";
+import React from "react";
 import Logo from "../../../assets/42logo.svg";
 
 // TODO: 본인 것만 업로드 할 수 있도록 처리
@@ -36,7 +36,7 @@ const AvatarLabel = styled.label`
 
 const Avatar = ({ upload, ...rest }: Props) => {
   //TODO: Logo를 처음 받아오는 이미지로 수정
-  const [image, setImage] = useState(Logo);
+  // const [image, setImage] = useState(Logo);
 
   const uploadToServer = (file: File) => {
     console.log(file);
@@ -57,13 +57,12 @@ const Avatar = ({ upload, ...rest }: Props) => {
     }
   };
 
-  console.log(image);
   if (upload) {
     return (
       <>
         <AvatarLabel
           htmlFor="avatar"
-          style={{ backgroundImage: `url(${image})` }}
+          style={{ backgroundImage: `url(${Logo})` }}
         />
         <input
           type="file"
