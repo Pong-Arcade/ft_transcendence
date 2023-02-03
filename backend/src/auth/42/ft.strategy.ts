@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-42';
-import { UserDto } from 'src/dto/user.dto';
+import { FtUserDto } from 'src/dto/ft.user.dto';
 
 /**
  * passport-42의 전략을 구성합니다.
@@ -28,7 +28,7 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
   /**
    * 42 OAuth 이후 이 정보를 서버 내에서 검증할 때 사용되는 함수이지만
    * 현재 단계에서는 42 로그인에 성공하면 추가적인 검증을 거칠 필요가 없다고 판단하여
-   * UserDto에 유저정보를 담아 callback으로 넘겨주도록 구성하였습니다.
+   * FtUserDto에 유저정보를 담아 callback으로 넘겨주도록 구성하였습니다.
    */
   async validate(
     request: any,
@@ -37,7 +37,7 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
     profile: any,
     cb: any,
   ) {
-    const user: UserDto = {
+    const user: FtUserDto = {
       userId: profile.userId,
       intraId: profile.intraId,
       email: profile.email,
