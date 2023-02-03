@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { SessionAuthGuard } from 'src/auth/session/session.guard';
 import { User } from 'src/decorator/user.decorator';
-import { UserDto } from 'src/dto/ft.user.dto';
+import { UserDto } from 'src/dto/user.dto';
 
 @Controller('/api/users')
 export class UserController {
