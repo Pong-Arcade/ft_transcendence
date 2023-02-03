@@ -26,7 +26,7 @@ const ModalWrapperStyled = styled.div<Props>`
 const ModalWrapper = ({ children, onClose, ...rest }: Props) => {
   const onClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (e.currentTarget === e.target) {
-      if (onClose) onClose();
+      onClose?.();
     }
   };
   return (

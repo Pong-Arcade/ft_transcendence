@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import ChatRoomTemplate from "../components/templates/ChatRoomTemplate";
 import Title from "../components/modules/Title";
@@ -12,6 +12,11 @@ import ModalWrapper from "../components/atoms/ModalWrapper";
 import Menu from "../components/modules/Menu";
 import UserInfoModal from "../components/modules/UserInfoModal";
 import useMenu from "../hooks/useMenu";
+import useUserInfo from "../hooks/useUserInfo";
+import useConfirm from "../hooks/useConfirm";
+import ConfirmModal from "../components/modules/ConfirmModal";
+import { EConfirmType } from "../components/modules/ConfirmModal/ConfirmModal";
+import { useNavigate } from "react-router-dom";
 
 const Wrapper = styled(Board).attrs({
   width: "100%",
@@ -47,16 +52,22 @@ for (let i = 0; i < 4; ++i) {
 }
 
 const ChatRoom = () => {
-  const [isOpenUserInfo, setOpenUserInfo] = useState(false);
   const { isOpenMenu, onOpenMenu, onCloseMenu, positionX, positionY } =
     useMenu();
 
-  const onOpenMenuDetail = () => {
-    setOpenUserInfo(true);
-    onCloseMenu();
+  const { isOpenUserInfo, onOpenMenuDetail, onCloseMenuDetail } = useUserInfo({
+    openAfter: () => {
+      onCloseMenu();
+    },
+  });
+
+  const { isOpenConfirm, onOpenConfirm, onCloseConfirm } = useConfirm();
+  const navigate = useNavigate();
+  const onYesConfirm = () => {
+    navigate("/lobby");
   };
-  const onCloseMenuDetail = () => {
-    setOpenUserInfo(false);
+  const onNoConfirm = () => {
+    onCloseConfirm();
   };
 
   return (
@@ -81,7 +92,12 @@ const ChatRoom = () => {
           <Button fontSize="2rem" height="7vh" width="30vw">
             초대하기
           </Button>
-          <Button fontSize="2rem" height="7vh" width="30vw" to="/lobby">
+          <Button
+            fontSize="2rem"
+            height="7vh"
+            width="30vw"
+            onClick={onOpenConfirm}
+          >
             나가기
           </Button>
         </ButtonGroup>
@@ -105,6 +121,16 @@ const ChatRoom = () => {
       {isOpenUserInfo && (
         <ModalWrapper onClose={onCloseMenuDetail}>
           <UserInfoModal onClose={onCloseMenuDetail} width="50%" height="90%" />
+        </ModalWrapper>
+      )}
+      {isOpenConfirm && (
+        <ModalWrapper onClose={onCloseConfirm}>
+          <ConfirmModal
+            onClose={onCloseConfirm}
+            type={EConfirmType.EXIT}
+            onYesConfirm={onYesConfirm}
+            onNoConfirm={onNoConfirm}
+          />
         </ModalWrapper>
       )}
     </>

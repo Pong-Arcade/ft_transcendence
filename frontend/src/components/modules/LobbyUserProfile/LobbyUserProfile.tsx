@@ -1,11 +1,16 @@
-import React, { useState } from "react";
+import React from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import useConfirm from "../../../hooks/useConfirm";
+import useUserInfo from "../../../hooks/useUserInfo";
 import Avatar from "../../atoms/Avatar";
 import Board from "../../atoms/Board";
 import Button from "../../atoms/Button";
 import ModalWrapper from "../../atoms/ModalWrapper";
 import Typography from "../../atoms/Typography";
 import ButtonGroup from "../ButtonGroup";
+import ConfirmModal from "../ConfirmModal";
+import { EConfirmType } from "../ConfirmModal/ConfirmModal";
 import LogoutButton from "../LogoutButton";
 import UserInfoModal from "../UserInfoModal";
 
@@ -39,18 +44,23 @@ const Wrapper = styled(Board).attrs({
 
 // TODO: Logout api 추가
 const LobbyUserProfile = () => {
-  const [isOpenUserInfo, setOpenUserInfo] = useState(false);
-  const onOpenMenuDetail = () => {
-    setOpenUserInfo(true);
+  const { isOpenConfirm, onOpenConfirm, onCloseConfirm } = useConfirm();
+  const { isOpenUserInfo, onOpenMenuDetail, onCloseMenuDetail } = useUserInfo(
+    {}
+  );
+
+  const navigate = useNavigate();
+  const onYesConfirm = () => {
+    navigate("/");
   };
-  const onCloseMenuDetail = () => {
-    setOpenUserInfo(false);
+  const onNoConfirm = () => {
+    onCloseConfirm();
   };
 
   return (
     <>
       <LobbyUserProfileStyled>
-        <LogoutButton to="/" />
+        <LogoutButton onClick={onOpenConfirm} />
         <Avatar width={"10rem"} height={"10rem"} />
         <UserInfo>
           <Wrapper>
@@ -83,6 +93,16 @@ const LobbyUserProfile = () => {
       {isOpenUserInfo && (
         <ModalWrapper onClose={onCloseMenuDetail}>
           <UserInfoModal onClose={onCloseMenuDetail} width="50%" height="90%" />
+        </ModalWrapper>
+      )}
+      {isOpenConfirm && (
+        <ModalWrapper onClose={onCloseConfirm}>
+          <ConfirmModal
+            onClose={onCloseConfirm}
+            type={EConfirmType.LOGOUT}
+            onYesConfirm={onYesConfirm}
+            onNoConfirm={onNoConfirm}
+          />
         </ModalWrapper>
       )}
     </>
