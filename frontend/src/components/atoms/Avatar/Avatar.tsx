@@ -1,60 +1,81 @@
 import styled from "styled-components";
-import img from "../../../assets/42logo.svg";
 import imageCompression from "browser-image-compression";
 import React, { useState } from "react";
+import Logo from "../../../assets/42logo.svg";
 
-/**
- * 일단은 주석처리..
- */
+// TODO: 본인 것만 업로드 할 수 있도록 처리
 interface Props {
-  // width: string;
-  // height: string;
-  // src?: string;
+  width: string;
+  height: string;
+  src?: string;
+  upload?: boolean;
 }
 
-// const AvatarStyled = styled.div<Props>`
-//   width: ${(props) => props.width};
-//   height: ${(props) => props.height};
-//   background-image: url(${(props) => props.src || ""});
-//   background-color: #dcdde1;
-//   border-radius: 50%;
-// `;
+const AvatarStyled = styled.div<Props>`
+  width: ${(props) => props.width};
+  height: ${(props) => props.height};
+  background-image: url(${(props) => props.src || ""});
+  background-color: #dcdde1;
+  border-radius: 50%;
+`;
 
-const Avatar = ({ ...rest }: Props) => {
-  let button = document.createElement("input");
-  const [image, setImage] = useState(img);
-  /**
-   * 파일이 들어왔을 경우 핸들러
-   */
-  const fileHandler = (event?: any) => {
-    const [file] = event.target.files;
-    /**
-     * 이미지 크기 조절
-     */
-    imageCompression(file, {
+const AvatarLabel = styled.label`
+  cursor: pointer;
+  background-color: white;
+  height: 15vw;
+  width: 15vw;
+  border-radius: 50%;
+  transition: 0.5s;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  &:hover {
+    box-shadow: 0px 5px 5px -2px rgba(0, 0, 0, 0.25);
+  }
+`;
+
+const Avatar = ({ upload, ...rest }: Props) => {
+  //TODO: Logo를 처음 받아오는 이미지로 수정
+  const [image, setImage] = useState(Logo);
+
+  const uploadToServer = (file: File) => {
+    console.log(file);
+  };
+
+  const handleImageUpload = async (e: React.FormEvent<HTMLInputElement>) => {
+    const imageFile = (e.target as HTMLInputElement).files?.[0];
+    if (!imageFile) return;
+
+    const options = {
       maxWidthOrHeight: 200,
-    }).then((compressedFile) => {
-      const newFile: any = new File([compressedFile], file.name, {
-        type: file.type,
-      });
-      //이미지 업로드하고 이미지 url 받아서 setImage에 parameter로 넣어주면 됨.
-      //현재는 임의로 component를 넣어줌. 아마 엑박 뜰거임..
-      setImage(newFile);
-      // setImage(img);
-    });
+    };
+    try {
+      const compressedFile = await imageCompression(imageFile, options);
+      await uploadToServer(compressedFile);
+    } catch (error) {
+      console.log(error);
+    }
   };
-  button.setAttribute("type", "file");
-  button.setAttribute("accept", "image/*");
-  button.onchange = (event) => fileHandler(event);
-  /**
-   * 아바타 클릭시 img 업로드 버튼 클릭 event 발생
-   */
-  const imageButton = () => {
-    button.click();
-  };
-  return <img src={image} width="200px" height="200px" onClick={imageButton} />;
 
-  // return <AvatarStyled {...rest} />;
+  console.log(image);
+  if (upload) {
+    return (
+      <>
+        <AvatarLabel
+          htmlFor="avatar"
+          style={{ backgroundImage: `url(${image})` }}
+        />
+        <input
+          type="file"
+          id="avatar"
+          style={{ display: "none" }}
+          accept="image/*"
+          onChange={handleImageUpload}
+        />
+      </>
+    );
+  }
+  return <AvatarStyled {...rest} />;
 };
 
 export default Avatar;

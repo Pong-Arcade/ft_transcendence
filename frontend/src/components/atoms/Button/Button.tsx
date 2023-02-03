@@ -8,7 +8,6 @@ interface Props {
   height: string;
   fontSize?: string;
   boxShadow?: boolean;
-  borderRadius?: string;
   backgroundColor?: string;
   to?: string;
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
