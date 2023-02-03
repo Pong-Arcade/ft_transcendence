@@ -54,10 +54,10 @@ const UserInfoModal = ({ onClose, width, height }: Props) => {
         <GridList
           width="100%"
           height="100%"
-          titleList={["게임종류", "승리", "패배", "승률", "랭킹"]}
+          titleList={["게임종류", "승리", "패배", "승률"]}
           contentList={[
-            ["레더게임", "10", "5", "66.7%", "1"],
-            ["일반게임", "10", "5", "66.7%", "2"],
+            ["레더게임", "10", "5", "66.7%"],
+            ["일반게임", "10", "5", "66.7%"],
           ]}
         />
       </Stat>
@@ -70,10 +70,13 @@ const UserInfoModal = ({ onClose, width, height }: Props) => {
         </ContentListWrapper>
       </State>
       <ButtonGroup width="100%" height="10%" backgroundColor="secondary">
-        <Button width="35%" height="75%" boxShadow fontSize="2rem">
+        <Button width="30%" height="75%" boxShadow fontSize="2rem">
           친구추가
         </Button>
-        <Button width="35%" height="75%" boxShadow fontSize="2rem">
+        <Button width="30%" height="75%" boxShadow fontSize="2rem" to="/stat/1">
+          최근전적
+        </Button>
+        <Button width="30%" height="75%" boxShadow fontSize="2rem">
           관전하기
         </Button>
       </ButtonGroup>
