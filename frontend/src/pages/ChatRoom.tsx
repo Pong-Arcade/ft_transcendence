@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import ChatRoomTemplate from "../components/templates/ChatRoomTemplate";
 import Title from "../components/modules/Title";
@@ -126,8 +126,6 @@ const ChatRoom = () => {
       {isOpenConfirm && (
         <ModalWrapper onClose={onCloseConfirm}>
           <ConfirmModal
-            width="30%"
-            height="30%"
             onClose={onCloseConfirm}
             type={EConfirmType.EXIT}
             onYesConfirm={onYesConfirm}

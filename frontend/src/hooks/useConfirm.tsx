@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 const useConfirm = () => {
   const [isOpenConfirm, setOpenConfirm] = useState(false);

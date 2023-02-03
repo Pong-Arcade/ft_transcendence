@@ -98,8 +98,6 @@ const LobbyUserProfile = () => {
       {isOpenConfirm && (
         <ModalWrapper onClose={onCloseConfirm}>
           <ConfirmModal
-            width="30%"
-            height="30%"
             onClose={onCloseConfirm}
             type={EConfirmType.LOGOUT}
             onYesConfirm={onYesConfirm}
