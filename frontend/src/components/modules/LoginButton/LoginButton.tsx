@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import styled from "styled-components";
 import Board from "../../atoms/Board";
 import Button from "../../atoms/Button";
@@ -6,6 +6,7 @@ import { ReactComponent as Logo } from "../../../assets/42logo.svg";
 import Typography from "../../atoms/Typography";
 import ModalWrapper from "../../atoms/ModalWrapper";
 import Spinner from "../../atoms/Spinner";
+import { login } from "../../../api/auth";
 
 const LoginButtonStyled = styled(Board).attrs({
   width: "50%",
@@ -26,9 +27,8 @@ const ButtonStyled = styled(Button).attrs({
 const LoginButton = () => {
   const [isLoading, setIsLoading] = useState(false);
 
-  const onClick = async () => {
-    setIsLoading(true);
-    window.location.replace(`${process.env.REACT_APP_API_URL}/api/auth/login`);
+  const onClick = () => {
+    login(setIsLoading);
   };
 
   return (
