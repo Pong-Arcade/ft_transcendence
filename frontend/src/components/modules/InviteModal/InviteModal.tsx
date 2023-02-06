@@ -1,4 +1,4 @@
-import { MouseEvent } from "react";
+import { MouseEvent, useEffect } from "react";
 import useConfirm from "../../../hooks/useConfirm";
 import Button from "../../atoms/Button";
 import Modal from "../../atoms/Modal";
@@ -12,8 +12,7 @@ interface Props {
   onClose: () => void;
 }
 
-let inviteList: string[] = [];
-
+let inviteList: string[];
 const InviteModal = ({ onClose }: Props) => {
   const onClick = (e: MouseEvent<HTMLButtonElement>) => {
     if (e.currentTarget.value) {
@@ -26,6 +25,10 @@ const InviteModal = ({ onClose }: Props) => {
       e.currentTarget.style.backgroundColor = "#b3e5fc";
     }
   };
+
+  useEffect(() => {
+    inviteList = [];
+  }, []);
 
   const { isOpenConfirm, onOpenConfirm, onCloseConfirm } = useConfirm();
   const onInvite = () => {
