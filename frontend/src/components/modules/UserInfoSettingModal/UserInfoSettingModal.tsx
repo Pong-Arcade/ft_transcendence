@@ -32,7 +32,7 @@ const UserInfoSettingModal = ({ onClose }: Props) => {
         <Wrapper>
           <Avatar width="15vw" height="15vw" upload />
           <Input height="15%" width="70%" borderRadius padding="1rem" />
-          <Button width="50%" height="16%">
+          <Button width="50%" height="16%" boxShadow>
             설정 완료
           </Button>
         </Wrapper>

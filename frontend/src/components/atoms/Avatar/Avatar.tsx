@@ -28,6 +28,7 @@ const AvatarLabel = styled.label`
   transition: 0.5s;
   background-position: center;
   background-repeat: no-repeat;
+  box-shadow: ${(props) => props.theme.box.shadow};
 
   &:hover {
     box-shadow: 0px 5px 5px -2px rgba(0, 0, 0, 0.25);
