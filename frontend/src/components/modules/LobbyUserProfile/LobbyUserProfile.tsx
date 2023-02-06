@@ -92,7 +92,12 @@ const LobbyUserProfile = () => {
       </LobbyUserProfileStyled>
       {isOpenUserInfo && (
         <ModalWrapper onClose={onCloseMenuDetail}>
-          <UserInfoModal onClose={onCloseMenuDetail} width="50%" height="90%" />
+          <UserInfoModal
+            onClose={onCloseMenuDetail}
+            width="50%"
+            height="90%"
+            me
+          />
         </ModalWrapper>
       )}
       {isOpenConfirm && (

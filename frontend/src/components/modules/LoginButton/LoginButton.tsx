@@ -1,10 +1,12 @@
-import React from "react";
+import { useState } from "react";
 import styled from "styled-components";
 import Board from "../../atoms/Board";
 import Button from "../../atoms/Button";
 import { ReactComponent as Logo } from "../../../assets/42logo.svg";
 import Typography from "../../atoms/Typography";
-import { Link } from "react-router-dom";
+import ModalWrapper from "../../atoms/ModalWrapper";
+import Spinner from "../../atoms/Spinner";
+import { login } from "../../../api/auth";
 
 const LoginButtonStyled = styled(Board).attrs({
   width: "50%",
@@ -22,18 +24,27 @@ const ButtonStyled = styled(Button).attrs({
   gap: 1rem;
 `;
 
-// TODO: Login api 추가
-// TODO: User profile, nickname 설정(api??)
 const LoginButton = () => {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const onClick = () => {
+    login(setIsLoading);
+  };
+
   return (
-    <LoginButtonStyled>
-      <Link to="/lobby">
-        <ButtonStyled>
+    <>
+      <LoginButtonStyled>
+        <ButtonStyled onClick={onClick} disabled={isLoading}>
           <Logo width="3.5rem" height="3.5rem" />
           <Typography fontSize="3rem">Login</Typography>
         </ButtonStyled>
-      </Link>
-    </LoginButtonStyled>
+      </LoginButtonStyled>
+      {isLoading && (
+        <ModalWrapper>
+          <Spinner />
+        </ModalWrapper>
+      )}
+    </>
   );
 };
 
