@@ -48,7 +48,7 @@ const UserInfoModalButton = styled(Button).attrs({
 const UserInfoModal = ({ onClose, width, height, me }: Props) => {
   const titleList = ["이름", "가입일", "자기소개"];
   const contentList = ["kangkim", "yyyy-mm-dd", "안녕하세요"];
-  const { onInfoSetting, onOpenInfoSetting, onCloseInfoSetting } =
+  const { isOpenInfoSetting, onOpenInfoSetting, onCloseInfoSetting } =
     useInfoSetting();
 
   return (
@@ -99,7 +99,7 @@ const UserInfoModal = ({ onClose, width, height, me }: Props) => {
           )}
         </ButtonGroup>
       </Modal>
-      {onInfoSetting && (
+      {isOpenInfoSetting && (
         <ModalWrapper onClose={onCloseInfoSetting}>
           <UserInfoSettingModal onClose={onCloseInfoSetting} />
         </ModalWrapper>

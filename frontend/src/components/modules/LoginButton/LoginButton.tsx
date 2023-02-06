@@ -28,7 +28,8 @@ const LoginButton = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const onClick = () => {
-    login(setIsLoading);
+    setIsLoading(true);
+    login();
   };
 
   return (

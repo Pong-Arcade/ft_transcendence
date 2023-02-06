@@ -1,18 +1,18 @@
 import { useState } from "react";
 
 const useInfoSetting = () => {
-  const [onInfoSetting, setOnInfoSetting] = useState(false);
+  const [isOpenInfoSetting, setIsInfoSetting] = useState(false);
 
   const onOpenInfoSetting = () => {
-    setOnInfoSetting(true);
+    setIsInfoSetting(true);
   };
 
   const onCloseInfoSetting = () => {
-    setOnInfoSetting(false);
+    setIsInfoSetting(false);
   };
 
   return {
-    onInfoSetting,
+    isOpenInfoSetting,
     onOpenInfoSetting,
     onCloseInfoSetting,
   };

@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import styled from "styled-components";
-import { firstLogin } from "../api/auth";
 import Board from "../components/atoms/Board";
 import ModalWrapper from "../components/atoms/ModalWrapper";
 import Chat from "../components/modules/Chat";
@@ -41,12 +40,18 @@ const RoomListChat = styled(Board).attrs((props) => {
   };
 })``;
 
+const LoginQueryKey = "isFirstLogin";
+
 const Lobby = () => {
   const [isFirstLogin, setIsFirstLogin] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
-    firstLogin({ location, setIsFirstLogin });
+    const searchParams = new URLSearchParams(location.search);
+
+    if (searchParams.get(LoginQueryKey) === "true") {
+      setIsFirstLogin(true);
+    }
   }, []);
 
   const onClose = () => {

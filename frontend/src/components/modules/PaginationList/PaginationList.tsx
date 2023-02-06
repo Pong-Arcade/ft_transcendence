@@ -14,7 +14,7 @@ interface Props {
   gridTemplate?: string;
   pageLength?: number;
   flexDirection?: "row" | "column";
-  onOpen?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 const PaginationListStyled = styled.div<Props>`
@@ -38,7 +38,7 @@ const PaginationList = ({
   gridTemplate,
   pageLength,
   flexDirection,
-  onOpen,
+  onClick,
   ...rest
 }: Props) => {
   return (
@@ -53,7 +53,7 @@ const PaginationList = ({
         gap="0.2rem"
         display={display}
         gridTemplate={gridTemplate}
-        onOpen={onOpen}
+        onClick={onClick}
       />
       <ButtonGroup width="18vw" height="9%" justifyContent="space-between">
         <PaginationButton

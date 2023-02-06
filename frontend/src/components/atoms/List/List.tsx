@@ -17,7 +17,7 @@ interface Props {
   gap?: string;
   display?: string;
   gridTemplate?: string;
-  onOpen?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 const ListStyled = styled.div<Props>`
@@ -35,7 +35,7 @@ const ListStyled = styled.div<Props>`
   grid-template: ${(props) => props.gridTemplate && props.gridTemplate};
 `;
 
-const List = ({ list, blankMessage, onOpen, ...rest }: Props) => {
+const List = ({ list, blankMessage, onClick, ...rest }: Props) => {
   if (!list) return null;
 
   if (list.length === 0) {
@@ -43,13 +43,11 @@ const List = ({ list, blankMessage, onOpen, ...rest }: Props) => {
   }
   return (
     <ListStyled {...rest}>
-      {list.map((item, index) => {
-        return (
-          <ListItem key={index} onOpen={onOpen}>
-            {item}
-          </ListItem>
-        );
-      })}
+      {list.map((item, index) => (
+        <ListItem key={index} onClick={onClick}>
+          {item}
+        </ListItem>
+      ))}
     </ListStyled>
   );
 };
