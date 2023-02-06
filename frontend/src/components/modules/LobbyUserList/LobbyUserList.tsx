@@ -47,7 +47,7 @@ const LobbyUserList = () => {
         </ButtonGroup>
         <PaginationList
           list={["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]}
-          onOpen={onOpenMenu}
+          onClick={onOpenMenu}
           display="grid"
           gridTemplate="repeat(5, 1fr) / 1fr"
           width="98%"
