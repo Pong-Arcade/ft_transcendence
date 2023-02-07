@@ -1,9 +1,9 @@
 import { Controller, Get, Logger, Req, UseGuards } from '@nestjs/common';
 import { FtGuard } from './42/ft.guard';
 import { User } from 'src/decorator/user.decorator';
-import { FtUserDto } from 'src/dto/ft.user.dto';
 import { SessionAuthGuard } from './session/session.guard';
 import { Request } from 'express';
+import { UserDto } from 'src/dto/user.dto';
 
 @Controller('/api/auth')
 export class AuthController {
@@ -17,7 +17,7 @@ export class AuthController {
 
   @Get('login/callback')
   @UseGuards(FtGuard)
-  async loginCallback(@User() user: FtUserDto) {
+  async loginCallback(@User() user: UserDto) {
     this.logger.log('Login -> callback');
     console.log(user);
 
@@ -30,7 +30,7 @@ export class AuthController {
 
   @Get('test')
   @UseGuards(SessionAuthGuard)
-  test(@User() user: FtUserDto) {
+  test(@User() user: UserDto) {
     console.log(user);
   }
 

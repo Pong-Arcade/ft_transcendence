@@ -1,5 +1,5 @@
 import { Strategy } from 'passport';
-import { FtUserDto } from 'src/dto/ft.user.dto';
+import { UserDto } from 'src/dto/user.dto';
 
 export default class MockStrategy extends Strategy {
   private verify;
@@ -10,13 +10,14 @@ export default class MockStrategy extends Strategy {
   }
 
   public authenticate() {
-    const verified = (error, user: FtUserDto) => {
+    const verified = (error, user: UserDto) => {
       this.success(user);
     };
     this.verify(
       {
         userId: 1,
-        intraId: 'sichoi',
+        nickname: 'sichoi',
+        avatarUrl: 'http://example.com',
         email: 'sichoi@student.42seoul.kr',
       },
       verified,
