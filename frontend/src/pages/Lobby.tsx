@@ -76,7 +76,7 @@ const Lobby = () => {
         </RoomListChatWrapper>
       </LobbyTemplate>
       {isFirstLogin && (
-        <ModalWrapper onClose={onClose}>
+        <ModalWrapper>
           <UserInfoSettingModal onClose={onClose} />
         </ModalWrapper>
       )}

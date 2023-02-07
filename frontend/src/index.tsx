@@ -5,6 +5,7 @@ import {
   Navigate,
   RouterProvider,
 } from "react-router-dom";
+import { RecoilRoot } from "recoil";
 import { ThemeProvider } from "styled-components";
 import ChatRoom from "./pages/ChatRoom";
 import GameRoom from "./pages/GameRoom";
@@ -61,7 +62,9 @@ root.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
       <GlobalStyle />
-      <RouterProvider router={router} />
+      <RecoilRoot>
+        <RouterProvider router={router} />
+      </RecoilRoot>
     </ThemeProvider>
   </React.StrictMode>
 );
