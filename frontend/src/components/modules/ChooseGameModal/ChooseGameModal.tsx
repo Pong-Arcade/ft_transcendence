@@ -1,5 +1,6 @@
-import React, { useState } from "react";
 import styled from "styled-components";
+import useCreateGameModal from "../../../hooks/useCreateGameModal";
+import useQuickGameModal from "../../../hooks/useQuickGameModal";
 import Button from "../../atoms/Button";
 import Modal from "../../atoms/Modal";
 import ButtonGroup from "../ButtonGroup";
@@ -8,7 +9,7 @@ import ModalTitle from "../ModalTitle";
 import QuickGameModal from "../QuickGameModal";
 
 interface Props {
-  buttonTitle: string;
+  title: string;
   onClose?: () => void;
 }
 
@@ -18,17 +19,10 @@ const ChooseGameButton = styled(Button).attrs({
   fontSize: "2rem",
 })``;
 
-const ChooseGameModal = ({ buttonTitle, onClose }: Props) => {
-  const [openCreateGame, setOpenCreateGame] = useState(false);
-  const [openQuickStart, setOpenQuickStart] = useState(false);
+const ChooseGameModal = ({ title, onClose }: Props) => {
+  const { isOpenCreateGame, onCreateGameClick } = useCreateGameModal();
+  const { isOpenQuickGame, onQuickStartClick } = useQuickGameModal();
 
-  const onCreateGameClick = () => {
-    setOpenCreateGame(true);
-  };
-  const onQuickStartClick = () => {
-    setOpenQuickStart(true);
-  };
-  console.log(buttonTitle);
   return (
     <>
       <Modal width="30%" height="30%">
@@ -38,7 +32,7 @@ const ChooseGameModal = ({ buttonTitle, onClose }: Props) => {
           closeFontSize="1.5rem"
           height="20%"
         >
-          {buttonTitle}
+          {title}
         </ModalTitle>
         <ButtonGroup
           height="79%"
@@ -54,12 +48,10 @@ const ChooseGameModal = ({ buttonTitle, onClose }: Props) => {
           </ChooseGameButton>
         </ButtonGroup>
       </Modal>
-      {openCreateGame && (
-        <CreateGameRoomModal title={buttonTitle} onClose={onClose} />
+      {isOpenCreateGame && (
+        <CreateGameRoomModal title={title} onClose={onClose} />
       )}
-      {openQuickStart && (
-        <QuickGameModal onClose={onClose} title={buttonTitle} />
-      )}
+      {isOpenQuickGame && <QuickGameModal onClose={onClose} title={title} />}
     </>
   );
 };
