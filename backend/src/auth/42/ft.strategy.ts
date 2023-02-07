@@ -37,7 +37,6 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
     profile: any,
     cb: any,
   ) {
-    console.log(profile);
     const user: UserDto = {
       userId: profile.userId,
       nickname: profile.intraId,
@@ -47,3 +46,4 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
     cb(null, user);
   }
 }
+``;
