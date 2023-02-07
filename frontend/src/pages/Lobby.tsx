@@ -1,5 +1,3 @@
-import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 import Board from "../components/atoms/Board";
 import ModalWrapper from "../components/atoms/ModalWrapper";
@@ -11,6 +9,7 @@ import LobbyUserList from "../components/modules/LobbyUserList";
 import LobbyUserProfile from "../components/modules/LobbyUserProfile";
 import UserInfoSettingModal from "../components/modules/UserInfoSettingModal";
 import LobbyTemplate from "../components/templates/LobbyTemplate";
+import useFirstLoginModal from "../hooks/useFirstLoginModal";
 
 const UserWrapper = styled(Board).attrs({
   width: "29%",
@@ -40,23 +39,8 @@ const RoomListChat = styled(Board).attrs((props) => {
   };
 })``;
 
-const LoginQueryKey = "isFirstLogin";
-
 const Lobby = () => {
-  const [isFirstLogin, setIsFirstLogin] = useState(false);
-  const location = useLocation();
-
-  useEffect(() => {
-    const searchParams = new URLSearchParams(location.search);
-
-    if (searchParams.get(LoginQueryKey) === "true") {
-      setIsFirstLogin(true);
-    }
-  }, []);
-
-  const onClose = () => {
-    setIsFirstLogin(false);
-  };
+  const { isFirstLogin, onSubmit, onClose } = useFirstLoginModal();
 
   return (
     <>
@@ -76,8 +60,8 @@ const Lobby = () => {
         </RoomListChatWrapper>
       </LobbyTemplate>
       {isFirstLogin && (
-        <ModalWrapper onClose={onClose}>
-          <UserInfoSettingModal onClose={onClose} />
+        <ModalWrapper>
+          <UserInfoSettingModal onSubmit={onSubmit} onClose={onClose} />
         </ModalWrapper>
       )}
     </>

@@ -1,8 +1,11 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
+import { logoutAPI } from "../../../api/auth";
 import useConfirm from "../../../hooks/useConfirm";
 import useUserInfo from "../../../hooks/useUserInfo";
+import LoadingState from "../../../state/LoadingState";
 import Avatar from "../../atoms/Avatar";
 import Board from "../../atoms/Board";
 import Button from "../../atoms/Button";
@@ -42,16 +45,25 @@ const Wrapper = styled(Board).attrs({
   gap: 0.5rem;
 `;
 
-// TODO: Logout api 추가
 const LobbyUserProfile = () => {
   const { isOpenConfirm, onOpenConfirm, onCloseConfirm } = useConfirm();
   const { isOpenUserInfo, onOpenMenuDetail, onCloseMenuDetail } = useUserInfo(
     {}
   );
+  const setIsLoading = useSetRecoilState(LoadingState);
 
   const navigate = useNavigate();
-  const onYesConfirm = () => {
-    navigate("/");
+  const onYesConfirm = async () => {
+    setIsLoading(true);
+    try {
+      const response = await logoutAPI();
+      if (response.status === 200) {
+        navigate("/");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    setIsLoading(false);
   };
   const onNoConfirm = () => {
     onCloseConfirm();
@@ -101,7 +113,7 @@ const LobbyUserProfile = () => {
         </ModalWrapper>
       )}
       {isOpenConfirm && (
-        <ModalWrapper onClose={onCloseConfirm}>
+        <ModalWrapper>
           <ConfirmModal
             onClose={onCloseConfirm}
             type={EConfirmType.LOGOUT}
