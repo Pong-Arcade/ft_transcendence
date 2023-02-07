@@ -100,7 +100,7 @@ const UserInfoModal = ({ onClose, width, height, me }: Props) => {
         </ButtonGroup>
       </Modal>
       {isOpenInfoSetting && (
-        <ModalWrapper onClose={onCloseInfoSetting}>
+        <ModalWrapper>
           <UserInfoSettingModal onClose={onCloseInfoSetting} />
         </ModalWrapper>
       )}

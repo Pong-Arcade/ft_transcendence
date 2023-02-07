@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useRecoilState } from "recoil";
+import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import { logoutAPI } from "../../../api/auth";
 import useConfirm from "../../../hooks/useConfirm";
@@ -50,7 +50,7 @@ const LobbyUserProfile = () => {
   const { isOpenUserInfo, onOpenMenuDetail, onCloseMenuDetail } = useUserInfo(
     {}
   );
-  const [isLoading, setIsLoading] = useRecoilState(LoadingState);
+  const setIsLoading = useSetRecoilState(LoadingState);
 
   const navigate = useNavigate();
   const onYesConfirm = async () => {
@@ -72,7 +72,7 @@ const LobbyUserProfile = () => {
   return (
     <>
       <LobbyUserProfileStyled>
-        <LogoutButton onClick={onOpenConfirm} disabled={isLoading} />
+        <LogoutButton onClick={onOpenConfirm} />
         <Avatar width={"10rem"} height={"10rem"} />
         <UserInfo>
           <Wrapper>
