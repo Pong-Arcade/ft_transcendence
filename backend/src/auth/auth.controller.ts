@@ -27,10 +27,10 @@ export class AuthController {
     this.logger.log('Login -> callback');
 
     const find = await this.authService.addUserIfNotExists(user);
-    // 유저가 처음 로그인한 경우, Lobby 페이지로 redirect 하되, query로 isFirst를 true로 설정한다.
+    // 유저가 처음 로그인한 경우, Lobby 페이지로 redirect 하되, query로 isFirstLogin을 true로 설정한다.
     const feHost = this.configService.get<string>('fe_host');
     if (!find) {
-      return res.redirect(`${feHost}/Lobby/?isFirst=true`);
+      return res.redirect(`${feHost}/Lobby/?isFirstLogin=true`);
     }
     return res.redirect(`${feHost}/Lobby`);
   }
