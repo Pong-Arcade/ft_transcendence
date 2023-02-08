@@ -5,6 +5,7 @@ import {
   ICreateRoomFormValues,
 } from "../hooks/useCreateRoomForm";
 
+// TODO: 리팩토링
 const createRoomFormValidate = ({
   Type,
   Title,

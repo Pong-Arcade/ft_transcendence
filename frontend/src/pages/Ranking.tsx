@@ -25,10 +25,10 @@ const Rank = () => {
   };
   return (
     <RankTemplate>
-      <RankingFilter />
       <ModalTitle fontSize="3rem" height="10%" onClose={onClose}>
         랭킹
       </ModalTitle>
+      <RankingFilter />
       <Wrapper>
         <GridList
           titleList={["순위", "ID", "점수", "승", "패", "승률"]}

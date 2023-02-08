@@ -5,13 +5,10 @@ import useCreateRoomForm, {
   ECreateRoomFormValues,
 } from "../../../hooks/useCreateRoomForm";
 import createRoomFormValidate from "../../../utils/createRoomFormValidate";
-
 import Button from "../../atoms/Button";
 import Modal from "../../atoms/Modal";
 import ModalInputWrapper from "../../atoms/ModalInputWrapper";
-import NumberInput from "../../atoms/NumberInput";
 import PasswordInput from "../../atoms/PasswordInput";
-import TextInput from "../../atoms/TextInput";
 import ModalInputListWrapper from "../ModalInputListWrapper";
 import ModalTitle from "../ModalTitle";
 import RoomTypeCheckBoxGroup from "../RoomTypeCheckBoxGroup";
@@ -55,23 +52,14 @@ const CreateChatRoomModal = ({ title, onClose }: Props) => {
   });
 
   return (
-    <Modal width="60%" height="70%">
+    <Modal width="50%" height="50%">
       <CreateRoomForm onSubmit={onSubmitForm}>
         <ModalTitle onClose={onClose} fontSize="3rem">
           {title}
         </ModalTitle>
-        <ModalInputListWrapper gridTemplate="repeat(4, 1fr) / 1fr">
+        <ModalInputListWrapper height="67%" gridTemplate="repeat(2, 1fr) / 1fr">
           <ModalInputWrapper>
             <RoomTypeCheckBoxGroup title="방유형" onChange={onChangeForm} />
-          </ModalInputWrapper>
-          <ModalInputWrapper>
-            <TextInput
-              title="방제목"
-              name={ECreateRoomFormValues.TITLE}
-              value={values.Title}
-              onChange={onChangeForm}
-              disabled={values.Type === EChatRoomType.PRIVATE}
-            />
           </ModalInputWrapper>
           <ModalInputWrapper>
             <PasswordInput
@@ -82,17 +70,9 @@ const CreateChatRoomModal = ({ title, onClose }: Props) => {
               disabled={values.Type !== EChatRoomType.PROTECTED}
             />
           </ModalInputWrapper>
-          <ModalInputWrapper>
-            <NumberInput
-              title="최대인원"
-              name={ECreateRoomFormValues.MAXUSER}
-              value={values.maxUser}
-              onChange={onChangeForm}
-            />
-          </ModalInputWrapper>
         </ModalInputListWrapper>
-        <Button width="30%" height="10%" boxShadow type="submit">
-          생성
+        <Button width="30%" height="15%" boxShadow type="submit">
+          수정
         </Button>
       </CreateRoomForm>
     </Modal>
