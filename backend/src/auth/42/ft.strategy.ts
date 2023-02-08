@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-42';
-import { FtUserDto } from 'src/dto/ft.user.dto';
+import { UserDto } from 'src/dto/user.dto';
 
 /**
  * passport-42의 전략을 구성합니다.
@@ -37,11 +37,13 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
     profile: any,
     cb: any,
   ) {
-    const user: FtUserDto = {
+    const user: UserDto = {
       userId: profile.userId,
-      intraId: profile.intraId,
+      nickname: profile.intraId,
+      avatarUrl: profile._json.image.link,
       email: profile.email,
     };
     cb(null, user);
   }
 }
+``;
