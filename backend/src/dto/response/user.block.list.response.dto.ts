@@ -1,4 +1,5 @@
 import { UserStatusDto } from '../user.status.dto';
+import { UserDto } from "../user.dto";
 
 /**
  * 유저가 차단한 유저 목록을 반환하는 dto입니다.
@@ -6,6 +7,6 @@ import { UserStatusDto } from '../user.status.dto';
  * isLast는 마지막 페이지인지 여부를 저장합니다.
  */
 export class UserBlockListResponseDto {
-  blockUsers: UserStatusDto[]; // 차단 유저정보 리스트
+  blockUsers: UserDto[]; // 차단 유저정보 리스트
   isLast: boolean; // 마지막 페이지인지 여부
 }
