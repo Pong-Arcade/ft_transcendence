@@ -12,6 +12,7 @@ interface Props {
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   disabled?: boolean;
   type?: InputType;
+  placeholder?: string;
 }
 
 const LabledInputStyled = styled(Input).attrs((props) => {
@@ -22,7 +23,7 @@ const LabledInputStyled = styled(Input).attrs((props) => {
     value: props.value && props.value,
     name: props.name && props.name,
     type: props.type || "text",
-    placeholder: props.type === "number" ? "2 ~ 10 숫자만 입력하세요" : "",
+    placeholder: props.placeholder && props.placeholder,
   };
 })`
   width: 100%;
@@ -44,6 +45,7 @@ const LabledInput = ({
   onChange,
   disabled,
   type,
+  placeholder,
 }: Props) => {
   return (
     <>
@@ -56,6 +58,7 @@ const LabledInput = ({
           onChange={onChange}
           disabled={disabled}
           type={type}
+          placeholder={placeholder}
         />
       </InputWrapper>
     </>

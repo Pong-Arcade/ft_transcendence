@@ -1,5 +1,8 @@
 import React from "react";
-import { ECreateRoomFormValues } from "../../../hooks/useCreateRoomForm";
+import {
+  EChatRoomType,
+  EChatRoomFormValues,
+} from "../../../hooks/useChatRoomForm";
 import CheckBox from "../../atoms/CheckBox";
 import InputLabel from "../../atoms/InputLabel";
 import InputWrapper from "../../atoms/InputWrapper/InputWrapper";
@@ -8,12 +11,6 @@ interface Props {
   title: string;
   checked: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-}
-
-export enum EChatRoomType {
-  PUBLIC = "PUBLIC",
-  PROTECTED = "PROTECTED",
-  PRIVATE = "PRIVATE",
 }
 
 const titleList = [
@@ -31,7 +28,7 @@ const RoomTypeCheckBoxGroup = ({ title, onChange, checked }: Props) => {
           <CheckBox
             onChange={onChange}
             title={title}
-            name={ECreateRoomFormValues.TYPE}
+            name={EChatRoomFormValues.TYPE}
             checked={title === checked}
             key={idx}
           />

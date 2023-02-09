@@ -1,22 +1,21 @@
-import React from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import useCreateRoomForm, {
-  ECreateRoomFormValidate,
-  ECreateRoomFormValues,
-} from "../../../hooks/useCreateRoomForm";
-import createRoomFormValidate from "../../../utils/createRoomFormValidate";
+import useChatRoomForm, {
+  EChatRoomFormValues,
+  EChatRoomType,
+} from "../../../hooks/useChatRoomForm";
 import Button from "../../atoms/Button";
 import Modal from "../../atoms/Modal";
 import ModalInputWrapper from "../../atoms/ModalInputWrapper";
+import ErrorModal from "../ErrorModal";
 import LabledInput from "../LabledInput";
 import ModalInputListWrapper from "../ModalInputListWrapper";
 import ModalTitle from "../ModalTitle";
 import RoomTypeCheckBoxGroup from "../RoomTypeCheckBoxGroup";
-import { EChatRoomType } from "../RoomTypeCheckBoxGroup/RoomTypeCheckBoxGroup";
 
 interface Props {
   title?: string;
-  onClose?: () => void;
+  onClose: () => void;
 }
 
 const CreateRoomForm = styled.form.attrs((props) => {
@@ -32,73 +31,78 @@ const CreateRoomForm = styled.form.attrs((props) => {
   align-items: center;
 `;
 
+const SubmitButton = styled(Button).attrs({
+  width: "30%",
+  height: "10%",
+  boxShadow: true,
+  type: "submit",
+})``;
+
+// FIXME: 모달 wrapper 리팩토링
 const CreateChatRoomModal = ({ title, onClose }: Props) => {
-  // TODO: errors, submitting 인자 받기
-  const { values, onChangeForm, onSubmitForm } = useCreateRoomForm({
-    initialValues: {
-      Type: EChatRoomType.PUBLIC,
-      Title: "",
-      Password: "",
-      maxUser: "",
-    },
-    onSubmit: (values) => {
-      console.log("----- Submit result -----");
-      console.log(values);
-      onClose && onClose();
-    },
-    validate: createRoomFormValidate,
-    roomType: ECreateRoomFormValidate.CHAT,
-  });
+  const navigate = useNavigate();
+  const { values, errors, onErrorModalClose, onChangeForm, onSubmitForm } =
+    useChatRoomForm({
+      onSubmit: () => {
+        onClose();
+        navigate("/chat-rooms/123");
+      },
+    });
 
   return (
-    <Modal width="60%" height="70%">
-      <CreateRoomForm onSubmit={onSubmitForm}>
-        <ModalTitle onClose={onClose} fontSize="3rem">
-          {title}
-        </ModalTitle>
-        <ModalInputListWrapper gridTemplate="repeat(4, 1fr) / 1fr">
-          <ModalInputWrapper>
-            <RoomTypeCheckBoxGroup
-              title="방유형"
-              onChange={onChangeForm}
-              checked={values.Type}
-            />
-          </ModalInputWrapper>
-          <ModalInputWrapper>
-            <LabledInput
-              title="방제목"
-              name={ECreateRoomFormValues.TITLE}
-              value={values.Title}
-              onChange={onChangeForm}
-              disabled={values.Type === EChatRoomType.PRIVATE}
-              type="text"
-            />
-          </ModalInputWrapper>
-          <ModalInputWrapper>
-            <LabledInput
-              title="비밀번호"
-              name={ECreateRoomFormValues.PASSWORD}
-              value={values.Password}
-              onChange={onChangeForm}
-              disabled={values.Type !== EChatRoomType.PROTECTED}
-              type="password"
-            />
-          </ModalInputWrapper>
-          <ModalInputWrapper>
-            <LabledInput
-              title="최대인원"
-              name={ECreateRoomFormValues.MAXUSER}
-              value={values.maxUser}
-              onChange={onChangeForm}
-              type="number"
-            />
-          </ModalInputWrapper>
-        </ModalInputListWrapper>
-        <Button width="30%" height="10%" boxShadow type="submit">
-          생성
-        </Button>
-      </CreateRoomForm>
-    </Modal>
+    <>
+      <Modal width="60%" height="70%">
+        <CreateRoomForm onSubmit={onSubmitForm}>
+          <ModalTitle onClose={onClose} fontSize="3rem">
+            {title}
+          </ModalTitle>
+          <ModalInputListWrapper gridTemplate="repeat(4, 1fr) / 1fr">
+            <ModalInputWrapper>
+              <RoomTypeCheckBoxGroup
+                title="방유형"
+                onChange={onChangeForm}
+                checked={values.Type}
+              />
+            </ModalInputWrapper>
+            <ModalInputWrapper>
+              <LabledInput
+                title="방제목"
+                name={EChatRoomFormValues.TITLE}
+                value={values.Title}
+                onChange={onChangeForm}
+                disabled={values.Type === EChatRoomType.PRIVATE}
+                type="text"
+                placeholder={
+                  values.Type === EChatRoomType.PRIVATE ? values.Title : ""
+                }
+              />
+            </ModalInputWrapper>
+            <ModalInputWrapper>
+              <LabledInput
+                title="비밀번호"
+                name={EChatRoomFormValues.PASSWORD}
+                value={values.Password}
+                onChange={onChangeForm}
+                disabled={values.Type !== EChatRoomType.PROTECTED}
+                type="password"
+              />
+            </ModalInputWrapper>
+            <ModalInputWrapper>
+              <LabledInput
+                title="최대인원"
+                name={EChatRoomFormValues.MAXUSER}
+                value={values.MaxUser}
+                onChange={onChangeForm}
+                type="number"
+                placeholder="2 ~ 10 숫자만 입력하세요"
+              />
+            </ModalInputWrapper>
+          </ModalInputListWrapper>
+          <SubmitButton>생성</SubmitButton>
+        </CreateRoomForm>
+      </Modal>
+      {errors && <ErrorModal onClose={onErrorModalClose} errors={errors} />}
+    </>
   );
 };
 
