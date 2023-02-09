@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 
 export interface ICreateRoomFormValues {
-  Type?: string;
-  Title?: string;
-  Password?: string;
-  maxUser?: string;
+  Type: string;
+  Title: string;
+  Password: string;
+  maxUser: string;
 }
 
 export interface ICreateRoomFormValidate extends ICreateRoomFormValues {
@@ -29,6 +29,7 @@ interface IUseCreateRoomForm {
   validate: (values: ICreateRoomFormValidate) => object;
   roomType: string;
 }
+interface IErrors extends Partial<ICreateRoomFormValues> {}
 
 // FIXME: 리팩토링
 function useCreateRoomForm({
@@ -38,12 +39,21 @@ function useCreateRoomForm({
   roomType,
 }: IUseCreateRoomForm) {
   const [values, setValues] = useState(initialValues);
-  const [errors, setErrors] = useState<ICreateRoomFormValues>({});
+  const [errors, setErrors] = useState<IErrors>({});
   const [submitting, setSubmitting] = useState(false);
 
   const onChangeForm = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setValues({ ...values, [name]: value });
+    if (name === ECreateRoomFormValues.TYPE) {
+      setValues({
+        [name]: value,
+        [ECreateRoomFormValues.TITLE]: "",
+        [ECreateRoomFormValues.PASSWORD]: "",
+        [ECreateRoomFormValues.MAXUSER]: "",
+      });
+    } else {
+      setValues({ ...values, [name]: value });
+    }
   };
 
   const onSubmitForm = (e: React.FormEvent<HTMLFormElement>) => {

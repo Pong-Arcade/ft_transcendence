@@ -5,13 +5,10 @@ import useCreateRoomForm, {
   ECreateRoomFormValues,
 } from "../../../hooks/useCreateRoomForm";
 import createRoomFormValidate from "../../../utils/createRoomFormValidate";
-
 import Button from "../../atoms/Button";
 import Modal from "../../atoms/Modal";
 import ModalInputWrapper from "../../atoms/ModalInputWrapper";
-import NumberInput from "../../atoms/NumberInput";
-import PasswordInput from "../../atoms/PasswordInput";
-import TextInput from "../../atoms/TextInput";
+import LabledInput from "../LabledInput";
 import ModalInputListWrapper from "../ModalInputListWrapper";
 import ModalTitle from "../ModalTitle";
 import RoomTypeCheckBoxGroup from "../RoomTypeCheckBoxGroup";
@@ -61,32 +58,39 @@ const CreateChatRoomModal = ({ title, onClose }: Props) => {
         </ModalTitle>
         <ModalInputListWrapper gridTemplate="repeat(4, 1fr) / 1fr">
           <ModalInputWrapper>
-            <RoomTypeCheckBoxGroup title="방유형" onChange={onChangeForm} />
+            <RoomTypeCheckBoxGroup
+              title="방유형"
+              onChange={onChangeForm}
+              checked={values.Type}
+            />
           </ModalInputWrapper>
           <ModalInputWrapper>
-            <TextInput
+            <LabledInput
               title="방제목"
               name={ECreateRoomFormValues.TITLE}
               value={values.Title}
               onChange={onChangeForm}
               disabled={values.Type === EChatRoomType.PRIVATE}
+              type="text"
             />
           </ModalInputWrapper>
           <ModalInputWrapper>
-            <PasswordInput
+            <LabledInput
               title="비밀번호"
               name={ECreateRoomFormValues.PASSWORD}
               value={values.Password}
               onChange={onChangeForm}
               disabled={values.Type !== EChatRoomType.PROTECTED}
+              type="password"
             />
           </ModalInputWrapper>
           <ModalInputWrapper>
-            <NumberInput
+            <LabledInput
               title="최대인원"
               name={ECreateRoomFormValues.MAXUSER}
               value={values.maxUser}
               onChange={onChangeForm}
+              type="number"
             />
           </ModalInputWrapper>
         </ModalInputListWrapper>

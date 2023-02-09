@@ -8,7 +8,7 @@ import createRoomFormValidate from "../../../utils/createRoomFormValidate";
 import Button from "../../atoms/Button";
 import Modal from "../../atoms/Modal";
 import ModalInputWrapper from "../../atoms/ModalInputWrapper";
-import PasswordInput from "../../atoms/PasswordInput";
+import LabledInput from "../LabledInput";
 import ModalInputListWrapper from "../ModalInputListWrapper";
 import ModalTitle from "../ModalTitle";
 import RoomTypeCheckBoxGroup from "../RoomTypeCheckBoxGroup";
@@ -58,15 +58,20 @@ const CreateChatRoomModal = ({ title, onClose }: Props) => {
         </ModalTitle>
         <ModalInputListWrapper height="67%" gridTemplate="repeat(2, 1fr) / 1fr">
           <ModalInputWrapper>
-            <RoomTypeCheckBoxGroup title="방유형" onChange={onChangeForm} />
+            <RoomTypeCheckBoxGroup
+              title="방유형"
+              onChange={onChangeForm}
+              checked={values.Type}
+            />
           </ModalInputWrapper>
           <ModalInputWrapper>
-            <PasswordInput
+            <LabledInput
               title="비밀번호"
               name={ECreateRoomFormValues.PASSWORD}
               value={values.Password}
               onChange={onChangeForm}
               disabled={values.Type !== EChatRoomType.PROTECTED}
+              type="password"
             />
           </ModalInputWrapper>
         </ModalInputListWrapper>

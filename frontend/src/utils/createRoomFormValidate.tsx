@@ -5,6 +5,8 @@ import {
   ICreateRoomFormValues,
 } from "../hooks/useCreateRoomForm";
 
+interface IErrors extends Partial<ICreateRoomFormValues> {}
+
 // FIXME: 리팩토링
 const createRoomFormValidate = ({
   Type,
@@ -13,7 +15,7 @@ const createRoomFormValidate = ({
   maxUser,
   roomType,
 }: ICreateRoomFormValidate) => {
-  const errors: ICreateRoomFormValues = {};
+  const errors: IErrors = {};
 
   if (roomType === ECreateRoomFormValidate.CHAT) {
     if (!Type || Type === "undefined") {

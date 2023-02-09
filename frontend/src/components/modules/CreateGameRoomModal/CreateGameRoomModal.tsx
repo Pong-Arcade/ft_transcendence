@@ -7,8 +7,7 @@ import createRoomFormValidate from "../../../utils/createRoomFormValidate";
 import Button from "../../atoms/Button";
 import Modal from "../../atoms/Modal";
 import ModalInputWrapper from "../../atoms/ModalInputWrapper";
-import NumberInput from "../../atoms/NumberInput";
-import TextInput from "../../atoms/TextInput";
+import LabledInput from "../LabledInput";
 import ModalInputListWrapper from "../ModalInputListWrapper";
 import ModalTitle from "../ModalTitle";
 
@@ -45,24 +44,26 @@ const CreateGameRoomModal = ({ title, onClose }: Props) => {
   return (
     <Modal width="50%" height="40%">
       <CreateRoomForm onSubmit={onSubmitForm}>
-        <ModalTitle onClose={onClose} fontSize="3rem">
+        <ModalTitle onClose={onClose} fontSize="3rem" height="20%">
           {title}
         </ModalTitle>
-        <ModalInputListWrapper height="65%" gridTemplate="repeat(2, 1fr) / 1fr">
+        <ModalInputListWrapper height="62%" gridTemplate="repeat(2, 1fr) / 1fr">
           <ModalInputWrapper>
-            <TextInput
+            <LabledInput
               title="방제목"
               name={ECreateRoomFormValues.TITLE}
               value={values.Title}
               onChange={onChangeForm}
+              type="text"
             />
           </ModalInputWrapper>
           <ModalInputWrapper>
-            <NumberInput
+            <LabledInput
               title="최대인원"
               name={ECreateRoomFormValues.MAXUSER}
               value={values.maxUser}
               onChange={onChangeForm}
+              type="number"
             />
           </ModalInputWrapper>
         </ModalInputListWrapper>
