@@ -15,6 +15,7 @@ interface Props {
   placeholder?: string;
   id?: string;
   value?: string;
+  onKeyPress?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   name?: string;
 }
@@ -39,8 +40,8 @@ const InputStyled = styled.input.attrs((props) => {
   caret-color: ${(props) => props.caretColor || props.theme.background.front};
 `;
 
-const Input = ({ ...rest }: Props) => {
-  return <InputStyled {...rest} />;
+const Input = ({ onKeyPress, onChange, ...rest }: Props) => {
+  return <InputStyled {...rest} onKeyPress={onKeyPress} onChange={onChange} />;
 };
 
 export default Input;
