@@ -1,11 +1,10 @@
-import { Controller, Get, Logger, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Logger, Res, UseGuards } from '@nestjs/common';
 import { FtGuard } from './42/ft.guard';
 import { User } from 'src/decorator/user.decorator';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { UserDto } from 'src/dto/user.dto';
 import { AuthService } from './auth.service';
 import { ConfigService } from '@nestjs/config';
-import { JwtAuthGuard } from './jwt/jwt.auth.guard';
 import { JWTSignGuard } from './jwt/jwt.sign.guard';
 
 @Controller('/api/auth')
