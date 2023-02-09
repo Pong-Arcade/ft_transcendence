@@ -2,7 +2,6 @@ import React from "react";
 import styled from "styled-components";
 import Board from "../../atoms/Board";
 import PaginationList from "../PaginationList";
-import ChatSocket from "../../../utils/ChatSocket";
 
 const LobbyChatRoomListStyled = styled(Board).attrs((props) => {
   return {

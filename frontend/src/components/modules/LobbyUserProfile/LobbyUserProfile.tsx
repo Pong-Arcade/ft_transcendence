@@ -1,9 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
-import { logoutAPI } from "../../../api/auth";
 import useModal from "../../../hooks/useModal";
-import LoadingState from "../../../state/LoadingState";
 import Avatar from "../../atoms/Avatar";
 import Board from "../../atoms/Board";
 import Button from "../../atoms/Button";
@@ -54,20 +51,9 @@ const LobbyUserProfile = () => {
     onModalClose: onUserInfoClose,
   } = useModal({});
 
-  const setIsLoading = useSetRecoilState(LoadingState);
-
   const navigate = useNavigate();
-  const onYesConfirm = async () => {
-    setIsLoading(true);
-    try {
-      const response = await logoutAPI();
-      if (response.status === 200) {
-        navigate("/");
-      }
-    } catch (error) {
-      console.log(error);
-    }
-    setIsLoading(false);
+  const onYesConfirm = () => {
+    navigate("/");
   };
 
   return (
