@@ -1,5 +1,6 @@
 import { useState } from "react";
 import styled from "styled-components";
+import useModal from "../../../hooks/useModal";
 import Board from "../../atoms/Board";
 import Button from "../../atoms/Button";
 import ModalWrapper from "../../atoms/ModalWrapper";
@@ -26,16 +27,10 @@ const ModifyButton = styled(Button).attrs({
   fontSize: "2rem",
 })``;
 
-// TODO: 리팩토링 모달 open hook 정리
 const ChatRoomPasswordModify = () => {
   const TITLE = "비밀번호수정";
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const onModalOpen = () => {
-    setIsModalOpen(true);
-  };
-  const onModalClose = () => {
-    setIsModalOpen(false);
-  };
+  const { isModalOpen, onModalOpen, onModalClose } = useModal({});
+
   return (
     <>
       <ChatRoomPasswordModifyStyled>

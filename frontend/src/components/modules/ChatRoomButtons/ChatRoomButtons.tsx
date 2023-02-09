@@ -25,14 +25,7 @@ const ChatRoomButtons = () => {
     onModalOpen: onInviteOpen,
     onModalClose: onInviteClose,
   } = useModal({});
-
   const navigate = useNavigate();
-  const onYesConfirm = () => {
-    navigate("/lobby");
-  };
-  const onNoConfirm = () => {
-    onConfirmClose();
-  };
 
   return (
     <>
@@ -50,8 +43,8 @@ const ChatRoomButtons = () => {
           <ConfirmModal
             onClose={onConfirmClose}
             type={EConfirmType.EXIT}
-            onYesConfirm={onYesConfirm}
-            onNoConfirm={onNoConfirm}
+            onYesConfirm={() => navigate("/lobby")}
+            onNoConfirm={() => onConfirmClose()}
           />
         </ModalWrapper>
       )}

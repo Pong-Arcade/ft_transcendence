@@ -12,7 +12,6 @@ interface Props {
   onClose?: () => void;
 }
 
-// TODO: 리팩토링 모달 사이즈 조절
 const ChooseGameButton = styled(Button).attrs({
   width: "49.5%",
   height: "100%",

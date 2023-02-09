@@ -1,4 +1,3 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Avatar from "../components/atoms/Avatar";
@@ -67,14 +66,7 @@ const GameRoom = () => {
     onModalOpen: onConfirmOpen,
     onModalClose: onConfirmClose,
   } = useModal({});
-
   const navigate = useNavigate();
-  const onYesConfirm = () => {
-    navigate("/lobby");
-  };
-  const onNoConfirm = () => {
-    onConfirmClose();
-  };
 
   const userList = ["kangkim1", "kangkim2"];
 
@@ -120,8 +112,8 @@ const GameRoom = () => {
           <ConfirmModal
             onClose={onConfirmClose}
             type={EConfirmType.EXIT}
-            onYesConfirm={onYesConfirm}
-            onNoConfirm={onNoConfirm}
+            onYesConfirm={() => navigate("/lobby")}
+            onNoConfirm={() => onConfirmClose()}
           />
         </ModalWrapper>
       )}

@@ -32,7 +32,6 @@ const CreateRoomForm = styled.form.attrs((props) => {
   align-items: center;
 `;
 
-// TODO: 리팩토링 blank box size
 const CreateChatRoomModal = ({ title, onClose }: Props) => {
   // TODO: errors, submitting 인자 받기
   const { values, onChangeForm, onSubmitForm } = useCreateRoomForm({

@@ -1,10 +1,9 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Board from "../components/atoms/Board";
 import GridList from "../components/atoms/GridList";
 import ModalTitle from "../components/modules/ModalTitle";
-import RankTemplate from "../components/templates/RankTemplate";
+import RankTemplate from "../components/templates/RankingTemplate";
 
 const Wrapper = styled(Board).attrs({
   width: "100%",
@@ -31,12 +30,14 @@ const contentList = [
 
 const Rank = () => {
   const navigate = useNavigate();
-  const onClose = () => {
-    navigate("/lobby");
-  };
+
   return (
     <RankTemplate>
-      <ModalTitle fontSize="3rem" height="10%" onClose={onClose}>
+      <ModalTitle
+        fontSize="3rem"
+        height="10%"
+        onClose={() => navigate("/lobby")}
+      >
         user's 최근 전적
       </ModalTitle>
 

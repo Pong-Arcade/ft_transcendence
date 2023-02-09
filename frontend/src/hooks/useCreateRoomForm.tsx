@@ -30,7 +30,7 @@ interface IUseCreateRoomForm {
   roomType: string;
 }
 
-// TODO: 리팩토링
+// FIXME: 리팩토링
 function useCreateRoomForm({
   initialValues,
   onSubmit,

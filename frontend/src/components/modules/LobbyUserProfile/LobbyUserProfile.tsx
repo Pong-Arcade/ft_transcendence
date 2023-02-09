@@ -71,9 +71,6 @@ const LobbyUserProfile = () => {
     }
     setIsLoading(false);
   };
-  const onNoConfirm = () => {
-    onConfirmClose();
-  };
 
   return (
     <>
@@ -124,7 +121,7 @@ const LobbyUserProfile = () => {
             onClose={onConfirmClose}
             type={EConfirmType.LOGOUT}
             onYesConfirm={onYesConfirm}
-            onNoConfirm={onNoConfirm}
+            onNoConfirm={() => onConfirmClose()}
           />
         </ModalWrapper>
       )}

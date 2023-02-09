@@ -1,4 +1,3 @@
-import React from "react";
 import styled from "styled-components";
 import useCreateRoomForm, {
   ECreateRoomFormValidate,
@@ -44,12 +43,12 @@ const CreateGameRoomModal = ({ title, onClose }: Props) => {
   });
 
   return (
-    <Modal width="50%" height="50%">
+    <Modal width="50%" height="40%">
       <CreateRoomForm onSubmit={onSubmitForm}>
         <ModalTitle onClose={onClose} fontSize="3rem">
           {title}
         </ModalTitle>
-        <ModalInputListWrapper height="68%" gridTemplate="repeat(2, 1fr) / 1fr">
+        <ModalInputListWrapper height="65%" gridTemplate="repeat(2, 1fr) / 1fr">
           <ModalInputWrapper>
             <TextInput
               title="방제목"
