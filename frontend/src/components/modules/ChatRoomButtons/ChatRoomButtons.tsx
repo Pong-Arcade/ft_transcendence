@@ -1,7 +1,6 @@
-import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import useConfirm from "../../../hooks/useConfirm";
+import useModal from "../../../hooks/useModal";
 import Button from "../../atoms/Button";
 import ModalWrapper from "../../atoms/ModalWrapper";
 import ButtonGroup from "../ButtonGroup";
@@ -16,39 +15,40 @@ const ChatRoomButton = styled(Button).attrs({
 })``;
 
 const ChatRoomButtons = () => {
-  const [isOpenInvite, setIsOpenInvite] = useState(false);
-  const onOpenInvite = () => {
-    setIsOpenInvite(true);
-  };
-  const onCloseInvite = () => {
-    setIsOpenInvite(false);
-  };
+  const {
+    isModalOpen: isConfirmOpen,
+    onModalOpen: onConfirmOpen,
+    onModalClose: onConfirmClose,
+  } = useModal({});
+  const {
+    isModalOpen: isInviteOpen,
+    onModalOpen: onInviteOpen,
+    onModalClose: onInviteClose,
+  } = useModal({});
 
-  const { isOpenConfirm, onOpenConfirm, onCloseConfirm } = useConfirm();
   const navigate = useNavigate();
   const onYesConfirm = () => {
     navigate("/lobby");
   };
   const onNoConfirm = () => {
-    onCloseConfirm();
+    onConfirmClose();
   };
 
   return (
     <>
       <ButtonGroup height="7%" width="100%" backgroundColor="secondary">
-        <ChatRoomButton onClick={onOpenInvite}>초대하기</ChatRoomButton>
-        <ChatRoomButton onClick={onOpenConfirm}>나가기</ChatRoomButton>
+        <ChatRoomButton onClick={onInviteOpen}>초대하기</ChatRoomButton>
+        <ChatRoomButton onClick={onConfirmOpen}>나가기</ChatRoomButton>
       </ButtonGroup>
-
-      {isOpenInvite && (
-        <ModalWrapper onClose={onCloseInvite}>
-          <InviteModal onClose={onCloseInvite} />
+      {isInviteOpen && (
+        <ModalWrapper>
+          <InviteModal onClose={onInviteClose} />
         </ModalWrapper>
       )}
-      {isOpenConfirm && (
-        <ModalWrapper onClose={onCloseConfirm}>
+      {isConfirmOpen && (
+        <ModalWrapper>
           <ConfirmModal
-            onClose={onCloseConfirm}
+            onClose={onConfirmClose}
             type={EConfirmType.EXIT}
             onYesConfirm={onYesConfirm}
             onNoConfirm={onNoConfirm}

@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import useMenu from "../../../hooks/useMenu";
-import useUserInfo from "../../../hooks/useUserInfo";
+import useModal from "../../../hooks/useModal";
 import Avatar from "../../atoms/Avatar";
 import Board from "../../atoms/Board";
 import ModalWrapper from "../../atoms/ModalWrapper";
@@ -47,8 +47,12 @@ const ChatRoomUserList = () => {
   const { isOpenMenu, onOpenMenu, onCloseMenu, positionX, positionY } =
     useMenu();
 
-  const { isOpenUserInfo, onOpenMenuDetail, onCloseMenuDetail } = useUserInfo({
-    openAfter: () => {
+  const {
+    isModalOpen: isUserInfoOpen,
+    onModalOpen: onUserInfoOpen,
+    onModalClose: onUserInfoClose,
+  } = useModal({
+    afterOpen: () => {
       onCloseMenu();
     },
   });
@@ -79,13 +83,13 @@ const ChatRoomUserList = () => {
             ]}
             top={positionY}
             left={positionX}
-            onOpen={onOpenMenuDetail}
+            onOpen={onUserInfoOpen}
           />
         </ModalWrapper>
       )}
-      {isOpenUserInfo && (
-        <ModalWrapper onClose={onCloseMenuDetail}>
-          <UserInfoModal onClose={onCloseMenuDetail} width="50%" height="90%" />
+      {isUserInfoOpen && (
+        <ModalWrapper>
+          <UserInfoModal onClose={onUserInfoClose} width="50%" height="90%" />
         </ModalWrapper>
       )}
     </>

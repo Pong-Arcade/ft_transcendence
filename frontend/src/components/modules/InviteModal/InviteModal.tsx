@@ -1,5 +1,5 @@
 import { MouseEvent, useEffect } from "react";
-import useConfirm from "../../../hooks/useConfirm";
+import useModal from "../../../hooks/useModal";
 import Button from "../../atoms/Button";
 import Modal from "../../atoms/Modal";
 import ModalWrapper from "../../atoms/ModalWrapper";
@@ -30,9 +30,14 @@ const InviteModal = ({ onClose }: Props) => {
     inviteList = [];
   }, []);
 
-  const { isOpenConfirm, onOpenConfirm, onCloseConfirm } = useConfirm();
+  const {
+    isModalOpen: isConfirmOpen,
+    onModalOpen: onConfirmOpen,
+    onModalClose: onConfirmClose,
+  } = useModal({});
+
   const onInvite = () => {
-    onOpenConfirm();
+    onConfirmOpen();
   };
   const onCloseInviteModal = () => {
     inviteList = [];
@@ -57,11 +62,11 @@ const InviteModal = ({ onClose }: Props) => {
           초대하기
         </Button>
       </Modal>
-      {isOpenConfirm && (
-        <ModalWrapper onClose={onCloseInviteModal}>
+      {isConfirmOpen && (
+        <ModalWrapper>
           <ConfirmModal
             content={inviteList.length}
-            onClose={onCloseConfirm}
+            onClose={onConfirmClose}
             type={EConfirmType.INVITE}
             onYesConfirm={onCloseInviteModal}
           />

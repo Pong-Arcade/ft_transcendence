@@ -65,7 +65,7 @@ const LobbyUserList = () => {
         </ModalWrapper>
       )}
       {isOpenUserInfo && (
-        <ModalWrapper onClose={onCloseMenuDetail}>
+        <ModalWrapper>
           <UserInfoModal onClose={onCloseMenuDetail} width="50%" height="90%" />
         </ModalWrapper>
       )}

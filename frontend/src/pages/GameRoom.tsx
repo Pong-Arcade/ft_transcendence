@@ -12,9 +12,8 @@ import { EConfirmType } from "../components/modules/ConfirmModal/ConfirmModal";
 import Menu from "../components/modules/Menu";
 import UserInfoModal from "../components/modules/UserInfoModal";
 import GameRoomTemplate from "../components/templates/GameRoomTemplate";
-import useConfirm from "../hooks/useConfirm";
 import useMenu from "../hooks/useMenu";
-import useUserInfo from "../hooks/useUserInfo";
+import useModal from "../hooks/useModal";
 
 const GameBoard = styled(Board).attrs((props) => {
   return {
@@ -54,19 +53,27 @@ const GameRoom = () => {
   const { isOpenMenu, onOpenMenu, onCloseMenu, positionX, positionY } =
     useMenu();
 
-  const { isOpenUserInfo, onOpenMenuDetail, onCloseMenuDetail } = useUserInfo({
-    openAfter: () => {
+  const {
+    isModalOpen: isUserInfoOpen,
+    onModalOpen: onUserInfoOpen,
+    onModalClose: onUserInfoClose,
+  } = useModal({
+    afterOpen: () => {
       onCloseMenu();
     },
   });
+  const {
+    isModalOpen: isConfirmOpen,
+    onModalOpen: onConfirmOpen,
+    onModalClose: onConfirmClose,
+  } = useModal({});
 
-  const { isOpenConfirm, onOpenConfirm, onCloseConfirm } = useConfirm();
   const navigate = useNavigate();
   const onYesConfirm = () => {
     navigate("/lobby");
   };
   const onNoConfirm = () => {
-    onCloseConfirm();
+    onConfirmClose();
   };
 
   const userList = ["kangkim1", "kangkim2"];
@@ -88,7 +95,7 @@ const GameRoom = () => {
             ))}
           </UserProfileGroup>
           <Chat width="98%" height="57%" />
-          <Button width="22vw" height="6vh" boxShadow onClick={onOpenConfirm}>
+          <Button width="22vw" height="6vh" boxShadow onClick={onConfirmOpen}>
             나가기
           </Button>
         </Wrapper>
@@ -99,19 +106,19 @@ const GameRoom = () => {
             list={["정보보기", "귓속말", "친구추가", "차단하기"]}
             top={positionY}
             left={positionX}
-            onOpen={onOpenMenuDetail}
+            onOpen={onUserInfoOpen}
           />
         </ModalWrapper>
       )}
-      {isOpenUserInfo && (
-        <ModalWrapper onClose={onCloseMenuDetail}>
-          <UserInfoModal onClose={onCloseMenuDetail} width="50%" height="90%" />
+      {isUserInfoOpen && (
+        <ModalWrapper>
+          <UserInfoModal onClose={onUserInfoClose} width="50%" height="90%" />
         </ModalWrapper>
       )}
-      {isOpenConfirm && (
-        <ModalWrapper onClose={onCloseConfirm}>
+      {isConfirmOpen && (
+        <ModalWrapper>
           <ConfirmModal
-            onClose={onCloseConfirm}
+            onClose={onConfirmClose}
             type={EConfirmType.EXIT}
             onYesConfirm={onYesConfirm}
             onNoConfirm={onNoConfirm}
