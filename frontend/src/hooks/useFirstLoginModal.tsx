@@ -9,7 +9,6 @@ const useFirstLoginModal = () => {
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
-
     if (searchParams.get(LoginQueryKey) === "true") {
       setIsFirstLogin(true);
     }

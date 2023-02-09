@@ -21,11 +21,7 @@ const Root = () => {
   return (
     <RootStyled>
       <Outlet />
-      {isLoading && (
-        <ModalWrapper>
-          <Spinner />
-        </ModalWrapper>
-      )}
+      {isLoading && <Spinner />}
     </RootStyled>
   );
 };

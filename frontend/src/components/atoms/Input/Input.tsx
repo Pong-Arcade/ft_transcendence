@@ -1,5 +1,5 @@
 import React from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 interface Props {
   width?: string;
@@ -18,6 +18,7 @@ interface Props {
   onKeyPress?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   name?: string;
+  disabled?: boolean;
 }
 
 const InputStyled = styled.input.attrs((props) => {
@@ -26,6 +27,7 @@ const InputStyled = styled.input.attrs((props) => {
     placeholder: props.placeholder && props.placeholder,
     id: props.id && props.id,
     value: props.value && props.value,
+    disabled: props.disabled && props.disabled,
   };
 })<Props>`
   width: ${(props) => props.width || "100%"};
@@ -38,6 +40,11 @@ const InputStyled = styled.input.attrs((props) => {
   padding: ${(props) => props.padding && props.padding};
   font-size: ${(props) => props.fontSize || "3rem"};
   caret-color: ${(props) => props.caretColor || props.theme.background.front};
+  ${(props) =>
+    props.disabled &&
+    css`
+      background-color: ${props.theme.colors.chineseWhite};
+    `}
 `;
 
 const Input = ({ onKeyPress, onChange, ...rest }: Props) => {

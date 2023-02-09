@@ -35,19 +35,17 @@ const CheckBoxWrapper = styled.input.attrs((props) => {
 
 interface Props {
   title: string;
-  onClick: (e: React.FormEvent<HTMLInputElement>) => void;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   name?: string;
   checked: boolean;
 }
 
-const CheckBox = ({ title, onClick, onChange, name, checked }: Props) => {
+const CheckBox = ({ title, onChange, name, checked }: Props) => {
   return (
     <CheckboxStyled>
       <CheckBoxLabel htmlFor={title}>
         <CheckBoxWrapper
           className="checkBox"
-          onClick={onClick}
           onChange={onChange}
           name={name}
           id={title}

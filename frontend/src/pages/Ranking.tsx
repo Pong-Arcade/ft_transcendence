@@ -1,4 +1,3 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Board from "../components/atoms/Board";
@@ -7,7 +6,7 @@ import PaginationButton from "../components/atoms/PaginationButton";
 import RankingFilter from "../components/atoms/RankingFilter";
 import ButtonGroup from "../components/modules/ButtonGroup";
 import ModalTitle from "../components/modules/ModalTitle";
-import RankTemplate from "../components/templates/RankTemplate";
+import RankingTemplate from "../components/templates/RankingTemplate";
 
 const Wrapper = styled(Board).attrs({
   width: "100%",
@@ -18,17 +17,19 @@ const Wrapper = styled(Board).attrs({
 })``;
 
 // TODO: filter 버튼 클릭으로 api 요청 기능 추가
-const Rank = () => {
+const Ranking = () => {
   const navigate = useNavigate();
-  const onClose = () => {
-    navigate("/lobby");
-  };
+
   return (
-    <RankTemplate>
-      <RankingFilter />
-      <ModalTitle fontSize="3rem" height="10%" onClose={onClose}>
+    <RankingTemplate>
+      <ModalTitle
+        fontSize="3rem"
+        height="10%"
+        onClose={() => navigate("/lobby")}
+      >
         랭킹
       </ModalTitle>
+      <RankingFilter />
       <Wrapper>
         <GridList
           titleList={["순위", "ID", "점수", "승", "패", "승률"]}
@@ -68,8 +69,8 @@ const Rank = () => {
           />
         </ButtonGroup>
       </Wrapper>
-    </RankTemplate>
+    </RankingTemplate>
   );
 };
 
-export default Rank;
+export default Ranking;

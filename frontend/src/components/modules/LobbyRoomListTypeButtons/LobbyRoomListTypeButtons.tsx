@@ -1,16 +1,20 @@
 import React from "react";
+import styled from "styled-components";
 import Button from "../../atoms/Button";
 import ButtonGroup from "../ButtonGroup";
+
+const RoomListTypeButton = styled(Button).attrs({
+  width: "30%",
+  height: "100%",
+  boxShadow: true,
+  fontSize: "2rem",
+})``;
 
 const LobbyRoomListTypeButtons = () => {
   return (
     <ButtonGroup height="6%" width="100%" justifyContent="space-evenly">
-      <Button width="30%" height="100%" boxShadow fontSize="2rem">
-        채팅방목록
-      </Button>
-      <Button width="30%" height="100%" boxShadow fontSize="2rem">
-        게임방목록
-      </Button>
+      <RoomListTypeButton>채팅방목록</RoomListTypeButton>
+      <RoomListTypeButton>게임방목록</RoomListTypeButton>
     </ButtonGroup>
   );
 };

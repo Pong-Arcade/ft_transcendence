@@ -1,10 +1,8 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Avatar from "../components/atoms/Avatar";
 import Board from "../components/atoms/Board";
 import Button from "../components/atoms/Button";
-import ModalWrapper from "../components/atoms/ModalWrapper";
 import Typography from "../components/atoms/Typography";
 import Chat from "../components/modules/Chat";
 import ConfirmModal from "../components/modules/ConfirmModal";
@@ -12,9 +10,8 @@ import { EConfirmType } from "../components/modules/ConfirmModal/ConfirmModal";
 import Menu from "../components/modules/Menu";
 import UserInfoModal from "../components/modules/UserInfoModal";
 import GameRoomTemplate from "../components/templates/GameRoomTemplate";
-import useConfirm from "../hooks/useConfirm";
 import useMenu from "../hooks/useMenu";
-import useUserInfo from "../hooks/useUserInfo";
+import useModal from "../hooks/useModal";
 
 const GameBoard = styled(Board).attrs((props) => {
   return {
@@ -54,20 +51,21 @@ const GameRoom = () => {
   const { isOpenMenu, onOpenMenu, onCloseMenu, positionX, positionY } =
     useMenu();
 
-  const { isOpenUserInfo, onOpenMenuDetail, onCloseMenuDetail } = useUserInfo({
-    openAfter: () => {
+  const {
+    isModalOpen: isUserInfoOpen,
+    onModalOpen: onUserInfoOpen,
+    onModalClose: onUserInfoClose,
+  } = useModal({
+    afterOpen: () => {
       onCloseMenu();
     },
   });
-
-  const { isOpenConfirm, onOpenConfirm, onCloseConfirm } = useConfirm();
+  const {
+    isModalOpen: isConfirmOpen,
+    onModalOpen: onConfirmOpen,
+    onModalClose: onConfirmClose,
+  } = useModal({});
   const navigate = useNavigate();
-  const onYesConfirm = () => {
-    navigate("/lobby");
-  };
-  const onNoConfirm = () => {
-    onCloseConfirm();
-  };
 
   const userList = ["kangkim1", "kangkim2"];
 
@@ -88,35 +86,29 @@ const GameRoom = () => {
             ))}
           </UserProfileGroup>
           <Chat width="98%" height="57%" />
-          <Button width="22vw" height="6vh" boxShadow onClick={onOpenConfirm}>
+          <Button width="22vw" height="6vh" boxShadow onClick={onConfirmOpen}>
             나가기
           </Button>
         </Wrapper>
       </GameRoomTemplate>
       {isOpenMenu && ( // TODO: 정보보기 제외 다른 기능 추가 시 리팩토링 필요
-        <ModalWrapper onClose={onCloseMenu} backgroundColor="none">
-          <Menu
-            list={["정보보기", "귓속말", "친구추가", "차단하기"]}
-            top={positionY}
-            left={positionX}
-            onOpen={onOpenMenuDetail}
-          />
-        </ModalWrapper>
+        <Menu
+          list={["정보보기", "귓속말", "친구추가", "차단하기"]}
+          top={positionY}
+          left={positionX}
+          onOpen={onUserInfoOpen}
+        />
       )}
-      {isOpenUserInfo && (
-        <ModalWrapper onClose={onCloseMenuDetail}>
-          <UserInfoModal onClose={onCloseMenuDetail} width="50%" height="90%" />
-        </ModalWrapper>
+      {isUserInfoOpen && (
+        <UserInfoModal onClose={onUserInfoClose} width="50%" height="90%" />
       )}
-      {isOpenConfirm && (
-        <ModalWrapper onClose={onCloseConfirm}>
-          <ConfirmModal
-            onClose={onCloseConfirm}
-            type={EConfirmType.EXIT}
-            onYesConfirm={onYesConfirm}
-            onNoConfirm={onNoConfirm}
-          />
-        </ModalWrapper>
+      {isConfirmOpen && (
+        <ConfirmModal
+          onClose={onConfirmClose}
+          type={EConfirmType.EXIT}
+          onYesConfirm={() => navigate("/lobby")}
+          onNoConfirm={() => onConfirmClose()}
+        />
       )}
     </>
   );

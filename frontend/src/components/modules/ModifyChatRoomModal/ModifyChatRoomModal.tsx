@@ -1,9 +1,9 @@
-import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import useChatRoomForm, {
+import {
   EChatRoomFormValues,
   EChatRoomType,
 } from "../../../hooks/useChatRoomForm";
+import useModifyChatRoomForm from "../../../hooks/useModifyChatRoomForm";
 import Button from "../../atoms/Button";
 import Modal from "../../atoms/Modal";
 import ModalInputWrapper from "../../atoms/ModalInputWrapper";
@@ -39,13 +39,12 @@ const SubmitButton = styled(Button).attrs({
   type: "submit",
 })``;
 
+// TODO: 초기값으로 세팅해놓기(비밀번호 제외)
 const CreateChatRoomModal = ({ title, onClose }: Props) => {
-  const navigate = useNavigate();
   const { values, errors, onErrorModalClose, onChangeForm, onSubmitForm } =
-    useChatRoomForm({
+    useModifyChatRoomForm({
       onSubmit: () => {
         onClose();
-        navigate("/chat-rooms/123");
       },
     });
 
@@ -70,11 +69,9 @@ const CreateChatRoomModal = ({ title, onClose }: Props) => {
                 name={EChatRoomFormValues.TITLE}
                 value={values.Title}
                 onChange={onChangeForm}
-                disabled={values.Type === EChatRoomType.PRIVATE}
+                disabled
                 type="text"
-                placeholder={
-                  values.Type === EChatRoomType.PRIVATE ? values.Title : ""
-                }
+                placeholder={values.Title}
               />
             </ModalInputWrapper>
             <ModalInputWrapper>
@@ -94,6 +91,7 @@ const CreateChatRoomModal = ({ title, onClose }: Props) => {
                 value={values.MaxUser}
                 onChange={onChangeForm}
                 type="number"
+                disabled
                 placeholder="2 ~ 10 숫자만 입력하세요"
               />
             </ModalInputWrapper>

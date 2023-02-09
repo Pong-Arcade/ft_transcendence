@@ -1,21 +1,19 @@
-import React from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import useCreateRoomForm, {
-  ECreateRoomFormValidate,
-  ECreateRoomFormValues,
-} from "../../../hooks/useCreateRoomForm";
-import createRoomFormValidate from "../../../utils/createRoomFormValidate";
+import useGameRoomForm, {
+  EGameRoomFormValues,
+} from "../../../hooks/useGameRoomForm";
 import Button from "../../atoms/Button";
 import Modal from "../../atoms/Modal";
 import ModalInputWrapper from "../../atoms/ModalInputWrapper";
-import NumberInput from "../../atoms/NumberInput";
-import TextInput from "../../atoms/TextInput";
+import ErrorModal from "../ErrorModal";
+import LabledInput from "../LabledInput";
 import ModalInputListWrapper from "../ModalInputListWrapper";
 import ModalTitle from "../ModalTitle";
 
 interface Props {
   title?: string;
-  onClose?: () => void;
+  onClose: () => void;
 }
 
 const CreateRoomForm = styled.form`
@@ -27,51 +25,58 @@ const CreateRoomForm = styled.form`
   align-items: center;
 `;
 
+const SubmitButton = styled(Button).attrs({
+  width: "30%",
+  height: "15%",
+  boxShadow: true,
+  type: "submit",
+})``;
+
 const CreateGameRoomModal = ({ title, onClose }: Props) => {
-  // TODO: errors, submitting 인자 받기
-  const { values, onChangeForm, onSubmitForm } = useCreateRoomForm({
-    initialValues: {
-      Title: "",
-      maxUser: "",
-    },
-    onSubmit: (values) => {
-      console.log("----- Submit result -----");
-      console.log(values);
-      onClose && onClose();
-    },
-    validate: createRoomFormValidate,
-    roomType: ECreateRoomFormValidate.GAME,
-  });
+  const navigate = useNavigate();
+  const { values, errors, onErrorModalClose, onChangeForm, onSubmitForm } =
+    useGameRoomForm({
+      onSubmit: () => {
+        onClose();
+        navigate("/game-rooms/123");
+      },
+    });
 
   return (
-    <Modal width="50%" height="50%">
-      <CreateRoomForm onSubmit={onSubmitForm}>
-        <ModalTitle onClose={onClose} fontSize="3rem">
-          {title}
-        </ModalTitle>
-        <ModalInputListWrapper height="68%" gridTemplate="repeat(2, 1fr) / 1fr">
-          <ModalInputWrapper>
-            <TextInput
-              title="방제목"
-              name={ECreateRoomFormValues.TITLE}
-              value={values.Title}
-              onChange={onChangeForm}
-            />
-          </ModalInputWrapper>
-          <ModalInputWrapper>
-            <NumberInput
-              title="최대인원"
-              name={ECreateRoomFormValues.MAXUSER}
-              value={values.maxUser}
-              onChange={onChangeForm}
-            />
-          </ModalInputWrapper>
-        </ModalInputListWrapper>
-        <Button width="30%" height="15%" boxShadow type="submit">
-          생성
-        </Button>
-      </CreateRoomForm>
-    </Modal>
+    <>
+      <Modal width="50%" height="40%">
+        <CreateRoomForm onSubmit={onSubmitForm}>
+          <ModalTitle onClose={onClose} fontSize="3rem" height="20%">
+            {title}
+          </ModalTitle>
+          <ModalInputListWrapper
+            height="62%"
+            gridTemplate="repeat(2, 1fr) / 1fr"
+          >
+            <ModalInputWrapper>
+              <LabledInput
+                title="방제목"
+                name={EGameRoomFormValues.TITLE}
+                value={values.Title}
+                onChange={onChangeForm}
+                type="text"
+              />
+            </ModalInputWrapper>
+            <ModalInputWrapper>
+              <LabledInput
+                title="최대인원"
+                name={EGameRoomFormValues.MAXUSER}
+                value={values.MaxUser}
+                onChange={onChangeForm}
+                type="number"
+              />
+            </ModalInputWrapper>
+          </ModalInputListWrapper>
+          <SubmitButton>생성</SubmitButton>
+        </CreateRoomForm>
+      </Modal>
+      {errors && <ErrorModal onClose={onErrorModalClose} errors={errors} />}
+    </>
   );
 };
 

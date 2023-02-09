@@ -3,7 +3,6 @@ import styled from "styled-components";
 import useMenu from "../../../hooks/useMenu";
 import Board from "../../atoms/Board";
 import Button from "../../atoms/Button";
-import ModalWrapper from "../../atoms/ModalWrapper";
 import ButtonGroup from "../ButtonGroup";
 import Menu from "../Menu";
 import PaginationList from "../PaginationList";
@@ -55,19 +54,15 @@ const LobbyUserList = () => {
         />
       </LobbyUserListStyled>
       {isOpenMenu && ( // TODO: 정보보기 제외 다른 기능 추가 시 리팩토링 필요
-        <ModalWrapper onClose={onCloseMenu} backgroundColor="none">
-          <Menu
-            list={["정보보기", "귓속말", "친구추가", "차단하기"]}
-            top={positionY}
-            left={positionX}
-            onOpen={onOpenMenuDetail}
-          />
-        </ModalWrapper>
+        <Menu
+          list={["정보보기", "귓속말", "친구추가", "차단하기"]}
+          top={positionY}
+          left={positionX}
+          onOpen={onOpenMenuDetail}
+        />
       )}
       {isOpenUserInfo && (
-        <ModalWrapper onClose={onCloseMenuDetail}>
-          <UserInfoModal onClose={onCloseMenuDetail} width="50%" height="90%" />
-        </ModalWrapper>
+        <UserInfoModal onClose={onCloseMenuDetail} width="50%" height="90%" />
       )}
     </>
   );

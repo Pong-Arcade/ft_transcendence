@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import Board from "../../atoms/Board";
 
-const RankTemplateStyled = styled(Board).attrs((props) => ({
+const RankingTemplateStyled = styled(Board).attrs((props) => ({
   width: props.theme.template.width,
   height: props.theme.template.height,
   backgroundColor: props.theme.background.back,
@@ -18,8 +18,8 @@ interface Props {
   children: React.ReactNode;
 }
 
-const RankTemplate = ({ children }: Props) => {
-  return <RankTemplateStyled>{children}</RankTemplateStyled>;
+const RankingTemplate = ({ children }: Props) => {
+  return <RankingTemplateStyled>{children}</RankingTemplateStyled>;
 };
 
-export default RankTemplate;
+export default RankingTemplate;

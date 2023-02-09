@@ -1,9 +1,7 @@
-import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import useConfirm from "../../../hooks/useConfirm";
+import useModal from "../../../hooks/useModal";
 import Button from "../../atoms/Button";
-import ModalWrapper from "../../atoms/ModalWrapper";
 import ButtonGroup from "../ButtonGroup";
 import ConfirmModal from "../ConfirmModal";
 import { EConfirmType } from "../ConfirmModal/ConfirmModal";
@@ -16,44 +14,32 @@ const ChatRoomButton = styled(Button).attrs({
 })``;
 
 const ChatRoomButtons = () => {
-  const [isOpenInvite, setIsOpenInvite] = useState(false);
-  const onOpenInvite = () => {
-    setIsOpenInvite(true);
-  };
-  const onCloseInvite = () => {
-    setIsOpenInvite(false);
-  };
-
-  const { isOpenConfirm, onOpenConfirm, onCloseConfirm } = useConfirm();
+  const {
+    isModalOpen: isConfirmOpen,
+    onModalOpen: onConfirmOpen,
+    onModalClose: onConfirmClose,
+  } = useModal({});
+  const {
+    isModalOpen: isInviteOpen,
+    onModalOpen: onInviteOpen,
+    onModalClose: onInviteClose,
+  } = useModal({});
   const navigate = useNavigate();
-  const onYesConfirm = () => {
-    navigate("/lobby");
-  };
-  const onNoConfirm = () => {
-    onCloseConfirm();
-  };
 
   return (
     <>
       <ButtonGroup height="7%" width="100%" backgroundColor="secondary">
-        <ChatRoomButton onClick={onOpenInvite}>초대하기</ChatRoomButton>
-        <ChatRoomButton onClick={onOpenConfirm}>나가기</ChatRoomButton>
+        <ChatRoomButton onClick={onInviteOpen}>초대하기</ChatRoomButton>
+        <ChatRoomButton onClick={onConfirmOpen}>나가기</ChatRoomButton>
       </ButtonGroup>
-
-      {isOpenInvite && (
-        <ModalWrapper onClose={onCloseInvite}>
-          <InviteModal onClose={onCloseInvite} />
-        </ModalWrapper>
-      )}
-      {isOpenConfirm && (
-        <ModalWrapper onClose={onCloseConfirm}>
-          <ConfirmModal
-            onClose={onCloseConfirm}
-            type={EConfirmType.EXIT}
-            onYesConfirm={onYesConfirm}
-            onNoConfirm={onNoConfirm}
-          />
-        </ModalWrapper>
+      {isInviteOpen && <InviteModal onClose={onInviteClose} />}
+      {isConfirmOpen && (
+        <ConfirmModal
+          onClose={onConfirmClose}
+          type={EConfirmType.EXIT}
+          onYesConfirm={() => navigate("/lobby")}
+          onNoConfirm={() => onConfirmClose()}
+        />
       )}
     </>
   );

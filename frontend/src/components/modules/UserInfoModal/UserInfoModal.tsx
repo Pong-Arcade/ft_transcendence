@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import useInfoSetting from "../../../hooks/useInfoSetting";
+import useModal from "../../../hooks/useModal";
 import Avatar from "../../atoms/Avatar";
 import Board from "../../atoms/Board";
 import Button from "../../atoms/Button";
@@ -48,11 +48,14 @@ const UserInfoModalButton = styled(Button).attrs({
 const UserInfoModal = ({ onClose, width, height, me }: Props) => {
   const titleList = ["이름", "가입일", "자기소개"];
   const contentList = ["kangkim", "yyyy-mm-dd", "안녕하세요"];
-  const { isOpenInfoSetting, onOpenInfoSetting, onCloseInfoSetting } =
-    useInfoSetting();
+  const {
+    isModalOpen: isInfoSettingOpen,
+    onModalOpen: onInfoSettingOpen,
+    onModalClose: InfoSettingClose,
+  } = useModal({});
 
   return (
-    <>
+    <ModalWrapper>
       <Modal width={width} height={height}>
         <ModalTitle onClose={onClose} fontSize="3rem" height="10%">
           UserId
@@ -85,7 +88,7 @@ const UserInfoModal = ({ onClose, width, height, me }: Props) => {
         <ButtonGroup width="100%" height="10%" backgroundColor="secondary">
           {me ? (
             <>
-              <UserInfoModalButton onClick={onOpenInfoSetting}>
+              <UserInfoModalButton onClick={onInfoSettingOpen}>
                 프로필설정
               </UserInfoModalButton>
               <UserInfoModalButton to="/stat/1">최근전적</UserInfoModalButton>
@@ -99,12 +102,8 @@ const UserInfoModal = ({ onClose, width, height, me }: Props) => {
           )}
         </ButtonGroup>
       </Modal>
-      {isOpenInfoSetting && (
-        <ModalWrapper>
-          <UserInfoSettingModal onClose={onCloseInfoSetting} />
-        </ModalWrapper>
-      )}
-    </>
+      {isInfoSettingOpen && <UserInfoSettingModal onClose={InfoSettingClose} />}
+    </ModalWrapper>
   );
 };
 

@@ -1,15 +1,12 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import { logoutAPI } from "../../../api/auth";
-import useConfirm from "../../../hooks/useConfirm";
-import useUserInfo from "../../../hooks/useUserInfo";
+import useModal from "../../../hooks/useModal";
 import LoadingState from "../../../state/LoadingState";
 import Avatar from "../../atoms/Avatar";
 import Board from "../../atoms/Board";
 import Button from "../../atoms/Button";
-import ModalWrapper from "../../atoms/ModalWrapper";
 import Typography from "../../atoms/Typography";
 import ButtonGroup from "../ButtonGroup";
 import ConfirmModal from "../ConfirmModal";
@@ -46,10 +43,17 @@ const Wrapper = styled(Board).attrs({
 `;
 
 const LobbyUserProfile = () => {
-  const { isOpenConfirm, onOpenConfirm, onCloseConfirm } = useConfirm();
-  const { isOpenUserInfo, onOpenMenuDetail, onCloseMenuDetail } = useUserInfo(
-    {}
-  );
+  const {
+    isModalOpen: isConfirmOpen,
+    onModalOpen: onConfirmOpen,
+    onModalClose: onConfirmClose,
+  } = useModal({});
+  const {
+    isModalOpen: isUserInfoOpen,
+    onModalOpen: onUserInfoOpen,
+    onModalClose: onUserInfoClose,
+  } = useModal({});
+
   const setIsLoading = useSetRecoilState(LoadingState);
 
   const navigate = useNavigate();
@@ -65,14 +69,11 @@ const LobbyUserProfile = () => {
     }
     setIsLoading(false);
   };
-  const onNoConfirm = () => {
-    onCloseConfirm();
-  };
 
   return (
     <>
       <LobbyUserProfileStyled>
-        <LogoutButton onClick={onOpenConfirm} />
+        <LogoutButton onClick={onConfirmOpen} />
         <Avatar width={"10rem"} height={"10rem"} />
         <UserInfo>
           <Wrapper>
@@ -86,7 +87,7 @@ const LobbyUserProfile = () => {
               height="5vh"
               boxShadow
               fontSize="1.5rem"
-              onClick={onOpenMenuDetail}
+              onClick={onUserInfoOpen}
             >
               내정보
             </Button>
@@ -102,25 +103,16 @@ const LobbyUserProfile = () => {
           </ButtonGroup>
         </UserInfo>
       </LobbyUserProfileStyled>
-      {isOpenUserInfo && (
-        <ModalWrapper onClose={onCloseMenuDetail}>
-          <UserInfoModal
-            onClose={onCloseMenuDetail}
-            width="50%"
-            height="90%"
-            me
-          />
-        </ModalWrapper>
+      {isUserInfoOpen && (
+        <UserInfoModal onClose={onUserInfoClose} width="50%" height="90%" me />
       )}
-      {isOpenConfirm && (
-        <ModalWrapper>
-          <ConfirmModal
-            onClose={onCloseConfirm}
-            type={EConfirmType.LOGOUT}
-            onYesConfirm={onYesConfirm}
-            onNoConfirm={onNoConfirm}
-          />
-        </ModalWrapper>
+      {isConfirmOpen && (
+        <ConfirmModal
+          onClose={onConfirmClose}
+          type={EConfirmType.LOGOUT}
+          onYesConfirm={onYesConfirm}
+          onNoConfirm={() => onConfirmClose()}
+        />
       )}
     </>
   );
