@@ -13,6 +13,7 @@ import { SessionMiddleware } from './middleware/session.middleware';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
 import TypeOrmConfigService from './config/typeorm.config';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import TypeOrmConfigService from './config/typeorm.config';
     }),
     AuthModule,
     UserModule,
+    ChatModule,
     CacheModule.register({
       isGlobal: true,
     }),
