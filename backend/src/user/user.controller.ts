@@ -16,7 +16,6 @@ import {
   ApiParam,
   ApiQuery
 } from "@nestjs/swagger";
-import { SessionAuthGuard } from 'src/auth/session/session.guard';
 import { User } from 'src/decorator/user.decorator';
 import { UserDto } from 'src/dto/user.dto';
 import { UserFriendListResponseDto } from "../dto/response/user.friend.list.response.dto";
