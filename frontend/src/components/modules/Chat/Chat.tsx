@@ -41,10 +41,22 @@ const Chat = ({ socket, ...rest }: Props) => {
       console.log(newMsg);
       setList((prevList) => [...prevList, newMsg]);
     };
+    const newWhisper = (newMsg: string) => {
+      console.log(newMsg);
+      setList((prevList) => [...prevList, newMsg]);
+    };
+    const newSystemMsg = (newMsg: string) => {
+      console.log(newMsg);
+      setList((prevList) => [...prevList, newMsg]);
+    };
     const joinRoom = (newMsg: string) => {
       setList((prevList) => [...prevList, newMsg]);
     };
-    if (socket) socket.socket.on("message", newMessage);
+    if (socket) {
+      socket.socket.on("message", newMessage);
+      socket.socket.on("whisper", newWhisper);
+      socket.socket.on("systemMsg", newSystemMsg);
+    }
   }, []);
   const enterkey = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key == "Enter") {

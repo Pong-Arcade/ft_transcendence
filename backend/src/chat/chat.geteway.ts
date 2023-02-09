@@ -116,10 +116,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       if (value.username == msg.toName) {
         this.server
           .to(client.id)
-          .emit('message', msg.toName + '에게: ' + msg.msg);
+          .emit('whisper', msg.toName + '에게: ' + msg.msg);
         this.server
           .to(value.socketid)
-          .emit('message', msg.fromName + '로 부터: ' + msg.msg);
+          .emit('whisper', msg.fromName + '로 부터: ' + msg.msg);
         console.log('send');
         return;
       }
