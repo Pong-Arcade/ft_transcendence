@@ -40,7 +40,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     });
   }
   //연결 끊김
-  async handleDisconnect() {}
+  async handleDisconnect() {
+    console.log('disconnect');
+  }
 
   @SubscribeMessage('showRoom')
   async onshowRoom(client) {

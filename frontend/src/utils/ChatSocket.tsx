@@ -5,7 +5,7 @@ class ChatSocket {
   socket: Socket;
   userid: number;
   username: string;
-  ignore_list: Array<number>;
+  // ignore_list: Array<number>;
 
   addMessage(msg: string) {
     const chatList = document.getElementById("");
@@ -14,6 +14,7 @@ class ChatSocket {
     console.log(msg);
   }
   constructor(userid: number, name: string) {
+    // this.ignore_list.
     this.socket = io("localhost:4242", {
       transports: ["websocket"],
     });
