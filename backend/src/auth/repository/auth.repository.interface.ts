@@ -8,4 +8,12 @@ export interface IAuthRepository {
    * @param user
    */
   addUserIfNotExists(user: UserDto): Promise<boolean>;
+
+  /**
+   * 유저가 존재하는지 확인합니다.
+   * 존재한다면 true를 반환합니다.
+   * 존재하지 않는다면 false를 반환합니다.
+   * @param userId
+   */
+  checkUserExists(userId: number): Promise<boolean>;
 }

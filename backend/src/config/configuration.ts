@@ -9,8 +9,10 @@ export default () => ({
     secret: process.env.FT_AUTH_SECRET,
     callback: process.env.FT_AUTH_CALLBACK,
   },
-  session: {
-    secret: process.env.SESSION_SECRET,
+  jwt: {
+    secret: process.env.JWT_SECRET,
+    expiresIn: process.env.JWT_EXPIRES_IN,
+    token: process.env.JWT_TOKEN,
   },
   database: {
     name: process.env.DATABASE_NAME,
