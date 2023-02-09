@@ -1,8 +1,6 @@
-import React from "react";
 import { Outlet } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
-import ModalWrapper from "../components/atoms/ModalWrapper";
 import Spinner from "../components/atoms/Spinner";
 import Loading from "../state/LoadingState";
 

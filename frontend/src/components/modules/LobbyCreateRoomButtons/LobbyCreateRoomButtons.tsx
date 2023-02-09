@@ -1,5 +1,3 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import useCreateRoom, {
   ERoomCreateButtonName,
@@ -7,7 +5,6 @@ import useCreateRoom, {
 import Button from "../../atoms/Button";
 import ButtonGroup from "../ButtonGroup";
 import ChooseGameModal from "../ChooseGameModal";
-import ChatSocket from "../../../utils/ChatSocket";
 import CreateChatRoomModal from "../CreateChatRoomModal";
 
 const CreateRoomButton = styled(Button).attrs({
