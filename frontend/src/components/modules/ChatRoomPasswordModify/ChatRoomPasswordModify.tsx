@@ -1,9 +1,7 @@
-import { useState } from "react";
 import styled from "styled-components";
 import useModal from "../../../hooks/useModal";
 import Board from "../../atoms/Board";
 import Button from "../../atoms/Button";
-import ModalWrapper from "../../atoms/ModalWrapper";
 import ModifyChatRoomModal from "../ModifyChatRoomModal";
 
 const ChatRoomPasswordModifyStyled = styled(Board).attrs((props) => {
@@ -37,9 +35,7 @@ const ChatRoomPasswordModify = () => {
         <ModifyButton onClick={onModalOpen}>{TITLE}</ModifyButton>
       </ChatRoomPasswordModifyStyled>
       {isModalOpen && (
-        <ModalWrapper>
-          <ModifyChatRoomModal onClose={onModalClose} title={TITLE} />
-        </ModalWrapper>
+        <ModifyChatRoomModal onClose={onModalClose} title={TITLE} />
       )}
     </>
   );

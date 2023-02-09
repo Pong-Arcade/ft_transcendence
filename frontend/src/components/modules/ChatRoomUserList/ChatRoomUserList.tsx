@@ -4,7 +4,6 @@ import useMenu from "../../../hooks/useMenu";
 import useModal from "../../../hooks/useModal";
 import Avatar from "../../atoms/Avatar";
 import Board from "../../atoms/Board";
-import ModalWrapper from "../../atoms/ModalWrapper";
 import Chat from "../Chat";
 import Menu from "../Menu";
 import PaginationList from "../PaginationList";
@@ -72,25 +71,16 @@ const ChatRoomUserList = () => {
         <Chat width="100%" height="55%" />
       </ChatRoomUserListStyled>
       {isOpenMenu && ( // TODO: 정보보기 제외 다른 기능 추가 시 리팩토링 필요
-        <ModalWrapper onClose={onCloseMenu} backgroundColor="none">
-          <Menu
-            list={[
-              "정보보기",
-              "강퇴하기",
-              "채팅금지",
-              "관리자부여",
-              "게임신청",
-            ]}
-            top={positionY}
-            left={positionX}
-            onOpen={onUserInfoOpen}
-          />
-        </ModalWrapper>
+        <Menu
+          list={["정보보기", "강퇴하기", "채팅금지", "관리자부여", "게임신청"]}
+          top={positionY}
+          left={positionX}
+          onOpen={onUserInfoOpen}
+          onClose={onCloseMenu}
+        />
       )}
       {isUserInfoOpen && (
-        <ModalWrapper>
-          <UserInfoModal onClose={onUserInfoClose} width="50%" height="90%" />
-        </ModalWrapper>
+        <UserInfoModal onClose={onUserInfoClose} width="50%" height="90%" />
       )}
     </>
   );

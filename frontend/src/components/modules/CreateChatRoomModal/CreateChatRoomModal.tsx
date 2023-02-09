@@ -7,6 +7,7 @@ import useChatRoomForm, {
 import Button from "../../atoms/Button";
 import Modal from "../../atoms/Modal";
 import ModalInputWrapper from "../../atoms/ModalInputWrapper";
+import ModalWrapper from "../../atoms/ModalWrapper";
 import ErrorModal from "../ErrorModal";
 import LabledInput from "../LabledInput";
 import ModalInputListWrapper from "../ModalInputListWrapper";
@@ -38,7 +39,6 @@ const SubmitButton = styled(Button).attrs({
   type: "submit",
 })``;
 
-// FIXME: 모달 wrapper 리팩토링
 const CreateChatRoomModal = ({ title, onClose }: Props) => {
   const navigate = useNavigate();
   const { values, errors, onErrorModalClose, onChangeForm, onSubmitForm } =
@@ -50,7 +50,7 @@ const CreateChatRoomModal = ({ title, onClose }: Props) => {
     });
 
   return (
-    <>
+    <ModalWrapper>
       <Modal width="60%" height="70%">
         <CreateRoomForm onSubmit={onSubmitForm}>
           <ModalTitle onClose={onClose} fontSize="3rem">
@@ -102,7 +102,7 @@ const CreateChatRoomModal = ({ title, onClose }: Props) => {
         </CreateRoomForm>
       </Modal>
       {errors && <ErrorModal onClose={onErrorModalClose} errors={errors} />}
-    </>
+    </ModalWrapper>
   );
 };
 

@@ -5,6 +5,7 @@ import Board from "../../atoms/Board";
 import Button from "../../atoms/Button";
 import Input from "../../atoms/Input";
 import Modal from "../../atoms/Modal";
+import ModalWrapper from "../../atoms/ModalWrapper";
 import ModalTitle from "../ModalTitle";
 
 interface Props {
@@ -32,16 +33,18 @@ const SubmitButton = styled(Button).attrs({
 
 const UserInfoSettingModal = ({ onClose, onSubmit }: Props) => {
   return (
-    <Modal width="30%" height="60%" animation>
-      <ModalTitle onClose={onClose} fontSize="3rem">
-        프로필설정
-      </ModalTitle>
-      <Wrapper>
-        <Avatar width="15vw" height="15vw" upload />
-        <Input height="15%" width="70%" borderRadius padding="1rem" />
-        <SubmitButton onClick={onSubmit}>설정완료</SubmitButton>
-      </Wrapper>
-    </Modal>
+    <ModalWrapper>
+      <Modal width="30%" height="60%" animation>
+        <ModalTitle onClose={onClose} fontSize="3rem">
+          프로필설정
+        </ModalTitle>
+        <Wrapper>
+          <Avatar width="15vw" height="15vw" upload />
+          <Input height="15%" width="70%" borderRadius padding="1rem" />
+          <SubmitButton onClick={onSubmit}>설정완료</SubmitButton>
+        </Wrapper>
+      </Modal>
+    </ModalWrapper>
   );
 };
 

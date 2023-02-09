@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import Button from "../../atoms/Button";
 import Modal from "../../atoms/Modal";
+import ModalWrapper from "../../atoms/ModalWrapper";
 
 interface Props {
   list?: string[];
@@ -12,6 +13,7 @@ interface Props {
   left: number;
   backgroundColor?: string;
   onOpen?: () => void;
+  onClose?: () => void;
 }
 
 const MenuStyled = styled(Modal).attrs((props) => {
@@ -26,24 +28,26 @@ const MenuStyled = styled(Modal).attrs((props) => {
   font-size: ${(props) => props.fontSize || "1.5rem"};
 `;
 
-const Menu = ({ list, onOpen, ...rest }: Props) => {
+const Menu = ({ list, onOpen, onClose, ...rest }: Props) => {
   if (!list) return null;
 
   const height = `${100 / list.length}%`;
   return (
-    <MenuStyled {...rest}>
-      {list.map((elem, idx) => (
-        <Button
-          key={idx}
-          width="100%"
-          height={height}
-          border="none"
-          onClick={onOpen}
-        >
-          {elem}
-        </Button>
-      ))}
-    </MenuStyled>
+    <ModalWrapper onClose={onClose} backgroundColor="none">
+      <MenuStyled {...rest}>
+        {list.map((elem, idx) => (
+          <Button
+            key={idx}
+            width="100%"
+            height={height}
+            border="none"
+            onClick={onOpen}
+          >
+            {elem}
+          </Button>
+        ))}
+      </MenuStyled>
+    </ModalWrapper>
   );
 };
 

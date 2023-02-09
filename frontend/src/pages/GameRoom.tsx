@@ -3,7 +3,6 @@ import styled from "styled-components";
 import Avatar from "../components/atoms/Avatar";
 import Board from "../components/atoms/Board";
 import Button from "../components/atoms/Button";
-import ModalWrapper from "../components/atoms/ModalWrapper";
 import Typography from "../components/atoms/Typography";
 import Chat from "../components/modules/Chat";
 import ConfirmModal from "../components/modules/ConfirmModal";
@@ -93,29 +92,23 @@ const GameRoom = () => {
         </Wrapper>
       </GameRoomTemplate>
       {isOpenMenu && ( // TODO: 정보보기 제외 다른 기능 추가 시 리팩토링 필요
-        <ModalWrapper onClose={onCloseMenu} backgroundColor="none">
-          <Menu
-            list={["정보보기", "귓속말", "친구추가", "차단하기"]}
-            top={positionY}
-            left={positionX}
-            onOpen={onUserInfoOpen}
-          />
-        </ModalWrapper>
+        <Menu
+          list={["정보보기", "귓속말", "친구추가", "차단하기"]}
+          top={positionY}
+          left={positionX}
+          onOpen={onUserInfoOpen}
+        />
       )}
       {isUserInfoOpen && (
-        <ModalWrapper>
-          <UserInfoModal onClose={onUserInfoClose} width="50%" height="90%" />
-        </ModalWrapper>
+        <UserInfoModal onClose={onUserInfoClose} width="50%" height="90%" />
       )}
       {isConfirmOpen && (
-        <ModalWrapper>
-          <ConfirmModal
-            onClose={onConfirmClose}
-            type={EConfirmType.EXIT}
-            onYesConfirm={() => navigate("/lobby")}
-            onNoConfirm={() => onConfirmClose()}
-          />
-        </ModalWrapper>
+        <ConfirmModal
+          onClose={onConfirmClose}
+          type={EConfirmType.EXIT}
+          onYesConfirm={() => navigate("/lobby")}
+          onNoConfirm={() => onConfirmClose()}
+        />
       )}
     </>
   );

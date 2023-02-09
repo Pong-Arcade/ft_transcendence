@@ -2,6 +2,7 @@ import styled from "styled-components";
 import useModal from "../../../hooks/useModal";
 import Button from "../../atoms/Button";
 import Modal from "../../atoms/Modal";
+import ModalWrapper from "../../atoms/ModalWrapper";
 import ButtonGroup from "../ButtonGroup";
 import CreateGameRoomModal from "../CreateGameRoomModal";
 import ModalTitle from "../ModalTitle";
@@ -9,7 +10,7 @@ import QuickGameModal from "../QuickGameModal";
 
 interface Props {
   title: string;
-  onClose?: () => void;
+  onClose: () => void;
 }
 
 const ChooseGameButton = styled(Button).attrs({
@@ -25,7 +26,7 @@ const ChooseGameModal = ({ title, onClose }: Props) => {
     useModal({});
 
   return (
-    <>
+    <ModalWrapper>
       <Modal width="30%" height="30%">
         <ModalTitle
           onClose={onClose}
@@ -53,7 +54,7 @@ const ChooseGameModal = ({ title, onClose }: Props) => {
         <CreateGameRoomModal title={title} onClose={onClose} />
       )}
       {isQuickGameOpen && <QuickGameModal onClose={onClose} title={title} />}
-    </>
+    </ModalWrapper>
   );
 };
 

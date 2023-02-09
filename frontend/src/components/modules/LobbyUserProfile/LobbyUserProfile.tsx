@@ -1,4 +1,3 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
@@ -8,7 +7,6 @@ import LoadingState from "../../../state/LoadingState";
 import Avatar from "../../atoms/Avatar";
 import Board from "../../atoms/Board";
 import Button from "../../atoms/Button";
-import ModalWrapper from "../../atoms/ModalWrapper";
 import Typography from "../../atoms/Typography";
 import ButtonGroup from "../ButtonGroup";
 import ConfirmModal from "../ConfirmModal";
@@ -106,24 +104,15 @@ const LobbyUserProfile = () => {
         </UserInfo>
       </LobbyUserProfileStyled>
       {isUserInfoOpen && (
-        <ModalWrapper>
-          <UserInfoModal
-            onClose={onUserInfoClose}
-            width="50%"
-            height="90%"
-            me
-          />
-        </ModalWrapper>
+        <UserInfoModal onClose={onUserInfoClose} width="50%" height="90%" me />
       )}
       {isConfirmOpen && (
-        <ModalWrapper>
-          <ConfirmModal
-            onClose={onConfirmClose}
-            type={EConfirmType.LOGOUT}
-            onYesConfirm={onYesConfirm}
-            onNoConfirm={() => onConfirmClose()}
-          />
-        </ModalWrapper>
+        <ConfirmModal
+          onClose={onConfirmClose}
+          type={EConfirmType.LOGOUT}
+          onYesConfirm={onYesConfirm}
+          onNoConfirm={() => onConfirmClose()}
+        />
       )}
     </>
   );

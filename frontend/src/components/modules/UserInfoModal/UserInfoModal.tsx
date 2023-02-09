@@ -55,7 +55,7 @@ const UserInfoModal = ({ onClose, width, height, me }: Props) => {
   } = useModal({});
 
   return (
-    <>
+    <ModalWrapper>
       <Modal width={width} height={height}>
         <ModalTitle onClose={onClose} fontSize="3rem" height="10%">
           UserId
@@ -102,12 +102,8 @@ const UserInfoModal = ({ onClose, width, height, me }: Props) => {
           )}
         </ButtonGroup>
       </Modal>
-      {isInfoSettingOpen && (
-        <ModalWrapper>
-          <UserInfoSettingModal onClose={InfoSettingClose} />
-        </ModalWrapper>
-      )}
-    </>
+      {isInfoSettingOpen && <UserInfoSettingModal onClose={InfoSettingClose} />}
+    </ModalWrapper>
   );
 };
 

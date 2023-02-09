@@ -3,7 +3,6 @@ import useCreateRoom, {
   ERoomCreateButtonName,
 } from "../../../hooks/useCreateRoom";
 import Button from "../../atoms/Button";
-import ModalWrapper from "../../atoms/ModalWrapper";
 import ButtonGroup from "../ButtonGroup";
 import ChooseGameModal from "../ChooseGameModal";
 import CreateChatRoomModal from "../CreateChatRoomModal";
@@ -29,7 +28,7 @@ const LobbyCreateRoomButtons = () => {
         ))}
       </ButtonGroup>
       {isOpenModal && (
-        <ModalWrapper>
+        <>
           {buttonTitle === ERoomCreateButtonName.CHATROOM ? (
             <CreateChatRoomModal
               onClose={onClose}
@@ -46,7 +45,7 @@ const LobbyCreateRoomButtons = () => {
               title={ERoomCreateButtonName.NORMALGAME}
             />
           )}
-        </ModalWrapper>
+        </>
       )}
     </>
   );

@@ -45,7 +45,7 @@ const InviteModal = ({ onClose }: Props) => {
   };
 
   return (
-    <>
+    <ModalWrapper>
       <Modal width="25%" height="60%">
         <ModalTitle onClose={onClose} fontSize="3rem" height="15%">
           초대하기
@@ -63,16 +63,14 @@ const InviteModal = ({ onClose }: Props) => {
         </Button>
       </Modal>
       {isConfirmOpen && (
-        <ModalWrapper>
-          <ConfirmModal
-            content={inviteList.length}
-            onClose={onConfirmClose}
-            type={EConfirmType.INVITE}
-            onYesConfirm={onCloseInviteModal}
-          />
-        </ModalWrapper>
+        <ConfirmModal
+          content={inviteList.length}
+          onClose={onConfirmClose}
+          type={EConfirmType.INVITE}
+          onYesConfirm={onCloseInviteModal}
+        />
       )}
-    </>
+    </ModalWrapper>
   );
 };
 

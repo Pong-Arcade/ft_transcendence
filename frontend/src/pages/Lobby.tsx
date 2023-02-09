@@ -1,6 +1,5 @@
 import styled from "styled-components";
 import Board from "../components/atoms/Board";
-import ModalWrapper from "../components/atoms/ModalWrapper";
 import Chat from "../components/modules/Chat";
 import LobbyChatRoomList from "../components/modules/LobbyChatRoomList";
 import LobbyCreateRoomButtons from "../components/modules/LobbyCreateRoomButtons";
@@ -60,9 +59,7 @@ const Lobby = () => {
         </RoomListChatWrapper>
       </LobbyTemplate>
       {isFirstLogin && (
-        <ModalWrapper>
-          <UserInfoSettingModal onSubmit={onSubmit} onClose={onClose} />
-        </ModalWrapper>
+        <UserInfoSettingModal onSubmit={onSubmit} onClose={onClose} />
       )}
     </>
   );

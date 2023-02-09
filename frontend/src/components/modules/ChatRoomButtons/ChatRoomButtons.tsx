@@ -2,7 +2,6 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import useModal from "../../../hooks/useModal";
 import Button from "../../atoms/Button";
-import ModalWrapper from "../../atoms/ModalWrapper";
 import ButtonGroup from "../ButtonGroup";
 import ConfirmModal from "../ConfirmModal";
 import { EConfirmType } from "../ConfirmModal/ConfirmModal";
@@ -33,20 +32,14 @@ const ChatRoomButtons = () => {
         <ChatRoomButton onClick={onInviteOpen}>초대하기</ChatRoomButton>
         <ChatRoomButton onClick={onConfirmOpen}>나가기</ChatRoomButton>
       </ButtonGroup>
-      {isInviteOpen && (
-        <ModalWrapper>
-          <InviteModal onClose={onInviteClose} />
-        </ModalWrapper>
-      )}
+      {isInviteOpen && <InviteModal onClose={onInviteClose} />}
       {isConfirmOpen && (
-        <ModalWrapper>
-          <ConfirmModal
-            onClose={onConfirmClose}
-            type={EConfirmType.EXIT}
-            onYesConfirm={() => navigate("/lobby")}
-            onNoConfirm={() => onConfirmClose()}
-          />
-        </ModalWrapper>
+        <ConfirmModal
+          onClose={onConfirmClose}
+          type={EConfirmType.EXIT}
+          onYesConfirm={() => navigate("/lobby")}
+          onNoConfirm={() => onConfirmClose()}
+        />
       )}
     </>
   );
