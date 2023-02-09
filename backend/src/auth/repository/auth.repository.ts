@@ -28,4 +28,11 @@ export class AuthRepository implements IAuthRepository {
     });
     return false;
   }
+
+  async checkUserExists(userId: number): Promise<boolean> {
+    const find = await this.userRepository.findOne({
+      where: { userId },
+    });
+    return find ? true : false;
+  }
 }

@@ -6,7 +6,6 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { SessionAuthGuard } from 'src/auth/session/session.guard';
 import { User } from 'src/decorator/user.decorator';
 import { UserDto } from 'src/dto/user.dto';
 
@@ -15,7 +14,6 @@ export class UserController {
   private logger = new Logger(UserController.name);
 
   @Get('/online-users/')
-  @UseGuards(SessionAuthGuard)
   @HttpCode(200)
   async getOnlineUsers(
     @User() user: UserDto,

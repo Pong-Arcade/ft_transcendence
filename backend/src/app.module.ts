@@ -1,17 +1,12 @@
-import {
-  CacheModule,
-  MiddlewareConsumer,
-  Module,
-  NestModule,
-} from '@nestjs/common';
+import { CacheModule, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import configuration from './config/configuration';
-import { SessionMiddleware } from './middleware/session.middleware';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
+import { GameModule } from './game/game.module';
 import TypeOrmConfigService from './config/typeorm.config';
 import { ChatModule } from './chat/chat.module';
 
@@ -31,19 +26,9 @@ import { ChatModule } from './chat/chat.module';
     CacheModule.register({
       isGlobal: true,
     }),
+    GameModule,
   ],
   controllers: [AppController],
-  providers: [AppService, SessionMiddleware],
+  providers: [AppService],
 })
-export class AppModule implements NestModule {
-  constructor(public sessionMiddleware: SessionMiddleware) {}
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(
-        this.sessionMiddleware.expressSession,
-        this.sessionMiddleware.passportInitialize,
-        this.sessionMiddleware.passportSession,
-      )
-      .forRoutes('*');
-  }
-}
+export class AppModule {}

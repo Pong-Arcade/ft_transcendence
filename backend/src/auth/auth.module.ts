@@ -1,12 +1,13 @@
 import { Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { FtStrategy } from './42/ft.strategy';
-import { SessionSerializer } from './session/session.serializer';
-import { PassportModule } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { AuthRepository } from './repository/auth.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import User from 'src/entity/user.entity';
+import { JwtModule } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+import { JwtStrategy } from './jwt/jwt.strategy';
 
 const repo = {
   provide: 'IAuthRepository',
@@ -15,10 +16,19 @@ const repo = {
 
 @Module({
   imports: [
-    PassportModule.register({ session: true }),
+    JwtModule.registerAsync({
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('jwt.secret'),
+        signOptions: {
+          expiresIn: configService.get<string>('jwt.expiresIn'),
+        },
+      }),
+      inject: [ConfigService],
+    }),
     TypeOrmModule.forFeature([User]),
   ],
+  providers: [FtStrategy, JwtStrategy, AuthService, repo],
   controllers: [AuthController],
-  providers: [FtStrategy, SessionSerializer, AuthService, repo],
+  exports: [AuthService],
 })
 export class AuthModule {}

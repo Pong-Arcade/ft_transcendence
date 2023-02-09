@@ -18,4 +18,14 @@ export class AuthService {
     await this.cacheManager.set(`auth-${user.userId}`, true, 0);
     return find;
   }
+
+  async checkUserExists(userId: number): Promise<boolean> {
+    const exist = await this.cacheManager.get<boolean>(`auth-${userId}`);
+    if (exist === undefined) {
+      const result = await this.authRepository.checkUserExists(userId);
+      await this.cacheManager.set(`auth-${userId}`, true, 0);
+      return result;
+    }
+    return exist;
+  }
 }
