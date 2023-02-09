@@ -13,7 +13,7 @@ import { Room, User } from './chat.entity';
 })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server;
-  roomid: number = 0;
+  roomid = 0;
   users = new Map<number, User>();
   rooms = new Map<number, Room>();
   async handleConnection(socket) {
@@ -24,7 +24,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         if (socket.id == value.socketid) {
           if (value.location > 0) {
             for (
-              var i = 0;
+              let i = 0;
               i < this.rooms.get(value.location).Users.length;
               i++
             ) {

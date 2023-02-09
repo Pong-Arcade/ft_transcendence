@@ -1,4 +1,4 @@
-import { CookieOptions, Request, Response } from 'express';
+import { Request, Response } from 'express';
 import {
   CanActivate,
   ExecutionContext,

@@ -36,11 +36,4 @@ export class AuthController {
     }
     return res.redirect(`${feHost}/Lobby`);
   }
-
-  @Get('logout')
-  @UseGuards(JwtAuthGuard)
-  // TODO: 200 OK를 보내도록 하고, 클라이언트는 이를 받으면 쿠키를 삭제하고 로그인 페이지로 리다이렉트하도록 구현
-  logout(@Req() req: Request) {
-    this.logger.log('Logout');
-  }
 }
