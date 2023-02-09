@@ -8,7 +8,6 @@ interface Props {
   height: string;
   fontSize?: string;
   boxShadow?: boolean;
-  borderRadius?: string;
   backgroundColor?: string;
   to?: string;
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
@@ -44,15 +43,31 @@ const ButtonStyled = styled.button.attrs((props) => {
   }
 `;
 
-const Button = ({ children, to, ...rest }: Props) => {
+interface LinkWrapperProps {
+  width: string;
+  height: string;
+}
+
+const LinkWrapper = styled(Link)<LinkWrapperProps>`
+  width: ${(props) => props.width};
+  height: ${(props) => props.height};
+`;
+
+const Button = ({ children, to, width, height, ...rest }: Props) => {
   if (to) {
     return (
-      <Link to={to}>
-        <ButtonStyled {...rest}>{children}</ButtonStyled>
-      </Link>
+      <LinkWrapper height={height} width={width} to={to}>
+        <ButtonStyled width="100%" height="100%" {...rest}>
+          {children}
+        </ButtonStyled>
+      </LinkWrapper>
     );
   }
-  return <ButtonStyled {...rest}>{children}</ButtonStyled>;
+  return (
+    <ButtonStyled width={width} height={height} {...rest}>
+      {children}
+    </ButtonStyled>
+  );
 };
 
 export default Button;

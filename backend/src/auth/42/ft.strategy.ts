@@ -28,7 +28,7 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
   /**
    * 42 OAuth 이후 이 정보를 서버 내에서 검증할 때 사용되는 함수이지만
    * 현재 단계에서는 42 로그인에 성공하면 추가적인 검증을 거칠 필요가 없다고 판단하여
-   * UserDto에 유저정보를 담아 callback으로 넘겨주도록 구성하였습니다.
+   * FtUserDto에 유저정보를 담아 callback으로 넘겨주도록 구성하였습니다.
    */
   async validate(
     request: any,
@@ -39,9 +39,11 @@ export class FtStrategy extends PassportStrategy(Strategy, '42') {
   ) {
     const user: UserDto = {
       userId: profile.userId,
-      intraId: profile.intraId,
+      nickname: profile.intraId,
+      avatarUrl: profile._json.image.link,
       email: profile.email,
     };
     cb(null, user);
   }
 }
+``;

@@ -1,10 +1,11 @@
-import React from "react";
 import styled from "styled-components";
 import Board from "../../atoms/Board";
 import Button from "../../atoms/Button";
 import { ReactComponent as Logo } from "../../../assets/42logo.svg";
 import Typography from "../../atoms/Typography";
-import { Link } from "react-router-dom";
+import { loginAPI } from "../../../api/auth";
+import LoadingState from "../../../state/LoadingState";
+import { useSetRecoilState } from "recoil";
 
 const LoginButtonStyled = styled(Board).attrs({
   width: "50%",
@@ -22,17 +23,20 @@ const ButtonStyled = styled(Button).attrs({
   gap: 1rem;
 `;
 
-// TODO: Login api 추가
-// TODO: User profile, nickname 설정(api??)
 const LoginButton = () => {
+  const setIsLoading = useSetRecoilState(LoadingState);
+
+  const onClick = () => {
+    setIsLoading(true);
+    loginAPI();
+  };
+
   return (
     <LoginButtonStyled>
-      <Link to="/lobby">
-        <ButtonStyled>
-          <Logo width="3.5rem" height="3.5rem" />
-          <Typography fontSize="3rem">Login</Typography>
-        </ButtonStyled>
-      </Link>
+      <ButtonStyled onClick={onClick}>
+        <Logo width="3.5rem" height="3.5rem" />
+        <Typography fontSize="3rem">Login</Typography>
+      </ButtonStyled>
     </LoginButtonStyled>
   );
 };

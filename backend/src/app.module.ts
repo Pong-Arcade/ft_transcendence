@@ -1,4 +1,9 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import {
+  CacheModule,
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+} from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -23,6 +28,9 @@ import { ChatModule } from './chat/chat.module';
     AuthModule,
     UserModule,
     ChatModule,
+    CacheModule.register({
+      isGlobal: true,
+    }),
   ],
   controllers: [AppController],
   providers: [AppService, SessionMiddleware],

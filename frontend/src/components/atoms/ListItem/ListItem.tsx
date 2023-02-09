@@ -5,7 +5,7 @@ import Button from "../Button";
 interface Props {
   children?: React.ReactNode;
   backgroundColor?: string;
-  onOpen?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 const ListItemStyled = styled(Button).attrs((props) => {
@@ -18,9 +18,9 @@ const ListItemStyled = styled(Button).attrs((props) => {
   };
 })``;
 
-const ListItem = ({ children, onOpen, ...rest }: Props) => {
+const ListItem = ({ children, onClick, ...rest }: Props) => {
   return (
-    <ListItemStyled onClick={onOpen} {...rest}>
+    <ListItemStyled onClick={onClick} {...rest}>
       {children}
     </ListItemStyled>
   );

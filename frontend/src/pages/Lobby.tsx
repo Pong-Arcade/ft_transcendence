@@ -1,14 +1,17 @@
 import React, { useEffect } from "react";
 import styled from "styled-components";
 import Board from "../components/atoms/Board";
+import ModalWrapper from "../components/atoms/ModalWrapper";
 import Chat from "../components/modules/Chat";
 import LobbyChatRoomList from "../components/modules/LobbyChatRoomList";
 import LobbyCreateRoomButtons from "../components/modules/LobbyCreateRoomButtons";
 import LobbyRoomListTypeButtons from "../components/modules/LobbyRoomListTypeButtons";
 import LobbyUserList from "../components/modules/LobbyUserList";
 import LobbyUserProfile from "../components/modules/LobbyUserProfile";
+import UserInfoSettingModal from "../components/modules/UserInfoSettingModal";
 import LobbyTemplate from "../components/templates/LobbyTemplate";
 import ChatSocket from "../utils/ChatSocket";
+import useFirstLoginModal from "../hooks/useFirstLoginModal";
 
 const UserWrapper = styled(Board).attrs({
   width: "29%",
@@ -39,6 +42,7 @@ const RoomListChat = styled(Board).attrs((props) => {
 })``;
 
 const Lobby = ({ socket }: { socket: ChatSocket }) => {
+  const { isFirstLogin, onSubmit, onClose } = useFirstLoginModal();
   useEffect(() => {
     if (socket === undefined) {
       socket = new ChatSocket(1, "user" + Math.floor(Math.random() * 100));
@@ -52,21 +56,28 @@ const Lobby = ({ socket }: { socket: ChatSocket }) => {
     }
   });
   return (
-    <LobbyTemplate>
-      <UserWrapper>
-        <LobbyUserProfile />
-        <LobbyUserList />
-      </UserWrapper>
-      <RoomListChatWrapper>
-        <LobbyCreateRoomButtons />
-        <RoomListChat>
-          <LobbyRoomListTypeButtons />
-          <LobbyChatRoomList />
-          {/* <LobbyGameRoomList /> */}
-          <Chat width="98%" height="40%" boxShadow />
-        </RoomListChat>
-      </RoomListChatWrapper>
-    </LobbyTemplate>
+    <>
+      <LobbyTemplate>
+        <UserWrapper>
+          <LobbyUserProfile />
+          <LobbyUserList />
+        </UserWrapper>
+        <RoomListChatWrapper>
+          <LobbyCreateRoomButtons />
+          <RoomListChat>
+            <LobbyRoomListTypeButtons />
+            <LobbyChatRoomList />
+            {/* <LobbyGameRoomList /> */}
+            <Chat width="98%" height="40%" boxShadow />
+          </RoomListChat>
+        </RoomListChatWrapper>
+      </LobbyTemplate>
+      {isFirstLogin && (
+        <ModalWrapper>
+          <UserInfoSettingModal onSubmit={onSubmit} onClose={onClose} />
+        </ModalWrapper>
+      )}
+    </>
   );
 };
 

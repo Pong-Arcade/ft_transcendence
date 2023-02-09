@@ -10,7 +10,7 @@ services:
       - "80:80"
     restart: always
     networks:
-      - pingpong
+      - pong_arcade
 
   postgres:
     image: postgres:latest
@@ -21,7 +21,9 @@ services:
       - ./postgres/postgres.env
     restart: always
     networks:
-      - pingpong
+      - pong_arcade
+    volumes:
+      - ./postgres/:/docker-entrypoint-initdb.d/
 
   backend_dev:
     image: backend_dev
@@ -37,7 +39,7 @@ services:
       - /backend/dist
     restart: always
     networks:
-      - pingpong
+      - pong_arcade
 
   frontend_dev:
     image: frontend_dev
@@ -54,8 +56,8 @@ services:
       - /frontend/build
     restart: always
     networks:
-      - pingpong
+      - pong_arcade
 
 networks:
-  pingpong:
+  pong_arcade:
     driver: bridge

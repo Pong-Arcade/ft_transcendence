@@ -16,7 +16,8 @@ export default class MockStrategy extends Strategy {
     this.verify(
       {
         userId: 1,
-        intraId: 'sichoi',
+        nickname: 'sichoi',
+        avatarUrl: 'http://example.com',
         email: 'sichoi@student.42seoul.kr',
       },
       verified,

@@ -4,7 +4,7 @@ import { ReactComponent as Logo } from "../../../assets/logout.svg";
 import Button from "../../atoms/Button";
 
 interface Props {
-  to?: string;
+  onClick?: () => void;
 }
 
 const LogoutLogo = styled(Logo)`
@@ -12,22 +12,19 @@ const LogoutLogo = styled(Logo)`
   height: 100%;
 `;
 
-const LogoutButtonStyled = styled(Button).attrs((props) => {
-  return {
-    width: "3.5%",
-    height: "4.5%",
-    backgroundColor: props.theme.background.middle,
-  };
-})`
+const LogoutButtonStyled = styled(Button)`
+  background-color: ${(props) => props.theme.background.middle};
   position: absolute;
   top: 2.5%;
   left: 2%;
   border: none;
+  width: 3.5%;
+  height: 4.5%;
 `;
 
-const LogoutButton = ({ to }: Props) => {
+const LogoutButton = ({ onClick }: Props) => {
   return (
-    <LogoutButtonStyled to={to}>
+    <LogoutButtonStyled width="3.5%" height="4.5%" onClick={onClick}>
       <LogoutLogo />
     </LogoutButtonStyled>
   );
