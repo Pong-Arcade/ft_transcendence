@@ -7,6 +7,16 @@ import {
 } from '@nestjs/websockets';
 import { Room, User } from './chat.entity';
 
+type MessageType = 'message' | 'whisper' | 'systemMsg';
+interface IMessage {
+  content: string;
+  type: MessageType;
+}
+enum EMessageType {
+  MESSAGE = 'message',
+  WHISPER = 'whisper',
+  SYSTEMMSG = 'systemMsg',
+}
 @WebSocketGateway(4242, {
   transports: ['websocket'],
   // cors: { origin: 'http://localhost:8000' },
@@ -103,29 +113,41 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('message')
   async onMessage(client, msg) {
+    const message: IMessage = {
+      content: msg.msg,
+      type: EMessageType.MESSAGE,
+    };
     if (!msg.roomid) {
-      this.server.to(this.rooms.get(0).roomname).emit('message', msg.msg);
+      this.server.to(this.rooms.get(0).roomname).emit('message', message);
     } else {
       this.server
         .to(this.rooms.get(msg.roomid).roomname)
-        .broadcast.emit('message', msg.msg);
+        .broadcast.emit('message', message);
     }
   }
   @SubscribeMessage('whisper')
   async onWhisper(client, msg) {
-    console.log(msg);
-    this.users.forEach((value, key, map) => {
+    for (const value of this.users.values()) {
       if (value.username == msg.toName) {
-        this.server
-          .to(client.id)
-          .emit('whisper', msg.toName + '에게: ' + msg.msg);
-        this.server
-          .to(value.socketid)
-          .emit('whisper', msg.fromName + '로 부터: ' + msg.msg);
+        const toWhisperMsg: IMessage = {
+          content: `${msg.toName}에게: ${msg.msg}`,
+          type: EMessageType.WHISPER,
+        };
+        const fromWhisperMsg: IMessage = {
+          content: `${msg.fromName}로부터: ${msg.msg}`,
+          type: EMessageType.WHISPER,
+        };
+        this.server.to(client.id).emit('whisper', toWhisperMsg);
+        this.server.to(value.socketid).emit('whisper', fromWhisperMsg);
         console.log('send');
         return;
       }
-    });
-    this.server.to(client.id).emit('system', '접속중이지 않은 유저입니다.');
+    }
+
+    const message: IMessage = {
+      content: '접속중이지 않은 유저입니다.',
+      type: EMessageType.SYSTEMMSG,
+    };
+    this.server.to(client.id).emit('systemMsg', message);
   }
 }

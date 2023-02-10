@@ -1,4 +1,4 @@
-// import React, { useEffect } from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import Board from "../components/atoms/Board";
 import Chat from "../components/modules/Chat";
@@ -9,7 +9,7 @@ import LobbyUserList from "../components/modules/LobbyUserList";
 import LobbyUserProfile from "../components/modules/LobbyUserProfile";
 import UserInfoSettingModal from "../components/modules/UserInfoSettingModal";
 import LobbyTemplate from "../components/templates/LobbyTemplate";
-// import ChatSocket from "../utils/ChatSocket";
+import ChatSocket from "../utils/ChatSocket";
 import useFirstLoginModal from "../hooks/useFirstLoginModal";
 
 const UserWrapper = styled(Board).attrs({
@@ -40,21 +40,20 @@ const RoomListChat = styled(Board).attrs((props) => {
   };
 })``;
 
-// const Lobby = ({ socket }: { socket: ChatSocket }) => {
-const Lobby = () => {
+const Lobby = ({ socket }: { socket: ChatSocket }) => {
   const { isFirstLogin, onSubmit, onClose } = useFirstLoginModal();
-  // useEffect(() => {
-  //   if (socket === undefined) {
-  //     socket = new ChatSocket(1, "user" + Math.floor(Math.random() * 100));
-  //     console.log("recreated socket");
-  //   }
-  //   if (socket) {
-  //     socket.socket.emit("joinLobby", socket.userid);
-  //     const createRoom = ({ type, roomname, password, maxUser }: any) => {
-  //       socket.socket.emit("createRoom", { type, roomname, password, maxUser });
-  //     };
-  //   }
-  // });
+  useEffect(() => {
+    if (socket === undefined) {
+      socket = new ChatSocket(1, "user" + Math.floor(Math.random() * 100));
+      console.log("recreated socket");
+    }
+    if (socket) {
+      socket.socket.emit("joinLobby", socket.userid);
+      const createRoom = ({ type, roomname, password, maxUser }: any) => {
+        socket.socket.emit("createRoom", { type, roomname, password, maxUser });
+      };
+    }
+  });
   return (
     <>
       <LobbyTemplate>
@@ -68,7 +67,7 @@ const Lobby = () => {
             <LobbyRoomListTypeButtons />
             <LobbyChatRoomList />
             {/* <LobbyGameRoomList /> */}
-            <Chat width="98%" height="40%" boxShadow />
+            <Chat width="98%" height="40%" boxShadow socket={socket} />
           </RoomListChat>
         </RoomListChatWrapper>
       </LobbyTemplate>
