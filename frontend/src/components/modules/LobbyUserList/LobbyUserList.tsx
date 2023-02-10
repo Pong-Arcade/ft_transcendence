@@ -59,6 +59,7 @@ const LobbyUserList = () => {
           top={positionY}
           left={positionX}
           onOpen={onOpenMenuDetail}
+          onClose={onCloseMenu}
         />
       )}
       {isOpenUserInfo && (
