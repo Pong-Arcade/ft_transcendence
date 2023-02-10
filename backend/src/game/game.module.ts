@@ -18,5 +18,6 @@ import { AuthModule } from 'src/auth/auth.module';
     AuthModule,
   ],
   providers: [GameGateway],
+  exports: [GameGateway],
 })
 export class GameModule {}
