@@ -1,27 +1,17 @@
 import {
   Controller,
+  Delete,
   Get,
   HttpCode,
   Logger,
   Param,
   Post,
   Query,
-  UseGuards,
 } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiCreatedResponse,
-  ApiFoundResponse,
-  ApiOkResponse,
-  ApiUnauthorizedResponse,
-  ApiParam,
-  ApiQuery,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { User } from 'src/decorator/user.decorator';
 import { UserDto } from 'src/dto/user.dto';
 import { UserFriendListResponseDto } from '../dto/response/user.friend.list.response.dto';
-import { UserStatusDto } from '../dto/user.status.dto';
 import { OnlineUsersResponseDto } from '../dto/response/online.users.response.dto';
 import { UserBlockListResponseDto } from '../dto/response/user.block.list.response.dto';
 import { ChatGateway } from '../chat/chat.geteway';
@@ -93,7 +83,6 @@ export class UserController {
     summary: '모든 온라인 유저 배열 반환',
     description: 'Pagenation으로 가져올 데이터의 수 지정',
   })
-  //@ApiOkResponse({type: UserDto, isArray: true})
   @Get()
   @HttpCode(200)
   async getOnlineUsers(
@@ -164,8 +153,8 @@ export class UserController {
     summary: '친구 추가',
     description: '유저를 친구 추가합니다.',
   })
-  @Post('friend/:user_id')
-  @HttpCode(201)
+  @Delete('friend/:user_id')
+  @HttpCode(204)
   async delFriendUsers(
     @User() user: UserDto,
     @Param('user_id') userId: number,
@@ -175,11 +164,11 @@ export class UserController {
   }
 
   @ApiOperation({
-    summary: '차단 등록',
-    description: '유저를 차단합니다.',
+    summary: '차단 해제',
+    description: '차단된 유저를 해제합니다.',
   })
-  @Post('block/:user_id')
-  @HttpCode(201)
+  @Delete('block/:user_id')
+  @HttpCode(204)
   async delBlockUsers(@User() user: UserDto, @Param('user_id') userId: number) {
     this.logger.log(`Called ${this.delBlockUsers.name}`);
     //  TODO: Business Logic!

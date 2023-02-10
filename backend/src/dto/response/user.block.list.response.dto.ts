@@ -1,5 +1,4 @@
-import { UserStatusDto } from '../user.status.dto';
-import { UserDto } from "../user.dto";
+import { UserDto } from '../user.dto';
 
 /**
  * 유저가 차단한 유저 목록을 반환하는 dto입니다.
