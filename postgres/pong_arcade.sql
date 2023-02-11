@@ -96,7 +96,8 @@ CREATE TABLE public.match_history (
     red_score integer NOT NULL,
     blue_score integer NOT NULL,
     begin_time date NOT NULL,
-    end_time date NOT NULL
+    end_time date NOT NULL,
+    match_type character varying(16) NOT NULL
 );
 
 
@@ -150,6 +151,13 @@ COMMENT ON COLUMN public.match_history.begin_time IS '게임 시작 시간
 --
 
 COMMENT ON COLUMN public.match_history.end_time IS '게임 종료 시간';
+
+
+--
+-- Name: COLUMN match_history.match_type; Type: COMMENT; Schema: public; Owner: arcade
+--
+
+COMMENT ON COLUMN public.match_history.match_type IS '대전 유형';
 
 
 --
@@ -317,7 +325,7 @@ COPY public.ladder_stat (user_id, win_count, lose_count, ladder_score) FROM stdi
 -- Data for Name: match_history; Type: TABLE DATA; Schema: public; Owner: arcade
 --
 
-COPY public.match_history (history_id, red_user_id, blue_user_id, red_score, blue_score, begin_time, end_time) FROM stdin;
+COPY public.match_history (history_id, red_user_id, blue_user_id, red_score, blue_score, begin_time, end_time, match_type) FROM stdin;
 \.
 
 
