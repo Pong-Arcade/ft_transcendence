@@ -95,8 +95,8 @@ CREATE TABLE public.match_history (
     blue_user_id integer DEFAULT 0 NOT NULL,
     red_score integer NOT NULL,
     blue_score integer NOT NULL,
-    begin_time date NOT NULL,
-    end_time date NOT NULL,
+    begin_time timestamp NOT NULL,
+    end_time timestamp NOT NULL,
     match_type character varying(16) NOT NULL
 );
 

@@ -1,5 +1,6 @@
 import { MatchResult } from 'src/enum/match.result.enum';
 import { UserDto } from './user.dto';
+import { MatchType } from 'src/enum/match.type.enum';
 
 /**
  * 대전 기록을 저장하는 dto입니다.
@@ -12,4 +13,5 @@ export class MatchHistoryDto {
   opponentScore: number; // 상대 점수
   beginDate: Date; // 대전 시작 시간
   matchTime: number; // 대전 시간(ms)
+  matchType: MatchType; // 대전 유형
 }
