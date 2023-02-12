@@ -19,6 +19,7 @@ import { GameGateway } from '../game/game.gateway';
 import { UserRecentMatchHistoryResponseDto } from '../dto/response/user.recent.match.history.response.dto';
 import { MatchResult } from '../enum/match.result.enum';
 import { RankListResponseDto } from '../dto/response/rank.list.response.dto';
+import { MatchType } from '../enum/match.type.enum';
 
 const onlineUsers: OnlineUsersResponseDto = {
   onlineUsers: [
@@ -91,6 +92,7 @@ const gameRet: UserRecentMatchHistoryResponseDto = {
       opponentScore: 8,
       beginDate: new Date('2023-02-03T11:47:41.000Z'),
       matchTime: 282000,
+      matchType: MatchType.LADDER,
     },
     {
       matchId: 2,
@@ -104,6 +106,7 @@ const gameRet: UserRecentMatchHistoryResponseDto = {
       opponentScore: 11,
       beginDate: new Date('2023-02-01T11:47'),
       matchTime: 272000,
+      matchType: MatchType.NORMAL,
     },
   ],
 };
