@@ -8,7 +8,7 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { User } from 'src/decorator/user.decorator';
 import { UserDto } from 'src/dto/user.dto';
 import { UserFriendListResponseDto } from '../dto/response/user.friend.list.response.dto';
@@ -16,6 +16,9 @@ import { OnlineUsersResponseDto } from '../dto/response/online.users.response.dt
 import { UserBlockListResponseDto } from '../dto/response/user.block.list.response.dto';
 import { ChatGateway } from '../chat/chat.geteway';
 import { GameGateway } from '../game/game.gateway';
+import { UserRecentMatchHistoryResponseDto } from '../dto/response/user.recent.match.history.response.dto';
+import { MatchResult } from '../enum/match.result.enum';
+import { RankListResponseDto } from '../dto/response/rank.list.response.dto';
 
 const onlineUsers: OnlineUsersResponseDto = {
   onlineUsers: [
@@ -67,6 +70,71 @@ const blockUsers: UserBlockListResponseDto = {
     },
   ],
   isLast: true,
+};
+
+const gameRet: UserRecentMatchHistoryResponseDto = {
+  userInfo: {
+    userId: 1,
+    nickname: 'sichoi',
+    avatarUrl: 'https://example.com',
+  },
+  matchHistories: [
+    {
+      matchId: 1,
+      matchResult: MatchResult.WIN,
+      opponent: {
+        userId: 2,
+        nickname: 'youngpar',
+        avatarUrl: 'https://example.com',
+      },
+      myScore: 11,
+      opponentScore: 8,
+      beginDate: new Date('2023-02-03T11:47:41.000Z'),
+      matchTime: 282000,
+    },
+    {
+      matchId: 2,
+      matchResult: MatchResult.LOSE,
+      opponent: {
+        userId: 3,
+        nickname: 'kangkim',
+        avatarUrl: 'https://example.com',
+      },
+      myScore: 9,
+      opponentScore: 11,
+      beginDate: new Date('2023-02-01T11:47'),
+      matchTime: 272000,
+    },
+  ],
+};
+const rankRet: RankListResponseDto = {
+  rankList: [
+    {
+      ranking: 1,
+      userInfo: {
+        userId: 1,
+        nickname: 'sichoi',
+        avatarUrl: 'https://example.com',
+      },
+      ladderScore: 1200,
+      winCount: 10,
+      loseCount: 0,
+      winRate: 100,
+    },
+    {
+      ranking: 2,
+      userInfo: {
+        userId: 2,
+        nickname: 'youngpar',
+        avatarUrl: 'https://example.com',
+      },
+      ladderScore: 1000,
+      winCount: 9,
+      loseCount: 1,
+      winRate: 90,
+    },
+  ],
+  isLast: false,
 };
 
 @ApiTags('Users')
@@ -172,5 +240,25 @@ export class UserController {
   async delBlockUsers(@User() user: UserDto, @Param('user_id') userId: number) {
     this.logger.log(`Called ${this.delBlockUsers.name}`);
     //  TODO: Business Logic!
+  }
+
+  @ApiOperation({
+    summary: '최근 전적',
+    description: '특정 유저의 최근 전적 조회',
+  })
+  @Get(':user_id/records')
+  async getGameRecord(@Param('user_id') userId: number) {
+    this.logger.log(`Called ${this.getGameRecord.name}`);
+    return gameRet;
+  }
+
+  @ApiOperation({
+    summary: '랭킹',
+    description: '전체 유저의 랭킹을 조회합니다.',
+  })
+  @Get('rank')
+  async getRank(@User() user: UserDto) {
+    this.logger.log(`Called ${this.getRank.name}`);
+    return rankRet;
   }
 }

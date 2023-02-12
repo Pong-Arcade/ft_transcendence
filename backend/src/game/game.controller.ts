@@ -77,30 +77,9 @@ export class GameController {
   @ApiOperation({
     summary: '게임방 상세',
     description: '해당 게임방의 유저 목록 확인',
-    deprecated: true,
   })
   @Get(':room-id')
   getGameRoom(@Param('room-id') roomId: number) {
-    return gameRoomDetail;
-  }
-
-  @ApiOperation({
-    summary: '게임방 생성',
-    description: '게임방을 생성합니다',
-    deprecated: true,
-  })
-  @Post(':room-id')
-  createGameRoom(@Param('room-id') roomId: number) {
-    return gameRoomDetail;
-  }
-
-  @ApiOperation({
-    summary: '게임방 삭제',
-    description: '게임방을 삭제합니다.',
-    deprecated: true,
-  })
-  @Delete(':roomId')
-  deleteGameRoom(@Param(':room-id') roomId: number) {
     return gameRoomDetail;
   }
 }

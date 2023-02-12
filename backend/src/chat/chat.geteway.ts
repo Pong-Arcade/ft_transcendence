@@ -6,16 +6,18 @@ import {
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { Room, User } from './chat.entity';
+import { Namespace } from 'socket.io';
 
-@WebSocketGateway(4242, {
-  transports: ['websocket'],
+@WebSocketGateway({
+  namespace: 'chat',
   // cors: { origin: 'http://localhost:8000' },
 })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  @WebSocketServer() server;
+  @WebSocketServer() server: Namespace;
   roomid = 0;
   users = new Map<number, User>();
   rooms = new Map<number, Room>();
+
   async handleConnection(socket) {
     // 연결 끊김 핸들러
     socket.on('disconnect', () => {
@@ -108,7 +110,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     } else {
       this.server
         .to(this.rooms.get(msg.roomid).roomname)
-        .broadcast.emit('message', msg.msg);
+        //.broadcast.emit('message', msg.msg);
+        .emit('message', msg.msg);
     }
   }
   @SubscribeMessage('whisper')

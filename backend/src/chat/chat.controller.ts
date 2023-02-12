@@ -39,30 +39,9 @@ export class ChatController {
   @ApiOperation({
     summary: '채팅방 상세',
     description: '해당 채팅방의 유저 목록 확인',
-    deprecated: true,
   })
   @Get(':room-id')
   getChatRoom(@Param('room-id') roomId: number) {
     return this.chatGateway.rooms[roomId];
-  }
-
-  @ApiOperation({
-    summary: '채팅방 생성',
-    description: '채팅방을 생성합니다',
-    deprecated: true,
-  })
-  @Post(':room-id')
-  createChatRoom(@Param('room-id') roomId: number) {
-    return usersInfo;
-  }
-
-  @ApiOperation({
-    summary: '채팅방 삭제',
-    description: '채팅방을 삭제합니다.',
-    deprecated: true,
-  })
-  @Delete(':roomId')
-  deleteChatRoom(@Param(':room-id') roomId: number) {
-    return usersInfo;
   }
 }
