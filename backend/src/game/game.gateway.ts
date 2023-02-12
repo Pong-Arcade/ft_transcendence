@@ -44,6 +44,7 @@ export class GameGateway
   }
 
   async handleConnection(@ConnectedSocket() socket: Socket) {
+    /*
     const token = socket.handshake.headers[
       `${this.configService.get<string>('jwt.token')}`
     ] as string;
@@ -58,7 +59,9 @@ export class GameGateway
       return;
     }
     this.logger.log(`Client connected: ${socket.id}`);
+  */
   }
+  //*/
 
   handleDisconnect(@ConnectedSocket() socket: Socket) {
     this.logger.log(`Client disconnected: ${socket.id}`);
