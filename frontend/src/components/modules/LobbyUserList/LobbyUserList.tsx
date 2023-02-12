@@ -1,12 +1,15 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import styled from "styled-components";
+import useLobbyUserList from "../../../hooks/useLobbyUserList";
 import useMenu from "../../../hooks/useMenu";
+import useModal from "../../../hooks/useModal";
 import Board from "../../atoms/Board";
-import Button from "../../atoms/Button";
-import ButtonGroup from "../ButtonGroup";
+import LobbyUserItem from "../LobbyUserItem";
+import LobbyUserListPagination from "../LobbyUserListPagination";
 import Menu from "../Menu";
-import PaginationList from "../PaginationList";
 import UserInfoModal from "../UserInfoModal";
+import UserListTypeChoiceButtonGroup from "../UserListTypeChoiceButtonGroup";
+import { EUSER_BUTTON } from "../UserListTypeChoiceButtonGroup/UserListTypeChoiceButtonGroup";
 
 const LobbyUserListStyled = styled(Board).attrs((props) => {
   return {
@@ -21,36 +24,45 @@ const LobbyUserListStyled = styled(Board).attrs((props) => {
 })``;
 
 const LobbyUserList = () => {
-  const buttonList = ["접속중인유저", "친구목록", "차단목록"];
   const { isOpenMenu, onOpenMenu, onCloseMenu, positionX, positionY } =
     useMenu();
-  const [isOpenUserInfo, setOpenUserInfo] = useState(false);
-
-  const onOpenMenuDetail = () => {
-    setOpenUserInfo(true);
-    onCloseMenu();
-  };
-  const onCloseMenuDetail = () => {
-    setOpenUserInfo(false);
+  const {
+    isModalOpen: isUserInfoOpen,
+    onModalOpen: onUserInfoOpen,
+    onModalClose: onUserInfoClose,
+  } = useModal({
+    afterOpen: () => {
+      onCloseMenu();
+    },
+  });
+  const [currentButton, setCurrentButton] = useState(EUSER_BUTTON.ONLINE_USERS);
+  const { onlineUsers, friendUsers, blockUsers } = useLobbyUserList();
+  const [page, setPage] = useState(0);
+  const onChoiceButtonClick = (button: EUSER_BUTTON) => {
+    setCurrentButton(button);
+    setPage(0);
   };
 
   return (
     <>
       <LobbyUserListStyled>
-        <ButtonGroup width="100%" height="15%" alignItems="center">
-          {buttonList.map((title, idx) => (
-            <Button width="31%" height="55%" boxShadow key={idx}>
-              {title}
-            </Button>
-          ))}
-        </ButtonGroup>
-        <PaginationList
-          list={["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]}
-          onClick={onOpenMenu}
-          display="grid"
-          gridTemplate="repeat(5, 1fr) / 1fr"
-          width="98%"
-          height="90%"
+        <UserListTypeChoiceButtonGroup
+          onClick={onChoiceButtonClick}
+          currentButton={currentButton}
+        />
+        <LobbyUserListPagination
+          list={
+            currentButton === "접속중인유저"
+              ? onlineUsers
+              : currentButton === "친구목록"
+              ? friendUsers
+              : blockUsers
+          }
+          onItemClick={onOpenMenu}
+          page={page}
+          onNextPage={() => setPage(page + 1)}
+          onPrevPage={() => setPage(page - 1)}
+          PaginationItem={LobbyUserItem}
         />
       </LobbyUserListStyled>
       {isOpenMenu && ( // TODO: 정보보기 제외 다른 기능 추가 시 리팩토링 필요
@@ -58,12 +70,12 @@ const LobbyUserList = () => {
           list={["정보보기", "귓속말", "친구추가", "차단하기"]}
           top={positionY}
           left={positionX}
-          onOpen={onOpenMenuDetail}
+          onOpen={onUserInfoOpen}
           onClose={onCloseMenu}
         />
       )}
-      {isOpenUserInfo && (
-        <UserInfoModal onClose={onCloseMenuDetail} width="50%" height="90%" />
+      {isUserInfoOpen && (
+        <UserInfoModal onClose={onUserInfoClose} width="50%" height="90%" />
       )}
     </>
   );

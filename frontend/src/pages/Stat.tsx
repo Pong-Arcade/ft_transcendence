@@ -42,6 +42,7 @@ const Rank = () => {
       </ModalTitle>
 
       <Wrapper>
+        // FIXME: 리팩토링 (GridList 제거)
         <GridList
           titleList={titleList}
           contentList={contentList}

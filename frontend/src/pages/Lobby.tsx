@@ -3,8 +3,7 @@ import styled from "styled-components";
 import Board from "../components/atoms/Board";
 import Chat from "../components/modules/Chat";
 import LobbyChatRoomList from "../components/modules/LobbyChatRoomList";
-import LobbyCreateRoomButtons from "../components/modules/LobbyCreateRoomButtons";
-import LobbyRoomListTypeButtons from "../components/modules/LobbyRoomListTypeButtons";
+import LobbyCreateRoomButtonGroup from "../components/modules/LobbyCreateRoomButtonGroup";
 import LobbyUserList from "../components/modules/LobbyUserList";
 import LobbyUserProfile from "../components/modules/LobbyUserProfile";
 import UserInfoSettingModal from "../components/modules/UserInfoSettingModal";
@@ -13,14 +12,14 @@ import LobbyTemplate from "../components/templates/LobbyTemplate";
 import useFirstLoginModal from "../hooks/useFirstLoginModal";
 
 const UserWrapper = styled(Board).attrs({
-  width: "29%",
+  width: "25%",
   height: "98%",
   flexDirection: "column",
   justifyContent: "space-between",
 })``;
 
 const RoomListChatWrapper = styled(Board).attrs({
-  width: "69%",
+  width: "74%",
   height: "98%",
   flexDirection: "column",
   boarderRadius: true,
@@ -63,9 +62,8 @@ const Lobby = () => {
           <LobbyUserList />
         </UserWrapper>
         <RoomListChatWrapper>
-          <LobbyCreateRoomButtons />
+          <LobbyCreateRoomButtonGroup />
           <RoomListChat>
-            <LobbyRoomListTypeButtons />
             <LobbyChatRoomList />
             {/* <LobbyGameRoomList /> */}
             <Chat width="98%" height="40%" boxShadow />

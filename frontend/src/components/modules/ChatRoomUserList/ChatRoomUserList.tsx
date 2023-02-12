@@ -1,12 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
+import useLobbyUserList from "../../../hooks/useLobbyUserList";
 import useMenu from "../../../hooks/useMenu";
 import useModal from "../../../hooks/useModal";
 import Avatar from "../../atoms/Avatar";
 import Board from "../../atoms/Board";
 import Chat from "../Chat";
+import ChatRoomUserListPagination from "../ChatRoomUserListPagination";
+import LobbyUserItem from "../LobbyUserItem";
 import Menu from "../Menu";
-import PaginationList from "../PaginationList";
 import UserInfoModal from "../UserInfoModal";
 
 const ChatRoomUserListStyled = styled(Board).attrs({
@@ -55,18 +57,20 @@ const ChatRoomUserList = () => {
       onCloseMenu();
     },
   });
+  // TODO: chat room user list
+  const { onlineUsers } = useLobbyUserList();
+  const [page, setPage] = useState(0);
 
   return (
     <>
       <ChatRoomUserListStyled>
-        <PaginationList
-          width="100%"
-          height="44%"
-          onClick={onOpenMenu}
-          list={list}
-          flexDirection="row"
-          display="grid"
-          gridTemplate="1fr / repeat(5, 1fr)"
+        <ChatRoomUserListPagination
+          list={onlineUsers}
+          page={page}
+          onNextPage={() => setPage(page + 1)}
+          onPrevPage={() => setPage(page - 1)}
+          onItemClick={onOpenMenu}
+          PaginationItem={LobbyUserItem} //TODO: LobbyChatRoomItem
         />
         <Chat width="100%" height="55%" />
       </ChatRoomUserListStyled>

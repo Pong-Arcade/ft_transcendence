@@ -14,7 +14,7 @@ const CreateRoomButton = styled(Button).attrs({
   fontSize: "2rem",
 })``;
 
-const LobbyCreateRoomButtons = () => {
+const LobbyCreateRoomButtonGroup = () => {
   const { isOpenModal, buttonTitle, roomCreateList, onCreateButton, onClose } =
     useCreateRoom();
 
@@ -51,4 +51,4 @@ const LobbyCreateRoomButtons = () => {
   );
 };
 
-export default LobbyCreateRoomButtons;
+export default LobbyCreateRoomButtonGroup;
