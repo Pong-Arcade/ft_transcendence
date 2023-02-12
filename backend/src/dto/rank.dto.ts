@@ -5,7 +5,7 @@ import { UserDto } from './user.dto';
  */
 export class RankDto {
   ranking: number; // 순위
-  userinfo: UserDto; // 유저 정보
+  userInfo: UserDto; // 유저 정보
   ladderScore: number; // 점수
   winCount: number; // 승리 횟수
   loseCount: number; // 패배 횟수
