@@ -9,6 +9,7 @@ interface Props {
   justifyContent?: string;
   alignItems?: string;
   boxShadow?: boolean;
+  gap?: string;
 }
 
 const ButtonGroupStyled = styled.div<Props>`
@@ -23,6 +24,7 @@ const ButtonGroupStyled = styled.div<Props>`
   align-items: ${(props) => props.alignItems || "center"};
   border-radius: ${(props) => props.theme.border.board};
   box-shadow: ${(props) => props.boxShadow && props.theme.box.shadow};
+  gap: ${(props) => props.gap || "0"};
 `;
 
 const ButtonGroup = ({ children, ...rest }: Props) => {

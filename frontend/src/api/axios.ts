@@ -6,17 +6,17 @@ const axiosClient = axios.create({
 });
 
 export function getRequest(URL: string) {
-  return axiosClient.get(`/${URL}`).then((response) => response);
+  return axiosClient.get(`/api/${URL}`).then((response) => response);
 }
 
 export function postRequest(URL: string, payload: object) {
-  return axiosClient.post(`/${URL}`, payload).then((response) => response);
+  return axiosClient.post(`/api/${URL}`, payload).then((response) => response);
 }
 
 export function patchRequest(URL: string, payload: object) {
-  return axiosClient.patch(`/${URL}`, payload).then((response) => response);
+  return axiosClient.patch(`/api/${URL}`, payload).then((response) => response);
 }
 
 export function deleteRequest(URL: string) {
-  return axiosClient.patch(`/${URL}`).then((response) => response);
+  return axiosClient.patch(`/api/${URL}`).then((response) => response);
 }

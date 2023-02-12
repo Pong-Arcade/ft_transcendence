@@ -1,34 +1,31 @@
-import { MouseEvent, useEffect } from "react";
+import { MouseEvent, useState } from "react";
+import useLobbyUserList from "../../../hooks/useLobbyUserList";
 import useModal from "../../../hooks/useModal";
 import Button from "../../atoms/Button";
 import Modal from "../../atoms/Modal";
 import ModalWrapper from "../../atoms/ModalWrapper";
+import ChatRoomInvitePagination from "../ChatRoomInvitePagination";
+import ChatRoomInviteUserItem from "../ChatRoomInviteUserItem";
 import ConfirmModal from "../ConfirmModal";
 import { EConfirmType } from "../ConfirmModal/ConfirmModal";
 import ModalTitle from "../ModalTitle";
-import PaginationList from "../PaginationList";
 
 interface Props {
   onClose: () => void;
 }
 
-let inviteList: string[];
 const InviteModal = ({ onClose }: Props) => {
+  const [inviteList, setInviteList] = useState<string[]>([]);
+
   const onClick = (e: MouseEvent<HTMLButtonElement>) => {
-    if (e.currentTarget.value) {
-      e.currentTarget.value = "";
-      inviteList = inviteList.filter((id) => id !== e.currentTarget.innerText);
-      e.currentTarget.style.backgroundColor = "#0288d1";
+    if (inviteList.includes(e.currentTarget.innerText)) {
+      setInviteList(
+        inviteList.filter((id) => id !== e.currentTarget.innerText)
+      );
     } else {
-      e.currentTarget.value = "checked";
-      inviteList.push(e.currentTarget.innerText);
-      e.currentTarget.style.backgroundColor = "#b3e5fc";
+      setInviteList([...inviteList, e.currentTarget.innerText]);
     }
   };
-
-  useEffect(() => {
-    inviteList = [];
-  }, []);
 
   const {
     isModalOpen: isConfirmOpen,
@@ -36,29 +33,32 @@ const InviteModal = ({ onClose }: Props) => {
     onModalClose: onConfirmClose,
   } = useModal({});
 
+  const { onlineUsers, friendUsers, blockUsers } = useLobbyUserList();
+  const [page, setPage] = useState(0);
+
   const onInvite = () => {
     onConfirmOpen();
   };
   const onCloseInviteModal = () => {
-    inviteList = [];
     onClose();
   };
 
   return (
     <ModalWrapper>
-      <Modal width="25%" height="60%">
-        <ModalTitle onClose={onClose} fontSize="3rem" height="15%">
+      <Modal width="25%" height="70%">
+        <ModalTitle onClose={onClose} fontSize="3rem" height="10%">
           초대하기
         </ModalTitle>
-        <PaginationList
-          list={["1", "2", "3", "4", "5", "6", "", "", "", ""]}
-          display="grid"
-          gridTemplate="repeat(5, 1fr) / 1fr"
-          width="100%"
-          height="73%"
-          onClick={onClick}
+        <ChatRoomInvitePagination
+          list={onlineUsers}
+          subList={inviteList}
+          onItemClick={onClick}
+          page={page}
+          onNextPage={() => setPage(page + 1)}
+          onPrevPage={() => setPage(page - 1)}
+          PaginationItem={ChatRoomInviteUserItem}
         />
-        <Button width="50%" height="10%" onClick={onInvite}>
+        <Button width="50%" height="9%" onClick={onInvite}>
           초대하기
         </Button>
       </Modal>

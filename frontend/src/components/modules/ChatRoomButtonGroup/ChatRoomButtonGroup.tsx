@@ -13,7 +13,7 @@ const ChatRoomButton = styled(Button).attrs({
   width: "30vw",
 })``;
 
-const ChatRoomButtons = () => {
+const ChatRoomButtonGroup = () => {
   const {
     isModalOpen: isConfirmOpen,
     onModalOpen: onConfirmOpen,
@@ -45,4 +45,4 @@ const ChatRoomButtons = () => {
   );
 };
 
-export default ChatRoomButtons;
+export default ChatRoomButtonGroup;

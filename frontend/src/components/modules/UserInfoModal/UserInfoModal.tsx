@@ -45,6 +45,7 @@ const UserInfoModalButton = styled(Button).attrs({
   fontSize: "2rem",
 })``;
 
+// FIXME: 리팩토링 (GridList 제거)
 const UserInfoModal = ({ onClose, width, height, me }: Props) => {
   const titleList = ["이름", "가입일", "자기소개"];
   const contentList = ["kangkim", "yyyy-mm-dd", "안녕하세요"];
