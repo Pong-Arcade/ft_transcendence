@@ -11,7 +11,7 @@ const LobbyUserItemStyled = styled(Button).attrs((props) => {
 })``;
 
 const LobbyUserItem = ({ item, onItemClick }: IPaginationItem) => {
-  if (!("userId" in item)) return <div></div>;
+  if (!("nickname" in item)) return <div></div>;
 
   const { nickname } = item;
   return (

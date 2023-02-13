@@ -13,37 +13,37 @@ const gameRet: UserRecentMatchHistoryResponseDto = {
     nickname: 'sichoi',
     avatarUrl: 'https://example.com',
   },
-  matchHistories: [
-    {
-      matchId: 1,
-      matchResult: MatchResult.WIN,
-      opponent: {
-        userId: 2,
-        nickname: 'youngpar',
-        avatarUrl: 'https://example.com',
-      },
-      myScore: 11,
-      opponentScore: 8,
-      beginDate: new Date('2023-02-03T11:47:41.000Z'),
-      matchTime: 282000,
-      matchType: MatchType.LADDER,
-    },
-    {
-      matchId: 2,
-      matchResult: MatchResult.LOSE,
-      opponent: {
-        userId: 3,
-        nickname: 'kangkim',
-        avatarUrl: 'https://example.com',
-      },
-      myScore: 9,
-      opponentScore: 11,
-      beginDate: new Date('2023-02-01T11:47'),
-      matchTime: 272000,
-      matchType: MatchType.NORMAL,
-    },
-  ],
+  matchHistories: [],
 };
+const formatDate = () => {
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hour = String(date.getHours()).padStart(2, '0');
+  const minute = String(date.getMinutes()).padStart(2, '0');
+  const second = String(date.getSeconds()).padStart(2, '0');
+
+  return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+};
+
+for (let i = 0; i < 11; ++i) {
+  gameRet.matchHistories.push({
+    matchId: i,
+    matchResult: i % 2 == 0 ? MatchResult.WIN : MatchResult.LOSE,
+    opponent: {
+      userId: 2,
+      nickname: 'youngpar',
+      avatarUrl: 'https://example.com',
+    },
+    myScore: 11,
+    opponentScore: 8,
+    beginDate: formatDate(),
+    matchTime: 612,
+    matchType: i % 2 == 0 ? MatchType.LADDER : MatchType.NORMAL,
+  });
+}
+
 const rankRet: RankListResponseDto = {
   rankList: [],
   isLast: false,

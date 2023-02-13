@@ -4,7 +4,7 @@ import Board from "../../atoms/Board";
 import Button from "../../atoms/Button";
 import ButtonGroup from "../ButtonGroup";
 
-export interface ILobbyUser {
+export interface IUser {
   userId: string;
   nickname: string;
   avatarUrl?: string;
@@ -13,14 +13,14 @@ export interface ILobbyUser {
 
 export interface IRanking {
   ranking: number;
-  userInfo: ILobbyUser;
+  userInfo: IUser;
   ladderScore: number;
   winCount: number;
   loseCount: number;
   winRate: number;
 }
 
-export type IItem = ILobbyUser | IRanking;
+export type IItem = IUser | IRanking;
 
 export interface IPaginationItem {
   item: IItem;
@@ -118,11 +118,11 @@ const Pagination = ({
   return (
     <PaginationStyled {...rest}>
       <Page itemGap={itemGap} gridTemplate={gridTemplate}>
-        {list.map((item, index) => (
+        {list.map((item, idx) => (
           <PaginationItem
             onItemClick={onItemClick}
             item={item}
-            key={index}
+            key={idx}
             subList={subList}
           />
         ))}
