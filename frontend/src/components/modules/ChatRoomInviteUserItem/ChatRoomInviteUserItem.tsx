@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import Button from "../../atoms/Button";
-import { IPaginationItem } from "../LobbyUserItem/LobbyUserItem";
+import { IPaginationItem } from "../Pagination/Pagination";
 
 const ChatRoomInviteUserItemStyled = styled(Button).attrs({
   width: "100%",
@@ -11,10 +11,13 @@ const ChatRoomInviteUserItemStyled = styled(Button).attrs({
 `;
 
 const ChatRoomInviteUserItem = ({
-  item: { nickname },
+  item,
   subList,
   onItemClick,
 }: IPaginationItem) => {
+  if (!("nickname" in item)) return <div></div>;
+
+  const { nickname } = item;
   return (
     <ChatRoomInviteUserItemStyled
       onClick={onItemClick}
