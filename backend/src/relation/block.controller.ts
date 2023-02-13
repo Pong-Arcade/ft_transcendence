@@ -13,22 +13,17 @@ import { UserDto } from '../dto/user.dto';
 import { UserBlockListResponseDto } from '../dto/response/user.block.list.response.dto';
 
 const blockUsers: UserBlockListResponseDto = {
-  blockUsers: [
-    {
-      userId: 1,
-      nickname: 'youngpar',
-      avatarUrl: 'qwe.jpeg',
-      email: 'qwe@asd.com',
-    },
-    {
-      userId: 2,
-      nickname: 'youngpar2',
-      avatarUrl: 'qwe2.jpeg',
-      email: 'qwe2@asd.com',
-    },
-  ],
+  blockUsers: [],
   isLast: true,
 };
+for (let i = 0; i < 7; ++i) {
+  blockUsers.blockUsers.push({
+    userId: i,
+    nickname: `block${i}`,
+    avatarUrl: 'qwe.jpeg',
+    email: 'qwe@asd.com',
+  });
+}
 
 @ApiTags('Relation')
 @Controller('api/block')

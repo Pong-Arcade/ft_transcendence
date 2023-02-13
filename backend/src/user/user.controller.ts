@@ -7,22 +7,17 @@ import { ChatGateway } from '../chat/chat.geteway';
 import { GameGateway } from '../game/game.gateway';
 
 const onlineUsers: OnlineUsersResponseDto = {
-  onlineUsers: [
-    {
-      userId: 1,
-      nickname: 'youngpar',
-      avatarUrl: 'qwe.jpeg',
-      email: 'qwe@asd.com',
-    },
-    {
-      userId: 2,
-      nickname: 'youngpar2',
-      avatarUrl: 'qwe2.jpeg',
-      email: 'qwe2@asd.com',
-    },
-  ],
+  onlineUsers: [],
   isLast: true,
 };
+for (let i = 0; i < 38; i++) {
+  onlineUsers.onlineUsers.push({
+    userId: i,
+    nickname: `youngpar${i}`,
+    avatarUrl: 'qwe.jpeg',
+    email: 'qwe@asd.com',
+  });
+}
 const userInfo = {
   userId: 1,
   nickname: 'sichoi',

@@ -1,5 +1,5 @@
 import { MouseEvent } from "react";
-import styled from "styled-components";
+import AttributeGroup from "../AttributeGroup";
 import Pagination from "../Pagination";
 import { IItem, IPaginationItem } from "../Pagination/Pagination";
 
@@ -11,26 +11,6 @@ interface Props {
   onNextPage?: () => void;
   onPrevPage?: () => void;
 }
-
-const RankingAttributeGroup = styled.div`
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  width: 100%;
-  height: 12%;
-  background-color: ${(props) => props.theme.background.front};
-  border-radius: ${(props) => props.theme.border.board};
-`;
-
-const RankingAttribute = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: ${(props) => props.theme.background.front};
-  width: 100%;
-  height: 100%;
-  font-size: 2rem;
-  border-radius: 50%;
-`;
 
 const RankingPagination = ({
   list,
@@ -45,11 +25,7 @@ const RankingPagination = ({
 
   return (
     <>
-      <RankingAttributeGroup>
-        {attrList.map((attr) => (
-          <RankingAttribute key={attr}>{attr}</RankingAttribute>
-        ))}
-      </RankingAttributeGroup>
+      <AttributeGroup attrList={attrList} />
       <Pagination
         list={list.slice(page * pageLength, (page + 1) * pageLength)}
         PaginationItem={PaginationItem}

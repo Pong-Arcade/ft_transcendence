@@ -11,7 +11,7 @@ export class MatchHistoryDto {
   opponent: UserDto; // 대전 상대 유저 정보
   myScore: number; // 내 점수
   opponentScore: number; // 상대 점수
-  beginDate: Date; // 대전 시작 시간
+  beginDate: string; // 대전 시작 시간
   matchTime: number; // 대전 시간(ms)
   matchType: MatchType; // 대전 유형
 }

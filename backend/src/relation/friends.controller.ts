@@ -13,22 +13,17 @@ import { UserFriendListResponseDto } from '../dto/response/user.friend.list.resp
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 const friendUsers: UserFriendListResponseDto = {
-  friendUsers: [
-    {
-      userId: 1,
-      nickname: 'youngpar',
-      avatarUrl: 'qwe.jpeg',
-      email: 'qwe@asd.com',
-    },
-    {
-      userId: 2,
-      nickname: 'youngpar2',
-      avatarUrl: 'qwe2.jpeg',
-      email: 'qwe2@asd.com',
-    },
-  ],
+  friendUsers: [],
   isLast: true,
 };
+for (let i = 0; i < 17; ++i) {
+  friendUsers.friendUsers.push({
+    userId: i,
+    nickname: `friends${i}`,
+    avatarUrl: 'qwe.jpeg',
+    email: 'qwe@asd.com',
+  });
+}
 
 @ApiTags('Relation')
 @Controller('api/friends')
