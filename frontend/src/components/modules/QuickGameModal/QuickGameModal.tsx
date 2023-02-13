@@ -1,4 +1,3 @@
-import React from "react";
 import styled from "styled-components";
 import Board from "../../atoms/Board";
 import Modal from "../../atoms/Modal";
@@ -8,7 +7,7 @@ import ModalTitle from "../ModalTitle";
 
 interface Props {
   title: string;
-  onClose?: () => void;
+  onClose: () => void;
 }
 
 const Wrapper = styled(Board).attrs((props) => {

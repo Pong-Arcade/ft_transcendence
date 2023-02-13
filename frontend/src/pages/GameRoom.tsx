@@ -97,6 +97,7 @@ const GameRoom = () => {
           top={positionY}
           left={positionX}
           onOpen={onUserInfoOpen}
+          onClose={onCloseMenu}
         />
       )}
       {isUserInfoOpen && (
