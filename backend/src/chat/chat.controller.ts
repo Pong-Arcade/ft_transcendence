@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ChatGateway } from './chat.geteway';
 import { ChatroomUsersInfoResponseDto } from '../dto/response/chatroom.users.info.response.dto';
@@ -40,8 +40,8 @@ export class ChatController {
     summary: '채팅방 상세',
     description: '해당 채팅방의 유저 목록 확인',
   })
-  @Get(':room-id')
-  getChatRoom(@Param('room-id') roomId: number) {
+  @Get(':room_id')
+  getChatRoom(@Param('room_id') roomId: number) {
     return this.chatGateway.rooms[roomId];
   }
 }
