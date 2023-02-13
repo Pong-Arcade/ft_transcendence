@@ -1,8 +1,6 @@
 import { Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { GameGateway } from './game.gateway';
-import { ChatroomUsersInfoResponseDto } from '../dto/response/chatroom.users.info.response.dto';
-import { UserChatMode } from '../enum/user.chat.mode.enum';
 import { GameRoomListResponseDto } from '../dto/response/gameroom.list.response.dto';
 import { GameRoomStatus } from '../enum/gameroom.status.enum';
 import { UserDto } from '../dto/user.dto';
@@ -39,23 +37,6 @@ const gameRoomList: GameRoomListResponseDto = {
       maxSpectatorCount: 5,
       curSpectatorCount: 2,
       roomStatus: GameRoomStatus.ON_READY,
-    },
-  ],
-};
-const usersInfo: ChatroomUsersInfoResponseDto = {
-  mastUserId: 1,
-  users: [
-    {
-      userId: 1,
-      nickname: 'youngpar',
-      avatarUrl: 'qwe.jpeg',
-      mode: UserChatMode.MASTER,
-    },
-    {
-      userId: 2,
-      nickname: 'youngpar2',
-      avatarUrl: 'qwe2.jpeg',
-      mode: UserChatMode.ADMIN,
     },
   ],
 };
