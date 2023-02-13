@@ -11,10 +11,10 @@ import User from './user.entity';
 @Entity('match_history')
 export default class MatchHistory {
   @PrimaryGeneratedColumn({
-    name: 'history_id',
+    name: 'match_id',
     type: 'int',
   })
-  historyId: number;
+  matchId: number;
 
   @Column({
     name: 'red_user_id',
