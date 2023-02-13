@@ -1,4 +1,3 @@
-import React from "react";
 import styled from "styled-components";
 import Avatar from "../../atoms/Avatar";
 import Board from "../../atoms/Board";
@@ -9,7 +8,7 @@ import ModalWrapper from "../../atoms/ModalWrapper";
 import ModalTitle from "../ModalTitle";
 
 interface Props {
-  onClose?: () => void;
+  onClose: () => void;
   onSubmit?: () => void;
 }
 
