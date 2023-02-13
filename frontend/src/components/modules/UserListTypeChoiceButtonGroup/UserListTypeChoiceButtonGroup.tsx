@@ -27,9 +27,9 @@ const ChoiceButton = styled(Button).attrs({
 const UserListTypeChoiceButtonGroup = ({ onClick, currentButton }: Props) => {
   return (
     <ButtonGroup width="100%" height="15%" alignItems="center">
-      {BUTTON_LIST.map((title, idx) => (
+      {BUTTON_LIST.map((title) => (
         <ChoiceButton
-          key={idx}
+          key={title}
           onClick={() => onClick(title)}
           disabled={currentButton === title}
         >

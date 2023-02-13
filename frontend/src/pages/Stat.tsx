@@ -27,6 +27,7 @@ const contentList = [
   ["승", "상대4", "일반게임", "10 : 9", "4m 01s", "2022-01-01 00:00:00"],
   ["패", "상대5", "일반게임", "8 : 10", "3m 25s", "2022-01-01 00:00:00"],
 ];
+// FIXME: 리팩토링 (GridList 제거)
 
 const Rank = () => {
   const navigate = useNavigate();
@@ -42,7 +43,6 @@ const Rank = () => {
       </ModalTitle>
 
       <Wrapper>
-        // FIXME: 리팩토링 (GridList 제거)
         <GridList
           titleList={titleList}
           contentList={contentList}

@@ -21,9 +21,9 @@ const LobbyCreateRoomButtonGroup = () => {
   return (
     <>
       <ButtonGroup height="10%" width="100%" boxShadow>
-        {roomCreateList.map((elem, idx) => (
-          <CreateRoomButton key={idx} onClick={onCreateButton}>
-            {elem}
+        {roomCreateList.map((title) => (
+          <CreateRoomButton key={title} onClick={onCreateButton}>
+            {title}
           </CreateRoomButton>
         ))}
       </ButtonGroup>

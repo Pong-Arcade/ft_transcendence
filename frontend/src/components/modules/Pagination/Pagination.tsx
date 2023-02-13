@@ -118,11 +118,11 @@ const Pagination = ({
   return (
     <PaginationStyled {...rest}>
       <Page itemGap={itemGap} gridTemplate={gridTemplate}>
-        {list.map((item, index) => (
+        {list.map((item, idx) => (
           <PaginationItem
             onItemClick={onItemClick}
             item={item}
-            key={index}
+            key={idx}
             subList={subList}
           />
         ))}

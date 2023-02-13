@@ -46,8 +46,8 @@ const RankingPagination = ({
   return (
     <>
       <RankingAttributeGroup>
-        {attrList.map((attr, idx) => (
-          <RankingAttribute key={idx}>{attr}</RankingAttribute>
+        {attrList.map((attr) => (
+          <RankingAttribute key={attr}>{attr}</RankingAttribute>
         ))}
       </RankingAttributeGroup>
       <Pagination
