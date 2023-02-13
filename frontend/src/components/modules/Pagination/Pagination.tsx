@@ -5,19 +5,19 @@ import Button from "../../atoms/Button";
 import ButtonGroup from "../ButtonGroup";
 
 export interface ILobbyUser {
-  userId?: string;
-  nickname?: string;
+  userId: string;
+  nickname: string;
   avatarUrl?: string;
   email?: string;
 }
 
 export interface IRanking {
-  ranking?: number;
-  userInfo?: ILobbyUser;
-  ladderScore?: number;
-  winCount?: number;
-  loseCount?: number;
-  winRate?: number;
+  ranking: number;
+  userInfo: ILobbyUser;
+  ladderScore: number;
+  winCount: number;
+  loseCount: number;
+  winRate: number;
 }
 
 export type IItem = ILobbyUser | IRanking;
