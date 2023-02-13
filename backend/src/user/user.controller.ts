@@ -111,34 +111,23 @@ const gameRet: UserRecentMatchHistoryResponseDto = {
   ],
 };
 const rankRet: RankListResponseDto = {
-  rankList: [
-    {
-      ranking: 1,
-      userInfo: {
-        userId: 1,
-        nickname: 'sichoi',
-        avatarUrl: 'https://example.com',
-      },
-      ladderScore: 1200,
-      winCount: 10,
-      loseCount: 0,
-      winRate: 100,
-    },
-    {
-      ranking: 2,
-      userInfo: {
-        userId: 2,
-        nickname: 'youngpar',
-        avatarUrl: 'https://example.com',
-      },
-      ladderScore: 1000,
-      winCount: 9,
-      loseCount: 1,
-      winRate: 90,
-    },
-  ],
+  rankList: [],
   isLast: false,
 };
+for (let i = 0; i < 38; ++i) {
+  rankRet.rankList.push({
+    ranking: i + 1,
+    userInfo: {
+      userId: i,
+      nickname: 'sichoi',
+      avatarUrl: 'https://example.com',
+    },
+    ladderScore: 1200,
+    winCount: 10,
+    loseCount: 0,
+    winRate: 100,
+  });
+}
 
 @ApiTags('Users')
 @Controller('/api/users')

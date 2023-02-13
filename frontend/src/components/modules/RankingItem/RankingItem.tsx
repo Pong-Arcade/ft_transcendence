@@ -10,13 +10,13 @@ const LobbyUserItemStyled = styled(Button).attrs((props) => {
   };
 })``;
 
-const LobbyUserItem = ({ item, onItemClick }: IPaginationItem) => {
-  if (!("userId" in item)) return <div></div>;
+const RankingItem = ({ item, onItemClick }: IPaginationItem) => {
+  if (!("ranking" in item)) return <div></div>;
 
-  const { nickname } = item;
+  const { ranking } = item;
   return (
-    <LobbyUserItemStyled onClick={onItemClick}>{nickname}</LobbyUserItemStyled>
+    <LobbyUserItemStyled onClick={onItemClick}>{ranking}</LobbyUserItemStyled>
   );
 };
 
-export default LobbyUserItem;
+export default RankingItem;

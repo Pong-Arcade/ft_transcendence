@@ -3,8 +3,30 @@ import styled from "styled-components";
 import Board from "../../atoms/Board";
 import Button from "../../atoms/Button";
 import ButtonGroup from "../ButtonGroup";
-import { IItem, IPaginationItem } from "../LobbyUserItem/LobbyUserItem";
 
+export interface ILobbyUser {
+  userId?: string;
+  nickname?: string;
+  avatarUrl?: string;
+  email?: string;
+}
+
+export interface IRanking {
+  ranking?: number;
+  userInfo?: ILobbyUser;
+  ladderScore?: number;
+  winCount?: number;
+  loseCount?: number;
+  winRate?: number;
+}
+
+export type IItem = ILobbyUser | IRanking;
+
+export interface IPaginationItem {
+  item: IItem;
+  subList?: string[];
+  onItemClick?: (e: MouseEvent<HTMLButtonElement>) => void;
+}
 interface Props {
   list: IItem[];
   subList?: string[];

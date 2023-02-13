@@ -4,12 +4,13 @@ import {
   getFriendUsersAPI,
   getOnlineUsersAPI,
 } from "../api/users";
-import { IItem } from "../components/modules/LobbyUserItem/LobbyUserItem";
+import { ILobbyUser } from "../components/modules/Pagination/Pagination";
 
 const useLobbyUserList = () => {
-  const [onlineUsers, setOnlineUsers] = useState<IItem[]>([]);
-  const [friendUsers, setFriendUsers] = useState<IItem[]>([]);
-  const [blockUsers, setBlockUsers] = useState<IItem[]>([]);
+  const [onlineUsers, setOnlineUsers] = useState<ILobbyUser[]>([]);
+  const [friendUsers, setFriendUsers] = useState<ILobbyUser[]>([]);
+  const [blockUsers, setBlockUsers] = useState<ILobbyUser[]>([]);
+
   useEffect(() => {
     const getOnlineUsers = async () => {
       const data = await getOnlineUsersAPI();

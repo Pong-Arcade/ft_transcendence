@@ -1,11 +1,10 @@
 import { MouseEvent } from "react";
 import styled from "styled-components";
-import { IItem, IPaginationItem } from "../LobbyUserItem/LobbyUserItem";
 import Pagination from "../Pagination";
+import { IItem, IPaginationItem } from "../Pagination/Pagination";
 
 interface Props {
   list: IItem[];
-  attrList: string[];
   PaginationItem: (arg: IPaginationItem) => JSX.Element;
   page: number;
   onItemClick?: (e: MouseEvent<HTMLButtonElement>) => void;
@@ -35,7 +34,6 @@ const RankingAttribute = styled.div`
 
 const RankingPagination = ({
   list,
-  attrList,
   PaginationItem,
   onItemClick,
   page,
@@ -43,6 +41,7 @@ const RankingPagination = ({
   onPrevPage,
 }: Props) => {
   const pageLength = 10;
+  const attrList = ["순위", "ID", "점수", "승", "패", "승률"];
 
   return (
     <>
