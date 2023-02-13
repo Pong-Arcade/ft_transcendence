@@ -3,7 +3,7 @@ import { UserRecentMatchHistoryResponseDto } from '../dto/response/user.recent.m
 import { MatchResult } from '../enum/match.result.enum';
 import { MatchType } from '../enum/match.type.enum';
 import { RankListResponseDto } from '../dto/response/rank.list.response.dto';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { User } from '../decorator/user.decorator';
 import { UserDto } from '../dto/user.dto';
 
@@ -74,6 +74,7 @@ const rankRet: RankListResponseDto = {
   isLast: false,
 };
 
+@ApiTags('Stat')
 @Controller('api/stat')
 export class StatController {
   private logger = new Logger(StatController.name);
@@ -82,9 +83,9 @@ export class StatController {
     summary: '랭킹',
     description: '전체 유저의 랭킹을 조회합니다.',
   })
-  @Get('rank')
-  async getRank(@User() user: UserDto) {
-    this.logger.log(`Called ${this.getRank.name}`);
+  @Get('ranking')
+  async getRanking(@User() user: UserDto) {
+    this.logger.log(`Called ${this.getRanking.name}`);
     return rankRet;
   }
 

@@ -5,7 +5,7 @@ import {
   HttpCode,
   Logger,
   Param,
-  Post,
+  Patch,
 } from '@nestjs/common';
 import { User } from '../decorator/user.decorator';
 import { UserDto } from '../dto/user.dto';
@@ -39,7 +39,7 @@ export class FriendsController {
     summary: '유저의 친구 목록',
     description: '해당 유저의 모든 친구정보를 불러옵니다.',
   })
-  @Get(':user_id')
+  @Get()
   async getFriend(@User() user: UserDto) {
     this.logger.log(`Called ${this.getFriend.name}`);
     return friendUsers;
@@ -49,7 +49,7 @@ export class FriendsController {
     summary: '친구 추가',
     description: '유저를 친구 추가합니다.',
   })
-  @Post(':user_id')
+  @Patch(':user_id')
   @HttpCode(201)
   async addFriend(@User() user: UserDto, @Param('user_id') userId: number) {
     this.logger.log(`Called ${this.addFriend.name}`);

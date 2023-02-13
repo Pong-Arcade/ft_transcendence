@@ -5,7 +5,7 @@ import {
   HttpCode,
   Logger,
   Param,
-  Post,
+  Patch,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { User } from '../decorator/user.decorator';
@@ -39,7 +39,7 @@ export class BlockController {
     summary: '유저의 차단 목록',
     description: '해당 유저가 차단한 유저들의 목록을 제공합니다.',
   })
-  @Get(':user_id')
+  @Get()
   @HttpCode(200)
   async getBlocks(@User() user: UserDto) {
     this.logger.log(`Called ${this.getBlocks.name}`);
@@ -50,7 +50,7 @@ export class BlockController {
     summary: '차단 등록',
     description: '유저를 차단합니다.',
   })
-  @Post(':user_id')
+  @Patch(':user_id')
   @HttpCode(201)
   async addBlock(@User() user: UserDto, @Param('user_id') userId: number) {
     this.logger.log(`Called ${this.addBlock.name}`);
