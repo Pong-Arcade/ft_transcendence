@@ -1,19 +1,6 @@
-import { MouseEvent } from "react";
 import styled from "styled-components";
 import Button from "../../atoms/Button";
-
-export interface IItem {
-  userId?: string;
-  nickname?: string;
-  avatarUrl?: string;
-  email?: string;
-}
-
-export interface IPaginationItem {
-  item: IItem;
-  subList?: string[];
-  onItemClick?: (e: MouseEvent<HTMLButtonElement>) => void;
-}
+import { IPaginationItem } from "../Pagination/Pagination";
 
 const LobbyUserItemStyled = styled(Button).attrs((props) => {
   return {
@@ -23,10 +10,10 @@ const LobbyUserItemStyled = styled(Button).attrs((props) => {
   };
 })``;
 
-const LobbyUserItem = ({
-  item: { nickname },
-  onItemClick,
-}: IPaginationItem) => {
+const LobbyUserItem = ({ item, onItemClick }: IPaginationItem) => {
+  if (!("userId" in item)) return <div></div>;
+
+  const { nickname } = item;
   return (
     <LobbyUserItemStyled onClick={onItemClick}>{nickname}</LobbyUserItemStyled>
   );

@@ -1,6 +1,6 @@
 import { MouseEvent } from "react";
-import { IItem, IPaginationItem } from "../LobbyUserItem/LobbyUserItem";
 import Pagination from "../Pagination";
+import { IItem, IPaginationItem } from "../Pagination/Pagination";
 
 interface Props {
   list: IItem[];
