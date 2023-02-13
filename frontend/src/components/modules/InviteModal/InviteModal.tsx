@@ -33,7 +33,7 @@ const InviteModal = ({ onClose }: Props) => {
     onModalClose: onConfirmClose,
   } = useModal({});
 
-  const { onlineUsers, friendUsers, blockUsers } = useLobbyUserList();
+  const { onlineUsers } = useLobbyUserList();
   const [page, setPage] = useState(0);
 
   const onInvite = () => {
