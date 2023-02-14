@@ -10,9 +10,9 @@ class ChatSocket {
   addMessage(msg: string) {
     const chatList = document.getElementById("");
   }
-  newMessage(msg: any) {
-    console.log(msg);
-  }
+  // newMessage(msg: any) {
+  //   console.log(msg);
+  // }
   constructor(userid: number, name: string) {
     // this.ignore_list.
     this.socket = io("localhost:8080", {
@@ -31,8 +31,8 @@ class ChatSocket {
     //   maxUser: 3,
     //   creator: this.userid,
     // });
-    this.socket.emit("showRoom");
-    this.socket.on("showRoom", this.newMessage);
+    // this.socket.emit("showRoom");
+    // this.socket.on("showRoom", this.newMessage);
   }
 }
 

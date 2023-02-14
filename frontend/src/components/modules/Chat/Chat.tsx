@@ -42,9 +42,9 @@ const Chat = ({ socket, ...rest }: Props) => {
     const newMessage = (newMsg: IMessage) => {
       setList((prevList) => [...prevList, newMsg]);
     };
-    const joinRoom = (newMsg: IMessage) => {
-      setList((prevList) => [...prevList, newMsg]);
-    };
+    // const joinRoom = (newMsg: IMessage) => {
+    //   setList((prevList) => [...prevList, newMsg]);
+    // };
     if (socket) {
       socket.socket.on("message", newMessage);
       socket.socket.on("whisper", newMessage);

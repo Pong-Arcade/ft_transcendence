@@ -9,6 +9,7 @@ import { UserModule } from './user/user.module';
 import { GameModule } from './game/game.module';
 import TypeOrmConfigService from './config/typeorm.config';
 import { ChatModule } from './chat/chat.module';
+import { StatusModule } from './status/status.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { ChatModule } from './chat/chat.module';
       isGlobal: true,
     }),
     GameModule,
+    StatusModule,
   ],
   controllers: [AppController],
   providers: [AppService],

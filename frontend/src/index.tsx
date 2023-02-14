@@ -20,8 +20,8 @@ import theme from "./styles/theme";
 import ChatSocket from "./utils/ChatSocket";
 
 const socket: ChatSocket = new ChatSocket(
-  1,
-  "user" + Math.floor(Math.random() * 100)
+  Math.floor(Math.random() * 1000),
+  "user" + Math.floor(Math.random() * 1000)
 );
 console.log(socket.username);
 const router = createBrowserRouter([
