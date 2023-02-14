@@ -4,6 +4,7 @@ import { UserRecentMatchHistoryResponseDto } from 'src/dto/response/user.recent.
 import { UserService } from 'src/user/user.service';
 import { RankListResponseDto } from 'src/dto/response/rank.list.response.dto';
 import { RankingFilter } from 'src/enum/ranking.filter.enum';
+import { SortDirection } from 'src/enum/sort.direction.enum';
 
 @Injectable()
 export class StatService {
@@ -17,7 +18,7 @@ export class StatService {
 
   async getRanking(
     filter: RankingFilter,
-    order: string,
+    order: SortDirection,
   ): Promise<RankListResponseDto> {
     this.logger.log(`Called ${this.getRanking.name}`);
     const rankList = await this.statRepository.getRanking(filter, order);

@@ -12,6 +12,7 @@ import { RankListResponseDto } from '../dto/response/rank.list.response.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { StatService } from './stat.service';
 import { RankingFilter } from 'src/enum/ranking.filter.enum';
+import { SortDirection } from 'src/enum/sort.direction.enum';
 
 @ApiTags('Stat')
 @Controller('api/stat')
@@ -27,7 +28,7 @@ export class StatController {
   @Get('ranking')
   async getRanking(
     @Query('filter', new ParseEnumPipe(RankingFilter)) filter: RankingFilter,
-    @Query('order') order: string,
+    @Query('order', new ParseEnumPipe(SortDirection)) order: SortDirection,
   ): Promise<RankListResponseDto> {
     this.logger.log(`Called ${this.getRanking.name}`);
     return await this.statService.getRanking(filter, order);

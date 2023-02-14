@@ -8,6 +8,7 @@ import { MatchResult } from 'src/enum/match.result.enum';
 import { RankDto } from 'src/dto/rank.dto';
 import LadderStat from 'src/entity/ladder.stat.entity';
 import { RankingFilter } from 'src/enum/ranking.filter.enum';
+import { SortDirection } from 'src/enum/sort.direction.enum';
 
 export class StatRepository implements IStatRepository {
   private logger = new Logger(StatRepository.name);
@@ -19,7 +20,10 @@ export class StatRepository implements IStatRepository {
     private readonly ladderStatRepository: Repository<LadderStat>,
   ) {}
 
-  async getRanking(filter: RankingFilter, order: string): Promise<RankDto[]> {
+  async getRanking(
+    filter: RankingFilter,
+    order: SortDirection,
+  ): Promise<RankDto[]> {
     this.logger.log(`Called ${this.getRanking.name}`);
     // 전체 유저의 랭킹을 가져온다.
     const results = await this.ladderStatRepository
