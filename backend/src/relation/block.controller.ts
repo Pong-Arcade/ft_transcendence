@@ -10,25 +10,13 @@ import {
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { User } from '../decorator/user.decorator';
 import { UserDto } from '../dto/user.dto';
-import { UserBlockListResponseDto } from '../dto/response/user.block.list.response.dto';
-
-const blockUsers: UserBlockListResponseDto = {
-  blockUsers: [],
-  isLast: true,
-};
-for (let i = 0; i < 7; ++i) {
-  blockUsers.blockUsers.push({
-    userId: i,
-    nickname: `block${i}`,
-    avatarUrl: 'qwe.jpeg',
-    email: 'qwe@asd.com',
-  });
-}
+import { MockRepository } from '../mock/mock.repository';
 
 @ApiTags('Relation')
 @Controller('api/block')
 export class BlockController {
   private logger = new Logger(BlockController.name);
+  private mock = new MockRepository();
 
   @ApiOperation({
     summary: '유저의 차단 목록',
@@ -38,7 +26,7 @@ export class BlockController {
   @HttpCode(200)
   async getBlocks(@User() user: UserDto) {
     this.logger.log(`Called ${this.getBlocks.name}`);
-    return blockUsers;
+    return this.mock.getBlockUser(34);
   }
 
   @ApiOperation({
