@@ -10,11 +10,7 @@ class ChatSocket {
   addMessage(msg: string) {
     const chatList = document.getElementById("");
   }
-  // newMessage(msg: any) {
-  //   console.log(msg);
-  // }
   constructor(userid: number, name: string) {
-    // this.ignore_list.
     this.socket = io("ws://localhost:3000/chat");
     this.userid = userid;
     this.username = name;
@@ -22,15 +18,6 @@ class ChatSocket {
       username: this.username,
       userid: this.userid,
     });
-    // this.socket.on("message", this.newMessage);
-    // this.socket.emit("createRoom", {
-    //   roomname: "test1",
-    //   type: "1",
-    //   maxUser: 3,
-    //   creator: this.userid,
-    // });
-    // this.socket.emit("showRoom");
-    // this.socket.on("showRoom", this.newMessage);
   }
 }
 

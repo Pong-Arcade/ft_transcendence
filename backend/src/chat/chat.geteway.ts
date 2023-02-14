@@ -22,7 +22,7 @@ enum EMessageType {
   SYSTEMMSG = 'systemMsg',
 }
 @WebSocketGateway({
-  namespace: 'chat',
+  namespace: 'socket/chat',
   cors: { origin: 'http://localhost:8000' },
 })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
