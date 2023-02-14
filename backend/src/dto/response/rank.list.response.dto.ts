@@ -7,5 +7,4 @@ import { RankDto } from '../rank.dto';
  */
 export class RankListResponseDto {
   rankList: RankDto[]; // 순위 정보 리스트
-  isLast: boolean; // 마지막 페이지인지 여부
 }

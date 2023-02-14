@@ -16,6 +16,22 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
+--
+-- Name: public; Type: SCHEMA; Schema: -; Owner: pg_database_owner
+--
+
+CREATE SCHEMA public;
+
+
+ALTER SCHEMA public OWNER TO pg_database_owner;
+
+--
+-- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: pg_database_owner
+--
+
+COMMENT ON SCHEMA public IS 'standard public schema';
+
+
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
@@ -74,13 +90,13 @@ COMMENT ON COLUMN public.ladder_stat.ladder_score IS '래더 점수';
 --
 
 CREATE TABLE public.match_history (
-    history_id integer NOT NULL,
+    match_id integer NOT NULL,
     red_user_id integer DEFAULT 0 NOT NULL,
     blue_user_id integer DEFAULT 0 NOT NULL,
     red_score integer NOT NULL,
     blue_score integer NOT NULL,
-    begin_time timestamp without time zone NOT NULL,
-    end_time timestamp without time zone NOT NULL,
+    begin_date timestamp without time zone NOT NULL,
+    end_date timestamp without time zone NOT NULL,
     match_type character varying(16) NOT NULL
 );
 
@@ -123,18 +139,18 @@ COMMENT ON COLUMN public.match_history.blue_score IS '블루팀 점수';
 
 
 --
--- Name: COLUMN match_history.begin_time; Type: COMMENT; Schema: public; Owner: arcade
+-- Name: COLUMN match_history.begin_date; Type: COMMENT; Schema: public; Owner: arcade
 --
 
-COMMENT ON COLUMN public.match_history.begin_time IS '게임 시작 시간
+COMMENT ON COLUMN public.match_history.begin_date IS '게임 시작 시간
 ';
 
 
 --
--- Name: COLUMN match_history.end_time; Type: COMMENT; Schema: public; Owner: arcade
+-- Name: COLUMN match_history.end_date; Type: COMMENT; Schema: public; Owner: arcade
 --
 
-COMMENT ON COLUMN public.match_history.end_time IS '게임 종료 시간';
+COMMENT ON COLUMN public.match_history.end_date IS '게임 종료 시간';
 
 
 --
@@ -163,7 +179,7 @@ ALTER TABLE public.match_history_history_id_seq OWNER TO arcade;
 -- Name: match_history_history_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: arcade
 --
 
-ALTER SEQUENCE public.match_history_history_id_seq OWNED BY public.match_history.history_id;
+ALTER SEQUENCE public.match_history_history_id_seq OWNED BY public.match_history.match_id;
 
 
 --
@@ -291,13 +307,6 @@ COMMENT ON COLUMN public."user".email IS '유저의 이메일';
 
 
 --
--- Name: match_history history_id; Type: DEFAULT; Schema: public; Owner: arcade
---
-
-ALTER TABLE ONLY public.match_history ALTER COLUMN history_id SET DEFAULT nextval('public.match_history_history_id_seq'::regclass);
-
-
---
 -- Data for Name: ladder_stat; Type: TABLE DATA; Schema: public; Owner: arcade
 --
 
@@ -309,7 +318,7 @@ COPY public.ladder_stat (user_id, win_count, lose_count, ladder_score) FROM stdi
 -- Data for Name: match_history; Type: TABLE DATA; Schema: public; Owner: arcade
 --
 
-COPY public.match_history (history_id, red_user_id, blue_user_id, red_score, blue_score, begin_time, end_time, match_type) FROM stdin;
+COPY public.match_history (match_id, red_user_id, blue_user_id, red_score, blue_score, begin_date, end_date, match_type) FROM stdin;
 \.
 
 
@@ -335,6 +344,7 @@ COPY public.relation (user_id, other_user_id, relation_type) FROM stdin;
 
 COPY public."user" (user_id, nickname, avatar_url, email) FROM stdin;
 85330	sichoi	https://cdn.intra.42.fr/users/6b58f90b32b08da5c68579c72f884599/sichoi.jpg	sichoi@student.42seoul.kr
+1	test	\N	\N
 \.
 
 
@@ -354,11 +364,19 @@ ALTER TABLE ONLY public.ladder_stat
 
 
 --
+-- Name: match_history match_history_match_id_key; Type: CONSTRAINT; Schema: public; Owner: arcade
+--
+
+ALTER TABLE ONLY public.match_history
+    ADD CONSTRAINT match_history_match_id_key UNIQUE (match_id);
+
+
+--
 -- Name: match_history match_history_pk; Type: CONSTRAINT; Schema: public; Owner: arcade
 --
 
 ALTER TABLE ONLY public.match_history
-    ADD CONSTRAINT match_history_pk PRIMARY KEY (history_id);
+    ADD CONSTRAINT match_history_pk PRIMARY KEY (match_id);
 
 
 --
