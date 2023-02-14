@@ -2,6 +2,8 @@ import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { IStatRepository } from './repository/stat.repository.interface';
 import { UserRecentMatchHistoryResponseDto } from 'src/dto/response/user.recent.match.history.response.dto';
 import { UserService } from 'src/user/user.service';
+import { RankListResponseDto } from 'src/dto/response/rank.list.response.dto';
+import { RankingFilter } from 'src/enum/ranking.filter.enum';
 
 @Injectable()
 export class StatService {
@@ -12,6 +14,17 @@ export class StatService {
     private readonly statRepository: IStatRepository,
     private readonly userService: UserService,
   ) {}
+
+  async getRanking(
+    filter: RankingFilter,
+    order: string,
+  ): Promise<RankListResponseDto> {
+    this.logger.log(`Called ${this.getRanking.name}`);
+    const rankList = await this.statRepository.getRanking(filter, order);
+    return {
+      rankList: rankList,
+    } as RankListResponseDto;
+  }
 
   async getRecentRecord(
     userId: number,

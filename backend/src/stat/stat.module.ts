@@ -5,6 +5,7 @@ import { StatRepository } from './repository/stat.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import MatchHistory from 'src/entity/match.history.entity';
 import { UserModule } from 'src/user/user.module';
+import LadderStat from 'src/entity/ladder.stat.entity';
 
 const repo = {
   provide: 'IStatRepository',
@@ -12,7 +13,7 @@ const repo = {
 };
 
 @Module({
-  imports: [TypeOrmModule.forFeature([MatchHistory]), UserModule],
+  imports: [TypeOrmModule.forFeature([MatchHistory, LadderStat]), UserModule],
   controllers: [StatController],
   providers: [StatService, repo],
 })

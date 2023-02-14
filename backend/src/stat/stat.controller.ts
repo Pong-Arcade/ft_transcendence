@@ -1,4 +1,12 @@
-import { Controller, Get, Logger, Param, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Logger,
+  Param,
+  ParseEnumPipe,
+  ParseIntPipe,
+  Query,
+} from '@nestjs/common';
 import { UserRecentMatchHistoryResponseDto } from '../dto/response/user.recent.match.history.response.dto';
 import { MatchResult } from '../enum/match.result.enum';
 import { MatchType } from '../enum/match.type.enum';
@@ -7,6 +15,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { User } from '../decorator/user.decorator';
 import { UserDto } from '../dto/user.dto';
 import { StatService } from './stat.service';
+import { RankingFilter } from 'src/enum/ranking.filter.enum';
 
 @ApiTags('Stat')
 @Controller('api/stat')
@@ -20,9 +29,12 @@ export class StatController {
     description: '전체 유저의 랭킹을 조회합니다.',
   })
   @Get('ranking')
-  async getRanking(@User() user: UserDto) {
+  async getRanking(
+    @Query('filter', new ParseEnumPipe(RankingFilter)) filter: RankingFilter,
+    @Query('order') order: string,
+  ): Promise<RankListResponseDto> {
     this.logger.log(`Called ${this.getRanking.name}`);
-    return;
+    return await this.statService.getRanking(filter, order);
   }
 
   @ApiOperation({
