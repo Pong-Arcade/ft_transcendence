@@ -1,11 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 interface Props {
   children: React.ReactNode;
-  width: string;
-  height: string;
+  width?: string;
+  height?: string;
   fontSize?: string;
   boxShadow?: boolean;
   backgroundColor?: string;
@@ -37,20 +37,29 @@ const ButtonStyled = styled.button.attrs((props) => {
 
   overflow: hidden;
   white-space: nowrap;
-  &:hover {
-    box-shadow: 0px 5px 5px -2px rgba(0, 0, 0, 0.25);
-    background-color: ${(props) => props.theme.colors.blueCola};
-  }
+  ${(props) =>
+    !props.disabled &&
+    css`
+      &:hover {
+        box-shadow: 0px 5px 5px -2px rgba(0, 0, 0, 0.25);
+        background-color: ${(props) => props.theme.colors.blueCola};
+      }
+    `}
+  ${(props) =>
+    props.disabled &&
+    css`
+      background-color: ${(props) => props.theme.background.back};
+    `}
 `;
 
 interface LinkWrapperProps {
-  width: string;
-  height: string;
+  width?: string;
+  height?: string;
 }
 
 const LinkWrapper = styled(Link)<LinkWrapperProps>`
-  width: ${(props) => props.width};
-  height: ${(props) => props.height};
+  width: ${(props) => props.width && props.width};
+  height: ${(props) => props.height && props.height};
 `;
 
 const Button = ({ children, to, width, height, ...rest }: Props) => {

@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import ModalWrapper from "../ModalWrapper";
 
 const SpinnerStyled = styled.div`
   font-size: 0.8rem;
@@ -90,11 +89,7 @@ const SpinnerStyled = styled.div`
 `;
 
 const Spinner = () => {
-  return (
-    <ModalWrapper>
-      <SpinnerStyled />
-    </ModalWrapper>
-  );
+  return <SpinnerStyled />;
 };
 
 export default Spinner;

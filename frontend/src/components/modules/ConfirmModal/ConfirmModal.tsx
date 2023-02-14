@@ -15,7 +15,7 @@ export enum EConfirmType {
 }
 
 interface Props {
-  onClose?: () => void;
+  onClose: () => void;
   onYesConfirm?: () => void;
   onNoConfirm?: () => void;
   type: EConfirmType;

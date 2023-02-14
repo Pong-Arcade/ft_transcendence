@@ -24,13 +24,13 @@ const RoomTypeCheckBoxGroup = ({ title, onChange, checked }: Props) => {
     <>
       <InputLabel htmlFor={title}>{title}</InputLabel>
       <InputWrapper>
-        {titleList.map((title, idx) => (
+        {titleList.map((title) => (
           <CheckBox
             onChange={onChange}
             title={title}
             name={EChatRoomFormValues.TYPE}
             checked={title === checked}
-            key={idx}
+            key={title}
           />
         ))}
       </InputWrapper>

@@ -9,7 +9,9 @@ import { UserModule } from './user/user.module';
 import { GameModule } from './game/game.module';
 import TypeOrmConfigService from './config/typeorm.config';
 import { ChatModule } from './chat/chat.module';
-import { StatusModule } from './status/status.module';
+import { RelationModule } from './relation/relation.module';
+import { StatModule } from './stat/stat.module';
+import { ChatroomModule } from './chatroom/chatroom.module';
 
 @Module({
   imports: [
@@ -28,7 +30,9 @@ import { StatusModule } from './status/status.module';
       isGlobal: true,
     }),
     GameModule,
-    StatusModule,
+    RelationModule,
+    StatModule,
+    ChatroomModule,
   ],
   controllers: [AppController],
   providers: [AppService],

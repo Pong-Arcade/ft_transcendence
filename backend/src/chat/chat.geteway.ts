@@ -5,9 +5,10 @@ import {
   OnGatewayConnection,
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
-import { Room } from './chat.entity';
 import { User } from '../status/status.entity';
 import { users } from '../status/status.module';
+import { rooms } from '../chatroom/chatroom.gateway';
+import { Room } from '../chatroom/chatroom.entity';
 
 type MessageType = 'message' | 'whisper' | 'systemMsg';
 interface IMessage {
@@ -19,8 +20,6 @@ enum EMessageType {
   WHISPER = 'whisper',
   SYSTEMMSG = 'systemMsg',
 }
-export let roomid = 0;
-export let rooms = new Map<number, Room>();
 @WebSocketGateway(4242, {
   transports: ['websocket'],
   // cors: { origin: 'http://localhost:8000' },
@@ -50,41 +49,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async handleDisconnect(client) {
     console.log('disconnect');
   }
-  /**
-   * 삭제예정
-   */
-  @SubscribeMessage('showRoom')
-  async onshowRoom(client) {
-    rooms.forEach((value, key, map) => {
-      client.emit('showRoom', { value });
-    });
-  }
-
-  /**
-   * 삭제예정
-   */
-  @SubscribeMessage('createRoom')
-  async onCreateRoom(client, info) {
-    rooms.set(
-      roomid,
-      new Room(
-        roomid,
-        info.roomTitle,
-        info.roomType,
-        info.roomPassword,
-        info.maxUser,
-        info.creator,
-      ),
-    );
-    client.emit('createdRoom', { code: 201, roomid: roomid });
-    roomid++;
-  }
 
   @SubscribeMessage('addUser')
   async onAddUser(client, info) {
     users.set(info.userid, new User(info.userid, info.username, client.id));
-    client.join('dd');
-    console.log('asdfsd: ', client.rooms);
   }
 
   @SubscribeMessage('message')
@@ -98,7 +66,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     } else {
       this.server
         .to(rooms.get(msg.roomid).roomname)
-        .broadcast.emit('message', message);
+        //.broadcast.emit('message', msg.msg);
+        .emit('message', msg.msg);
     }
   }
   @SubscribeMessage('whisper')

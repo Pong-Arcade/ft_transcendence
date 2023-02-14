@@ -1,12 +1,13 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Board from "../components/atoms/Board";
-import GridList from "../components/atoms/GridList";
-import PaginationButton from "../components/atoms/PaginationButton";
 import RankingFilter from "../components/atoms/RankingFilter";
-import ButtonGroup from "../components/modules/ButtonGroup";
 import ModalTitle from "../components/modules/ModalTitle";
+import RankingItem from "../components/modules/RankingItem";
+import RankingPagination from "../components/modules/RankingPagination";
 import RankingTemplate from "../components/templates/RankingTemplate";
+import useRankList from "../hooks/useRankList";
 
 const Wrapper = styled(Board).attrs({
   width: "100%",
@@ -19,7 +20,8 @@ const Wrapper = styled(Board).attrs({
 // TODO: filter 버튼 클릭으로 api 요청 기능 추가
 const Ranking = () => {
   const navigate = useNavigate();
-
+  const { rankList } = useRankList();
+  const [page, setPage] = useState(0);
   return (
     <RankingTemplate>
       <ModalTitle
@@ -31,43 +33,13 @@ const Ranking = () => {
       </ModalTitle>
       <RankingFilter />
       <Wrapper>
-        <GridList
-          titleList={["순위", "ID", "점수", "승", "패", "승률"]}
-          contentList={[
-            ["1", "인트라1", "100", "10", "0", "0%"],
-            ["2", "인트라2", "90", "9", "1", "0%"],
-            ["3", "인트라3", "80", "8", "2", "0%"],
-            ["4", "인트라4", "70", "7", "3", "0%"],
-            ["5", "인트라5", "60", "6", "4", "0%"],
-            ["6", "인트라1", "100", "10", "0", "0%"],
-            ["7", "인트라2", "90", "9", "1", "0%"],
-            ["8", "인트라3", "80", "8", "2", "0%"],
-            ["9", "인트라4", "70", "7", "3", "0%"],
-            ["10", "인트라5", "60", "6", "4", "0%"],
-          ]}
-          width="100%"
-          height="90%"
-          rowCount={10}
+        <RankingPagination
+          list={rankList}
+          page={page}
+          onNextPage={() => setPage(page + 1)}
+          onPrevPage={() => setPage(page - 1)}
+          PaginationItem={RankingItem}
         />
-        <ButtonGroup
-          width="20vw"
-          height="9%"
-          justifyContent="space-between"
-          backgroundColor="secondary"
-        >
-          <PaginationButton
-            direction="left"
-            height="4vh"
-            width="8vw"
-            fontSize="1.5rem"
-          />
-          <PaginationButton
-            direction="right"
-            height="4vh"
-            width="8vw"
-            fontSize="1.5rem"
-          />
-        </ButtonGroup>
       </Wrapper>
     </RankingTemplate>
   );

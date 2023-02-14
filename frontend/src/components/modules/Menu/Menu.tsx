@@ -35,15 +35,15 @@ const Menu = ({ list, onOpen, onClose, ...rest }: Props) => {
   return (
     <ModalWrapper onClose={onClose} backgroundColor="none">
       <MenuStyled {...rest}>
-        {list.map((elem, idx) => (
+        {list.map((title) => (
           <Button
-            key={idx}
+            key={title}
             width="100%"
             height={height}
             border="none"
             onClick={onOpen}
           >
-            {elem}
+            {title}
           </Button>
         ))}
       </MenuStyled>
