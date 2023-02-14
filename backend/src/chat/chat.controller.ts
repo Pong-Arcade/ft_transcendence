@@ -3,6 +3,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ChatGateway } from './chat.geteway';
 import { ChatroomUsersInfoResponseDto } from '../dto/response/chatroom.users.info.response.dto';
 import { UserChatMode } from '../enum/user.chat.mode.enum';
+import { rooms } from '../chatroom/chatroom.gateway';
 
 const usersInfo: ChatroomUsersInfoResponseDto = {
   mastUserId: 1,
@@ -21,6 +22,7 @@ const usersInfo: ChatroomUsersInfoResponseDto = {
     },
   ],
 };
+let roomid: number = 0;
 
 @ApiTags('Chat')
 @Controller('api/chat-rooms')
@@ -33,7 +35,7 @@ export class ChatController {
   })
   @Get()
   getChatList() {
-    return this.chatGateway.rooms.keys();
+    return rooms.keys();
   }
 
   @ApiOperation({
@@ -42,6 +44,6 @@ export class ChatController {
   })
   @Get(':room_id')
   getChatRoom(@Param('room_id') roomId: number) {
-    return this.chatGateway.rooms[roomId];
+    return rooms[roomId];
   }
 }

@@ -3,10 +3,12 @@ import styled from "styled-components";
 
 interface Props {
   children: React.ReactNode;
+  color?: string;
 }
 
 const ChatListItemStyled = styled.p<Props>`
   word-break: normal;
+  color: ${(props) => props.color && props.color};
 `;
 
 const ChatListItem = ({ children, ...rest }: Props) => {

@@ -8,6 +8,7 @@ services:
       - ./nginx/:/etc/nginx/conf.d/
     ports:
       - "80:80"
+      - "8080:8080"
     restart: always
     networks:
       - pong_arcade
@@ -33,6 +34,7 @@ services:
       dockerfile: ./Dockerfile.dev
     ports:
       - "3000:3000"
+      - "4242:4242"
     volumes:
       - ./backend:/backend
       - /backend/node_modules

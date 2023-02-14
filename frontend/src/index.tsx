@@ -17,13 +17,14 @@ import Stat from "./pages/Stat";
 import GlobalStyle from "./styles/GlobalStyle";
 import theme from "./styles/theme";
 
-// import ChatSocket from "./utils/ChatSocket";
-// var i = 0;
-// const socket: ChatSocket = new ChatSocket(
-//   1,
-//   "user" + Math.floor(Math.random() * 100)
-// );
-// console.log(socket.username);
+import ChatSocket from "./utils/ChatSocket";
+
+const socket: ChatSocket = new ChatSocket(
+  Math.floor(Math.random() * 1000),
+  "user" + Math.floor(Math.random() * 1000)
+);
+console.log(socket.socket);
+console.log(socket.username);
 const router = createBrowserRouter([
   {
     path: "/",
@@ -36,8 +37,7 @@ const router = createBrowserRouter([
       },
       {
         path: "lobby",
-        element: <Lobby />,
-        // element: <Lobby socket={socket} />,
+        element: <Lobby socket={socket} />,
       },
       {
         path: "game-rooms/:gameId",
@@ -67,12 +67,12 @@ const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 root.render(
-  <React.StrictMode>
-    <ThemeProvider theme={theme}>
-      <GlobalStyle />
-      <RecoilRoot>
-        <RouterProvider router={router} />
-      </RecoilRoot>
-    </ThemeProvider>
-  </React.StrictMode>
+  // <React.StrictMode>
+  <ThemeProvider theme={theme}>
+    <GlobalStyle />
+    <RecoilRoot>
+      <RouterProvider router={router} />
+    </RecoilRoot>
+  </ThemeProvider>
+  // </React.StrictMode>
 );

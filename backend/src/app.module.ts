@@ -11,6 +11,7 @@ import TypeOrmConfigService from './config/typeorm.config';
 import { ChatModule } from './chat/chat.module';
 import { RelationModule } from './relation/relation.module';
 import { StatModule } from './stat/stat.module';
+import { ChatroomModule } from './chatroom/chatroom.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { StatModule } from './stat/stat.module';
     GameModule,
     RelationModule,
     StatModule,
+    ChatroomModule,
   ],
   controllers: [AppController],
   providers: [AppService],
