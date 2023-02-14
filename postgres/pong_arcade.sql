@@ -20,7 +20,7 @@ SET row_security = off;
 -- Name: public; Type: SCHEMA; Schema: -; Owner: pg_database_owner
 --
 
-CREATE SCHEMA public;
+CREATE SCHEMA IF NOT EXISTS public;
 
 
 ALTER SCHEMA public OWNER TO pg_database_owner;
@@ -265,7 +265,8 @@ CREATE TABLE public."user" (
     user_id integer NOT NULL,
     nickname character varying(32) NOT NULL,
     avatar_url text,
-    email character varying(64)
+    email character varying(64),
+    first_login timestamp without time zone
 );
 
 
@@ -307,6 +308,13 @@ COMMENT ON COLUMN public."user".email IS '유저의 이메일';
 
 
 --
+-- Name: COLUMN "user".first_login; Type: COMMENT; Schema: public; Owner: arcade
+--
+
+COMMENT ON COLUMN public."user".first_login IS '최초 로그인 시간';
+
+
+--
 -- Data for Name: ladder_stat; Type: TABLE DATA; Schema: public; Owner: arcade
 --
 
@@ -342,9 +350,7 @@ COPY public.relation (user_id, other_user_id, relation_type) FROM stdin;
 -- Data for Name: user; Type: TABLE DATA; Schema: public; Owner: arcade
 --
 
-COPY public."user" (user_id, nickname, avatar_url, email) FROM stdin;
-85330	sichoi	https://cdn.intra.42.fr/users/6b58f90b32b08da5c68579c72f884599/sichoi.jpg	sichoi@student.42seoul.kr
-1	test	\N	\N
+COPY public."user" (user_id, nickname, avatar_url, email, first_login) FROM stdin;
 \.
 
 

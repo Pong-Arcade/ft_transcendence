@@ -25,6 +25,7 @@ export class AuthRepository implements IAuthRepository {
       nickname: user.nickname,
       avatarUrl: user.avatarUrl,
       email: user.email,
+      firstLogin: new Date(),
     });
     return false;
   }

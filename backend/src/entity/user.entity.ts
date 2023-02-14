@@ -31,5 +31,13 @@ export default class User {
     nullable: true,
   })
   email: string;
+
+  @Column({
+    name: 'first_login',
+    type: 'timestamp',
+    nullable: true,
+  })
+  firstLogin: Date;
+
   // TODO: Relation과의 관계를 정의해야 함
 }
