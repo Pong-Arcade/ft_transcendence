@@ -9,31 +9,14 @@ import {
 } from '@nestjs/common';
 import { User } from '../decorator/user.decorator';
 import { UserDto } from '../dto/user.dto';
-import { UserFriendListResponseDto } from '../dto/response/user.friend.list.response.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-
-const friendUsers: UserFriendListResponseDto = {
-  friendUsers: [
-    {
-      userId: 1,
-      nickname: 'youngpar',
-      avatarUrl: 'qwe.jpeg',
-      email: 'qwe@asd.com',
-    },
-    {
-      userId: 2,
-      nickname: 'youngpar2',
-      avatarUrl: 'qwe2.jpeg',
-      email: 'qwe2@asd.com',
-    },
-  ],
-  isLast: true,
-};
+import { MockRepository } from '../mock/mock.repository';
 
 @ApiTags('Relation')
 @Controller('api/friends')
 export class FriendsController {
   private logger = new Logger(FriendsController.name);
+  private mock = new MockRepository();
 
   @ApiOperation({
     summary: '유저의 친구 목록',
@@ -42,7 +25,7 @@ export class FriendsController {
   @Get()
   async getFriend(@User() user: UserDto) {
     this.logger.log(`Called ${this.getFriend.name}`);
-    return friendUsers;
+    return this.mock.getFriendUser(41);
   }
 
   @ApiOperation({

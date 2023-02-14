@@ -1,28 +1,11 @@
-import { Controller, Get, HttpCode, Logger, Param } from '@nestjs/common';
+import { Controller, Get, HttpCode, Logger } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { User } from 'src/decorator/user.decorator';
 import { UserDto } from 'src/dto/user.dto';
-import { OnlineUsersResponseDto } from '../dto/response/online.users.response.dto';
 import { ChatGateway } from '../chat/chat.geteway';
 import { GameGateway } from '../game/game.gateway';
+import { MockRepository } from '../mock/mock.repository';
 
-const onlineUsers: OnlineUsersResponseDto = {
-  onlineUsers: [
-    {
-      userId: 1,
-      nickname: 'youngpar',
-      avatarUrl: 'qwe.jpeg',
-      email: 'qwe@asd.com',
-    },
-    {
-      userId: 2,
-      nickname: 'youngpar2',
-      avatarUrl: 'qwe2.jpeg',
-      email: 'qwe2@asd.com',
-    },
-  ],
-  isLast: true,
-};
 const userInfo = {
   userId: 1,
   nickname: 'sichoi',
@@ -46,7 +29,7 @@ const userInfo = {
 @Controller('/api/users')
 export class UserController {
   private logger = new Logger(UserController.name);
-
+  private mock = new MockRepository();
   constructor(
     private chatGateway: ChatGateway,
     private gameGateway: GameGateway,
@@ -60,7 +43,7 @@ export class UserController {
   @HttpCode(200)
   async getAllUsers() {
     this.logger.log(`Called ${this.getAllUsers.name}`);
-    return onlineUsers;
+    return this.mock.getOnlineUser(17);
   }
 
   @ApiOperation({
