@@ -8,12 +8,8 @@ import {
   Query,
 } from '@nestjs/common';
 import { UserRecentMatchHistoryResponseDto } from '../dto/response/user.recent.match.history.response.dto';
-import { MatchResult } from '../enum/match.result.enum';
-import { MatchType } from '../enum/match.type.enum';
 import { RankListResponseDto } from '../dto/response/rank.list.response.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { User } from '../decorator/user.decorator';
-import { UserDto } from '../dto/user.dto';
 import { StatService } from './stat.service';
 import { RankingFilter } from 'src/enum/ranking.filter.enum';
 
