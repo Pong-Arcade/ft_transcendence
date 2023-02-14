@@ -25,9 +25,9 @@ const LobbyRoomListTypeChoiceButtonGroup = ({
 }: Props) => {
   return (
     <ButtonGroup width="100%" height="20%" justifyContent="center" gap="11vw">
-      {BUTTON_LIST.map((title, idx) => (
+      {BUTTON_LIST.map((title) => (
         <ChoiceButton
-          key={idx}
+          key={title}
           onClick={() => onClick(title)}
           disabled={currentButton === title}
         >

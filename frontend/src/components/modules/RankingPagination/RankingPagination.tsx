@@ -1,11 +1,10 @@
 import { MouseEvent } from "react";
-import styled from "styled-components";
-import { IItem, IPaginationItem } from "../LobbyUserItem/LobbyUserItem";
+import AttributeGroup from "../AttributeGroup";
 import Pagination from "../Pagination";
+import { IItem, IPaginationItem } from "../Pagination/Pagination";
 
 interface Props {
   list: IItem[];
-  attrList: string[];
   PaginationItem: (arg: IPaginationItem) => JSX.Element;
   page: number;
   onItemClick?: (e: MouseEvent<HTMLButtonElement>) => void;
@@ -13,29 +12,8 @@ interface Props {
   onPrevPage?: () => void;
 }
 
-const RankingAttributeGroup = styled.div`
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  width: 100%;
-  height: 12%;
-  background-color: ${(props) => props.theme.background.front};
-  border-radius: ${(props) => props.theme.border.board};
-`;
-
-const RankingAttribute = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: ${(props) => props.theme.background.front};
-  width: 100%;
-  height: 100%;
-  font-size: 2rem;
-  border-radius: 50%;
-`;
-
 const RankingPagination = ({
   list,
-  attrList,
   PaginationItem,
   onItemClick,
   page,
@@ -43,14 +21,11 @@ const RankingPagination = ({
   onPrevPage,
 }: Props) => {
   const pageLength = 10;
+  const attrList = ["순위", "ID", "점수", "승", "패", "승률"];
 
   return (
     <>
-      <RankingAttributeGroup>
-        {attrList.map((attr, idx) => (
-          <RankingAttribute key={idx}>{attr}</RankingAttribute>
-        ))}
-      </RankingAttributeGroup>
+      <AttributeGroup attrList={attrList} />
       <Pagination
         list={list.slice(page * pageLength, (page + 1) * pageLength)}
         PaginationItem={PaginationItem}

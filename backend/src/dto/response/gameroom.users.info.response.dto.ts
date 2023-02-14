@@ -5,7 +5,7 @@ import { UserDto } from '../user.dto';
  * @property mastUserId 방장의 유저 id
  * @property users 게임방에 참여한 유저들의 정보
  */
-export class ChatroomUsersInfoResponseDto {
+export class GameRoomUsersInfoResponseDto {
   roomId: number; // 게임방 ID
   redUser: UserDto; // 빨간 팀 유저
   blueUser: UserDto; // 파란 팀 유저

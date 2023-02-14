@@ -4,7 +4,6 @@ import reset from "styled-reset";
 const GlobalStyle = createGlobalStyle`
   ${reset}
 
-  // TODO: refactoring
   * {
     font-family: 'Jua', sans-serif !important;
     font-family: 'Sofia Sans', sans-serif;

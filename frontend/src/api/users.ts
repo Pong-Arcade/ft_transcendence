@@ -6,10 +6,10 @@ export const getOnlineUsersAPI = async () => {
 };
 
 export const getFriendUsersAPI = async () => {
-  const response = await getRequest("users/friend");
+  const response = await getRequest("friends");
   return response.data.friendUsers;
 };
 export const getBlockUsersAPI = async () => {
-  const response = await getRequest("users/block");
+  const response = await getRequest("block");
   return response.data.blockUsers;
 };
