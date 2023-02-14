@@ -82,6 +82,7 @@ export class StatRepository implements IStatRepository {
       order: {
         beginDate: 'DESC',
       },
+      take: 10,
       select: {
         matchId: true,
         redScore: true,
