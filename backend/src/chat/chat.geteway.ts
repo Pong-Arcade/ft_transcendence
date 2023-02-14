@@ -9,6 +9,7 @@ import { User } from '../status/status.entity';
 import { users } from '../status/status.module';
 import { rooms } from '../chatroom/chatroom.gateway';
 import { Room } from '../chatroom/chatroom.entity';
+import { Namespace } from 'socket.io';
 
 type MessageType = 'message' | 'whisper' | 'systemMsg';
 interface IMessage {
@@ -20,12 +21,12 @@ enum EMessageType {
   WHISPER = 'whisper',
   SYSTEMMSG = 'systemMsg',
 }
-@WebSocketGateway(4242, {
-  transports: ['websocket'],
-  // cors: { origin: 'http://localhost:8000' },
+@WebSocketGateway({
+  namespace: 'chat',
+  cors: { origin: 'http://localhost:8000' },
 })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  @WebSocketServer() server;
+  @WebSocketServer() server: Namespace;
   async handleConnection(socket) {
     // 연결 끊김 핸들러
     socket.on('disconnect', () => {

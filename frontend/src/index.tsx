@@ -23,6 +23,7 @@ const socket: ChatSocket = new ChatSocket(
   Math.floor(Math.random() * 1000),
   "user" + Math.floor(Math.random() * 1000)
 );
+console.log(socket.socket);
 console.log(socket.username);
 const router = createBrowserRouter([
   {

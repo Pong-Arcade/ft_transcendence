@@ -62,6 +62,7 @@ const Chat = ({ socket, ...rest }: Props) => {
         msg: msg.substring(msg.split(" ")[1].length + 4),
       });
     } else {
+      console.log(msg);
       socket.socket.emit("message", {
         roomid: 0,
         username: socket.username,

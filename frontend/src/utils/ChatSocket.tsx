@@ -15,9 +15,7 @@ class ChatSocket {
   // }
   constructor(userid: number, name: string) {
     // this.ignore_list.
-    this.socket = io("localhost:8080", {
-      transports: ["websocket"],
-    });
+    this.socket = io("ws://localhost:3000/chat");
     this.userid = userid;
     this.username = name;
     this.socket.emit("addUser", {

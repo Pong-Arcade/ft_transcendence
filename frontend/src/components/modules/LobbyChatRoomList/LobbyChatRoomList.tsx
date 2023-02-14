@@ -7,7 +7,7 @@ import LobbyGameRoomPagination from "../LobbyGameRoomPagination";
 import LobbyRoomListTypeChoiceButtonGroup from "../LobbyRoomListTypeChoiceButtonGroup";
 import { EROOM_BUTTON } from "../LobbyRoomListTypeChoiceButtonGroup/LobbyRoomListTypeChoiceButtonGroup";
 import LobbyUserItem from "../LobbyUserItem";
-
+import ChatSocket from "../../../utils/ChatSocket";
 const LobbyChatRoomListStyled = styled(Board).attrs((props) => {
   return {
     width: "100%",
@@ -20,7 +20,7 @@ const LobbyChatRoomListStyled = styled(Board).attrs((props) => {
 })``;
 
 // TODO: chat room list, game room list
-const LobbyChatRoomList = () => {
+const LobbyChatRoomList = ({ socket }: { socket: ChatSocket }) => {
   const { onlineUsers, friendUsers } = useLobbyUserList();
   const [page, setPage] = useState(0);
   const [currentButton, setCurrentButton] = useState(EROOM_BUTTON.CHATROOM);
