@@ -9,7 +9,13 @@ import {
 } from '@nestjs/common';
 import { UserRecentMatchHistoryResponseDto } from '../dto/response/user.recent.match.history.response.dto';
 import { RankListResponseDto } from '../dto/response/rank.list.response.dto';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { StatService } from './stat.service';
 import { RankingFilter } from 'src/enum/ranking.filter.enum';
 import { SortDirection } from 'src/enum/sort.direction.enum';
@@ -25,6 +31,13 @@ export class StatController {
     summary: '랭킹',
     description: '전체 유저의 랭킹을 조회합니다.',
   })
+  @ApiOkResponse({
+    description: '전체 유저의 랭킹을 반환합니다.',
+    type: RankListResponseDto,
+  })
+  @ApiBadRequestResponse({
+    description: '요청에 문법적 오류가 있습니다.',
+  })
   @Get('ranking')
   async getRanking(
     @Query('filter', new ParseEnumPipe(RankingFilter)) filter: RankingFilter,
@@ -37,6 +50,16 @@ export class StatController {
   @ApiOperation({
     summary: '최근 전적',
     description: '특정 유저의 최근 전적을 조회합니다.',
+  })
+  @ApiOkResponse({
+    description: '특정 유저의 최근 전적을 반환합니다.',
+    type: UserRecentMatchHistoryResponseDto,
+  })
+  @ApiNotFoundResponse({
+    description: '존재하지 않는 유저입니다.',
+  })
+  @ApiBadRequestResponse({
+    description: '요청에 문법적 오류가 있습니다.',
   })
   @Get('recent-records/:user_id')
   async getRecentRecord(

@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { GameRoomMode } from 'src/enum/gameroom.mode.enum';
 import { MatchType } from 'src/enum/match.type.enum';
 
@@ -10,9 +11,36 @@ import { MatchType } from 'src/enum/match.type.enum';
  * maxSpectatorCount: 최대 관전자 수
  */
 export class GameRoomCreateRequestDto {
+  @ApiProperty({
+    description: '게임방 모드 (비밀번호/초대전용/공개)',
+    example: GameRoomMode.PROTECTED,
+    enum: GameRoomMode,
+  })
   mode: GameRoomMode;
+
+  @ApiProperty({
+    description: '대전 유형',
+    example: MatchType.LADDER,
+    enum: MatchType,
+  })
   type: MatchType;
+
+  @ApiProperty({
+    description: '게임방 제목',
+    example: '게임방 제목입니다.',
+  })
   title: string;
+
+  @ApiProperty({
+    description: '게임방 비밀번호(optional)',
+    example: '1234',
+    required: false,
+  })
   password?: string;
+
+  @ApiProperty({
+    description: '최대 관전자 수',
+    example: 10,
+  })
   maxSpectatorCount: number;
 }
