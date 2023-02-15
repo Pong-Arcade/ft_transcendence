@@ -7,12 +7,7 @@ import {
   Param,
   Patch,
 } from '@nestjs/common';
-import {
-  ApiOkResponse,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { User } from '../decorator/user.decorator';
 import { UserDto } from '../dto/user.dto';
 import { MockRepository } from '../mock/mock.repository';

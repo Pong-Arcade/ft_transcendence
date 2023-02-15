@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { OnlineUsersResponseDto } from '../dto/response/online.users.response.dto';
 import { UserFriendListResponseDto } from '../dto/response/user.friend.list.response.dto';
 import { UserBlockListResponseDto } from '../dto/response/user.block.list.response.dto';
-import { userInfo } from 'os';
 
 @Injectable()
 export class MockRepository {
