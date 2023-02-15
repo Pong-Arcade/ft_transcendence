@@ -1,4 +1,4 @@
-import { useRecoilState } from "recoil";
+import { useSetRecoilState } from "recoil";
 import {
   deleteBlockUsersAPI,
   deleteFriendUsersAPI,
@@ -10,9 +10,9 @@ import {
 import { blockUsersState } from "../state/BlockUsersState";
 import { friendUsersState } from "../state/FriendUsersState";
 
-const useGeneralMenu = (userId: number) => {
-  const [friendUsers, setFriendUsers] = useRecoilState(friendUsersState);
-  const [blockUsers, setBlockUsers] = useRecoilState(blockUsersState);
+const useRelation = (userId: number) => {
+  const setFriendUsers = useSetRecoilState(friendUsersState);
+  const setBlockUsers = useSetRecoilState(blockUsersState);
 
   const onAddFriend = async () => {
     const response = await patchFriendUsersAPI(userId);
@@ -43,8 +43,6 @@ const useGeneralMenu = (userId: number) => {
     }
   };
   return {
-    friendUsers,
-    blockUsers,
     onAddFriend,
     onDelFriend,
     onAddBlock,
@@ -52,4 +50,4 @@ const useGeneralMenu = (userId: number) => {
   };
 };
 
-export default useGeneralMenu;
+export default useRelation;

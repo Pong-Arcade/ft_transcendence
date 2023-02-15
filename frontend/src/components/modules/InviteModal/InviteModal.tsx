@@ -1,13 +1,13 @@
 import { MouseEvent, useState } from "react";
-import useLobbyUserList from "../../../hooks/useLobbyUserList";
+import { useRecoilValue } from "recoil";
 import useModal from "../../../hooks/useModal";
+import { onlineUsersState } from "../../../state/OnlineUsersState";
 import Button from "../../atoms/Button";
 import Modal from "../../atoms/Modal";
 import ModalWrapper from "../../atoms/ModalWrapper";
 import ChatRoomInvitePagination from "../ChatRoomInvitePagination";
 import ChatRoomInviteUserItem from "../ChatRoomInviteUserItem";
-import ConfirmModal from "../ConfirmModal";
-import { EConfirmType } from "../ConfirmModal/ConfirmModal";
+import InviteConfirmModal from "../InviteConfirmModal";
 import ModalTitle from "../ModalTitle";
 
 interface Props {
@@ -27,22 +27,17 @@ const InviteModal = ({ onClose }: Props) => {
     }
   };
 
-  const {
-    isModalOpen: isConfirmOpen,
-    onModalOpen: onConfirmOpen,
-    onModalClose: onConfirmClose,
-  } = useModal({});
+  const { isModalOpen: isConfirmOpen, onModalOpen: onConfirmOpen } = useModal(
+    {}
+  );
 
-  const { onlineUsers } = useLobbyUserList();
+  const onlineUsers = useRecoilValue(onlineUsersState);
   const [page, setPage] = useState(0);
 
   const onInvite = () => {
     onConfirmOpen();
+    // TODO: invite logic
   };
-  const onCloseInviteModal = () => {
-    onClose();
-  };
-
   return (
     <ModalWrapper>
       <Modal width="25%" height="70%">
@@ -63,11 +58,10 @@ const InviteModal = ({ onClose }: Props) => {
         </Button>
       </Modal>
       {isConfirmOpen && (
-        <ConfirmModal
-          content={inviteList.length}
-          onClose={onConfirmClose}
-          type={EConfirmType.INVITE}
-          onYesConfirm={onCloseInviteModal}
+        <InviteConfirmModal
+          count={inviteList.length}
+          onClose={onClose}
+          onYesConfirm={() => onClose()}
         />
       )}
     </ModalWrapper>

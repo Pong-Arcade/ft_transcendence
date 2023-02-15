@@ -3,8 +3,7 @@ import styled from "styled-components";
 import useModal from "../../../hooks/useModal";
 import Button from "../../atoms/Button";
 import ButtonGroup from "../ButtonGroup";
-import ConfirmModal from "../ConfirmModal";
-import { EConfirmType } from "../ConfirmModal/ConfirmModal";
+import ExitConfirmModal from "../ExitConfirmModal";
 import InviteModal from "../InviteModal";
 
 const ChatRoomButton = styled(Button).attrs({
@@ -34,9 +33,8 @@ const ChatRoomButtonGroup = () => {
       </ButtonGroup>
       {isInviteOpen && <InviteModal onClose={onInviteClose} />}
       {isConfirmOpen && (
-        <ConfirmModal
+        <ExitConfirmModal
           onClose={onConfirmClose}
-          type={EConfirmType.EXIT}
           onYesConfirm={() => navigate("/lobby")}
           onNoConfirm={() => onConfirmClose()}
         />

@@ -5,8 +5,7 @@ import Board from "../components/atoms/Board";
 import Button from "../components/atoms/Button";
 import Typography from "../components/atoms/Typography";
 import Chat from "../components/modules/Chat";
-import ConfirmModal from "../components/modules/ConfirmModal";
-import { EConfirmType } from "../components/modules/ConfirmModal/ConfirmModal";
+import ExitConfirmModal from "../components/modules/ExitConfirmModal";
 import GeneralMenu from "../components/modules/GeneralMenu";
 import GameRoomTemplate from "../components/templates/GameRoomTemplate";
 import useMenu from "../hooks/useMenu";
@@ -89,9 +88,8 @@ const GameRoom = () => {
         left={positionX}
       />
       {isConfirmOpen && (
-        <ConfirmModal
+        <ExitConfirmModal
           onClose={onConfirmClose}
-          type={EConfirmType.EXIT}
           onYesConfirm={() => navigate("/lobby")}
           onNoConfirm={() => onConfirmClose()}
         />
