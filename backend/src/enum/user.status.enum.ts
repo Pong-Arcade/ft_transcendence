@@ -4,7 +4,7 @@
  * OFFLINE: 오프라인
  * NOTE: 상태가 추가될 경우 이곳에 추가합니다.
  */
-export class UserStatus {
-  ONLINE = 'ONLINE';
-  OFFLINE = 'OFFLINE';
+export enum UserStatus {
+  ONLINE = 'ONLINE',
+  OFFLINE = 'OFFLINE',
 }
