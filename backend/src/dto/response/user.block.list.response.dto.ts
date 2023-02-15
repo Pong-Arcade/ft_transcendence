@@ -7,5 +7,4 @@ import { UserDto } from '../user.dto';
  */
 export class UserBlockListResponseDto {
   blockUsers: UserDto[]; // 차단 유저정보 리스트
-  isLast: boolean; // 마지막 페이지인지 여부
 }

@@ -2,12 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { OnlineUsersResponseDto } from '../dto/response/online.users.response.dto';
 import { UserFriendListResponseDto } from '../dto/response/user.friend.list.response.dto';
 import { UserBlockListResponseDto } from '../dto/response/user.block.list.response.dto';
+import { userInfo } from 'os';
 
 @Injectable()
 export class MockRepository {
   getOnlineUser(USER_NUM: number) {
-    let ret: OnlineUsersResponseDto;
-    ret.isLast = true;
+    const ret = new OnlineUsersResponseDto();
+    ret.onlineUsers = [];
     for (let i = 0; i < USER_NUM; ++i) {
       ret.onlineUsers.push({
         userId: i,
@@ -20,8 +21,8 @@ export class MockRepository {
   }
 
   getFriendUser(USER_NUM: number) {
-    let ret: UserFriendListResponseDto;
-    ret.isLast = true;
+    const ret = new UserFriendListResponseDto();
+    ret.friendUsers = [];
     for (let i = 0; i < USER_NUM; ++i) {
       ret.friendUsers.push({
         userId: i,
@@ -34,8 +35,8 @@ export class MockRepository {
   }
 
   getBlockUser(USER_NUM: number) {
-    let ret: UserBlockListResponseDto;
-    ret.isLast = true;
+    const ret = new UserBlockListResponseDto();
+    ret.blockUsers = [];
     for (let i = 0; i < USER_NUM; ++i) {
       ret.blockUsers.push({
         userId: i,
@@ -45,5 +46,28 @@ export class MockRepository {
       });
     }
     return ret;
+  }
+
+  userInfo = {
+    userId: 1,
+    nickname: 'sichoi',
+    ladderInfo: {
+      ladderScore: 1020,
+      rank: 13,
+      winCount: 3,
+      loseCount: 2,
+      winRate: 60,
+      userStatus: 'ON_LOBBY',
+    },
+    normalInfo: {
+      winCount: 3,
+      loseCount: 2,
+      winRate: 60,
+      userStatus: 'ON_LOBBY',
+    },
+  };
+
+  getUserInfo() {
+    return this.userInfo;
   }
 }
