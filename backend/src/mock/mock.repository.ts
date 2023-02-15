@@ -7,7 +7,6 @@ import { UserBlockListResponseDto } from '../dto/response/user.block.list.respon
 export class MockRepository {
   getOnlineUser(USER_NUM: number) {
     let ret: OnlineUsersResponseDto;
-    ret.isLast = true;
     for (let i = 0; i < USER_NUM; ++i) {
       ret.onlineUsers.push({
         userId: i,
@@ -21,7 +20,6 @@ export class MockRepository {
 
   getFriendUser(USER_NUM: number) {
     let ret: UserFriendListResponseDto;
-    ret.isLast = true;
     for (let i = 0; i < USER_NUM; ++i) {
       ret.friendUsers.push({
         userId: i,
@@ -35,7 +33,6 @@ export class MockRepository {
 
   getBlockUser(USER_NUM: number) {
     let ret: UserBlockListResponseDto;
-    ret.isLast = true;
     for (let i = 0; i < USER_NUM; ++i) {
       ret.blockUsers.push({
         userId: i,
