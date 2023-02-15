@@ -7,9 +7,11 @@ import {
 } from '@nestjs/websockets';
 import { User } from '../status/status.entity';
 import { users } from '../status/status.module';
-import { rooms } from '../chatroom/chatroom.gateway';
-import { Room } from '../chatroom/chatroom.entity';
+import { Room } from '../chat/chatroom.entity';
 import { Namespace } from 'socket.io';
+import { OnEvent } from '@nestjs/event-emitter';
+
+export let rooms = new Map<number, Room>();
 
 type MessageType = 'message' | 'whisper' | 'systemMsg';
 interface IMessage {
@@ -23,7 +25,7 @@ enum EMessageType {
 }
 @WebSocketGateway({
   namespace: 'socket/chat',
-  cors: { origin: 'http://localhost:8000' },
+  // cors: { origin: 'http://localhost:80' },
 })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Namespace;
@@ -96,4 +98,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     };
     this.server.to(client.id).emit('systemMsg', message);
   }
+
+  @OnEvent('chatroom:join')
+  async onJoinRoom(client, roomid) {}
 }

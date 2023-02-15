@@ -1,14 +1,16 @@
+import { ChatRoomMode } from 'src/enum/chatroom.mode.enum';
+
 export class Room {
   id: number;
   roomname: string;
-  type: number;
+  type: ChatRoomMode;
   password: string;
   maxUser: number;
   Users: Array<number>;
   constructor(
     id: number,
     roomname: string,
-    type: number,
+    type: ChatRoomMode,
     password: string,
     maxUser: number,
     creator: number,
