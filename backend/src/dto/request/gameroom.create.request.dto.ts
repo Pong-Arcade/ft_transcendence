@@ -13,8 +13,8 @@ import { MatchType } from 'src/enum/match.type.enum';
  */
 export class GameRoomCreateRequestDto {
   @ApiProperty({
-    description: '게임방 모드 (비밀번호/초대전용/공개)',
-    example: GameRoomMode.PROTECTED,
+    description: '게임방 모드 (파워업/일반)',
+    example: GameRoomMode.POWER_UP,
     enum: GameRoomMode,
   })
   @IsEnum(GameRoomMode)
@@ -29,21 +29,19 @@ export class GameRoomCreateRequestDto {
   type: MatchType;
 
   @ApiProperty({
+    description: '승리 점수',
+    example: 10,
+  })
+  @IsNumber()
+  winScore: number;
+
+  @ApiProperty({
     description: '게임방 제목',
     example: '게임방 제목입니다.',
   })
   @IsString()
   @MaxLength(32)
   title: string;
-
-  @ApiProperty({
-    description: '게임방 비밀번호(optional)',
-    example: '1234',
-    required: false,
-  })
-  @IsString()
-  @MaxLength(32)
-  password?: string;
 
   @IsNumber()
   @ApiProperty({

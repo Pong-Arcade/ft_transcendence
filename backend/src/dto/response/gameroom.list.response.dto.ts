@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { GameRoomListDto } from '../gameroom.list.dto';
 import { GameRoomStatus } from 'src/enum/gameroom.status.enum';
+import { GameRoomMode } from 'src/enum/gameroom.mode.enum';
 
 /**
  * 현재 게임방 목록을 반환하는 응답 DTO입니다.
@@ -25,6 +26,8 @@ export class GameRoomListResponseDto {
         maxSpectatorCount: 10,
         curSpectatorCount: 5,
         roomStatus: GameRoomStatus.ON_READY,
+        title: '게임방 제목입니다.',
+        mode: GameRoomMode.POWER_UP,
       },
       {
         roomId: 2,
@@ -41,6 +44,8 @@ export class GameRoomListResponseDto {
         maxSpectatorCount: 10,
         curSpectatorCount: 7,
         roomStatus: GameRoomStatus.ON_GAME,
+        title: '게임방 제목입니다.',
+        mode: GameRoomMode.NORMAL,
       },
     ] as GameRoomListDto[],
     type: GameRoomListDto,
