@@ -25,3 +25,13 @@ export const getBlockUsersAPI = async () => {
   const response = await getRequest("block");
   return response.data.blockUsers;
 };
+
+export const patchBlockUsersAPI = async (userId: number) => {
+  const response = await patchRequest(`block/${userId}`);
+  return response;
+};
+
+export const deleteBlockUsersAPI = async (userId: number) => {
+  const response = await deleteRequest(`block/${userId}`);
+  return response;
+};

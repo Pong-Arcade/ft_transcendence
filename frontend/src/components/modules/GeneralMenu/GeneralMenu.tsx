@@ -1,16 +1,11 @@
-import { useRecoilState } from "recoil";
 import styled from "styled-components";
-import {
-  deleteFriendUsersAPI,
-  getFriendUsersAPI,
-  patchFriendUsersAPI,
-} from "../../../api/users";
 import useModal from "../../../hooks/useModal";
 import Button from "../../atoms/Button";
 import Modal from "../../atoms/Modal";
 import ModalWrapper from "../../atoms/ModalWrapper";
 import UserInfoModal from "../UserInfoModal";
-import { friendUsersState } from "../../../state/FriendUsersState";
+
+import useGeneralMenu from "../../../hooks/useGeneralMenu";
 
 interface Props {
   top: number;
@@ -52,7 +47,14 @@ const MenuButton = styled(Button).attrs({
   height: "25%",
 })``;
 
-const GeneralMenu = ({ onClose, isOpenMenu, userId, ...rest }: Props) => {
+const GeneralMenu = ({
+  onClose,
+  isOpenMenu,
+  userId,
+  top,
+  left,
+  ...rest
+}: Props) => {
   const {
     isModalOpen: isUserInfoOpen,
     onModalOpen: onUserInfoOpen,
@@ -62,30 +64,32 @@ const GeneralMenu = ({ onClose, isOpenMenu, userId, ...rest }: Props) => {
       onClose();
     },
   });
-  const [friendUsers, setFriendUsers] = useRecoilState(friendUsersState);
-
-  const onAddFriend = async () => {
-    const response = await patchFriendUsersAPI(userId);
-    if (response.status === 201) {
-      const newFriendUsers = await getFriendUsersAPI();
-      setFriendUsers(newFriendUsers);
-    }
-  };
-  const onDelFriend = async () => {
-    const response = await deleteFriendUsersAPI(userId);
-    if (response.status === 204) {
-      const newFriendUsers = await getFriendUsersAPI();
-      setFriendUsers(newFriendUsers);
-    }
-  };
+  const {
+    friendUsers,
+    blockUsers,
+    onAddFriend,
+    onDelFriend,
+    onAddBlock,
+    onDelBlock,
+  } = useGeneralMenu(userId);
 
   const isFriend = friendUsers.find((user) => user.userId === userId);
+  const isBlock = blockUsers.find((user) => user.userId === userId);
+
+  const checkedTop =
+    top > window.innerHeight - window.innerHeight * 0.15
+      ? top - window.innerHeight * 0.15
+      : top;
+  const checkedLeft =
+    left > window.innerWidth - window.innerWidth * 0.1
+      ? left - window.innerWidth * 0.1
+      : left;
 
   return (
     <>
       {isOpenMenu && (
         <ModalWrapper onClose={onClose} backgroundColor="none">
-          <MenuStyled {...rest}>
+          <MenuStyled top={checkedTop} left={checkedLeft} {...rest}>
             <MenuButton onClick={onUserInfoOpen}>{EMenu.INFO}</MenuButton>
             <MenuButton>{EMenu.WHISPHER}</MenuButton>
             {isFriend ? (
@@ -93,7 +97,11 @@ const GeneralMenu = ({ onClose, isOpenMenu, userId, ...rest }: Props) => {
             ) : (
               <MenuButton onClick={onAddFriend}>{EMenu.ADD_FRIEND}</MenuButton>
             )}
-            <MenuButton>{EMenu.INFO}</MenuButton>
+            {isBlock ? (
+              <MenuButton onClick={onDelBlock}>{EMenu.DEL_BLOCK}</MenuButton>
+            ) : (
+              <MenuButton onClick={onAddBlock}>{EMenu.ADD_BLOCK}</MenuButton>
+            )}
           </MenuStyled>
         </ModalWrapper>
       )}
