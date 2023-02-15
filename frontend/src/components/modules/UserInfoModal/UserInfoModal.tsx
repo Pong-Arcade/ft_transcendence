@@ -17,7 +17,7 @@ interface Props {
   onClose: () => void;
   width: string;
   height: string;
-  userId: number;
+  userId: string;
   me?: boolean;
 }
 

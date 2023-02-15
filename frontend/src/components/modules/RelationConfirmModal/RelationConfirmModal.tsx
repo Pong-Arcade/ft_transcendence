@@ -10,7 +10,8 @@ interface Props {
   onNoConfirm: () => void;
   onClose: () => void;
   currentOn?: ECurrentOn;
-  userId: number;
+  userId: string;
+  name: string;
 }
 
 const ConfirmButton = styled(Button).attrs({
@@ -18,11 +19,20 @@ const ConfirmButton = styled(Button).attrs({
   height: "100%",
 })``;
 
+const Content = styled(Typography).attrs({
+  fontSize: "3rem",
+})`
+  text-align: center;
+  width: 80%;
+  white-space: break-spaces;
+`;
+
 const RelationConfirmModal = ({
   onNoConfirm,
   onClose,
   currentOn,
   userId,
+  name,
 }: Props) => {
   const { onAddFriend, onDelFriend, onAddBlock, onDelBlock } =
     useRelation(userId);
@@ -35,22 +45,22 @@ const RelationConfirmModal = ({
   switch (currentOn) {
     case ECurrentOn.ADD_FRIEND:
       title = EMenu.ADD_FRIEND;
-      content = "정말 친구를 추가하시겠습니까?";
+      content = `정말 ${name}님을 친구추가하시겠습니까?`;
       onYesConfirm = onAddFriend;
       break;
     case ECurrentOn.DEL_FRIEND:
       title = EMenu.DEL_FRIEND;
-      content = "정말 친구를 삭제하시겠습니까?";
+      content = `정말 ${name}님을 친구삭제하시겠습니까?`;
       onYesConfirm = onDelFriend;
       break;
     case ECurrentOn.ADD_BLOCK:
       title = EMenu.ADD_BLOCK;
-      content = "정말 차단하시겠습니까?";
+      content = `정말 ${name}님을 차단하시겠습니까?`;
       onYesConfirm = onAddBlock;
       break;
     case ECurrentOn.DEL_BLOCK:
       title = EMenu.DEL_BLOCK;
-      content = "정말 차단을 해제하시겠습니까?";
+      content = `정말 ${name}님을 차단해제하시겠습니까?`;
       onYesConfirm = onDelBlock;
       break;
   }
@@ -60,7 +70,7 @@ const RelationConfirmModal = ({
   };
   return (
     <ConfirmModal title={title} onClose={onNoConfirm}>
-      <Typography fontSize="2.8rem">{content}</Typography>
+      <Content>{content}</Content>
       <ButtonGroup width="100%" height="30%">
         <ConfirmButton onClick={onClick}>예</ConfirmButton>
         <ConfirmButton onClick={onNoConfirm}>아니오</ConfirmButton>

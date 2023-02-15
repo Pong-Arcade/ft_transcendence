@@ -31,7 +31,7 @@ export class FriendsController {
   @Get()
   async getFriend(@User() user: UserDto) {
     this.logger.log(`Called ${this.getFriend.name}`);
-    return this.mock.getFriendUser(41);
+    return this.mock.getFriendUser(17);
   }
 
   @Patch(':user_id')

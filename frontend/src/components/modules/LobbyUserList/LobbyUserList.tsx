@@ -22,8 +22,15 @@ const LobbyUserListStyled = styled(Board).attrs((props) => {
 })``;
 
 const LobbyUserList = () => {
-  const { isOpenMenu, onOpenMenu, onCloseMenu, positionX, positionY, id } =
-    useMenu();
+  const {
+    isOpenMenu,
+    onOpenMenu,
+    onCloseMenu,
+    positionX,
+    positionY,
+    id,
+    name,
+  } = useMenu();
 
   const [currentButton, setCurrentButton] = useState(EUSER_BUTTON.ONLINE_USERS);
   const { onlineUsers, friendUsers, blockUsers } = useLobbyUserList();
@@ -57,6 +64,7 @@ const LobbyUserList = () => {
       </LobbyUserListStyled>
       <GeneralMenu
         userId={id}
+        name={name}
         isOpenMenu={isOpenMenu}
         onClose={onCloseMenu}
         top={positionY}

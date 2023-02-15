@@ -13,7 +13,7 @@ const LobbyUserItemStyled = styled(Button).attrs((props) => {
 const LobbyUserItem = ({ item, onItemClick }: IPaginationItem) => {
   const { nickname, userId } = item as IUser;
   return (
-    <LobbyUserItemStyled id={userId} onClick={onItemClick}>
+    <LobbyUserItemStyled id={userId.toString()} onClick={onItemClick}>
       {nickname}
     </LobbyUserItemStyled>
   );

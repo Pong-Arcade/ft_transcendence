@@ -63,18 +63,18 @@ const LinkWrapper = styled(Link)<LinkWrapperProps>`
   height: ${(props) => props.height && props.height};
 `;
 
-const Button = ({ children, to, width, height, ...rest }: Props) => {
+const Button = ({ children, to, width, height, id, ...rest }: Props) => {
   if (to) {
     return (
       <LinkWrapper height={height} width={width} to={to}>
-        <ButtonStyled width="100%" height="100%" {...rest}>
+        <ButtonStyled id={id} width="100%" height="100%" {...rest}>
           {children}
         </ButtonStyled>
       </LinkWrapper>
     );
   }
   return (
-    <ButtonStyled width={width} height={height} {...rest}>
+    <ButtonStyled id={id} width={width} height={height} {...rest}>
       {children}
     </ButtonStyled>
   );

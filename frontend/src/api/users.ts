@@ -11,12 +11,12 @@ export const getFriendUsersAPI = async () => {
   return response.data.friendUsers;
 };
 
-export const patchFriendUsersAPI = async (userId: number) => {
+export const patchFriendUsersAPI = async (userId: string) => {
   const response = await patchRequest(`friends/${userId}`);
   return response;
 };
 
-export const deleteFriendUsersAPI = async (userId: number) => {
+export const deleteFriendUsersAPI = async (userId: string) => {
   const response = await deleteRequest(`friends/${userId}`);
   return response;
 };
@@ -26,12 +26,12 @@ export const getBlockUsersAPI = async () => {
   return response.data.blockUsers;
 };
 
-export const patchBlockUsersAPI = async (userId: number) => {
+export const patchBlockUsersAPI = async (userId: string) => {
   const response = await patchRequest(`block/${userId}`);
   return response;
 };
 
-export const deleteBlockUsersAPI = async (userId: number) => {
+export const deleteBlockUsersAPI = async (userId: string) => {
   const response = await deleteRequest(`block/${userId}`);
   return response;
 };

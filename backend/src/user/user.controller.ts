@@ -34,7 +34,7 @@ export class UserController {
   @Get()
   async getAllUsers() {
     this.logger.log(`Called ${this.getAllUsers.name}`);
-    return this.mock.getOnlineUser(17);
+    return this.mock.getOnlineUser(38);
   }
 
   @ApiOperation({
