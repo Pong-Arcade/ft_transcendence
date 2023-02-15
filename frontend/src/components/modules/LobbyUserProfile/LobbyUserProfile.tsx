@@ -92,7 +92,7 @@ const LobbyUserProfile = () => {
       </LobbyUserProfileStyled>
       {isUserInfoOpen && (
         <UserInfoModal
-          userId={3} // TODO: 수정
+          userId={"3"} // TODO: 수정
           onClose={onUserInfoClose}
           width="50%"
           height="90%"
