@@ -3,7 +3,7 @@ import { ChatRoomMode } from 'src/enum/chatroom.mode.enum';
 export class Room {
   id: number;
   roomname: string;
-  type: ChatRoomMode;
+  mode: ChatRoomMode;
   password: string;
   maxUser: number;
   users: Array<number>;
@@ -11,14 +11,14 @@ export class Room {
   constructor(
     id: number,
     roomname: string,
-    type: ChatRoomMode,
+    mode: ChatRoomMode,
     password: string,
     maxUser: number,
     creator: number,
   ) {
     this.id = id;
     this.roomname = roomname;
-    this.type = type;
+    this.mode = mode;
     this.password = password;
     this.maxUser = maxUser;
     this.users = new Array<number>();

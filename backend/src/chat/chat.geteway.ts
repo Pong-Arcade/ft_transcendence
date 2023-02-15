@@ -25,7 +25,7 @@ enum EMessageType {
 }
 @WebSocketGateway({
   namespace: 'socket/chat',
-  // cors: { origin: 'http://localhost:80' },
+  cors: { origin: process.env.FE_HOST },
 })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Namespace;

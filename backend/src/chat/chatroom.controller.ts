@@ -61,7 +61,7 @@ export class ChatroomController {
       chatrooms.push({
         roomId: roomId,
         title: room.roomname,
-        mode: room.type,
+        mode: room.mode,
         maxUserCount: room.maxUser,
         currentCount: room.users.length,
       });
@@ -110,7 +110,7 @@ export class ChatroomController {
       throw new ForbiddenException('추방당한 방에 입장할 수 없습니다.');
     }
     // 3. 비밀번호 채팅방인 경우, 비밀번호가 일치하는지 확인
-    if (chatroomInfo.type === ChatRoomMode.PROTECTED) {
+    if (chatroomInfo.mode === ChatRoomMode.PROTECTED) {
       // FIXME: bcrypt로 암호화된 비밀번호와 비교
       if (chatroomInfo.password !== password) {
         throw new ForbiddenException('비밀번호가 일치하지 않습니다.');
