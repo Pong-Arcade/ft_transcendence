@@ -11,7 +11,7 @@ class ChatSocket {
     const chatList = document.getElementById("");
   }
   constructor(userid: number, name: string) {
-    this.socket = io("ws://localhost:3000/chat");
+    this.socket = io("ws://localhost:80/socket/chat");
     this.userid = userid;
     this.username = name;
     this.socket.emit("addUser", {

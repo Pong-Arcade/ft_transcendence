@@ -7,8 +7,7 @@ import Typography from "../components/atoms/Typography";
 import Chat from "../components/modules/Chat";
 import ConfirmModal from "../components/modules/ConfirmModal";
 import { EConfirmType } from "../components/modules/ConfirmModal/ConfirmModal";
-import Menu from "../components/modules/Menu";
-import UserInfoModal from "../components/modules/UserInfoModal";
+import GeneralMenu from "../components/modules/GeneralMenu";
 import GameRoomTemplate from "../components/templates/GameRoomTemplate";
 import useMenu from "../hooks/useMenu";
 import useModal from "../hooks/useModal";
@@ -52,15 +51,6 @@ const GameRoom = () => {
     useMenu();
 
   const {
-    isModalOpen: isUserInfoOpen,
-    onModalOpen: onUserInfoOpen,
-    onModalClose: onUserInfoClose,
-  } = useModal({
-    afterOpen: () => {
-      onCloseMenu();
-    },
-  });
-  const {
     isModalOpen: isConfirmOpen,
     onModalOpen: onConfirmOpen,
     onModalClose: onConfirmClose,
@@ -91,18 +81,13 @@ const GameRoom = () => {
           </Button>
         </Wrapper>
       </GameRoomTemplate>
-      {isOpenMenu && ( // TODO: 정보보기 제외 다른 기능 추가 시 리팩토링 필요
-        <Menu
-          list={["정보보기", "귓속말", "친구추가", "차단하기"]}
-          top={positionY}
-          left={positionX}
-          onOpen={onUserInfoOpen}
-          onClose={onCloseMenu}
-        />
-      )}
-      {isUserInfoOpen && (
-        <UserInfoModal onClose={onUserInfoClose} width="50%" height="90%" />
-      )}
+      <GeneralMenu
+        userId={2} // TODO: 정보보기 제외 다른 기능 추가 시 리팩토링 필요
+        isOpenMenu={isOpenMenu}
+        onClose={onCloseMenu}
+        top={positionY}
+        left={positionX}
+      />
       {isConfirmOpen && (
         <ConfirmModal
           onClose={onConfirmClose}

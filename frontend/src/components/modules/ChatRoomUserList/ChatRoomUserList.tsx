@@ -45,7 +45,7 @@ for (let i = 0; i < 4; ++i) {
 }
 
 const ChatRoomUserList = () => {
-  const { isOpenMenu, onOpenMenu, onCloseMenu, positionX, positionY } =
+  const { isOpenMenu, onOpenMenu, onCloseMenu, positionX, positionY, id } =
     useMenu();
 
   const {
@@ -84,7 +84,12 @@ const ChatRoomUserList = () => {
         />
       )}
       {isUserInfoOpen && (
-        <UserInfoModal onClose={onUserInfoClose} width="50%" height="90%" />
+        <UserInfoModal
+          userId={id}
+          onClose={onUserInfoClose}
+          width="50%"
+          height="90%"
+        />
       )}
     </>
   );

@@ -14,6 +14,7 @@ interface Props {
   border?: string;
   disabled?: boolean;
   type?: "button" | "reset" | "submit" | undefined;
+  id?: string;
 }
 
 const ButtonStyled = styled.button.attrs((props) => {

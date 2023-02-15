@@ -2,12 +2,10 @@ import { useState } from "react";
 import styled from "styled-components";
 import useLobbyUserList from "../../../hooks/useLobbyUserList";
 import useMenu from "../../../hooks/useMenu";
-import useModal from "../../../hooks/useModal";
 import Board from "../../atoms/Board";
+import GeneralMenu from "../GeneralMenu";
 import LobbyUserItem from "../LobbyUserItem";
 import LobbyUserListPagination from "../LobbyUserListPagination";
-import Menu from "../Menu";
-import UserInfoModal from "../UserInfoModal";
 import UserListTypeChoiceButtonGroup from "../UserListTypeChoiceButtonGroup";
 import { EUSER_BUTTON } from "../UserListTypeChoiceButtonGroup/UserListTypeChoiceButtonGroup";
 
@@ -24,17 +22,9 @@ const LobbyUserListStyled = styled(Board).attrs((props) => {
 })``;
 
 const LobbyUserList = () => {
-  const { isOpenMenu, onOpenMenu, onCloseMenu, positionX, positionY } =
+  const { isOpenMenu, onOpenMenu, onCloseMenu, positionX, positionY, id } =
     useMenu();
-  const {
-    isModalOpen: isUserInfoOpen,
-    onModalOpen: onUserInfoOpen,
-    onModalClose: onUserInfoClose,
-  } = useModal({
-    afterOpen: () => {
-      onCloseMenu();
-    },
-  });
+
   const [currentButton, setCurrentButton] = useState(EUSER_BUTTON.ONLINE_USERS);
   const { onlineUsers, friendUsers, blockUsers } = useLobbyUserList();
   const [page, setPage] = useState(0);
@@ -65,18 +55,13 @@ const LobbyUserList = () => {
           PaginationItem={LobbyUserItem}
         />
       </LobbyUserListStyled>
-      {isOpenMenu && ( // TODO: 정보보기 제외 다른 기능 추가 시 리팩토링 필요
-        <Menu
-          list={["정보보기", "귓속말", "친구추가", "차단하기"]}
-          top={positionY}
-          left={positionX}
-          onOpen={onUserInfoOpen}
-          onClose={onCloseMenu}
-        />
-      )}
-      {isUserInfoOpen && (
-        <UserInfoModal onClose={onUserInfoClose} width="50%" height="90%" />
-      )}
+      <GeneralMenu
+        userId={id}
+        isOpenMenu={isOpenMenu}
+        onClose={onCloseMenu}
+        top={positionY}
+        left={positionX}
+      />
     </>
   );
 };
