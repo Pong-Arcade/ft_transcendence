@@ -6,7 +6,8 @@ export class Room {
   type: ChatRoomMode;
   password: string;
   maxUser: number;
-  Users: Array<number>;
+  users: Array<number>;
+  bannedUsers: Array<number>;
   constructor(
     id: number,
     roomname: string,
@@ -20,6 +21,7 @@ export class Room {
     this.type = type;
     this.password = password;
     this.maxUser = maxUser;
-    this.Users = new Array<number>();
+    this.users = new Array<number>();
+    this.bannedUsers = new Array<number>();
   }
 }

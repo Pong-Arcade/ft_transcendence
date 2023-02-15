@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsEnum, IsNumber, IsString, MaxLength } from 'class-validator';
 import { GameRoomMode } from 'src/enum/gameroom.mode.enum';
 import { MatchType } from 'src/enum/match.type.enum';
 
@@ -16,6 +17,7 @@ export class GameRoomCreateRequestDto {
     example: GameRoomMode.PROTECTED,
     enum: GameRoomMode,
   })
+  @IsEnum(GameRoomMode)
   mode: GameRoomMode;
 
   @ApiProperty({
@@ -23,12 +25,15 @@ export class GameRoomCreateRequestDto {
     example: MatchType.LADDER,
     enum: MatchType,
   })
+  @IsEnum(MatchType)
   type: MatchType;
 
   @ApiProperty({
     description: '게임방 제목',
     example: '게임방 제목입니다.',
   })
+  @IsString()
+  @MaxLength(32)
   title: string;
 
   @ApiProperty({
@@ -36,8 +41,11 @@ export class GameRoomCreateRequestDto {
     example: '1234',
     required: false,
   })
+  @IsString()
+  @MaxLength(32)
   password?: string;
 
+  @IsNumber()
   @ApiProperty({
     description: '최대 관전자 수',
     example: 10,

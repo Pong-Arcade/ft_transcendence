@@ -36,9 +36,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       users.forEach((value, key, map) => {
         if (socket.id == value.socketid) {
           if (value.location > 0) {
-            for (let i = 0; i < rooms.get(value.location).Users.length; i++) {
-              if (rooms.get(value.location).Users[i] == value.userid) {
-                rooms.get(value.location).Users.splice(i);
+            for (let i = 0; i < rooms.get(value.location).users.length; i++) {
+              if (rooms.get(value.location).users[i] == value.userid) {
+                rooms.get(value.location).users.splice(i);
                 break;
               }
             }
