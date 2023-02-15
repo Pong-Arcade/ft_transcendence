@@ -48,9 +48,9 @@ const Lobby = ({ socket }: { socket: ChatSocket }) => {
     }
     if (socket) {
       socket.socket.emit("joinLobby", socket.userid);
-      const createRoom = ({ type, roomname, password, maxUser }: any) => {
-        socket.socket.emit("createRoom", { type, roomname, password, maxUser });
-      };
+      // const createRoom = ({ type, roomname, password, maxUser }: any) => {
+      //   socket.socket.emit("createRoom", { type, roomname, password, maxUser });
+      // };
     }
   });
   return (
@@ -63,7 +63,7 @@ const Lobby = ({ socket }: { socket: ChatSocket }) => {
         <RoomListChatWrapper>
           <LobbyCreateRoomButtonGroup />
           <RoomListChat>
-            <LobbyChatRoomList socket={socket} />
+            <LobbyChatRoomList />
             {/* <LobbyGameRoomList /> */}
             <Chat width="98%" height="40%" boxShadow socket={socket} />
           </RoomListChat>

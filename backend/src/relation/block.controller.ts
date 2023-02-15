@@ -31,7 +31,7 @@ export class BlockController {
   @Get()
   async getBlocks(@User() user: UserDto) {
     this.logger.log(`Called ${this.getBlocks.name}`);
-    return this.mock.getBlockUser(34);
+    return this.mock.getBlockUser(9);
   }
 
   @Patch(':user_id')
