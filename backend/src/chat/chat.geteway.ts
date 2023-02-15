@@ -99,6 +99,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.to(client.id).emit('systemMsg', message);
   }
 
-  @OnEvent('chatroom:join')
-  async onJoinRoom(client, roomid) {}
+  // @OnEvent('chatroom:join')
+  // async onJoinRoom(client, roomid) {}
 }
