@@ -1,14 +1,55 @@
 import { GameRoomStatus } from 'src/enum/gameroom.status.enum';
 import { UserDto } from './user.dto';
+import { ApiProperty } from '@nestjs/swagger';
 
 /**
  * 게임방 목록을 반환하는 dto입니다.
  */
 export class GameRoomListDto {
-  roomId: number; // 게임방 ID
-  redUser: UserDto; // 빨간 팀 유저
-  blueUser: UserDto; // 파란 팀 유저
-  maxSpectatorCount: number; // 최대 관전자 수
-  curSpectatorCount: number; // 현재 관전자 수
-  roomStatus: GameRoomStatus; // 게임방 상태
+  @ApiProperty({
+    description: '게임방 ID',
+    example: 1,
+  })
+  roomId: number;
+
+  @ApiProperty({
+    description: '빨간 팀 유저',
+    example: {
+      userId: 1,
+      nickname: 'redUser',
+      avatarUrl: 'http://example.com',
+    } as UserDto,
+    type: UserDto,
+  })
+  redUser: UserDto;
+
+  @ApiProperty({
+    description: '파란 팀 유저',
+    example: {
+      userId: 2,
+      nickname: 'blueUser',
+      avatarUrl: 'http://example.com',
+    } as UserDto,
+    type: UserDto,
+  })
+  blueUser: UserDto;
+
+  @ApiProperty({
+    description: '최대 관전자 수',
+    example: 10,
+  })
+  maxSpectatorCount: number;
+
+  @ApiProperty({
+    description: '현재 관전자 수',
+    example: 5,
+  })
+  curSpectatorCount: number;
+
+  @ApiProperty({
+    description: '게임방 상태(게임중/대기중)',
+    example: GameRoomStatus.ON_GAME,
+    enum: GameRoomStatus,
+  })
+  roomStatus: GameRoomStatus;
 }
