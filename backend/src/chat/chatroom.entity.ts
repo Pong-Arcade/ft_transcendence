@@ -24,6 +24,7 @@ export class Room {
     this.mode = mode;
     this.password = password;
     this.maxUser = maxUser;
+    this.masterUser = masterUser;
     this.users = new Array<number>();
     this.bannedUsers = new Array<number>();
     this.adminUsers = new Array<number>();

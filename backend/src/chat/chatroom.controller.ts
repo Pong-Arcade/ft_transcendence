@@ -111,7 +111,7 @@ export class ChatroomController {
     }
 
     // 3. 참여중인 채팅방이 있는지 확인
-    for (const [_, room] of rooms.entries()) {
+    for (const room of rooms.values()) {
       if (room.users.includes(user.userId)) {
         throw new ConflictException('참여중인 채팅방이 있습니다.');
       }
@@ -205,7 +205,7 @@ export class ChatroomController {
     this.logger.log(`Called ${this.createChatroom.name}`);
 
     // 1. 참여중인 채팅방이 있는지 확인
-    for (const [_, room] of rooms.entries()) {
+    for (const room of rooms.values()) {
       if (room.users.includes(user.userId)) {
         throw new ConflictException('참여중인 채팅방이 있습니다.');
       }
@@ -326,7 +326,7 @@ export class ChatroomController {
     }
 
     // 4. 참여중인 채팅방이 있는지 확인
-    for (const [_, room] of rooms.entries()) {
+    for (const room of rooms.values()) {
       if (room.users.includes(user.userId)) {
         throw new ConflictException('참여중인 채팅방이 있습니다.');
       }
