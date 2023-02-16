@@ -9,14 +9,14 @@ export function getRequest(URL: string) {
   return axiosClient.get(`/api/${URL}`).then((response) => response);
 }
 
-export function postRequest(URL: string, payload: object) {
+export function postRequest(URL: string, payload?: object) {
   return axiosClient.post(`/api/${URL}`, payload).then((response) => response);
 }
 
-export function patchRequest(URL: string, payload: object) {
+export function patchRequest(URL: string, payload?: object) {
   return axiosClient.patch(`/api/${URL}`, payload).then((response) => response);
 }
 
 export function deleteRequest(URL: string) {
-  return axiosClient.patch(`/api/${URL}`).then((response) => response);
+  return axiosClient.delete(`/api/${URL}`).then((response) => response);
 }

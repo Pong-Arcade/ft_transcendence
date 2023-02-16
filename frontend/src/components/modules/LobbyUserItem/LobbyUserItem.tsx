@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import Button from "../../atoms/Button";
-import { IPaginationItem } from "../Pagination/Pagination";
+import { IPaginationItem, IUser } from "../Pagination/Pagination";
 
 const LobbyUserItemStyled = styled(Button).attrs((props) => {
   return {
@@ -11,11 +11,11 @@ const LobbyUserItemStyled = styled(Button).attrs((props) => {
 })``;
 
 const LobbyUserItem = ({ item, onItemClick }: IPaginationItem) => {
-  if (!("nickname" in item)) return <div></div>;
-
-  const { nickname } = item;
+  const { nickname, userId } = item as IUser;
   return (
-    <LobbyUserItemStyled onClick={onItemClick}>{nickname}</LobbyUserItemStyled>
+    <LobbyUserItemStyled id={userId.toString()} onClick={onItemClick}>
+      {nickname}
+    </LobbyUserItemStyled>
   );
 };
 

@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { patchFriendUsersAPI } from "../../../api/users";
 import useModal from "../../../hooks/useModal";
 import Avatar from "../../atoms/Avatar";
 import Board from "../../atoms/Board";
@@ -16,6 +17,7 @@ interface Props {
   onClose: () => void;
   width: string;
   height: string;
+  userId: string;
   me?: boolean;
 }
 
@@ -46,7 +48,7 @@ const UserInfoModalButton = styled(Button).attrs({
 })``;
 
 // FIXME: 리팩토링 (GridList ContentListWrapper ContentList 제거)
-const UserInfoModal = ({ onClose, width, height, me }: Props) => {
+const UserInfoModal = ({ onClose, width, height, me, userId }: Props) => {
   const titleList = ["이름", "가입일", "자기소개"];
   const contentList = ["kangkim", "yyyy-mm-dd", "안녕하세요"];
   const {
@@ -55,6 +57,10 @@ const UserInfoModal = ({ onClose, width, height, me }: Props) => {
     onModalClose: InfoSettingClose,
   } = useModal({});
 
+  const onAddFriend = async () => {
+    const status = await patchFriendUsersAPI(userId);
+    console.log(`id : ${userId}, status : ${status}`);
+  };
   return (
     <ModalWrapper>
       <Modal width={width} height={height}>
@@ -96,7 +102,9 @@ const UserInfoModal = ({ onClose, width, height, me }: Props) => {
             </>
           ) : (
             <>
-              <UserInfoModalButton>친구추가</UserInfoModalButton>
+              <UserInfoModalButton onClick={onAddFriend}>
+                친구추가
+              </UserInfoModalButton>
               <UserInfoModalButton to="/stat/1">최근전적</UserInfoModalButton>
               <UserInfoModalButton>관전하기</UserInfoModalButton>
             </>

@@ -7,9 +7,8 @@ import Board from "../../atoms/Board";
 import Button from "../../atoms/Button";
 import Typography from "../../atoms/Typography";
 import ButtonGroup from "../ButtonGroup";
-import ConfirmModal from "../ConfirmModal";
-import { EConfirmType } from "../ConfirmModal/ConfirmModal";
 import LogoutButton from "../LogoutButton";
+import LogoutConfirmModal from "../LogoutConfirmModal";
 import UserInfoModal from "../UserInfoModal";
 
 const LobbyUserProfileStyled = styled(Board).attrs((props) => {
@@ -92,12 +91,17 @@ const LobbyUserProfile = () => {
         </UserInfo>
       </LobbyUserProfileStyled>
       {isUserInfoOpen && (
-        <UserInfoModal onClose={onUserInfoClose} width="50%" height="90%" me />
+        <UserInfoModal
+          userId={"3"} // TODO: 수정
+          onClose={onUserInfoClose}
+          width="50%"
+          height="90%"
+          me
+        />
       )}
       {isConfirmOpen && (
-        <ConfirmModal
+        <LogoutConfirmModal
           onClose={onConfirmClose}
-          type={EConfirmType.LOGOUT}
           onYesConfirm={onYesConfirm}
           onNoConfirm={() => onConfirmClose()}
         />

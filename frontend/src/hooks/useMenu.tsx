@@ -6,23 +6,37 @@ interface IUseMenu {
   onCloseMenu: () => void;
   positionX: number;
   positionY: number;
+  id: string;
+  name: string;
 }
 
 function useMenu(): IUseMenu {
   const [isOpenMenu, setOpenMenu] = useState(false);
   const [positionX, setPositionX] = useState(0);
   const [positionY, setPositionY] = useState(0);
+  const [id, setId] = useState("");
+  const [name, setName] = useState("");
 
   const onOpenMenu = (e: React.MouseEvent<HTMLButtonElement>) => {
     setPositionX(e.clientX);
     setPositionY(e.clientY);
+    setId(e.currentTarget.id);
+    setName(e.currentTarget.innerText);
     setOpenMenu(true);
   };
   const onCloseMenu = () => {
     setOpenMenu(false);
   };
 
-  return { isOpenMenu, onOpenMenu, onCloseMenu, positionX, positionY };
+  return {
+    isOpenMenu,
+    onOpenMenu,
+    onCloseMenu,
+    positionX,
+    positionY,
+    id,
+    name,
+  };
 }
 
 export default useMenu;

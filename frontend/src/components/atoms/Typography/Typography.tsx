@@ -4,7 +4,7 @@ import styled from "styled-components";
 interface Props {
   children: React.ReactNode;
   fontSize: string;
-  fontColor?: "primary" | "secondary";
+  fontColor?: string;
 }
 
 const TypographyStyled = styled.p<Props>`
@@ -13,10 +13,7 @@ const TypographyStyled = styled.p<Props>`
     0.1rem 0 ${(props) => props.theme.colors.blueCola},
     0 -0.1rem ${(props) => props.theme.colors.blueCola};
   font-size: ${(props) => props.fontSize || "1rem"};
-  color: ${(props) =>
-    props.fontColor === "secondary"
-      ? props.theme.colors.blueCola
-      : props.theme.colors.white};
+  color: ${(props) => props.fontColor || "white"};
   white-space: nowrap;
   text-decoration: none;
 `;
