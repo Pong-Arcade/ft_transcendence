@@ -31,7 +31,7 @@ export class BlockController {
   @Get()
   async getBlocks(@User() user: UserDto) {
     this.logger.log(`Called ${this.getBlocks.name}`);
-    return this.mock.getBlockUser(9);
+    return this.mock.getBlockUser();
   }
 
   @Patch(':user_id')
@@ -55,6 +55,7 @@ export class BlockController {
   async addBlock(@User() user: UserDto, @Param('user_id') userId: number) {
     this.logger.log(`Called ${this.addBlock.name}`);
     //  TODO: Business Logic!
+    this.mock.patchBlockUser(userId);
   }
 
   @Delete(':user_id')
@@ -74,5 +75,6 @@ export class BlockController {
   async delBlock(@User() user: UserDto, @Param('user_id') userId: number) {
     this.logger.log(`Called ${this.delBlock.name}`);
     //  TODO: Business Logic!
+    this.mock.deleteBlockUser(userId);
   }
 }

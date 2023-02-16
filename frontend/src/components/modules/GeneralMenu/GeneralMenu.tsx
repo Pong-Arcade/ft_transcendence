@@ -88,8 +88,8 @@ const GeneralMenu = ({
   const blockUsers = useRecoilValue(blockUsersState);
   const [currentOn, setCurrentOn] = useState<ECurrentOn>();
 
-  const isFriend = friendUsers.find((user) => user.userId === +userId);
-  const isBlock = blockUsers.find((user) => user.userId === +userId);
+  const isFriend = friendUsers.find((user) => user.userId === userId);
+  const isBlock = blockUsers.find((user) => user.userId === userId);
 
   const checkedTop =
     top > window.innerHeight - window.innerHeight * 0.15
