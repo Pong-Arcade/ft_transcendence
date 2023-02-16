@@ -58,7 +58,7 @@ const Lobby = ({ socket }: { socket: ChatSocket }) => {
       <LobbyTemplate>
         <UserWrapper>
           <LobbyUserProfile />
-          <LobbyUserList />
+          <LobbyUserList socket={socket} />
         </UserWrapper>
         <RoomListChatWrapper>
           <LobbyCreateRoomButtonGroup />
