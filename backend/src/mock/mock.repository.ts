@@ -33,15 +33,6 @@ export class MockRepository {
     return blockUsers;
   }
 
-  patchOnlineUser(userId: number) {
-    const user: UserDto = {
-      userId: userId,
-      nickname: `User${userId}`,
-      avatarUrl: `onlineUser${userId}.jpeg`,
-      email: `onlineUser${userId}@asd.com`,
-    };
-    onlineUsers.onlineUsers.push(user);
-  }
   patchFriendUser(userId: number) {
     const user: UserDto = {
       userId: userId,
@@ -59,14 +50,6 @@ export class MockRepository {
       email: `blockUser${userId}@asd.com`,
     };
     blockUsers.blockUsers.push(user);
-  }
-  deleteOnlineUser(userId: number) {
-    for (let i = 0; i < onlineUsers.onlineUsers.length; ++i) {
-      if (onlineUsers.onlineUsers[i].userId === userId) {
-        onlineUsers.onlineUsers.splice(i, 1);
-        return;
-      }
-    }
   }
   deleteFriendUser(userId: number) {
     for (let i = 0; i < friendUsers.friendUsers.length; ++i) {

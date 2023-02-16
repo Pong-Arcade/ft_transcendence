@@ -31,14 +31,7 @@ const useLobbyUserList = () => {
     getBlockUsers();
   }, []);
 
-  return {
-    onlineUsers,
-    friendUsers,
-    blockUsers,
-    setOnlineUsers,
-    setFriendUsers,
-    setBlockUsers,
-  };
+  return { onlineUsers, friendUsers, blockUsers };
 };
 
 export default useLobbyUserList;

@@ -18,11 +18,13 @@ import GlobalStyle from "./styles/GlobalStyle";
 import theme from "./styles/theme";
 
 import ChatSocket from "./utils/ChatSocket";
-const n: number = Math.floor(Math.random() * 1000);
-const socket: ChatSocket = new ChatSocket(n, "user" + n);
 
+const socket: ChatSocket = new ChatSocket(
+  Math.floor(Math.random() * 1000),
+  "user" + Math.floor(Math.random() * 1000)
+);
 console.log(socket.socket);
-console.log(socket.userid);
+console.log(socket.username);
 const router = createBrowserRouter([
   {
     path: "/",
