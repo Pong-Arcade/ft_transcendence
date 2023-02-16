@@ -28,7 +28,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { ChatRoomListResponseDto } from 'src/dto/response/chatroom.list.response.dto';
-import { ChatRoomListDto } from 'src/dto/chatroom.list.dto';
 import { ChatroomUsersInfoResponseDto } from 'src/dto/response/chatroom.users.info.response.dto';
 import { User } from 'src/decorator/user.decorator';
 import { UserDto } from 'src/dto/user.dto';
@@ -63,9 +62,9 @@ export class ChatroomController {
     type: ChatRoomListResponseDto,
   })
   @Get()
-  async getAllChatrooms(): Promise<ChatRoomListResponseDto> {
+  getAllChatrooms(): ChatRoomListResponseDto {
     this.logger.log(`Called ${this.getAllChatrooms.name}`);
-    return await this.chatroomService.getAllChatrooms();
+    return this.chatroomService.getAllChatrooms();
   }
 
   @ApiOperation({
@@ -140,9 +139,7 @@ export class ChatroomController {
     this.eventEmitter.emit('chatroom:join', roomId, user.userId);
 
     // 8. 채팅방에 입장한 유저 정보 반환
-    // return await this.chatroomService.getChatroomUsersInfo(roomId);
-    // TODO:
-    return new ChatroomUsersInfoResponseDto();
+    return await this.chatroomService.getChatroomUsersInfo(chatroomInfo);
   }
 
   @ApiOperation({
@@ -207,8 +204,6 @@ export class ChatroomController {
   ): Promise<ChatroomCreateUsersInfoResponseDto> {
     this.logger.log(`Called ${this.createChatroom.name}`);
 
-    console.log(user);
-
     // 1. 참여중인 채팅방이 있는지 확인
     for (const [_, room] of rooms.entries()) {
       if (room.users.includes(user.userId)) {
@@ -217,16 +212,20 @@ export class ChatroomController {
     }
 
     // 2. 채팅방 생성
-    // 채팅방 생성 후 roomId 반환
-    const roomId = await this.chatroomService.createChatroom(
+    this.eventEmitter.emit(
+      'chatroom:create',
       user.userId,
       chatroomCreateRequestDto,
     );
 
-    // 3. 채팅방에 입장
+    // 3. 자신이 생성한 채팅방의 roomId를 가져온다.
+    const roomId = this.chatroomService.getMyMasterChatroomId(user.userId);
+
+    // 4. 채팅방에 입장
     this.eventEmitter.emit('chatroom:join', roomId, user.userId);
-    // TODO:
-    return new ChatroomCreateUsersInfoResponseDto();
+
+    // 5. 채팅방에 입장한 유저 정보 반환(roomId 포함)
+    return await this.chatroomService.getChatroomCreateUsersInfo(roomId);
   }
 
   @ApiOperation({
@@ -346,8 +345,8 @@ export class ChatroomController {
     // 7. 채팅방에 입장
     this.eventEmitter.emit('chatroom:join', roomId, user.userId);
 
-    // TODO:
-    return new ChatroomUsersInfoResponseDto();
+    // 8. 채팅방에 속한 유저 정보 반환
+    return await this.chatroomService.getChatroomUsersInfo(chatroomInfo);
   }
 
   @ApiOperation({
