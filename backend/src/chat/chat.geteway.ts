@@ -11,7 +11,7 @@ import { Room } from '../chat/chatroom.entity';
 import { Namespace } from 'socket.io';
 import { OnEvent } from '@nestjs/event-emitter';
 
-export let rooms = new Map<number, Room>();
+export const rooms = new Map<number, Room>();
 
 type MessageType = 'message' | 'whisper' | 'systemMsg';
 interface IMessage {

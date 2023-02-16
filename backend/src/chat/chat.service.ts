@@ -9,6 +9,7 @@ import { ChatroomCreateRequestDto } from 'src/dto/request/chatroom.create.reques
 export class ChatroomService {
   private logger = new Logger(ChatroomService.name);
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   constructor() {} // private readonly chatGateway: ChatGateway,
 
   /**
