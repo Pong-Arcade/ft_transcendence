@@ -11,6 +11,7 @@ import { ChatGateway } from '../chat/chat.geteway';
 import { GameGateway } from '../game/game.gateway';
 import { MockRepository } from '../mock/mock.repository';
 import { OnlineUsersResponseDto } from '../dto/response/online.users.response.dto';
+import { UserService } from './user.service';
 
 @ApiTags('Users')
 @Controller('/api/users')
@@ -20,7 +21,17 @@ export class UserController {
   constructor(
     private chatGateway: ChatGateway,
     private gameGateway: GameGateway,
-  ) {}
+    private service: UserService,
+  ) {
+    console.log('here');
+    console.log(
+      this.service.createUser({
+        userId: 1,
+        nickname: 'heyhey',
+        avatarUrl: 'http://example.com',
+      }),
+    );
+  }
 
   @ApiOperation({
     summary: '모든 온라인 유저 배열 반환',
@@ -34,7 +45,8 @@ export class UserController {
   @Get()
   async getAllUsers() {
     this.logger.log(`Called ${this.getAllUsers.name}`);
-    return this.mock.getOnlineUser();
+    return await this.service.getAllUsers();
+    //return this.mock.getOnlineUser();
   }
 
   @ApiOperation({
