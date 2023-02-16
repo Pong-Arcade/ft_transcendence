@@ -3,7 +3,7 @@ import { GameGateway } from './game.gateway';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { AuthModule } from 'src/auth/auth.module';
-import { GameController } from './game.controller';
+import { GameRoomController } from './gameroom.controller';
 
 @Module({
   imports: [
@@ -20,6 +20,6 @@ import { GameController } from './game.controller';
   ],
   providers: [GameGateway],
   exports: [GameGateway],
-  controllers: [GameController],
+  controllers: [GameRoomController],
 })
 export class GameModule {}

@@ -11,7 +11,7 @@ import TypeOrmConfigService from './config/typeorm.config';
 import { ChatModule } from './chat/chat.module';
 import { RelationModule } from './relation/relation.module';
 import { StatModule } from './stat/stat.module';
-import { ChatroomModule } from './chatroom/chatroom.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -23,16 +23,16 @@ import { ChatroomModule } from './chatroom/chatroom.module';
       imports: [ConfigModule],
       useClass: TypeOrmConfigService,
     }),
-    AuthModule,
-    UserModule,
-    ChatModule,
     CacheModule.register({
       isGlobal: true,
     }),
+    EventEmitterModule.forRoot(),
+    AuthModule,
+    UserModule,
+    ChatModule,
     GameModule,
     RelationModule,
     StatModule,
-    ChatroomModule,
   ],
   controllers: [AppController],
   providers: [AppService],

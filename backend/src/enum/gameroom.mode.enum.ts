@@ -1,11 +1,9 @@
 /**
  * 게임방 모드
- * PUBLIC: 공개 게임방
- * PRIVATE: 비공개 게임방(invite-only)
- * PROTECTED: 비밀번호 게임방
+ * POWER_UP: 파워업 모드
+ * NORMAL: 일반 모드
  */
 export enum GameRoomMode {
-  PUBLIC = 'PUBLIC',
-  PRIVATE = 'PRIVATE',
-  PROTECTED = 'PROTECTED',
+  POWER_UP = 'POWER_UP',
+  NORMAL = 'NORMAL',
 }

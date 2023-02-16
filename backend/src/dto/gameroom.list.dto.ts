@@ -1,6 +1,7 @@
 import { GameRoomStatus } from 'src/enum/gameroom.status.enum';
 import { UserDto } from './user.dto';
 import { ApiProperty } from '@nestjs/swagger';
+import { GameRoomMode } from 'src/enum/gameroom.mode.enum';
 
 /**
  * 게임방 목록을 반환하는 dto입니다.
@@ -52,4 +53,17 @@ export class GameRoomListDto {
     enum: GameRoomStatus,
   })
   roomStatus: GameRoomStatus;
+
+  @ApiProperty({
+    description: '게임방 제목',
+    example: '게임방 제목입니다.',
+  })
+  title: string;
+
+  @ApiProperty({
+    description: '게임방 모드 (파워업/일반)',
+    example: GameRoomMode.POWER_UP,
+    enum: GameRoomMode,
+  })
+  mode: GameRoomMode;
 }

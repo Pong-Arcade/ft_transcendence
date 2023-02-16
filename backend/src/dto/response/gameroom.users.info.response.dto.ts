@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { UserDto } from '../user.dto';
+import { GameRoomMode } from 'src/enum/gameroom.mode.enum';
 
 /**
  * 게임방에 참여한 유저들의 정보를 반환하는 dto입니다.
@@ -8,7 +9,7 @@ import { UserDto } from '../user.dto';
  */
 export class GameRoomUsersInfoResponseDto {
   @ApiProperty({
-    description: '게임방에 참여한 유저들의 정보',
+    description: '게임방 ID',
     example: 1,
   })
   roomId: number;
@@ -44,4 +45,17 @@ export class GameRoomUsersInfoResponseDto {
     example: 5,
   })
   curSpectatorCount: number;
+
+  @ApiProperty({
+    description: '게임방 제목',
+    example: '게임방 제목입니다.',
+  })
+  title: string;
+
+  @ApiProperty({
+    description: '게임방 모드 (파워업/일반)',
+    example: GameRoomMode.POWER_UP,
+    enum: GameRoomMode,
+  })
+  mode: GameRoomMode;
 }

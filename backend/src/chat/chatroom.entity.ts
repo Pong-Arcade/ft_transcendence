@@ -1,23 +1,27 @@
+import { ChatRoomMode } from 'src/enum/chatroom.mode.enum';
+
 export class Room {
   id: number;
   roomname: string;
-  type: number;
+  mode: ChatRoomMode;
   password: string;
   maxUser: number;
-  Users: Array<number>;
+  users: Array<number>;
+  bannedUsers: Array<number>;
   constructor(
     id: number,
     roomname: string,
-    type: number,
+    mode: ChatRoomMode,
     password: string,
     maxUser: number,
     creator: number,
   ) {
     this.id = id;
     this.roomname = roomname;
-    this.type = type;
+    this.mode = mode;
     this.password = password;
     this.maxUser = maxUser;
-    this.Users = new Array<number>();
+    this.users = new Array<number>();
+    this.bannedUsers = new Array<number>();
   }
 }
