@@ -31,7 +31,7 @@ export class FriendsController {
   @Get()
   async getFriend(@User() user: UserDto) {
     this.logger.log(`Called ${this.getFriend.name}`);
-    return this.mock.getFriendUser(17);
+    return this.mock.getFriendUser();
   }
 
   @Patch(':user_id')
@@ -55,6 +55,7 @@ export class FriendsController {
   async addFriend(@User() user: UserDto, @Param('user_id') userId: number) {
     this.logger.log(`Called ${this.addFriend.name}`);
     //  TODO: Business Logic!
+    this.mock.patchFriendUser(userId);
   }
 
   @Delete(':user_id')
@@ -74,5 +75,6 @@ export class FriendsController {
   async delFriend(@User() user: UserDto, @Param('user_id') userId: number) {
     this.logger.log(`Called ${this.delFriend.name}`);
     //  TODO: Business Logic!
+    this.mock.deleteFriendUser(userId);
   }
 }
