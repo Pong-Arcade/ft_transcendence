@@ -1,11 +1,4 @@
-import {
-  Controller,
-  Get,
-  HttpCode,
-  Logger,
-  Param,
-  ParseIntPipe,
-} from '@nestjs/common';
+import { Controller, Get, HttpCode, Logger } from '@nestjs/common';
 import {
   ApiOkResponse,
   ApiOperation,
@@ -28,8 +21,17 @@ export class UserController {
   constructor(
     private chatGateway: ChatGateway,
     private gameGateway: GameGateway,
-    private readonly userService: UserService,
-  ) {}
+    private service: UserService,
+  ) {
+    console.log('here');
+    console.log(
+      this.service.createUser({
+        userId: 1,
+        nickname: 'heyhey',
+        avatarUrl: 'http://example.com',
+      }),
+    );
+  }
 
   @ApiOperation({
     summary: '모든 온라인 유저 배열 반환',
@@ -43,7 +45,8 @@ export class UserController {
   @Get()
   async getAllUsers() {
     this.logger.log(`Called ${this.getAllUsers.name}`);
-    return this.mock.getOnlineUser();
+    return await this.service.getAllUsers();
+    //return this.mock.getOnlineUser();
   }
 
   @ApiOperation({
@@ -64,11 +67,8 @@ export class UserController {
     description: '존재하지 않는 유저입니다.',
   })
   @Get(':user_id')
-  async getUserDetail(
-    @User() user: UserDto,
-    @Param('user_id', ParseIntPipe) userId: number,
-  ) {
+  async getUserDetail(@User() user: UserDto) {
     this.logger.log(`Called ${this.getUserDetail.name}`);
-    return await this.userService.getUserInfo(userId);
+    return this.mock.getUserInfo();
   }
 }
