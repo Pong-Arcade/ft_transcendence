@@ -19,7 +19,7 @@ const LobbyChatRoomPagination = ({
   onNextPage,
   onPrevPage,
 }: Props) => {
-  const pageLength = 6;
+  const pageLength = 4;
 
   return (
     <Pagination
@@ -31,9 +31,10 @@ const LobbyChatRoomPagination = ({
       buttonHeight="70%"
       buttonWidth="15%"
       buttonGap="2vw"
+      height="85%"
       width="90%"
       itemGap="0.3vh"
-      gridTemplate="repeat(3, 1fr) / repeat(2, 1fr)"
+      gridTemplate="repeat(2, 1fr) / repeat(2, 1fr)"
       onNextPage={onNextPage}
       onPrevPage={onPrevPage}
       onItemClick={onItemClick}

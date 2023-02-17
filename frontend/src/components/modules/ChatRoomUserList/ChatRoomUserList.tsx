@@ -70,7 +70,7 @@ const ChatRoomUserList = () => {
           onNextPage={() => setPage(page + 1)}
           onPrevPage={() => setPage(page - 1)}
           onItemClick={onOpenMenu}
-          PaginationItem={LobbyUserItem} //TODO: LobbyChatRoomItem
+          PaginationItem={LobbyUserItem} //TODO: LobbyLobbyChatRoomItem
         />
         <Chat width="100%" height="55%" />
       </ChatRoomUserListStyled>

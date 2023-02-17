@@ -4,8 +4,8 @@ import {
   deleteFriendUsersAPI,
   getBlockUsersAPI,
   getFriendUsersAPI,
-  patchBlockUsersAPI,
-  patchFriendUsersAPI,
+  createBlockUsersAPI,
+  createFriendUsersAPI,
 } from "../api/users";
 import { blockUsersState } from "../state/BlockUsersState";
 import { friendUsersState } from "../state/FriendUsersState";
@@ -15,7 +15,7 @@ const useRelation = (userId: string) => {
   const setBlockUsers = useSetRecoilState(blockUsersState);
 
   const onAddFriend = async () => {
-    const response = await patchFriendUsersAPI(userId);
+    const response = await createFriendUsersAPI(userId);
     if (response.status === 201) {
       const newFriendUsers = await getFriendUsersAPI();
       setFriendUsers(newFriendUsers);
@@ -29,7 +29,7 @@ const useRelation = (userId: string) => {
     }
   };
   const onAddBlock = async () => {
-    const response = await patchBlockUsersAPI(userId);
+    const response = await createBlockUsersAPI(userId);
     if (response.status === 201) {
       const newBlockUsers = await getBlockUsersAPI();
       setBlockUsers(newBlockUsers);

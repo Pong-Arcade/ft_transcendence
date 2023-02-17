@@ -49,7 +49,6 @@ export class JWTSignGuard implements CanActivate {
     this.logger.debug(`${user.nickname}의 토큰을 생성합니다.`);
     response.cookie(this.configService.get<string>('jwt.token'), token, {
       expires,
-      httpOnly: true,
       domain,
     });
     return true;
