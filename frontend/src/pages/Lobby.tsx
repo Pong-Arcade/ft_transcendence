@@ -65,7 +65,7 @@ const Lobby = ({ socket }: { socket: ChatSocket }) => {
       console.log("recreated socket");
     }
     if (socket) {
-      socket.socket.emit("joinLobby", socket.userid);
+      socket.socket.emit("addUser", socket);
       // const createRoom = ({ type, roomname, password, maxUser }: any) => {
       //   socket.socket.emit("createRoom", { type, roomname, password, maxUser });
       // };

@@ -48,9 +48,11 @@ const LobbyUserList = ({ socket }: { socket: ChatSocket }) => {
     setPage(0);
   };
   const addOnlineUser = (user: IUser) => {
+    console.log("add");
     setOnlineUsers((prev) => [...prev, user]);
   };
   const deleteOnlineUser = (userId: string) => {
+    console.log("delete");
     setOnlineUsers((prev) => {
       let users = new Array<IUser>();
       prev.forEach((user) => {
@@ -60,6 +62,7 @@ const LobbyUserList = ({ socket }: { socket: ChatSocket }) => {
     });
   };
   useEffect(() => {
+    console.log(socket);
     socket.socket.on("addOnlineUser", (user) => addOnlineUser(user));
     socket.socket.on("deleteOnlineUser", (userId) => deleteOnlineUser(userId));
   }, []);

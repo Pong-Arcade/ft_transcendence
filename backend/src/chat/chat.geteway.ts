@@ -36,10 +36,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     socket.on('disconnect', () => {
       // 끊긴 소켓 삭제
       users.forEach((value, key, map) => {
-        if (socket.id == value.socketid) {
+        if (socket.id == value.socketId) {
           if (value.location > 0) {
             for (let i = 0; i < rooms.get(value.location).users.length; i++) {
-              if (rooms.get(value.location).users[i] == value.userid) {
+              if (rooms.get(value.location).users[i] == value.userId) {
                 rooms.get(value.location).users.splice(i);
                 break;
               }
@@ -61,6 +61,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async onAddUser(client, info) {
     if (rooms.size == 0) rooms.set(0, new Room(0, 'lobby'));
     users.set(info.userid, new User(info.userid, info.username, client.id));
+    client.join('lobby');
 
     this.mock.patchOnlineUser(info.userid);
     this.server.to('lobby').emit('addOnlineUser', {
@@ -90,7 +91,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('whisper')
   async onWhisper(client, msg) {
     for (const value of users.values()) {
-      if (value.username == msg.toName) {
+      if (value.userName == msg.toName) {
         const toWhisperMsg: IMessage = {
           content: `${msg.toName}에게: ${msg.msg}`,
           type: EMessageType.WHISPER,
@@ -100,7 +101,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
           type: EMessageType.WHISPER,
         };
         this.server.to(client.id).emit('whisper', toWhisperMsg);
-        this.server.to(value.socketid).emit('whisper', fromWhisperMsg);
+        this.server.to(value.socketId).emit('whisper', fromWhisperMsg);
         console.log('send');
         return;
       }
