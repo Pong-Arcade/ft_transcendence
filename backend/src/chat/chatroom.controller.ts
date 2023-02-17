@@ -11,6 +11,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
 import {
@@ -36,12 +37,16 @@ import { ChatroomCreateRequestDto } from 'src/dto/request/chatroom.create.reques
 import { ChatroomInviteRequestDto } from 'src/dto/request/chatroom.invite.request.dto';
 import { ChangeChatroomInfoRequestDto } from 'src/dto/request/chatroom.change.info.request.dto';
 import { ChatroomCreateUsersInfoResponseDto } from 'src/dto/response/chatroom.create.users.info.response.dto';
+import { MockRepository } from 'src/mock/mock.repository';
+import { JwtAuthGuard } from 'src/auth/jwt/jwt.auth.guard';
+import { UserChatDto } from 'src/dto/user.chat.dto';
 
 @ApiTags('Chat')
+@UseGuards(JwtAuthGuard)
 @Controller('api/chat-rooms')
 export class ChatroomController {
   private logger = new Logger(ChatroomController.name);
-
+  private mock = new MockRepository();
   constructor(private readonly eventEmitter: EventEmitter2) {}
 
   @ApiOperation({
@@ -66,9 +71,10 @@ export class ChatroomController {
         currentCount: room.users.length,
       });
     }
-    return {
-      chatRooms: chatrooms,
-    } as ChatRoomListResponseDto;
+    // return {
+    //   chatRooms: chatrooms,
+    // } as ChatRoomListResponseDto;
+    return this.mock.getChatRoomList();
   }
 
   @ApiOperation({
@@ -166,7 +172,8 @@ export class ChatroomController {
     chatroomCreateRequestDto: ChatroomCreateRequestDto,
   ): Promise<ChatroomCreateUsersInfoResponseDto> {
     this.logger.log(`Called ${this.createChatroom.name}`);
-    return new ChatroomCreateUsersInfoResponseDto();
+    // return new ChatroomCreateUsersInfoResponseDto();
+    return this.mock.createChatRoom(user);
   }
 
   @ApiOperation({

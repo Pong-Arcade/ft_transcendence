@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  EChatRoomType,
+  EChatRoomMode,
   EChatRoomFormValues,
 } from "../../../hooks/useChatRoomForm";
 import CheckBox from "../../atoms/CheckBox";
@@ -14,9 +14,9 @@ interface Props {
 }
 
 const titleList = [
-  EChatRoomType.PUBLIC,
-  EChatRoomType.PROTECTED,
-  EChatRoomType.PRIVATE,
+  EChatRoomMode.PUBLIC,
+  EChatRoomMode.PROTECTED,
+  EChatRoomMode.PRIVATE,
 ];
 
 const RoomTypeCheckBoxGroup = ({ title, onChange, checked }: Props) => {
@@ -28,7 +28,7 @@ const RoomTypeCheckBoxGroup = ({ title, onChange, checked }: Props) => {
           <CheckBox
             onChange={onChange}
             title={title}
-            name={EChatRoomFormValues.TYPE}
+            name={EChatRoomFormValues.MODE}
             checked={title === checked}
             key={title}
           />

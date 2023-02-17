@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { patchFriendUsersAPI } from "../../../api/users";
+import { createFriendUsersAPI } from "../../../api/users";
 import useModal from "../../../hooks/useModal";
 import Avatar from "../../atoms/Avatar";
 import Board from "../../atoms/Board";
@@ -58,7 +58,7 @@ const UserInfoModal = ({ onClose, width, height, me, userId }: Props) => {
   } = useModal({});
 
   const onAddFriend = async () => {
-    const status = await patchFriendUsersAPI(userId);
+    const status = await createFriendUsersAPI(userId);
     console.log(`id : ${userId}, status : ${status}`);
   };
   return (
