@@ -41,12 +41,14 @@ import { ChatroomCreateUsersInfoResponseDto } from 'src/dto/response/chatroom.cr
 import { ChatroomService } from './chat.service';
 import { UserChatMode } from 'src/enum/user.chat.mode.enum';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.auth.guard';
+import { MockRepository } from 'src/mock/mock.repository';
 
 @ApiTags('Chat')
 @UseGuards(JwtAuthGuard)
 @Controller('api/chat-rooms')
 export class ChatroomController {
   private logger = new Logger(ChatroomController.name);
+  private mock = new MockRepository();
 
   constructor(
     private readonly eventEmitter: EventEmitter2,
@@ -64,7 +66,8 @@ export class ChatroomController {
   @Get()
   getAllChatrooms(): ChatRoomListResponseDto {
     this.logger.log(`Called ${this.getAllChatrooms.name}`);
-    return this.chatroomService.getAllChatrooms();
+    // return this.chatroomService.getAllChatrooms();
+    return this.mock.getChatRoomList();
   }
 
   @ApiOperation({
@@ -225,7 +228,8 @@ export class ChatroomController {
     this.eventEmitter.emit('chatroom:join', roomId, user.userId);
 
     // 5. 채팅방에 입장한 유저 정보 반환(roomId 포함)
-    return await this.chatroomService.getChatroomCreateUsersInfo(roomId);
+    // return await this.chatroomService.getChatroomCreateUsersInfo(roomId);
+    return this.mock.createChatRoom(user, chatroomCreateRequestDto);
   }
 
   @ApiOperation({

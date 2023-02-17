@@ -20,7 +20,15 @@ export interface IRanking {
   winRate: number;
 }
 
-export type IItem = IUser | IRanking;
+export interface IChatRoom {
+  roomId: string;
+  title: string;
+  mode: string;
+  maxUserCount: string;
+  currentCount: string;
+}
+
+export type IItem = IUser | IRanking | IChatRoom;
 
 export interface IPaginationItem {
   item: IItem;

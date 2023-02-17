@@ -9,7 +9,7 @@ import ModalTitle from "../ModalTitle";
 
 interface Props {
   onClose: () => void;
-  errors: IErrors;
+  errors?: IErrors;
 }
 const Wrapper = styled(Board).attrs((props) => {
   return {
@@ -41,10 +41,12 @@ const ErrorModal = ({ onClose, errors }: Props) => {
           방만들기 실패
         </ModalTitle>
         <Wrapper>
-          {errors.Type && <ErrorMessage>{errors.Type}</ErrorMessage>}
-          {errors.Title && <ErrorMessage>{errors.Title}</ErrorMessage>}
-          {errors.Password && <ErrorMessage>{errors.Password}</ErrorMessage>}
-          {errors.MaxUser && <ErrorMessage>{errors.MaxUser}</ErrorMessage>}
+          {errors?.mode && <ErrorMessage>{errors.mode}</ErrorMessage>}
+          {errors?.title && <ErrorMessage>{errors.title}</ErrorMessage>}
+          {errors?.password && <ErrorMessage>{errors.password}</ErrorMessage>}
+          {errors?.maxUserCount && (
+            <ErrorMessage>{errors.maxUserCount}</ErrorMessage>
+          )}
         </Wrapper>
         <ModalButton onClick={onClose}>확인</ModalButton>
       </Modal>

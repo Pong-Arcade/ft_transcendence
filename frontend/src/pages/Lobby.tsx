@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Board from "../components/atoms/Board";
 import Chat from "../components/modules/Chat";
@@ -10,6 +10,18 @@ import UserInfoSettingModal from "../components/modules/UserInfoSettingModal";
 import LobbyTemplate from "../components/templates/LobbyTemplate";
 import ChatSocket from "../utils/ChatSocket";
 import useFirstLoginModal from "../hooks/useFirstLoginModal";
+import { useSetRecoilState } from "recoil";
+import { loadingState } from "../state/LoadingState";
+import {
+  getBlockUsersAPI,
+  getFriendUsersAPI,
+  getOnlineUsersAPI,
+} from "../api/users";
+import { onlineUsersState } from "../state/OnlineUsersState";
+import { friendUsersState } from "../state/FriendUsersState";
+import { blockUsersState } from "../state/BlockUsersState";
+import { IChatRoom } from "../components/modules/Pagination/Pagination";
+import { getChatRoomListAPI } from "../api/chatRoom";
 
 const UserWrapper = styled(Board).attrs({
   width: "25%",
@@ -34,13 +46,19 @@ const RoomListChat = styled(Board).attrs((props) => {
     backgroundColor: props.theme.background.middle,
     boxShadow: true,
     flexDirection: "column",
-    justifyContent: "space-evenly",
+    justifyContent: "space-between",
     borderRadius: true,
   };
 })``;
 
 const Lobby = ({ socket }: { socket: ChatSocket }) => {
   const { isFirstLogin, onSubmit, onClose } = useFirstLoginModal();
+  const setIsLoadingState = useSetRecoilState(loadingState);
+  const setOnlineUsers = useSetRecoilState(onlineUsersState);
+  const setFriendUsers = useSetRecoilState(friendUsersState);
+  const setBlockUsers = useSetRecoilState(blockUsersState);
+  const [chatRoomList, setChatRoomList] = useState<IChatRoom[]>([]);
+
   useEffect(() => {
     if (socket === undefined) {
       socket = new ChatSocket(1, "user" + Math.floor(Math.random() * 100));
@@ -52,7 +70,16 @@ const Lobby = ({ socket }: { socket: ChatSocket }) => {
       //   socket.socket.emit("createRoom", { type, roomname, password, maxUser });
       // };
     }
-  });
+    (async () => {
+      setIsLoadingState(true);
+      setOnlineUsers(await getOnlineUsersAPI());
+      setFriendUsers(await getFriendUsersAPI());
+      setBlockUsers(await getBlockUsersAPI());
+      setChatRoomList(await getChatRoomListAPI());
+      setIsLoadingState(false);
+    })();
+  }, []);
+
   return (
     <>
       <LobbyTemplate>
@@ -63,7 +90,7 @@ const Lobby = ({ socket }: { socket: ChatSocket }) => {
         <RoomListChatWrapper>
           <LobbyCreateRoomButtonGroup />
           <RoomListChat>
-            <LobbyChatRoomList />
+            <LobbyChatRoomList list={chatRoomList} />
             {/* <LobbyGameRoomList /> */}
             <Chat width="98%" height="40%" boxShadow socket={socket} />
           </RoomListChat>

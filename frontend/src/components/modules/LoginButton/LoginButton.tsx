@@ -4,7 +4,7 @@ import Button from "../../atoms/Button";
 import { ReactComponent as Logo } from "../../../assets/42logo.svg";
 import Typography from "../../atoms/Typography";
 import { loginAPI } from "../../../api/auth";
-import LoadingState from "../../../state/LoadingState";
+import { loadingState } from "../../../state/LoadingState";
 import { useSetRecoilState } from "recoil";
 
 const LoginButtonStyled = styled(Board).attrs({
@@ -24,7 +24,7 @@ const ButtonStyled = styled(Button).attrs({
 `;
 
 const LoginButton = () => {
-  const setIsLoading = useSetRecoilState(LoadingState);
+  const setIsLoading = useSetRecoilState(loadingState);
 
   const onClick = () => {
     setIsLoading(true);

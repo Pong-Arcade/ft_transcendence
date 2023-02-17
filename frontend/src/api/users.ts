@@ -11,7 +11,7 @@ export const getFriendUsersAPI = async () => {
   return response.data.friendUsers;
 };
 
-export const patchFriendUsersAPI = async (userId: string) => {
+export const createFriendUsersAPI = async (userId: string) => {
   const response = await patchRequest(`friends/${userId}`);
   return response;
 };
@@ -26,7 +26,7 @@ export const getBlockUsersAPI = async () => {
   return response.data.blockUsers;
 };
 
-export const patchBlockUsersAPI = async (userId: string) => {
+export const createBlockUsersAPI = async (userId: string) => {
   const response = await patchRequest(`block/${userId}`);
   return response;
 };

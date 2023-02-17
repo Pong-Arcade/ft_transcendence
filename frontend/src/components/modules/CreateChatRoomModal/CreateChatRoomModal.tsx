@@ -1,8 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { createChatRoomAPI } from "../../../api/chatRoom";
 import useChatRoomForm, {
   EChatRoomFormValues,
-  EChatRoomType,
+  EChatRoomMode,
 } from "../../../hooks/useChatRoomForm";
 import Button from "../../atoms/Button";
 import Modal from "../../atoms/Modal";
@@ -44,8 +45,11 @@ const CreateChatRoomModal = ({ title, onClose }: Props) => {
   const { values, errors, onErrorModalClose, onChangeForm, onSubmitForm } =
     useChatRoomForm({
       onSubmit: () => {
-        onClose();
-        navigate("/chat-rooms/123");
+        (async () => {
+          const response = await createChatRoomAPI(values);
+          onClose();
+          navigate(`/chat-rooms/${response.data.roomId}`);
+        })();
       },
     });
 
@@ -61,19 +65,19 @@ const CreateChatRoomModal = ({ title, onClose }: Props) => {
               <RoomTypeCheckBoxGroup
                 title="방유형"
                 onChange={onChangeForm}
-                checked={values.Type}
+                checked={values.mode}
               />
             </ModalInputWrapper>
             <ModalInputWrapper>
               <LabledInput
                 title="방제목"
                 name={EChatRoomFormValues.TITLE}
-                value={values.Title}
+                value={values.title}
                 onChange={onChangeForm}
-                disabled={values.Type === EChatRoomType.PRIVATE}
+                disabled={values.mode === EChatRoomMode.PRIVATE}
                 type="text"
                 placeholder={
-                  values.Type === EChatRoomType.PRIVATE ? values.Title : ""
+                  values.mode === EChatRoomMode.PRIVATE ? values.title : ""
                 }
               />
             </ModalInputWrapper>
@@ -81,17 +85,17 @@ const CreateChatRoomModal = ({ title, onClose }: Props) => {
               <LabledInput
                 title="비밀번호"
                 name={EChatRoomFormValues.PASSWORD}
-                value={values.Password}
+                value={values.password}
                 onChange={onChangeForm}
-                disabled={values.Type !== EChatRoomType.PROTECTED}
+                disabled={values.mode !== EChatRoomMode.PROTECTED}
                 type="password"
               />
             </ModalInputWrapper>
             <ModalInputWrapper>
               <LabledInput
                 title="최대인원"
-                name={EChatRoomFormValues.MAXUSER}
-                value={values.MaxUser}
+                name={EChatRoomFormValues.MAXUSER_COUNT}
+                value={values.maxUserCount}
                 onChange={onChangeForm}
                 type="number"
                 placeholder="2 ~ 10 숫자만 입력하세요"
@@ -101,7 +105,9 @@ const CreateChatRoomModal = ({ title, onClose }: Props) => {
           <SubmitButton>생성</SubmitButton>
         </CreateRoomForm>
       </Modal>
-      {errors && <ErrorModal onClose={onErrorModalClose} errors={errors} />}
+      {Object.keys(errors).length && (
+        <ErrorModal onClose={onErrorModalClose} errors={errors} />
+      )}
     </ModalWrapper>
   );
 };

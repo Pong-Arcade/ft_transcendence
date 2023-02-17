@@ -3,11 +3,15 @@ import { OnlineUsersResponseDto } from '../dto/response/online.users.response.dt
 import { UserFriendListResponseDto } from '../dto/response/user.friend.list.response.dto';
 import { UserBlockListResponseDto } from '../dto/response/user.block.list.response.dto';
 import { UserDto } from 'src/dto/user.dto';
+import { ChatRoomListDto } from 'src/dto/chatroom.list.dto';
+import { ChatRoomMode } from 'src/enum/chatroom.mode.enum';
+import { UserChatDto } from 'src/dto/user.chat.dto';
+import { ChatroomCreateRequestDto } from 'src/dto/request/chatroom.create.request.dto';
 
-const MOCK_DATA = 36;
+const USER_MOCK_DATA = 38;
 const onlineUsers = new OnlineUsersResponseDto();
 onlineUsers.onlineUsers = [];
-for (let i = 0; i < MOCK_DATA; ++i) {
+for (let i = 0; i < USER_MOCK_DATA; ++i) {
   onlineUsers.onlineUsers.push({
     userId: i,
     nickname: `onlineUser${i}`,
@@ -19,8 +23,43 @@ const friendUsers = new UserFriendListResponseDto();
 friendUsers.friendUsers = [];
 const blockUsers = new UserBlockListResponseDto();
 blockUsers.blockUsers = [];
+
+const CHAT_ROOM_MOCK_DATA = 13;
+let roomCount = CHAT_ROOM_MOCK_DATA;
+const chatRoomList: ChatRoomListDto[] = [];
+for (let i = 0; i < CHAT_ROOM_MOCK_DATA; ++i) {
+  if (i % 3 === 0) {
+    chatRoomList.push({
+      roomId: i,
+      title: `chatRoom${i}`,
+      mode: ChatRoomMode.PUBLIC,
+      maxUserCount: 10,
+      currentCount: 10,
+    });
+  } else if (i % 3 === 1) {
+    chatRoomList.push({
+      roomId: i,
+      title: `chatRoom${i}`,
+      mode: ChatRoomMode.PROTECTED,
+      maxUserCount: 10,
+      currentCount: 6,
+    });
+  } else {
+    chatRoomList.push({
+      roomId: i,
+      title: `chatRoom${i}`,
+      mode: ChatRoomMode.PRIVATE,
+      maxUserCount: 5,
+      currentCount: 3,
+    });
+  }
+}
+
 @Injectable()
 export class MockRepository {
+  getChatRoomList() {
+    return { chatRooms: chatRoomList };
+  }
   getOnlineUser() {
     return onlineUsers;
   }
@@ -33,7 +72,22 @@ export class MockRepository {
     return blockUsers;
   }
 
-  patchFriendUser(userId: number) {
+  createChatRoom(user: UserDto, value: ChatroomCreateRequestDto) {
+    chatRoomList.push({
+      roomId: roomCount,
+      title: value.title,
+      mode: value.mode,
+      maxUserCount: value.maxUserCount,
+      currentCount: 1,
+    });
+    return {
+      roomId: roomCount++,
+      mastUserId: user.userId,
+      users: [user as UserChatDto],
+    };
+  }
+
+  createFriendUser(userId: number) {
     const user: UserDto = {
       userId: userId,
       nickname: `friendUser${userId}`,
@@ -42,7 +96,7 @@ export class MockRepository {
     };
     friendUsers.friendUsers.push(user);
   }
-  patchBlockUser(userId: number) {
+  createBlockUser(userId: number) {
     const user: UserDto = {
       userId: userId,
       nickname: `blockUser${userId}`,
