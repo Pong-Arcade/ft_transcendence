@@ -11,7 +11,11 @@ import { UserService } from './user.service';
 @Controller('/api/users')
 export class UserController {
   private logger = new Logger(UserController.name);
-  constructor(private service: UserService) {
+  constructor(
+    private chatGateway: ChatGateway,
+    private gameGateway: GameGateway,
+    private service: UserService,
+  ) {
     this.service.createUser({
       userId: 1,
       nickname: 'youngpar',

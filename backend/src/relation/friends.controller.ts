@@ -10,7 +10,6 @@ import {
 import { User } from '../decorator/user.decorator';
 import { UserDto } from '../dto/user.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { MockRepository } from '../mock/mock.repository';
 import { UserFriendListResponseDto } from '../dto/response/user.friend.list.response.dto';
 import { FriendsService } from './friends.service';
 

@@ -1,5 +1,4 @@
 import { UserDto } from 'src/dto/user.dto';
-import User from '../../entity/user.entity';
 
 export interface IUserRepository {
   /**

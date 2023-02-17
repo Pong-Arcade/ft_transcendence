@@ -12,7 +12,6 @@ import { User } from '../decorator/user.decorator';
 import { UserDto } from '../dto/user.dto';
 import { UserBlockListResponseDto } from '../dto/response/user.block.list.response.dto';
 import { BlockService } from './block.service';
-import { UserFriendListResponseDto } from '../dto/response/user.friend.list.response.dto';
 
 @ApiTags('Relation')
 @Controller('api/block')

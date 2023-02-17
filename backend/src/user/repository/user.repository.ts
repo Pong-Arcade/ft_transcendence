@@ -4,6 +4,8 @@ import { UserDto } from 'src/dto/user.dto';
 import User from 'src/entity/user.entity';
 import { Repository } from 'typeorm';
 import { IUserRepository } from './user.repository.interface';
+import Relation from '../../entity/relation.entity';
+import { UserFriendListResponseDto } from '../../dto/response/user.friend.list.response.dto';
 
 export class UserRepository implements IUserRepository {
   private logger = new Logger(UserRepository.name);
@@ -43,7 +45,9 @@ export class UserRepository implements IUserRepository {
   async getAllUser(): Promise<UserDto[]> {
     this.logger.log(`Called ${this.getAllUser.name}`);
     const ret = await this.userRepository.find();
-    return ret;
+    const userPromises = ret.map((user: User) => user as UserDto);
+
+    return (await Promise.all(userPromises)) as UserDto[];
   }
 
   async getUserInfo(userId: number): Promise<UserDto> {
