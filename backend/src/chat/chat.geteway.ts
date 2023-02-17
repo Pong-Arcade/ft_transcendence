@@ -10,6 +10,7 @@ import { users } from '../status/status.module';
 import { Room } from '../chat/chatroom.entity';
 import { Namespace } from 'socket.io';
 import { OnEvent } from '@nestjs/event-emitter';
+import { MockRepository } from 'src/mock/mock.repository';
 
 export const rooms = new Map<number, Room>();
 
@@ -28,6 +29,7 @@ enum EMessageType {
   cors: { origin: process.env.FE_HOST },
 })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
+  mock = new MockRepository();
   @WebSocketServer() server: Namespace;
   async handleConnection(socket) {
     // 연결 끊김 핸들러
@@ -43,7 +45,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
               }
             }
           }
+          this.server.to('lobby').emit('deleteOnlineUser', key);
           users.delete(key);
+          this.mock.deleteOnlineUser(key);
         }
       });
     });
@@ -55,7 +59,17 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('addUser')
   async onAddUser(client, info) {
+    if (rooms.size == 0) rooms.set(0, new Room(0, 'lobby'));
     users.set(info.userid, new User(info.userid, info.username, client.id));
+
+    this.mock.patchOnlineUser(info.userid);
+    this.server.to('lobby').emit('addOnlineUser', {
+      userId: info.userid,
+      nickname: info.username,
+      avatarUrl: 'asdfd',
+      email: 'sfds',
+    });
+    console.log('addOnlineUser');
   }
 
   @SubscribeMessage('message')
