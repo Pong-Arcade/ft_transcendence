@@ -12,13 +12,13 @@ import { UserDto } from '../dto/user.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { MockRepository } from '../mock/mock.repository';
 import { UserFriendListResponseDto } from '../dto/response/user.friend.list.response.dto';
+import { FriendsService } from './friends.service';
 
 @ApiTags('Relation')
 @Controller('api/friends')
 export class FriendsController {
   private logger = new Logger(FriendsController.name);
-  private mock = new MockRepository();
-
+  constructor(private readonly friendService: FriendsService) {}
   @ApiOperation({
     summary: '유저의 친구 목록',
     description: '해당 유저의 모든 친구정보를 불러옵니다.',
@@ -31,7 +31,7 @@ export class FriendsController {
   @Get()
   async getFriend(@User() user: UserDto) {
     this.logger.log(`Called ${this.getFriend.name}`);
-    return this.mock.getFriendUser();
+    return await this.friendService.getFriends(user);
   }
 
   @Patch(':user_id')
@@ -54,8 +54,7 @@ export class FriendsController {
   })
   async addFriend(@User() user: UserDto, @Param('user_id') userId: number) {
     this.logger.log(`Called ${this.addFriend.name}`);
-    //  TODO: Business Logic!
-    this.mock.patchFriendUser(userId);
+    this.friendService.addFriend({ user: user.userId, target: userId });
   }
 
   @Delete(':user_id')
@@ -74,7 +73,27 @@ export class FriendsController {
   })
   async delFriend(@User() user: UserDto, @Param('user_id') userId: number) {
     this.logger.log(`Called ${this.delFriend.name}`);
-    //  TODO: Business Logic!
-    this.mock.deleteFriendUser(userId);
+    this.friendService.delFriend({ user: user.userId, target: userId });
+  }
+
+  @ApiOperation({ summary: '친추테스트' })
+  @Get('test')
+  async testFriend() {
+    this.logger.log(`Friends Test Start`);
+    //  given
+    const testUser: UserDto = {
+      userId: 1,
+      nickname: 'youngpar',
+    };
+    this.logger.debug(`When ${this.addFriend.name}(${testUser}, 2, 4)`);
+    await this.addFriend(testUser, 2);
+    await this.addFriend(testUser, 4);
+    //  when : 1번 유저의 친구 목록에 2번, 4번 유저 추가
+    const relation: UserFriendListResponseDto =
+      await this.friendService.getFriends(testUser);
+    //  then : 1번 유저(testUser)의 친구목록 얻어옴
+    this.logger.debug(`Then ${this.getFriend.name} =>`, relation);
+    this.logger.log(`Friends Test End`);
+    return relation;
   }
 }

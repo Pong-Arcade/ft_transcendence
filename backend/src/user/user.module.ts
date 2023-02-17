@@ -6,6 +6,7 @@ import { UserRepository } from './repository/user.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import User from 'src/entity/user.entity';
 import { UserService } from './user.service';
+import { StatusModule, users } from '../status/status.module';
 
 const repo = {
   provide: 'IUserRepository',
@@ -13,7 +14,12 @@ const repo = {
 };
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User]), ChatModule, GameModule],
+  imports: [
+    TypeOrmModule.forFeature([User]),
+    ChatModule,
+    GameModule,
+    StatusModule,
+  ],
   controllers: [UserController],
   providers: [UserService, repo],
   exports: [UserService],

@@ -15,13 +15,23 @@ export class UserRepository implements IUserRepository {
 
   async createUser(userDto: UserDto): Promise<UserDto> {
     this.logger.log(`Called ${this.createUser.name}`);
-    const user = await this.userRepository.create(userDto);
-    if (!user) return null;
+    const user: User = this.userRepository.create({
+      userId: userDto.userId,
+      nickname: userDto.nickname,
+      email: userDto.email,
+      avatarUrl: userDto.avatarUrl,
+      firstLogin: userDto.firstLogin,
+    });
+    const ret = this.userRepository.save(user);
+    if (!ret) {
+      return null;
+    }
     return {
       userId: user.userId,
       avatarUrl: user.avatarUrl,
       email: user.email,
       nickname: user.nickname,
+      firstLogin: user.firstLogin,
     } as UserDto;
   }
 
@@ -30,23 +40,37 @@ export class UserRepository implements IUserRepository {
     await this.userRepository.delete(userId);
   }
 
-  async getAllUser(): Promise<User[]> {
+  async getAllUser(): Promise<UserDto[]> {
     this.logger.log(`Called ${this.getAllUser.name}`);
-    console.log(this.userRepository);
     const ret = await this.userRepository.find();
-    console.log(ret);
     return ret;
   }
 
-  async getUserInfo(userId: number): Promise<User> {
+  async getUserInfo(userId: number): Promise<UserDto> {
     this.logger.log(`Called ${this.getUserInfo.name}`);
     const user = await this.userRepository.findOne({
-      where: { userId: userId },
+      where: { userId },
     });
     console.log(user);
     if (!user) {
       return null;
     }
+    return {
+      userId: user.userId,
+      nickname: user.nickname,
+      email: user.email,
+      avatarUrl: user.avatarUrl,
+      firstLogin: user.firstLogin,
+    } as UserDto;
+  }
+
+  async updateUser(userId: number, userDto: Partial<UserDto>): Promise<User> {
+    const ret = this.userRepository.update(userId, userDto);
+    const user = this.userRepository.findOne({ where: { userId: userId } });
+    if (!user) {
+      return null;
+    }
+    console.log(user);
     return user;
   }
 }

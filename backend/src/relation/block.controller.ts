@@ -10,14 +10,15 @@ import {
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { User } from '../decorator/user.decorator';
 import { UserDto } from '../dto/user.dto';
-import { MockRepository } from '../mock/mock.repository';
 import { UserBlockListResponseDto } from '../dto/response/user.block.list.response.dto';
+import { BlockService } from './block.service';
+import { UserFriendListResponseDto } from '../dto/response/user.friend.list.response.dto';
 
 @ApiTags('Relation')
 @Controller('api/block')
 export class BlockController {
   private logger = new Logger(BlockController.name);
-  private mock = new MockRepository();
+  constructor(private blockService: BlockService) {}
 
   @ApiOperation({
     summary: '유저의 차단 목록',
@@ -31,7 +32,7 @@ export class BlockController {
   @Get()
   async getBlocks(@User() user: UserDto) {
     this.logger.log(`Called ${this.getBlocks.name}`);
-    return this.mock.getBlockUser();
+    return this.blockService.getBlocks(user);
   }
 
   @Patch(':user_id')
@@ -54,8 +55,10 @@ export class BlockController {
   })
   async addBlock(@User() user: UserDto, @Param('user_id') userId: number) {
     this.logger.log(`Called ${this.addBlock.name}`);
-    //  TODO: Business Logic!
-    this.mock.patchBlockUser(userId);
+    await this.blockService.addBlockUser({
+      user: user.userId,
+      target: userId,
+    });
   }
 
   @Delete(':user_id')
@@ -74,7 +77,30 @@ export class BlockController {
   })
   async delBlock(@User() user: UserDto, @Param('user_id') userId: number) {
     this.logger.log(`Called ${this.delBlock.name}`);
-    //  TODO: Business Logic!
-    this.mock.deleteBlockUser(userId);
+    await this.blockService.delBlockUser({
+      user: user.userId,
+      target: userId,
+    });
+  }
+
+  @ApiOperation({ summary: '차단 테스트' })
+  @Get('test')
+  async testBlock() {
+    this.logger.log(`Block Test Start`);
+    //  given
+    const testUser: UserDto = {
+      userId: 1,
+      nickname: 'youngpar',
+    };
+    this.logger.debug(`When ${this.addBlock.name}(${testUser}, 3, 5)`);
+    await this.addBlock(testUser, 3);
+    await this.addBlock(testUser, 5);
+    //  when : 1번 유저의 친구 목록에 2번, 4번 유저 추가
+    const relation: UserBlockListResponseDto =
+      await this.blockService.getBlocks(testUser);
+    //  then : 1번 유저(testUser)의 차단목록 얻어옴
+    this.logger.debug(`Then ${this.getBlocks.name} =>`, relation);
+    this.logger.log(`Block Test End`);
+    return relation;
   }
 }

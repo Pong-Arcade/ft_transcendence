@@ -1,15 +1,9 @@
-import { Controller, Get, HttpCode, Logger, Param } from '@nestjs/common';
-import {
-  ApiOkResponse,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { Controller, Get, Logger, Param } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { User } from 'src/decorator/user.decorator';
 import { UserDto } from 'src/dto/user.dto';
 import { ChatGateway } from '../chat/chat.geteway';
 import { GameGateway } from '../game/game.gateway';
-import { MockRepository } from '../mock/mock.repository';
 import { OnlineUsersResponseDto } from '../dto/response/online.users.response.dto';
 import { UserService } from './user.service';
 
@@ -17,18 +11,12 @@ import { UserService } from './user.service';
 @Controller('/api/users')
 export class UserController {
   private logger = new Logger(UserController.name);
-  private mock = new MockRepository();
-  constructor(
-    private chatGateway: ChatGateway,
-    private gameGateway: GameGateway,
-    private service: UserService,
-  ) {
-    const user: any = this.service.createUser({
+  constructor(private service: UserService) {
+    this.service.createUser({
       userId: 1,
-      nickname: 'heyhey',
-      avatarUrl: 'http://example.com',
+      nickname: 'youngpar',
+      avatarUrl: 'google.com',
     });
-    console.log(user);
   }
 
   @ApiOperation({
@@ -44,7 +32,6 @@ export class UserController {
   async getAllUsers() {
     this.logger.log(`Called ${this.getAllUsers.name}`);
     return await this.service.getAllUsers();
-    //return this.mock.getOnlineUser();
   }
 
   @ApiOperation({
@@ -67,8 +54,6 @@ export class UserController {
   @Get(':user_id')
   async getUserDetail(@User() user: UserDto, @Param('user_id') userId) {
     this.logger.log(`Called ${this.getUserDetail.name}`);
-    const userret = await this.service.createUser(user);
     return await this.service.getUserInfo(userId);
-    //return this.mock.getUserInfo();
   }
 }
