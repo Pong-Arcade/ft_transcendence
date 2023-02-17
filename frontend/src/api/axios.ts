@@ -1,12 +1,11 @@
 import axios from "axios";
-
-const COOKIE_VALUE = document.cookie.split("=")?.[1];
+import { getCookie } from "../utils/cookie";
 
 const axiosClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   withCredentials: true,
   headers: {
-    Authorization: `Bearer ${COOKIE_VALUE}`,
+    Authorization: `Bearer ${getCookie()}`,
   },
 });
 

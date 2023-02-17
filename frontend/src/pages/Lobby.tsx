@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect } from "react";
 import styled from "styled-components";
 import Board from "../components/atoms/Board";
 import Chat from "../components/modules/Chat";
@@ -10,18 +10,9 @@ import UserInfoSettingModal from "../components/modules/UserInfoSettingModal";
 import LobbyTemplate from "../components/templates/LobbyTemplate";
 import ChatSocket from "../utils/ChatSocket";
 import useFirstLoginModal from "../hooks/useFirstLoginModal";
-import { useSetRecoilState } from "recoil";
-import { loadingState } from "../state/LoadingState";
-import {
-  getBlockUsersAPI,
-  getFriendUsersAPI,
-  getOnlineUsersAPI,
-} from "../api/users";
-import { onlineUsersState } from "../state/OnlineUsersState";
-import { friendUsersState } from "../state/FriendUsersState";
-import { blockUsersState } from "../state/BlockUsersState";
-import { IChatRoom } from "../components/modules/Pagination/Pagination";
-import { getChatRoomListAPI } from "../api/chatRoom";
+import useLoading from "../hooks/useLoading";
+import FullSpinner from "../components/atoms/FullSpinner";
+import useLobbyData from "../hooks/useLobbyData";
 
 const UserWrapper = styled(Board).attrs({
   width: "25%",
@@ -52,12 +43,10 @@ const RoomListChat = styled(Board).attrs((props) => {
 })``;
 
 const Lobby = ({ socket }: { socket: ChatSocket }) => {
-  const { isFirstLogin, onSubmit, onClose } = useFirstLoginModal();
-  const setIsLoadingState = useSetRecoilState(loadingState);
-  const setOnlineUsers = useSetRecoilState(onlineUsersState);
-  const setFriendUsers = useSetRecoilState(friendUsersState);
-  const setBlockUsers = useSetRecoilState(blockUsersState);
-  const [chatRoomList, setChatRoomList] = useState<IChatRoom[]>([]);
+  const { setLobbyData, getLobbyData } = useLobbyData();
+  const { isLoading, endLoading } = useLoading({
+    initialLoading: true,
+  });
 
   useEffect(() => {
     if (socket === undefined) {
@@ -71,21 +60,25 @@ const Lobby = ({ socket }: { socket: ChatSocket }) => {
       // };
     }
     (async () => {
-      setIsLoadingState(true);
-      setOnlineUsers(await getOnlineUsersAPI());
-      setFriendUsers(await getFriendUsersAPI());
-      setBlockUsers(await getBlockUsersAPI());
-      setChatRoomList(await getChatRoomListAPI());
-      setIsLoadingState(false);
+      await setLobbyData();
+      endLoading();
     })();
   }, []);
+  const { onlineUsers, friendUsers, blockUsers, chatRoomList, myInfo } =
+    getLobbyData();
+  const { isFirstLoginModal, FirstLoginModalClose, FirstLoginModalSubmit } =
+    useFirstLoginModal();
 
   return (
     <>
       <LobbyTemplate>
         <UserWrapper>
-          <LobbyUserProfile />
-          <LobbyUserList />
+          <LobbyUserProfile info={myInfo} />
+          <LobbyUserList
+            onlineUsers={onlineUsers}
+            friendUsers={friendUsers}
+            blockUsers={blockUsers}
+          />
         </UserWrapper>
         <RoomListChatWrapper>
           <LobbyCreateRoomButtonGroup />
@@ -96,9 +89,14 @@ const Lobby = ({ socket }: { socket: ChatSocket }) => {
           </RoomListChat>
         </RoomListChatWrapper>
       </LobbyTemplate>
-      {isFirstLogin && (
-        <UserInfoSettingModal onSubmit={onSubmit} onClose={onClose} />
+      {isFirstLoginModal && (
+        <UserInfoSettingModal
+          onSubmit={FirstLoginModalSubmit}
+          onClose={FirstLoginModalClose}
+          info={myInfo}
+        />
       )}
+      {isLoading && <FullSpinner />}
     </>
   );
 };

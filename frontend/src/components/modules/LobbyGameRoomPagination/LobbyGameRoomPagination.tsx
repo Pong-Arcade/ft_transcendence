@@ -32,6 +32,7 @@ const LobbyGameRoomPagination = ({
       buttonWidth="15%"
       buttonGap="2vw"
       width="90%"
+      height="85%"
       itemGap="0.3vh"
       gridTemplate="repeat(2, 1fr) / repeat(2, 1fr)"
       onNextPage={onNextPage}

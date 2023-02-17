@@ -1,11 +1,11 @@
 import { useState } from "react";
 import styled from "styled-components";
-import useLobbyUserList from "../../../hooks/useLobbyUserList";
 import useMenu from "../../../hooks/useMenu";
 import Board from "../../atoms/Board";
 import GeneralMenu from "../GeneralMenu";
 import LobbyUserItem from "../LobbyUserItem";
 import LobbyUserListPagination from "../LobbyUserListPagination";
+import { IUser } from "../Pagination/Pagination";
 import UserListTypeChoiceButtonGroup from "../UserListTypeChoiceButtonGroup";
 import { EUSER_BUTTON } from "../UserListTypeChoiceButtonGroup/UserListTypeChoiceButtonGroup";
 
@@ -21,7 +21,13 @@ const LobbyUserListStyled = styled(Board).attrs((props) => {
   };
 })``;
 
-const LobbyUserList = () => {
+interface Props {
+  onlineUsers: IUser[];
+  friendUsers: IUser[];
+  blockUsers: IUser[];
+}
+
+const LobbyUserList = ({ onlineUsers, friendUsers, blockUsers }: Props) => {
   const {
     isOpenMenu,
     onOpenMenu,
@@ -33,7 +39,6 @@ const LobbyUserList = () => {
   } = useMenu();
 
   const [currentButton, setCurrentButton] = useState(EUSER_BUTTON.ONLINE_USERS);
-  const { onlineUsers, friendUsers, blockUsers } = useLobbyUserList();
   const [page, setPage] = useState(0);
   const onChoiceButtonClick = (button: EUSER_BUTTON) => {
     setCurrentButton(button);

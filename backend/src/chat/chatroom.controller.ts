@@ -66,8 +66,8 @@ export class ChatroomController {
   @Get()
   getAllChatrooms(): ChatRoomListResponseDto {
     this.logger.log(`Called ${this.getAllChatrooms.name}`);
-    // return this.chatroomService.getAllChatrooms();
-    return this.mock.getChatRoomList();
+
+    return this.chatroomService.getAllChatrooms();
   }
 
   @ApiOperation({
@@ -223,13 +223,14 @@ export class ChatroomController {
 
     // 3. 자신이 생성한 채팅방의 roomId를 가져온다.
     const roomId = this.chatroomService.getMyMasterChatroomId(user.userId);
+    console.log(roomId);
 
     // 4. 채팅방에 입장
     this.eventEmitter.emit('chatroom:join', roomId, user.userId);
 
     // 5. 채팅방에 입장한 유저 정보 반환(roomId 포함)
-    // return await this.chatroomService.getChatroomCreateUsersInfo(roomId);
-    return this.mock.createChatRoom(user, chatroomCreateRequestDto);
+    return await this.chatroomService.getChatroomCreateUsersInfo(roomId);
+    // return this.mock.createChatRoom(user, chatroomCreateRequestDto);
   }
 
   @ApiOperation({

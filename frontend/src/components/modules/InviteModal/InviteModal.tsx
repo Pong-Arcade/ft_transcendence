@@ -1,7 +1,5 @@
 import { MouseEvent, useState } from "react";
-import { useRecoilValue } from "recoil";
 import useModal from "../../../hooks/useModal";
-import { onlineUsersState } from "../../../state/OnlineUsersState";
 import Button from "../../atoms/Button";
 import Modal from "../../atoms/Modal";
 import ModalWrapper from "../../atoms/ModalWrapper";
@@ -30,8 +28,6 @@ const InviteModal = ({ onClose }: Props) => {
   const { isModalOpen: isConfirmOpen, onModalOpen: onConfirmOpen } = useModal(
     {}
   );
-
-  const onlineUsers = useRecoilValue(onlineUsersState);
   const [page, setPage] = useState(0);
 
   const onInvite = () => {
@@ -45,7 +41,7 @@ const InviteModal = ({ onClose }: Props) => {
           초대하기
         </ModalTitle>
         <ChatRoomInvitePagination
-          list={onlineUsers}
+          list={[]}
           subList={inviteList}
           onItemClick={onClick}
           page={page}

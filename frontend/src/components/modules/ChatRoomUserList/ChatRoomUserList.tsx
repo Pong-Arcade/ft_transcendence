@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import useLobbyUserList from "../../../hooks/useLobbyUserList";
 import useMenu from "../../../hooks/useMenu";
 import useModal from "../../../hooks/useModal";
 import Avatar from "../../atoms/Avatar";
@@ -58,14 +57,13 @@ const ChatRoomUserList = () => {
     },
   });
   // TODO: chat room user list
-  const { onlineUsers } = useLobbyUserList();
   const [page, setPage] = useState(0);
 
   return (
     <>
       <ChatRoomUserListStyled>
         <ChatRoomUserListPagination
-          list={onlineUsers}
+          list={[]}
           page={page}
           onNextPage={() => setPage(page + 1)}
           onPrevPage={() => setPage(page - 1)}

@@ -1,34 +1,27 @@
-import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
-import { useSetRecoilState } from "recoil";
-import { loginState } from "../state/LoginState";
+import { useEffect } from "react";
+import useModal from "./useModal";
 
 const LoginQueryKey = "isFirstLogin";
 
 const useFirstLoginModal = () => {
-  const [isFirstLogin, setIsFirstLogin] = useState(false);
-  const setLogin = useSetRecoilState(loginState);
-  const location = useLocation();
+  const {
+    isModalOpen: isFirstLoginModal,
+    onModalOpen: FirstLoginModalOpen,
+    onModalClose: FirstLoginModalClose,
+    onSubmit: FirstLoginModalSubmit,
+  } = useModal({});
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     if (searchParams.get(LoginQueryKey) === "true") {
-      setIsFirstLogin(true);
+      FirstLoginModalOpen();
     }
-    setLogin(true);
   }, []);
 
-  const onClose = () => {
-    setIsFirstLogin(false);
-  };
-  const onSubmit = () => {
-    setIsFirstLogin(false);
-  };
-
   return {
-    isFirstLogin,
-    onSubmit,
-    onClose,
+    isFirstLoginModal,
+    FirstLoginModalClose,
+    FirstLoginModalSubmit,
   };
 };
 

@@ -13,10 +13,10 @@ const LogoutLogo = styled(Logo)`
 `;
 
 const LogoutButtonStyled = styled(Button)`
-  background-color: ${(props) => props.theme.background.middle};
+  background-color: transparent;
   position: absolute;
   top: 2.5%;
-  left: 2%;
+  left: 1%;
   border: none;
   width: 3.5%;
   height: 4.5%;

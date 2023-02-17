@@ -69,6 +69,7 @@ export class ChatroomService {
   getAllChatrooms(): ChatRoomListResponseDto {
     this.logger.log(`Called ${this.getAllChatrooms.name}`);
     const chatrooms = new ChatRoomListResponseDto();
+    chatrooms.chatRooms = [];
     for (const room of rooms.values()) {
       chatrooms.chatRooms.push({
         roomId: room.id,
