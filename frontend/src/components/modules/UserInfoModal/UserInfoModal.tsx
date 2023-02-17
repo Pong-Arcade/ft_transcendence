@@ -49,10 +49,9 @@ const InfoTitle = styled(Board).attrs((props) => {
     backgroundColor: props.theme.background.front,
     borderRadius: true,
   };
-})<{ row: number }>`
+})`
   font-size: 2rem;
-  grid-row: ${(props) => props.row} + 1 / span 1;
-  grid-column: 4 / span 2;
+  grid-column: 1 / span 1;
 `;
 
 const InfoContent = styled(Board).attrs((props) => {
@@ -60,10 +59,16 @@ const InfoContent = styled(Board).attrs((props) => {
     backgroundColor: props.theme.background.middle,
     borderRadius: true,
   };
-})<{ row: number }>`
+})`
   font-size: 2rem;
-  grid-row: ${(props) => props.row} + 1 / span 1;
-  grid-column: 6 / span 4;
+  grid-column: 2 / span 4;
+`;
+
+const InfoWrapper = styled(Board)<{ row: number }>`
+  grid-column: 4 / -1;
+  display: grid;
+  gap: 0.1vw;
+  grid-template: 1fr / repeat(4, 1fr);
 `;
 
 const GameStatTitle = styled(Board).attrs({
@@ -141,35 +146,29 @@ const UserInfoModal = ({ onClose, width, height, userId }: Props) => {
           {myInfo.nickname}
         </ModalTitle>
         <GridWrapper>
-          <>
-            <MyAvatar src={myInfo.avatarUrl} />
-            {infoTitleList.map((title, index) => (
-              <>
-                <InfoTitle key={title} row={index}>
-                  {title}
-                </InfoTitle>
-                <InfoContent key={infoContentList[index]} row={index}>
-                  {infoContentList[index]}
-                </InfoContent>
-              </>
+          <MyAvatar key={myInfo.avatarUrl} src={myInfo.avatarUrl} />
+          {infoTitleList.map((title, index) => (
+            <InfoWrapper key={index} row={index}>
+              <InfoTitle>{title}</InfoTitle>
+              <InfoContent>{infoContentList[index]}</InfoContent>
+            </InfoWrapper>
+          ))}
+          <GameStatTitle key={"GameStatTitle"}>
+            {gameStatTitleList.map((title, index) => (
+              <Typography key={index} fontSize="2rem">
+                {title}
+              </Typography>
             ))}
-            <GameStatTitle>
-              {gameStatTitleList.map((title) => (
-                <Typography key={title} fontSize="2rem">
-                  {title}
-                </Typography>
-              ))}
-            </GameStatTitle>
-            <GameStatContent>
-              {gameStatContentList.map((content, idx) => (
-                <Typography key={idx} fontSize="2rem">
-                  {content}
-                </Typography>
-              ))}
-            </GameStatContent>
-            <CurrentLocationTitle>현재 상태</CurrentLocationTitle>
-            <CurrentLocationContent>로비에 있습니다</CurrentLocationContent>
-          </>
+          </GameStatTitle>
+          <GameStatContent key={"GameStatContent"}>
+            {gameStatContentList.map((content, index) => (
+              <Typography key={index} fontSize="2rem">
+                {content}
+              </Typography>
+            ))}
+          </GameStatContent>
+          <CurrentLocationTitle>현재 상태</CurrentLocationTitle>
+          <CurrentLocationContent>로비에 있습니다</CurrentLocationContent>
         </GridWrapper>
         <ButtonGroup width="100%" height="8%" backgroundColor="secondary">
           {myInfo.userId === +userId ? (
