@@ -11,8 +11,8 @@ class ChatSocket {
   // }
   constructor(userid: number, name: string) {
     this.socket = io("ws://localhost:80/socket/chat");
-    this.userid = userid;
-    this.username = name;
+    this.userId = userid;
+    this.userName = name;
   }
 }
 
