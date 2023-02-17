@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import useModal from "../../../hooks/useModal";
-import { IMyInfoState } from "../../../state/MyInfoState";
+import { IInfoState } from "../../../state/InfoState";
 import removeJWT from "../../../utils/removeJWT";
 import Avatar from "../../atoms/Avatar";
 import Board from "../../atoms/Board";
@@ -42,7 +42,7 @@ const Wrapper = styled.div`
 `;
 
 interface Props {
-  info: IMyInfoState;
+  info: IInfoState;
 }
 
 const ProfileButton = styled(Button).attrs({

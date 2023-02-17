@@ -10,7 +10,7 @@ import {
 import { IChatRoom, IUser } from "../components/modules/Pagination/Pagination";
 import blockUsersState from "../state/BlockUsersState";
 import friendUsersState from "../state/FriendUsersState";
-import myInfoState from "../state/MyInfoState";
+import infoState from "../state/InfoState";
 import { getDecodedCookie } from "../utils/cookie";
 
 const useLobbyData = () => {
@@ -19,7 +19,7 @@ const useLobbyData = () => {
     useRecoilState<IUser[]>(friendUsersState);
   const [blockUsers, setBlockUsers] = useRecoilState<IUser[]>(blockUsersState);
   const [chatRoomList, setChatRoomList] = useState<IChatRoom[]>([]);
-  const [myInfo, setMyInfo] = useRecoilState(myInfoState);
+  const [myInfo, setMyInfo] = useRecoilState(infoState);
 
   const setLobbyData = async () => {
     const info = JSON.parse(getDecodedCookie());

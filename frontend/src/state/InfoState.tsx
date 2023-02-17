@@ -1,13 +1,13 @@
 import { atom } from "recoil";
 
-export interface IMyInfoState {
+export interface IInfoState {
   userId: number;
   nickname: string;
   avatarUrl: string;
 }
 
-const myInfoState = atom<IMyInfoState>({
-  key: "myInfoState",
+const infoState = atom<IInfoState>({
+  key: "infoState",
   default: {
     userId: -1,
     nickname: "",
@@ -15,4 +15,4 @@ const myInfoState = atom<IMyInfoState>({
   },
 });
 
-export default myInfoState;
+export default infoState;

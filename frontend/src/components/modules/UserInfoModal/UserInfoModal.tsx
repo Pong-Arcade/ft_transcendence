@@ -2,7 +2,7 @@ import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { createFriendUsersAPI } from "../../../api/users";
 import useModal from "../../../hooks/useModal";
-import myInfoState from "../../../state/MyInfoState";
+import infoState from "../../../state/InfoState";
 import Avatar from "../../atoms/Avatar";
 import Board from "../../atoms/Board";
 import Button from "../../atoms/Button";
@@ -115,7 +115,7 @@ const CurrentLocationContent = styled(Board).attrs({
 `;
 
 const UserInfoModal = ({ onClose, width, height, userId }: Props) => {
-  const myInfo = useRecoilValue(myInfoState);
+  const myInfo = useRecoilValue(infoState);
   const infoTitleList = ["이름", "가입일", "이메일"];
   const infoContentList = [myInfo.nickname, "2021-08-01", "kangkim@naver.com"];
   const gameStatTitleList = ["게임종류", "승리", "패배", "승률"];
