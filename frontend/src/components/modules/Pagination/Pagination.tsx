@@ -1,5 +1,6 @@
 import { MouseEvent } from "react";
 import styled from "styled-components";
+import { EChatRoomType } from "../../../hooks/useChatRoomForm";
 import Board from "../../atoms/Board";
 import Button from "../../atoms/Button";
 import ButtonGroup from "../ButtonGroup";
@@ -20,7 +21,15 @@ export interface IRanking {
   winRate: number;
 }
 
-export type IItem = IUser | IRanking;
+export interface IRoom {
+  roomId: number;
+  mode: EChatRoomType;
+  title: string;
+  nowUserCount: number;
+  maxUserCount: number;
+}
+
+export type IItem = IUser | IRanking | IRoom;
 
 export interface IPaginationItem {
   item: IItem;

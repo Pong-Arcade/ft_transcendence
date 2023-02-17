@@ -16,13 +16,22 @@ import Root from "./pages/Root";
 import Stat from "./pages/Stat";
 import GlobalStyle from "./styles/GlobalStyle";
 import theme from "./styles/theme";
-
+import { selector } from "recoil";
 import ChatSocket from "./utils/ChatSocket";
 const n: number = Math.floor(Math.random() * 1000);
-const socket: ChatSocket = new ChatSocket(n, "user" + n);
+// const socket: ChatSocket = new ChatSocket(n, "user" + n);
 
-console.log(socket.socket);
-console.log(socket.userid);
+// console.log(socket.socket);
+// console.log(socket.userid);
+
+export const chatSocket = selector({
+  key: "chatSocket",
+  get: async () => {
+    const socket: ChatSocket = await new ChatSocket(n, "user" + n);
+    return socket;
+  },
+});
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -35,7 +44,8 @@ const router = createBrowserRouter([
       },
       {
         path: "lobby",
-        element: <Lobby socket={socket} />,
+        element: <Lobby />,
+        // element: <Lobby socket={socket} />,
       },
       {
         path: "game-rooms/:gameId",

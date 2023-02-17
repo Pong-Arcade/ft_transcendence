@@ -14,7 +14,7 @@ import LobbyUserListPagination from "../LobbyUserListPagination";
 import { IUser } from "../Pagination/Pagination";
 import UserListTypeChoiceButtonGroup from "../UserListTypeChoiceButtonGroup";
 import { EUSER_BUTTON } from "../UserListTypeChoiceButtonGroup/UserListTypeChoiceButtonGroup";
-
+import { chatSocket } from "../../..";
 const LobbyUserListStyled = styled(Board).attrs((props) => {
   return {
     width: "100%",
@@ -27,7 +27,8 @@ const LobbyUserListStyled = styled(Board).attrs((props) => {
   };
 })``;
 
-const LobbyUserList = ({ socket }: { socket: ChatSocket }) => {
+const LobbyUserList = () => {
+  // const LobbyUserList = ({ socket }: { socket: ChatSocket }) => {
   const {
     isOpenMenu,
     onOpenMenu,
@@ -37,6 +38,8 @@ const LobbyUserList = ({ socket }: { socket: ChatSocket }) => {
     id,
     name,
   } = useMenu();
+
+  const [socket, setSocket] = useRecoilState(chatSocket);
 
   const [currentButton, setCurrentButton] = useState(EUSER_BUTTON.ONLINE_USERS);
   // const {
@@ -70,8 +73,14 @@ const LobbyUserList = ({ socket }: { socket: ChatSocket }) => {
     });
   };
   useEffect(() => {
-    socket.socket.on("addOnlineUser", (user) => addOnlineUser(user));
-    socket.socket.on("deleteOnlineUser", (userId) => deleteOnlineUser(userId));
+    let newSocket = socket;
+    newSocket.socket.on("addOnlineUser", (user) => addOnlineUser(user));
+    newSocket.socket.on("deleteOnlineUser", (userId) =>
+      deleteOnlineUser(userId)
+    );
+    setSocket(newSocket);
+    // socket.socket.on("addOnlineUser", (user) => addOnlineUser(user));
+    // socket.socket.on("deleteOnlineUser", (userId) => deleteOnlineUser(userId));
   }, []);
   return (
     <>

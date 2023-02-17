@@ -10,7 +10,8 @@ import UserInfoSettingModal from "../components/modules/UserInfoSettingModal";
 import LobbyTemplate from "../components/templates/LobbyTemplate";
 import ChatSocket from "../utils/ChatSocket";
 import useFirstLoginModal from "../hooks/useFirstLoginModal";
-
+import { useRecoilValue } from "recoil";
+import { chatSocket } from "..";
 const UserWrapper = styled(Board).attrs({
   width: "25%",
   height: "98%",
@@ -39,12 +40,16 @@ const RoomListChat = styled(Board).attrs((props) => {
   };
 })``;
 
-const Lobby = ({ socket }: { socket: ChatSocket }) => {
+// const Lobby = ({ socket }: { socket: ChatSocket }) => {
+const Lobby = () => {
+  const socket = useRecoilValue(chatSocket);
+  console.log(socket);
+  // console.log("recoil:", test);
   const { isFirstLogin, onSubmit, onClose } = useFirstLoginModal();
   useEffect(() => {
     if (socket === undefined) {
-      socket = new ChatSocket(1, "user" + Math.floor(Math.random() * 100));
-      console.log("recreated socket");
+      // socket = new ChatSocket(1, "user" + Math.floor(Math.random() * 100));
+      // console.log("recreated socket");
     }
     if (socket) {
       socket.socket.emit("joinLobby", socket.userid);
