@@ -15,9 +15,14 @@ export class UserRepository implements IUserRepository {
 
   async createUser(userDto: UserDto): Promise<UserDto> {
     this.logger.log(`Called ${this.createUser.name}`);
-    const ret = await this.userRepository.create(userDto);
-    console.log(ret);
-    return ret as UserDto;
+    const user = await this.userRepository.create(userDto);
+    if (!user) return null;
+    return {
+      userId: user.userId,
+      avatarUrl: user.avatarUrl,
+      email: user.email,
+      nickname: user.nickname,
+    } as UserDto;
   }
 
   async deleteUser(userId: number): Promise<void> {
@@ -27,23 +32,21 @@ export class UserRepository implements IUserRepository {
 
   async getAllUser(): Promise<User[]> {
     this.logger.log(`Called ${this.getAllUser.name}`);
+    console.log(this.userRepository);
     const ret = await this.userRepository.find();
     console.log(ret);
     return ret;
   }
 
-  async getUserInfo(userId: number): Promise<UserDto> {
+  async getUserInfo(userId: number): Promise<User> {
     this.logger.log(`Called ${this.getUserInfo.name}`);
     const user = await this.userRepository.findOne({
-      where: { userId },
+      where: { userId: userId },
     });
+    console.log(user);
     if (!user) {
       return null;
     }
-    return {
-      userId: user.userId,
-      nickname: user.nickname,
-      avatarUrl: user.avatarUrl,
-    } as UserDto;
+    return user;
   }
 }

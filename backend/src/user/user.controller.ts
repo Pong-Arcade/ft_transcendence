@@ -1,4 +1,4 @@
-import { Controller, Get, HttpCode, Logger } from '@nestjs/common';
+import { Controller, Get, HttpCode, Logger, Param } from '@nestjs/common';
 import {
   ApiOkResponse,
   ApiOperation,
@@ -23,14 +23,12 @@ export class UserController {
     private gameGateway: GameGateway,
     private service: UserService,
   ) {
-    console.log('here');
-    console.log(
-      this.service.createUser({
-        userId: 1,
-        nickname: 'heyhey',
-        avatarUrl: 'http://example.com',
-      }),
-    );
+    const user: any = this.service.createUser({
+      userId: 1,
+      nickname: 'heyhey',
+      avatarUrl: 'http://example.com',
+    });
+    console.log(user);
   }
 
   @ApiOperation({
@@ -67,8 +65,10 @@ export class UserController {
     description: '존재하지 않는 유저입니다.',
   })
   @Get(':user_id')
-  async getUserDetail(@User() user: UserDto) {
+  async getUserDetail(@User() user: UserDto, @Param('user_id') userId) {
     this.logger.log(`Called ${this.getUserDetail.name}`);
-    return this.mock.getUserInfo();
+    const userret = await this.service.createUser(user);
+    return await this.service.getUserInfo(userId);
+    //return this.mock.getUserInfo();
   }
 }
