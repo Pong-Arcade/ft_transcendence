@@ -70,15 +70,14 @@ const Lobby = ({ socket }: { socket: ChatSocket }) => {
       //   socket.socket.emit("createRoom", { type, roomname, password, maxUser });
       // };
     }
-    const getLobbyData = async () => {
+    (async () => {
       setIsLoadingState(true);
       setOnlineUsers(await getOnlineUsersAPI());
       setFriendUsers(await getFriendUsersAPI());
       setBlockUsers(await getBlockUsersAPI());
       setChatRoomList(await getChatRoomListAPI());
       setIsLoadingState(false);
-    };
-    getLobbyData();
+    })();
   }, []);
 
   return (

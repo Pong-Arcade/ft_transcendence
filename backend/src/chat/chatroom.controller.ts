@@ -229,7 +229,7 @@ export class ChatroomController {
 
     // 5. 채팅방에 입장한 유저 정보 반환(roomId 포함)
     // return await this.chatroomService.getChatroomCreateUsersInfo(roomId);
-    return this.mock.createChatRoom(user);
+    return this.mock.createChatRoom(user, chatroomCreateRequestDto);
   }
 
   @ApiOperation({

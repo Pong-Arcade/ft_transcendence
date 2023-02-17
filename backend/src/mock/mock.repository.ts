@@ -6,6 +6,7 @@ import { UserDto } from 'src/dto/user.dto';
 import { ChatRoomListDto } from 'src/dto/chatroom.list.dto';
 import { ChatRoomMode } from 'src/enum/chatroom.mode.enum';
 import { UserChatDto } from 'src/dto/user.chat.dto';
+import { ChatroomCreateRequestDto } from 'src/dto/request/chatroom.create.request.dto';
 
 const USER_MOCK_DATA = 38;
 const onlineUsers = new OnlineUsersResponseDto();
@@ -71,7 +72,14 @@ export class MockRepository {
     return blockUsers;
   }
 
-  createChatRoom(user: UserDto) {
+  createChatRoom(user: UserDto, value: ChatroomCreateRequestDto) {
+    chatRoomList.push({
+      roomId: roomCount,
+      title: value.title,
+      mode: value.mode,
+      maxUserCount: value.maxUserCount,
+      currentCount: 1,
+    });
     return {
       roomId: roomCount++,
       mastUserId: user.userId,
