@@ -7,7 +7,7 @@ export interface IUserRepository {
    * @param userId
    */
   createUser(userDto: UserDto): Promise<UserDto>;
-  deleteUser(userId: number);
-  getUserInfo(userId: number): Promise<UserDto>;
+  deleteUser(userId: number): Promise<void>;
+  getUserInfo(userId: number): Promise<User>;
   getAllUser(): Promise<User[]>;
 }
