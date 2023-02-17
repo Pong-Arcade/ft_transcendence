@@ -48,11 +48,9 @@ const LobbyUserList = ({ socket }: { socket: ChatSocket }) => {
     setPage(0);
   };
   const addOnlineUser = (user: IUser) => {
-    console.log("add");
     setOnlineUsers((prev) => [...prev, user]);
   };
   const deleteOnlineUser = (userId: string) => {
-    console.log("delete");
     setOnlineUsers((prev) => {
       let users = new Array<IUser>();
       prev.forEach((user) => {

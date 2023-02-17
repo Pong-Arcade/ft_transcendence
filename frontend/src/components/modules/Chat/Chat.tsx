@@ -57,7 +57,7 @@ const Chat = ({ socket, ...rest }: Props) => {
 
     if (msg.split(" ")[0] === "/w") {
       socket.socket.emit("whisper", {
-        fromName: socket.username,
+        fromName: socket.userName,
         toName: msg.split(" ")[1],
         msg: msg.substring(msg.split(" ")[1].length + 4),
       });
@@ -65,8 +65,8 @@ const Chat = ({ socket, ...rest }: Props) => {
       console.log(msg);
       socket.socket.emit("message", {
         roomid: 0,
-        username: socket.username,
-        msg: socket.username + ": " + msg,
+        username: socket.userName,
+        msg: socket.userName + ": " + msg,
       });
     }
     setMsg("");
