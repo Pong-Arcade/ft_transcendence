@@ -47,6 +47,7 @@ const LabledInput = ({
   disabled,
   type,
   placeholder,
+  defaultValue,
 }: Props) => {
   return (
     <>
@@ -60,6 +61,7 @@ const LabledInput = ({
           disabled={disabled}
           type={type}
           placeholder={placeholder}
+          defaultValue={defaultValue}
         />
       </InputWrapper>
     </>
