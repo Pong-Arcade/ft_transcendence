@@ -29,4 +29,17 @@ export class UserService {
     }
     return userInfo;
   }
+
+  async updateUserInfo(
+    userId: number,
+    newNickname?: string,
+    newAvatarUrl?: string,
+  ): Promise<UserDto> {
+    this.logger.log(`Called ${this.updateUserInfo.name}`);
+    return await this.userRepository.updateUserInfo(
+      userId,
+      newNickname,
+      newAvatarUrl,
+    );
+  }
 }
