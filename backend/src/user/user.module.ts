@@ -16,7 +16,7 @@ const repo = {
   imports: [
     TypeOrmModule.forFeature([User]),
     forwardRef(() => ChatModule),
-    GameModule,
+    forwardRef(() => GameModule),
   ],
   controllers: [UserController],
   providers: [UserService, repo],

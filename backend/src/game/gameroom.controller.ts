@@ -6,9 +6,11 @@ import {
   HttpCode,
   HttpStatus,
   Logger,
+  NotFoundException,
   Param,
   ParseIntPipe,
   Post,
+  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
 import {
@@ -31,13 +33,19 @@ import { GameRoomUsersInfoResponseDto } from 'src/dto/response/gameroom.users.in
 import { User } from 'src/decorator/user.decorator';
 import { GameRoomCreateRequestDto } from 'src/dto/request/gameroom.create.request.dto';
 import { GameRoomInviteRequestDto } from 'src/dto/request/gameroom.invite.request.dto';
+import { JwtAuthGuard } from 'src/auth/jwt/jwt.auth.guard';
+import { GameRoomService } from './gameroom.service';
 
 @ApiTags('Game')
+@UseGuards(JwtAuthGuard)
 @Controller('api/game-rooms')
 export class GameRoomController {
   private logger = new Logger(GameRoomController.name);
 
-  constructor(private readonly eventEmitter: EventEmitter2) {}
+  constructor(
+    private readonly eventEmitter: EventEmitter2,
+    private readonly gameRoomService: GameRoomService,
+  ) {}
 
   @ApiOperation({
     summary: '전체 게임방 목록 조회',
@@ -50,7 +58,7 @@ export class GameRoomController {
   @Get()
   async getAllGameRooms(): Promise<GameRoomListResponseDto> {
     this.logger.log(`Called ${this.getAllGameRooms.name}`);
-    return new GameRoomListResponseDto();
+    return await this.gameRoomService.getAllGameRooms();
   }
 
   @ApiOperation({
@@ -80,6 +88,13 @@ export class GameRoomController {
     @Param('room_id', ParseIntPipe) roomId: number,
   ): Promise<GameRoomUsersInfoResponseDto> {
     this.logger.log(`Called ${this.joinGameRoom.name}`);
+    // 1. 해당 게임방 정보 확인
+    const gameroomInfo = this.gameRoomService.getGameRoomInfo(roomId);
+    if (!gameroomInfo) {
+      throw new NotFoundException('존재하지 않는 채팅방입니다.');
+    }
+    // 2. 이미 게임방에 입장한 유저인지 확인
+    // TODO:
     return new GameRoomUsersInfoResponseDto();
   }
 
