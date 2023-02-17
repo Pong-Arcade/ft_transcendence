@@ -11,7 +11,7 @@ import { Room } from '../chat/chatroom.entity';
 import { Namespace } from 'socket.io';
 import { OnEvent } from '@nestjs/event-emitter';
 
-export let rooms = new Map<number, Room>();
+export const rooms = new Map<number, Room>();
 
 type MessageType = 'message' | 'whisper' | 'systemMsg';
 interface IMessage {
@@ -65,10 +65,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       type: EMessageType.MESSAGE,
     };
     if (!msg.roomid) {
-      this.server.to(rooms.get(0).roomname).emit('message', message);
+      this.server.to(rooms.get(0).title).emit('message', message);
     } else {
       this.server
-        .to(rooms.get(msg.roomid).roomname)
+        .to(rooms.get(msg.roomid).title)
         //.broadcast.emit('message', msg.msg);
         .emit('message', msg.msg);
     }

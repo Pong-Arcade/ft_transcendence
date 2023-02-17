@@ -1,5 +1,6 @@
 import {
   Body,
+  ConflictException,
   Controller,
   Delete,
   ForbiddenException,
@@ -7,10 +8,12 @@ import {
   HttpCode,
   HttpStatus,
   Logger,
+  NotFoundException,
   Param,
   ParseIntPipe,
   Patch,
   Post,
+  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
 import {
@@ -25,7 +28,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { ChatRoomListResponseDto } from 'src/dto/response/chatroom.list.response.dto';
-import { ChatRoomListDto } from 'src/dto/chatroom.list.dto';
 import { ChatroomUsersInfoResponseDto } from 'src/dto/response/chatroom.users.info.response.dto';
 import { User } from 'src/decorator/user.decorator';
 import { UserDto } from 'src/dto/user.dto';
@@ -36,13 +38,20 @@ import { ChatroomCreateRequestDto } from 'src/dto/request/chatroom.create.reques
 import { ChatroomInviteRequestDto } from 'src/dto/request/chatroom.invite.request.dto';
 import { ChangeChatroomInfoRequestDto } from 'src/dto/request/chatroom.change.info.request.dto';
 import { ChatroomCreateUsersInfoResponseDto } from 'src/dto/response/chatroom.create.users.info.response.dto';
+import { ChatroomService } from './chat.service';
+import { UserChatMode } from 'src/enum/user.chat.mode.enum';
+import { JwtAuthGuard } from 'src/auth/jwt/jwt.auth.guard';
 
 @ApiTags('Chat')
+@UseGuards(JwtAuthGuard)
 @Controller('api/chat-rooms')
 export class ChatroomController {
   private logger = new Logger(ChatroomController.name);
 
-  constructor(private readonly eventEmitter: EventEmitter2) {}
+  constructor(
+    private readonly eventEmitter: EventEmitter2,
+    private readonly chatroomService: ChatroomService,
+  ) {}
 
   @ApiOperation({
     summary: '전체 채팅방 목록 조회',
@@ -53,22 +62,9 @@ export class ChatroomController {
     type: ChatRoomListResponseDto,
   })
   @Get()
-  async getAllChatrooms(): Promise<ChatRoomListResponseDto> {
+  getAllChatrooms(): ChatRoomListResponseDto {
     this.logger.log(`Called ${this.getAllChatrooms.name}`);
-    // map에 전체 항목에 대해 콜백을 실행하고, 그 결과를 배열로 반환
-    const chatrooms: ChatRoomListDto[] = [];
-    for (const [roomId, room] of rooms.entries()) {
-      chatrooms.push({
-        roomId: roomId,
-        title: room.roomname,
-        mode: room.mode,
-        maxUserCount: room.maxUser,
-        currentCount: room.users.length,
-      });
-    }
-    return {
-      chatRooms: chatrooms,
-    } as ChatRoomListResponseDto;
+    return this.chatroomService.getAllChatrooms();
   }
 
   @ApiOperation({
@@ -104,22 +100,46 @@ export class ChatroomController {
   ): Promise<ChatroomUsersInfoResponseDto> {
     this.logger.log(`Called ${this.joinChatroom.name}`);
     // 1. 해당 채팅방 정보 확인
-    const chatroomInfo = rooms.get(roomId);
-    // 2. 추방당한 유저인지 확인
-    if (chatroomInfo.bannedUsers.includes(user.userId)) {
-      throw new ForbiddenException('추방당한 방에 입장할 수 없습니다.');
+    const chatroomInfo = this.chatroomService.getChatroomInfo(roomId);
+    if (!chatroomInfo) {
+      throw new NotFoundException('존재하지 않는 채팅방입니다.');
     }
-    // 3. 비밀번호 채팅방인 경우, 비밀번호가 일치하는지 확인
+
+    // 2. 이미 채팅방에 입장한 유저인지 확인
+    if (chatroomInfo.users.includes(user.userId)) {
+      throw new ConflictException('이미 채팅방에 참여중입니다.');
+    }
+
+    // 3. 참여중인 채팅방이 있는지 확인
+    for (const room of rooms.values()) {
+      if (room.users.includes(user.userId)) {
+        throw new ConflictException('참여중인 채팅방이 있습니다.');
+      }
+    }
+
+    // 4. 채팅방 정원이 가득 찼는지 확인
+    if (chatroomInfo.users.length >= chatroomInfo.maxUser) {
+      throw new ConflictException('채팅방 정원이 가득 찼습니다.');
+    }
+
+    // 5. 추방당한 유저인지 확인
+    if (chatroomInfo.bannedUsers.includes(user.userId)) {
+      throw new ForbiddenException('추방당한 방에 참여할 수 없습니다.');
+    }
+
+    // 6. 비밀번호 채팅방인 경우, 비밀번호가 일치하는지 확인
     if (chatroomInfo.mode === ChatRoomMode.PROTECTED) {
       // FIXME: bcrypt로 암호화된 비밀번호와 비교
       if (chatroomInfo.password !== password) {
         throw new ForbiddenException('비밀번호가 일치하지 않습니다.');
       }
     }
-    // 4. 채팅방에 입장
+
+    // 7. 채팅방에 입장
     this.eventEmitter.emit('chatroom:join', roomId, user.userId);
-    // return await this.chatroomService.getChatroomUsersInfo(roomId);
-    return new ChatroomUsersInfoResponseDto();
+
+    // 8. 채팅방에 입장한 유저 정보 반환
+    return await this.chatroomService.getChatroomUsersInfo(chatroomInfo);
   }
 
   @ApiOperation({
@@ -147,11 +167,28 @@ export class ChatroomController {
     @Param('room_id', ParseIntPipe) roomId: number,
   ): Promise<void> {
     this.logger.log(`Called ${this.leaveChatroom.name}`);
+    // 1. 해당 채팅방 정보 확인
+    const chatroomInfo = this.chatroomService.getChatroomInfo(roomId);
+    if (!chatroomInfo) {
+      throw new NotFoundException('존재하지 않는 채팅방입니다.');
+    }
+
+    // 2. 해당 채팅방에 입장중인 유저인지 확인
+    if (!chatroomInfo.users.includes(user.userId)) {
+      throw new ConflictException('해당 채팅방에 참여중이지 않습니다.');
+    }
+
+    // 3. 채팅방 퇴장
+    this.eventEmitter.emit('chatroom:leave', roomId, user.userId);
   }
 
   @ApiOperation({
     summary: '채팅방 생성',
     description: '채팅방을 생성합니다.',
+  })
+  @ApiConflictResponse({
+    description:
+      '참여중인 채팅방이 있는 경우(로비 채팅방 제외), 채팅방 생성에 실패합니다.',
   })
   @ApiCreatedResponse({
     description:
@@ -166,7 +203,29 @@ export class ChatroomController {
     chatroomCreateRequestDto: ChatroomCreateRequestDto,
   ): Promise<ChatroomCreateUsersInfoResponseDto> {
     this.logger.log(`Called ${this.createChatroom.name}`);
-    return new ChatroomCreateUsersInfoResponseDto();
+
+    // 1. 참여중인 채팅방이 있는지 확인
+    for (const room of rooms.values()) {
+      if (room.users.includes(user.userId)) {
+        throw new ConflictException('참여중인 채팅방이 있습니다.');
+      }
+    }
+
+    // 2. 채팅방 생성
+    this.eventEmitter.emit(
+      'chatroom:create',
+      user.userId,
+      chatroomCreateRequestDto,
+    );
+
+    // 3. 자신이 생성한 채팅방의 roomId를 가져온다.
+    const roomId = this.chatroomService.getMyMasterChatroomId(user.userId);
+
+    // 4. 채팅방에 입장
+    this.eventEmitter.emit('chatroom:join', roomId, user.userId);
+
+    // 5. 채팅방에 입장한 유저 정보 반환(roomId 포함)
+    return await this.chatroomService.getChatroomCreateUsersInfo(roomId);
   }
 
   @ApiOperation({
@@ -195,6 +254,28 @@ export class ChatroomController {
     chatroomInviteRequestDto: ChatroomInviteRequestDto,
   ): Promise<void> {
     this.logger.log(`Called ${this.inviteChatroom.name}`);
+    // 1. 해당 채팅방 정보 확인
+    const chatroomInfo = this.chatroomService.getChatroomInfo(roomId);
+    if (!chatroomInfo) {
+      throw new NotFoundException('존재하지 않는 채팅방입니다.');
+    }
+
+    // 2. 해당 채팅방 관리자인지 확인
+    const userChatMode = this.chatroomService.getChatroomUserMode(
+      chatroomInfo,
+      user.userId,
+    );
+    if (userChatMode === UserChatMode.NORMAL) {
+      throw new ForbiddenException('채팅방 관리자만 초대할 수 있습니다');
+    }
+
+    // 3. 채팅방 초대
+    this.eventEmitter.emit(
+      'chatroom:invite',
+      roomId,
+      user.userId,
+      chatroomInviteRequestDto.users,
+    );
   }
 
   @ApiOperation({
@@ -210,7 +291,8 @@ export class ChatroomController {
     description: '문법적인 오류가 있을 경우 채팅방 초대 수락에 실패합니다.',
   })
   @ApiForbiddenResponse({
-    description: '채팅방 초대를 받지 않은 경우, 채팅방 초대 수락에 실패합니다.',
+    description:
+      '채팅방 초대를 받지 않은 경우, 추방당한 채팅방인 경우, 채팅방 초대 수락에 실패합니다.',
   })
   @ApiNotFoundResponse({
     description:
@@ -227,7 +309,44 @@ export class ChatroomController {
     @Param('room_id', ParseIntPipe) roomId: number,
   ): Promise<ChatroomUsersInfoResponseDto> {
     this.logger.log(`Called ${this.acceptChatroomInvite.name}`);
-    return new ChatroomUsersInfoResponseDto();
+    // 1. 해당 채팅방 정보 확인
+    const chatroomInfo = this.chatroomService.getChatroomInfo(roomId);
+    if (!chatroomInfo) {
+      throw new NotFoundException('존재하지 않는 채팅방입니다.');
+    }
+
+    // 2. 해당 채팅방에 초대된 유저인지 확인
+    if (!chatroomInfo.invitedUsers.includes(user.userId)) {
+      throw new ForbiddenException('해당 채팅방에 초대 받지 않았습니다.');
+    }
+
+    // 3. 이미 채팅방에 입장한 유저인지 확인
+    if (chatroomInfo.users.includes(user.userId)) {
+      throw new ConflictException('이미 채팅방에 참여중입니다.');
+    }
+
+    // 4. 참여중인 채팅방이 있는지 확인
+    for (const room of rooms.values()) {
+      if (room.users.includes(user.userId)) {
+        throw new ConflictException('참여중인 채팅방이 있습니다.');
+      }
+    }
+
+    // 5. 채팅방 정원이 가득 찼는지 확인
+    if (chatroomInfo.users.length >= chatroomInfo.maxUser) {
+      throw new ConflictException('채팅방 정원이 가득 찼습니다.');
+    }
+
+    // 6. 추방당한 유저인지 확인
+    if (chatroomInfo.bannedUsers.includes(user.userId)) {
+      throw new ForbiddenException('추방당한 방에 참여할 수 없습니다.');
+    }
+
+    // 7. 채팅방에 입장
+    this.eventEmitter.emit('chatroom:join', roomId, user.userId);
+
+    // 8. 채팅방에 속한 유저 정보 반환
+    return await this.chatroomService.getChatroomUsersInfo(chatroomInfo);
   }
 
   @ApiOperation({
@@ -254,6 +373,20 @@ export class ChatroomController {
     @Param('room_id', ParseIntPipe) roomId: number,
   ): Promise<void> {
     this.logger.log(`Called ${this.rejectChatroomInvite.name}`);
+
+    // 1. 해당 채팅방 정보 확인
+    const chatroomInfo = this.chatroomService.getChatroomInfo(roomId);
+    if (!chatroomInfo) {
+      throw new NotFoundException('존재하지 않는 채팅방입니다.');
+    }
+
+    // 2. 해당 채팅방에 초대된 유저인지 확인
+    if (!chatroomInfo.invitedUsers.includes(user.userId)) {
+      throw new ForbiddenException('채팅방 초대를 받지 않았습니다.');
+    }
+
+    // 3. 채팅방 초대 거절
+    this.eventEmitter.emit('chatroom:invite:reject', roomId, user.userId);
   }
 
   @ApiOperation({
@@ -287,6 +420,47 @@ export class ChatroomController {
     @Param('target_user_id', ParseIntPipe) targetUserId: number,
   ): Promise<void> {
     this.logger.log(`Called ${this.banUserFromChatroom.name}`);
+
+    // 1. 해당 채팅방 정보 확인
+    const chatroomInfo = this.chatroomService.getChatroomInfo(roomId);
+    if (!chatroomInfo) {
+      throw new NotFoundException('존재하지 않는 채팅방입니다.');
+    }
+
+    // 2. 존재하지 않는 유저인지 확인
+    if (!chatroomInfo.users.includes(targetUserId)) {
+      throw new NotFoundException('채팅방에 존재하지 않는 유저입니다.');
+    }
+
+    // 3. 해당 채팅방 관리자인지 확인
+    const userChatMode = this.chatroomService.getChatroomUserMode(
+      chatroomInfo,
+      user.userId,
+    );
+    if (userChatMode === UserChatMode.NORMAL) {
+      throw new ForbiddenException('채팅방 관리자가 아닙니다.');
+    }
+
+    // 4. 자신 이상의 등급의 관리자를 추방 시도하는지 확인
+    const targetUserChatMode = this.chatroomService.getChatroomUserMode(
+      chatroomInfo,
+      targetUserId,
+    );
+    if (
+      !this.chatroomService.isHigherChatMode(userChatMode, targetUserChatMode)
+    ) {
+      throw new ForbiddenException(
+        '자신 이상의 등급의 관리자를 추방할 수 없습니다.',
+      );
+    }
+
+    // 5. 이미 채팅방에서 추방된 유저인지 확인
+    if (chatroomInfo.bannedUsers.includes(targetUserId)) {
+      throw new ConflictException('이미 채팅방에서 추방된 유저입니다.');
+    }
+
+    // 6. 채팅방에서 추방
+    this.eventEmitter.emit('chatroom:ban', roomId, targetUserId);
   }
 
   @ApiOperation({
@@ -305,7 +479,7 @@ export class ChatroomController {
   })
   @ApiNotFoundResponse({
     description:
-      '채팅방 ID나 유저 ID가 존재하지 않는 경우, 채팅방에서 추방 해제에 실패합니다.',
+      '채팅방 ID가 존재하지 않는 경우, 채팅방에서 추방 해제에 실패합니다.',
   })
   @ApiConflictResponse({
     description:
@@ -319,6 +493,42 @@ export class ChatroomController {
     @Param('target_user_id', ParseIntPipe) targetUserId: number,
   ): Promise<void> {
     this.logger.log(`Called ${this.unbanUserFromChatroom.name}`);
+
+    // 1. 해당 채팅방 정보 확인
+    const chatroomInfo = this.chatroomService.getChatroomInfo(roomId);
+    if (!chatroomInfo) {
+      throw new NotFoundException('존재하지 않는 채팅방입니다.');
+    }
+
+    // 2. 해당 채팅방 관리자인지 확인
+    const userChatMode = this.chatroomService.getChatroomUserMode(
+      chatroomInfo,
+      user.userId,
+    );
+    if (userChatMode === UserChatMode.NORMAL) {
+      throw new ForbiddenException('채팅방 관리자가 아닙니다.');
+    }
+
+    // 3. 자신 이상의 등급의 관리자를 추방 시도하는지 확인
+    const targetUserChatMode = this.chatroomService.getChatroomUserMode(
+      chatroomInfo,
+      targetUserId,
+    );
+    if (
+      !this.chatroomService.isHigherChatMode(userChatMode, targetUserChatMode)
+    ) {
+      throw new ForbiddenException(
+        '자신 이상의 등급의 관리자를 추방할 수 없습니다.',
+      );
+    }
+
+    // 4. 채팅방에서 추방되지 않은 유저인지 확인
+    if (!chatroomInfo.bannedUsers.includes(targetUserId)) {
+      throw new ConflictException('채팅방에서 추방되지 않은 유저입니다.');
+    }
+
+    // 5. 채팅방에서 추방 해제
+    this.eventEmitter.emit('chatroom:unban', roomId, targetUserId);
   }
 
   @ApiOperation({
@@ -350,6 +560,45 @@ export class ChatroomController {
     @Param('target_user_id', ParseIntPipe) targetUserId: number,
   ): Promise<void> {
     this.logger.log(`Called ${this.promoteUserToAdmin.name}`);
+
+    // 1. 해당 채팅방 정보 확인
+    const chatroomInfo = this.chatroomService.getChatroomInfo(roomId);
+    if (!chatroomInfo) {
+      throw new NotFoundException('존재하지 않는 채팅방입니다.');
+    }
+
+    // 2. 존재하지 않는 유저인지 확인
+    if (!chatroomInfo.users.includes(targetUserId)) {
+      throw new NotFoundException('채팅방에 존재하지 않는 유저입니다.');
+    }
+
+    // 3. 해당 채팅방 방장인지 확인
+    const userChatMode = this.chatroomService.getChatroomUserMode(
+      chatroomInfo,
+      user.userId,
+    );
+    if (userChatMode !== UserChatMode.MASTER) {
+      throw new ForbiddenException(
+        '채팅방 방장만 관리자를 임명할 수 있습니다.',
+      );
+    }
+
+    // 4. 자기 자신을 관리자로 임명하는지 확인
+    if (user.userId === targetUserId) {
+      throw new ConflictException('자기 자신을 관리자로 임명할 수 없습니다.');
+    }
+
+    // 5. 이미 채팅방 관리자인지 확인
+    const targetUserChatMode = this.chatroomService.getChatroomUserMode(
+      chatroomInfo,
+      targetUserId,
+    );
+    if (targetUserChatMode !== UserChatMode.NORMAL) {
+      throw new ConflictException('해당 유저는 이미 채팅방 관리자입니다.');
+    }
+
+    // 6. 채팅방 관리자로 임명
+    this.eventEmitter.emit('chatroom:promote-admin', roomId, targetUserId);
   }
 
   @ApiOperation({
@@ -381,6 +630,44 @@ export class ChatroomController {
     @Param('target_user_id', ParseIntPipe) targetUserId: number,
   ): Promise<void> {
     this.logger.log(`Called ${this.demoteUserFromAdmin.name}`);
+    // 1. 해당 채팅방 정보 확인
+    const chatroomInfo = this.chatroomService.getChatroomInfo(roomId);
+    if (!chatroomInfo) {
+      throw new NotFoundException('존재하지 않는 채팅방입니다.');
+    }
+
+    // 2. 존재하지 않는 유저인지 확인
+    if (!chatroomInfo.users.includes(targetUserId)) {
+      throw new NotFoundException('채팅방에 존재하지 않는 유저입니다.');
+    }
+
+    // 3. 해당 채팅방 방장인지 확인
+    const userChatMode = this.chatroomService.getChatroomUserMode(
+      chatroomInfo,
+      user.userId,
+    );
+    if (userChatMode !== UserChatMode.MASTER) {
+      throw new ForbiddenException(
+        '채팅방 방장만 관리자를 해임할 수 있습니다.',
+      );
+    }
+
+    // 4. 자기 자신을 관리자 해임하는지 확인
+    if (user.userId === targetUserId) {
+      throw new ConflictException('자기 자신을 관리자에서 해임할 수 없습니다.');
+    }
+
+    // 5. 대상 유저가 채팅방 관리자인지 확인
+    const targetUserChatMode = this.chatroomService.getChatroomUserMode(
+      chatroomInfo,
+      targetUserId,
+    );
+    if (targetUserChatMode === UserChatMode.NORMAL) {
+      throw new ConflictException('해당 유저는 채팅방 관리자가 아닙니다.');
+    }
+
+    // 6. 채팅방 관리자 해임
+    this.eventEmitter.emit('chatroom:demote-admin', roomId, targetUserId);
   }
 
   @ApiOperation({
@@ -414,6 +701,51 @@ export class ChatroomController {
     @Param('duration', ParseIntPipe) duration: number,
   ): Promise<void> {
     this.logger.log(`Called ${this.muteUserFromChatroom.name}`);
+    // 1. 해당 채팅방 정보 확인
+    const chatroomInfo = this.chatroomService.getChatroomInfo(roomId);
+    if (!chatroomInfo) {
+      throw new NotFoundException('존재하지 않는 채팅방입니다.');
+    }
+
+    // 2. 존재하지 않는 유저인지 확인
+    if (!chatroomInfo.users.includes(targetUserId)) {
+      throw new NotFoundException('채팅방에 존재하지 않는 유저입니다.');
+    }
+
+    // 3. 해당 채팅방 관리자인지 확인
+    const userChatMode = this.chatroomService.getChatroomUserMode(
+      chatroomInfo,
+      user.userId,
+    );
+    if (userChatMode === UserChatMode.NORMAL) {
+      throw new ForbiddenException('채팅방 관리자가 아닙니다.');
+    }
+
+    // 4. 자기 자신을 채팅 금지 시도하는지 확인
+    if (user.userId === targetUserId) {
+      throw new ConflictException('자기 자신을 채팅 금지할 수 없습니다.');
+    }
+
+    // 5. 자신 이상의 등급의 관리자를 채팅 금지 시도하는지 확인
+    const targetUserChatMode = this.chatroomService.getChatroomUserMode(
+      chatroomInfo,
+      targetUserId,
+    );
+    if (
+      !this.chatroomService.isHigherChatMode(userChatMode, targetUserChatMode)
+    ) {
+      throw new ForbiddenException(
+        '자신 이상의 등급의 관리자를 채팅 금지할 수 없습니다.',
+      );
+    }
+
+    // 6. 채팅 금지
+    this.eventEmitter.emit(
+      'chatroom:mute-user',
+      roomId,
+      targetUserId,
+      duration,
+    );
   }
 
   @ApiOperation({
@@ -446,6 +778,46 @@ export class ChatroomController {
     @Param('target_user_id', ParseIntPipe) targetUserId: number,
   ): Promise<void> {
     this.logger.log(`Called ${this.unmuteUserFromChatroom.name}`);
+    // 1. 해당 채팅방 정보 확인
+    const chatroomInfo = this.chatroomService.getChatroomInfo(roomId);
+    if (!chatroomInfo) {
+      throw new NotFoundException('존재하지 않는 채팅방입니다.');
+    }
+
+    // 2. 존재하지 않는 유저인지 확인
+    if (!chatroomInfo.users.includes(targetUserId)) {
+      throw new NotFoundException('채팅방에 존재하지 않는 유저입니다.');
+    }
+
+    // 3. 해당 채팅방 관리자인지 확인
+    const userChatMode = this.chatroomService.getChatroomUserMode(
+      chatroomInfo,
+      user.userId,
+    );
+    if (userChatMode === UserChatMode.NORMAL) {
+      throw new ForbiddenException('채팅방 관리자가 아닙니다.');
+    }
+
+    // 4. 자기 자신을 채팅 금지 해제 시도하는지 확인
+    if (user.userId === targetUserId) {
+      throw new ConflictException('자기 자신을 채팅 금지 해제할 수 없습니다.');
+    }
+
+    // 5. 자신 이상의 등급의 관리자를 채팅 금지 해제 시도하는지 확인
+    const targetUserChatMode = this.chatroomService.getChatroomUserMode(
+      chatroomInfo,
+      targetUserId,
+    );
+    if (
+      !this.chatroomService.isHigherChatMode(userChatMode, targetUserChatMode)
+    ) {
+      throw new ForbiddenException(
+        '자신 이상의 등급의 관리자를 채팅 금지 해제할 수 없습니다.',
+      );
+    }
+
+    // 6. 채팅 금지 해제
+    this.eventEmitter.emit('chatroom:unmute-user', roomId, targetUserId);
   }
 
   @ApiOperation({
@@ -477,5 +849,22 @@ export class ChatroomController {
     changeChatroomInfoDto: ChangeChatroomInfoRequestDto,
   ): Promise<void> {
     this.logger.log(`Called ${this.changeChatroomInfo.name}`);
+    // 1. 해당 채팅방 정보 확인
+    const chatroomInfo = this.chatroomService.getChatroomInfo(roomId);
+    if (!chatroomInfo) {
+      throw new NotFoundException('존재하지 않는 채팅방입니다.');
+    }
+
+    // 2. 해당 채팅방 방장인지 확인
+    if (chatroomInfo.masterUser !== user.userId) {
+      throw new ForbiddenException('채팅방 방장만 변경할 수 있습니다.');
+    }
+
+    // 3. 채팅방 정보 변경
+    this.eventEmitter.emit(
+      'chatroom:change-info',
+      roomId,
+      changeChatroomInfoDto,
+    );
   }
 }

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { UserController } from './user.controller';
 import { ChatModule } from '../chat/chat.module';
 import { GameModule } from '../game/game.module';
@@ -13,7 +13,11 @@ const repo = {
 };
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User]), ChatModule, GameModule],
+  imports: [
+    TypeOrmModule.forFeature([User]),
+    forwardRef(() => ChatModule),
+    GameModule,
+  ],
   controllers: [UserController],
   providers: [UserService, repo],
   exports: [UserService],
