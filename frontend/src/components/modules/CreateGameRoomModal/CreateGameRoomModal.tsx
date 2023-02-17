@@ -57,7 +57,7 @@ const CreateGameRoomModal = ({ title, onClose }: Props) => {
               <LabledInput
                 title="방제목"
                 name={EGameRoomFormValues.TITLE}
-                value={values.Title}
+                value={values.title}
                 onChange={onChangeForm}
                 type="text"
               />
@@ -66,7 +66,7 @@ const CreateGameRoomModal = ({ title, onClose }: Props) => {
               <LabledInput
                 title="최대인원"
                 name={EGameRoomFormValues.MAXUSER}
-                value={values.MaxUser}
+                value={values.maxUserCount}
                 onChange={onChangeForm}
                 type="number"
               />

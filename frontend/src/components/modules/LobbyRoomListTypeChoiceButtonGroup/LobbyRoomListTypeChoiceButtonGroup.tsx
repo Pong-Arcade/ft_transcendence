@@ -15,7 +15,7 @@ export const BUTTON_LIST = [EROOM_BUTTON.CHATROOM, EROOM_BUTTON.GAMEROOM];
 
 const ChoiceButton = styled(Button).attrs({
   width: "31%",
-  height: "75%",
+  height: "70%",
   boxShadow: true,
 })``;
 
@@ -24,7 +24,13 @@ const LobbyRoomListTypeChoiceButtonGroup = ({
   currentButton,
 }: Props) => {
   return (
-    <ButtonGroup width="100%" height="20%" justifyContent="center" gap="11vw">
+    <ButtonGroup
+      width="100%"
+      height="20%"
+      justifyContent="center"
+      alignItems="center"
+      gap="11vw"
+    >
       {BUTTON_LIST.map((title) => (
         <ChoiceButton
           key={title}

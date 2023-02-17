@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import {
   EChatRoomFormValues,
-  EChatRoomType,
+  EChatRoomMode,
 } from "../../../hooks/useChatRoomForm";
 import useModifyChatRoomForm from "../../../hooks/useModifyChatRoomForm";
 import Button from "../../atoms/Button";
@@ -60,35 +60,35 @@ const CreateChatRoomModal = ({ title, onClose }: Props) => {
               <RoomTypeCheckBoxGroup
                 title="방유형"
                 onChange={onChangeForm}
-                checked={values.Type}
+                checked={values.mode}
               />
             </ModalInputWrapper>
             <ModalInputWrapper>
               <LabledInput
                 title="방제목"
                 name={EChatRoomFormValues.TITLE}
-                value={values.Title}
+                value={values.title}
                 onChange={onChangeForm}
                 disabled
                 type="text"
-                placeholder={values.Title}
+                placeholder={values.title}
               />
             </ModalInputWrapper>
             <ModalInputWrapper>
               <LabledInput
                 title="비밀번호"
                 name={EChatRoomFormValues.PASSWORD}
-                value={values.Password}
+                value={values.password}
                 onChange={onChangeForm}
-                disabled={values.Type !== EChatRoomType.PROTECTED}
+                disabled={values.mode !== EChatRoomMode.PROTECTED}
                 type="password"
               />
             </ModalInputWrapper>
             <ModalInputWrapper>
               <LabledInput
                 title="최대인원"
-                name={EChatRoomFormValues.MAXUSER}
-                value={values.MaxUser}
+                name={EChatRoomFormValues.MAXUSER_COUNT}
+                value={values.maxUserCount}
                 onChange={onChangeForm}
                 type="number"
                 disabled

@@ -13,6 +13,7 @@ import { OnEvent } from '@nestjs/event-emitter';
 import { MockRepository } from 'src/mock/mock.repository';
 export let rooms = new Map<number, Room>();
 
+
 type MessageType = 'message' | 'whisper' | 'systemMsg';
 interface IMessage {
   content: string;
@@ -78,10 +79,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       type: EMessageType.MESSAGE,
     };
     if (!msg.roomid) {
-      this.server.to(rooms.get(0).roomname).emit('message', message);
+      this.server.to(rooms.get(0).title).emit('message', message);
     } else {
       this.server
-        .to(rooms.get(msg.roomid).roomname)
+        .to(rooms.get(msg.roomid).title)
         //.broadcast.emit('message', msg.msg);
         .emit('message', msg.msg);
     }

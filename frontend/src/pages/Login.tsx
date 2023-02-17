@@ -1,4 +1,3 @@
-import React from "react";
 import LoginButton from "../components/modules/LoginButton";
 import LoginTitle from "../components/modules/LoginTitle";
 import LoginTemplate from "../components/templates/LoginTemplate";

@@ -1,27 +1,30 @@
 import { useState } from "react";
 import styled from "styled-components";
-import useLobbyUserList from "../../../hooks/useLobbyUserList";
 import Board from "../../atoms/Board";
+import LobbyChatRoomItem from "../LobbyChatRoomItem";
 import LobbyChatRoomPagination from "../LobbyChatRoomPagination";
 import LobbyGameRoomPagination from "../LobbyGameRoomPagination";
 import LobbyRoomListTypeChoiceButtonGroup from "../LobbyRoomListTypeChoiceButtonGroup";
 import { EROOM_BUTTON } from "../LobbyRoomListTypeChoiceButtonGroup/LobbyRoomListTypeChoiceButtonGroup";
-import LobbyUserItem from "../LobbyUserItem";
+import { IChatRoom } from "../Pagination/Pagination";
 
 const LobbyChatRoomListStyled = styled(Board).attrs((props) => {
   return {
     width: "100%",
-    height: "55%",
+    height: "59%",
     backgroundColor: props.theme.background.middle,
     flexDirection: "column",
-    justifyContent: "space-evenly",
+    justifyContent: "space-around",
     borderRadius: true,
   };
 })``;
 
-// TODO: chat room list, game room list
-const LobbyChatRoomList = () => {
-  const { onlineUsers, friendUsers } = useLobbyUserList();
+interface Props {
+  list: IChatRoom[];
+}
+
+// TODO: game room list
+const LobbyChatRoomList = ({ list }: Props) => {
   const [page, setPage] = useState(0);
   const [currentButton, setCurrentButton] = useState(EROOM_BUTTON.CHATROOM);
 
@@ -38,19 +41,19 @@ const LobbyChatRoomList = () => {
       />
       {currentButton === EROOM_BUTTON.CHATROOM ? (
         <LobbyChatRoomPagination
-          list={onlineUsers}
+          list={list}
           page={page}
           onNextPage={() => setPage(page + 1)}
           onPrevPage={() => setPage(page - 1)}
-          PaginationItem={LobbyUserItem} //TODO: LobbyChatRoomItem
+          PaginationItem={LobbyChatRoomItem}
         />
       ) : (
         <LobbyGameRoomPagination
-          list={friendUsers}
+          list={list}
           page={page}
           onNextPage={() => setPage(page + 1)}
           onPrevPage={() => setPage(page - 1)}
-          PaginationItem={LobbyUserItem} //TODO: LobbyGameRoomItem
+          PaginationItem={LobbyChatRoomItem} //TODO: LobbyGameRoomItem
         />
       )}
     </LobbyChatRoomListStyled>
