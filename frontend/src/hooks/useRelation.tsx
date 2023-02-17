@@ -7,8 +7,8 @@ import {
   createBlockUsersAPI,
   createFriendUsersAPI,
 } from "../api/users";
-import { blockUsersState } from "../state/BlockUsersState";
-import { friendUsersState } from "../state/FriendUsersState";
+import blockUsersState from "../state/BlockUsersState";
+import friendUsersState from "../state/FriendUsersState";
 
 const useRelation = (userId: string) => {
   const setFriendUsers = useSetRecoilState(friendUsersState);

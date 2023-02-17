@@ -4,8 +4,8 @@ import Button from "../../atoms/Button";
 import { ReactComponent as Logo } from "../../../assets/42logo.svg";
 import Typography from "../../atoms/Typography";
 import { loginAPI } from "../../../api/auth";
-import { loadingState } from "../../../state/LoadingState";
-import { useSetRecoilState } from "recoil";
+import FullSpinner from "../../atoms/FullSpinner";
+import useLoading from "../../../hooks/useLoading";
 
 const LoginButtonStyled = styled(Board).attrs({
   width: "50%",
@@ -24,20 +24,20 @@ const ButtonStyled = styled(Button).attrs({
 `;
 
 const LoginButton = () => {
-  const setIsLoading = useSetRecoilState(loadingState);
-
-  const onClick = () => {
-    setIsLoading(true);
-    loginAPI();
-  };
+  const { isLoading, startLoading } = useLoading({
+    afterStartLoading: () => loginAPI(),
+  });
 
   return (
-    <LoginButtonStyled>
-      <ButtonStyled onClick={onClick}>
-        <Logo width="3.5rem" height="3.5rem" />
-        <Typography fontSize="3rem">Login</Typography>
-      </ButtonStyled>
-    </LoginButtonStyled>
+    <>
+      <LoginButtonStyled>
+        <ButtonStyled onClick={startLoading}>
+          <Logo width="3.5rem" height="3.5rem" />
+          <Typography fontSize="3rem">Login</Typography>
+        </ButtonStyled>
+      </LoginButtonStyled>
+      {isLoading && <FullSpinner />}
+    </>
   );
 };
 

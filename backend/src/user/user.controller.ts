@@ -1,4 +1,11 @@
-import { Controller, Get, HttpCode, Logger } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpCode,
+  Logger,
+  Param,
+  ParseIntPipe,
+} from '@nestjs/common';
 import {
   ApiOkResponse,
   ApiOperation,
@@ -11,6 +18,7 @@ import { ChatGateway } from '../chat/chat.geteway';
 import { GameGateway } from '../game/game.gateway';
 import { MockRepository } from '../mock/mock.repository';
 import { OnlineUsersResponseDto } from '../dto/response/online.users.response.dto';
+import { UserService } from './user.service';
 
 @ApiTags('Users')
 @Controller('/api/users')
@@ -20,6 +28,7 @@ export class UserController {
   constructor(
     private chatGateway: ChatGateway,
     private gameGateway: GameGateway,
+    private readonly userService: UserService,
   ) {}
 
   @ApiOperation({
@@ -55,8 +64,11 @@ export class UserController {
     description: '존재하지 않는 유저입니다.',
   })
   @Get(':user_id')
-  async getUserDetail(@User() user: UserDto) {
+  async getUserDetail(
+    @User() user: UserDto,
+    @Param('user_id', ParseIntPipe) userId: number,
+  ) {
     this.logger.log(`Called ${this.getUserDetail.name}`);
-    return this.mock.getUserInfo();
+    return await this.userService.getUserInfo(userId);
   }
 }

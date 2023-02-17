@@ -59,15 +59,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('addUser')
   async onAddUser(client, info) {
-    console.log(info);
     if (rooms.size == 0) rooms.set(0, new Room(0, 'lobby'));
-    users.set(info.userId, new User(info.userId, info.userName, client.id));
+    users.set(info.userid, new User(info.userid, info.username, client.id));
     client.join('lobby');
-
-    this.mock.patchOnlineUser(info.userId);
+    this.mock.patchOnlineUser(info.userid);
     this.server.to('lobby').emit('addOnlineUser', {
-      userId: info.userId,
-      nickname: info.userName,
+      userId: info.userid,
+      nickname: info.username,
       avatarUrl: 'asdfd',
       email: 'sfds',
     });

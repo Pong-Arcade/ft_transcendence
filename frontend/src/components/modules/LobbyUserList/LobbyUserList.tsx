@@ -1,12 +1,6 @@
-import { useEffect, useState } from "react";
-import { useRecoilState } from "recoil";
+import { useState } from "react";
 import styled from "styled-components";
-import useLobbyUserList from "../../../hooks/useLobbyUserList";
 import useMenu from "../../../hooks/useMenu";
-import { blockUsersState } from "../../../state/BlockUsersState";
-import { friendUsersState } from "../../../state/FriendUsersState";
-import { onlineUsersState } from "../../../state/OnlineUsersState";
-import ChatSocket from "../../../utils/ChatSocket";
 import Board from "../../atoms/Board";
 import GeneralMenu from "../GeneralMenu";
 import LobbyUserItem from "../LobbyUserItem";
@@ -27,7 +21,31 @@ const LobbyUserListStyled = styled(Board).attrs((props) => {
   };
 })``;
 
-const LobbyUserList = ({ socket }: { socket: ChatSocket }) => {
+interface Props {
+  onlineUsers: IUser[];
+  friendUsers: IUser[];
+  blockUsers: IUser[];
+}
+// const addOnlineUser = (user: IUser) => {
+//   console.log("add");
+//   setOnlineUsers((prev) => [...prev, user]);
+// };
+// const deleteOnlineUser = (userId: string) => {
+//   console.log("delete");
+//   setOnlineUsers((prev) => {
+//     let users = new Array<IUser>();
+//     prev.forEach((user) => {
+//       if (user.userId != userId) users.push(user);
+//     });
+//     return users;
+//   });
+// };
+// useEffect(() => {
+//   console.log(socket);
+//   socket.socket.on("addOnlineUser", (user) => addOnlineUser(user));
+//   socket.socket.on("deleteOnlineUser", (userId) => deleteOnlineUser(userId));
+// }, []);
+const LobbyUserList = ({ onlineUsers, friendUsers, blockUsers }: Props) => {
   const {
     isOpenMenu,
     onOpenMenu,
@@ -39,31 +57,11 @@ const LobbyUserList = ({ socket }: { socket: ChatSocket }) => {
   } = useMenu();
 
   const [currentButton, setCurrentButton] = useState(EUSER_BUTTON.ONLINE_USERS);
-  const [onlineUsers, setOnlineUsers] = useRecoilState(onlineUsersState);
-  const [friendUsers, setFriendUsers] = useRecoilState(friendUsersState);
-  const [blockUsers, setBlockUsers] = useRecoilState(blockUsersState);
   const [page, setPage] = useState(0);
   const onChoiceButtonClick = (button: EUSER_BUTTON) => {
     setCurrentButton(button);
     setPage(0);
   };
-  const addOnlineUser = (user: IUser) => {
-    setOnlineUsers((prev) => [...prev, user]);
-  };
-  const deleteOnlineUser = (userId: string) => {
-    setOnlineUsers((prev) => {
-      let users = new Array<IUser>();
-      prev.forEach((user) => {
-        if (user.userId != userId) users.push(user);
-      });
-      return users;
-    });
-  };
-  useEffect(() => {
-    console.log(socket);
-    socket.socket.on("addOnlineUser", (user) => addOnlineUser(user));
-    socket.socket.on("deleteOnlineUser", (userId) => deleteOnlineUser(userId));
-  }, []);
   return (
     <>
       <LobbyUserListStyled>

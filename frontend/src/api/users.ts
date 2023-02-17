@@ -6,6 +6,11 @@ export const getOnlineUsersAPI = async () => {
   return response.data.onlineUsers;
 };
 
+export const getUserInfoAPI = async (userId: string) => {
+  const response = await getRequest(`users/${userId}`);
+  return response.data;
+};
+
 export const getFriendUsersAPI = async () => {
   const response = await getRequest("friends");
   return response.data.friendUsers;

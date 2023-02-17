@@ -1,44 +1,48 @@
 import styled from "styled-components";
 import imageCompression from "browser-image-compression";
 import React from "react";
-import Logo from "../../../assets/42logo.svg";
 
 // TODO: 본인 것만 업로드 할 수 있도록 처리
 interface Props {
   width: string;
   height: string;
-  src?: string;
+  src: string;
   upload?: boolean;
 }
 
 const AvatarStyled = styled.div<Props>`
   width: ${(props) => props.width};
   height: ${(props) => props.height};
-  background-image: url(${(props) => props.src || ""});
-  background-color: #dcdde1;
+  background-image: url(${(props) => props.src});
+  background-size: cover;
+  background-position: center;
   border-radius: 50%;
+  border: 2.5px solid ${(props) => props.theme.background.front};
 `;
 
-const AvatarLabel = styled.label`
+interface AvatarLabelProps {
+  src: string;
+}
+
+const AvatarLabel = styled.label<AvatarLabelProps>`
   cursor: pointer;
-  background-color: white;
   height: 15vw;
   width: 15vw;
   border-radius: 50%;
   transition: 0.5s;
-  background-position: center;
-  background-repeat: no-repeat;
   box-shadow: ${(props) => props.theme.box.shadow};
+  background-image: url(${(props) => props.src});
+  background-size: cover;
+  background-position: center;
+
+  border: 2.5px solid ${(props) => props.theme.background.front};
 
   &:hover {
     box-shadow: 0px 5px 5px -2px rgba(0, 0, 0, 0.25);
   }
 `;
 
-const Avatar = ({ upload, ...rest }: Props) => {
-  //TODO: Logo를 처음 받아오는 이미지로 수정
-  // const [image, setImage] = useState(Logo);
-
+const Avatar = ({ upload, src, ...rest }: Props) => {
   const uploadToServer = (file: File) => {
     console.log(file);
   };
@@ -61,10 +65,7 @@ const Avatar = ({ upload, ...rest }: Props) => {
   if (upload) {
     return (
       <>
-        <AvatarLabel
-          htmlFor="avatar"
-          style={{ backgroundImage: `url(${Logo})` }}
-        />
+        <AvatarLabel htmlFor="avatar" src={src} />
         <input
           type="file"
           id="avatar"
@@ -75,7 +76,7 @@ const Avatar = ({ upload, ...rest }: Props) => {
       </>
     );
   }
-  return <AvatarStyled {...rest} />;
+  return <AvatarStyled src={src} {...rest} />;
 };
 
 export default Avatar;

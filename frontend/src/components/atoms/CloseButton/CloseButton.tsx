@@ -14,7 +14,7 @@ const CloseButtonStyled = styled(Button).attrs((props) => {
   return {
     width: props.width || "2.2rem",
     height: props.height || "2.2rem",
-    backgroundColor: props.theme.background.middle,
+    backgroundColor: "transparent",
     fontSize: props.fontSize || "2rem",
   };
 })<Props>`

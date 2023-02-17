@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { IInfoState } from "../../../state/InfoState";
 import Avatar from "../../atoms/Avatar";
 import Board from "../../atoms/Board";
 import Button from "../../atoms/Button";
@@ -10,6 +11,7 @@ import ModalTitle from "../ModalTitle";
 interface Props {
   onClose: () => void;
   onSubmit?: () => void;
+  info: IInfoState;
 }
 
 const Wrapper = styled(Board).attrs((props) => {
@@ -30,7 +32,17 @@ const SubmitButton = styled(Button).attrs({
   fontSize: "2rem",
 })``;
 
-const UserInfoSettingModal = ({ onClose, onSubmit }: Props) => {
+const NicknameInput = styled(Input).attrs({
+  height: "15%",
+  width: "70%",
+  borderRadius: true,
+  padding: "1rem",
+})`
+  text-align: center;
+`;
+
+const UserInfoSettingModal = ({ onClose, onSubmit, info }: Props) => {
+  if (info.userId === -1) return null;
   return (
     <ModalWrapper>
       <Modal width="30%" height="60%" animation>
@@ -38,8 +50,8 @@ const UserInfoSettingModal = ({ onClose, onSubmit }: Props) => {
           프로필설정
         </ModalTitle>
         <Wrapper>
-          <Avatar width="15vw" height="15vw" upload />
-          <Input height="15%" width="70%" borderRadius padding="1rem" />
+          <Avatar width="15vw" height="15vw" upload src={info.avatarUrl} />
+          <NicknameInput defaultValue={info.nickname} />
           <SubmitButton onClick={onSubmit}>설정완료</SubmitButton>
         </Wrapper>
       </Modal>

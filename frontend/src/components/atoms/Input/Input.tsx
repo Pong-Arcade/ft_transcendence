@@ -19,6 +19,7 @@ interface Props {
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   name?: string;
   disabled?: boolean;
+  defaultValue?: string;
 }
 
 const InputStyled = styled.input.attrs((props) => {
@@ -47,8 +48,15 @@ const InputStyled = styled.input.attrs((props) => {
     `}
 `;
 
-const Input = ({ onKeyPress, onChange, ...rest }: Props) => {
-  return <InputStyled {...rest} onKeyPress={onKeyPress} onChange={onChange} />;
+const Input = ({ onKeyPress, onChange, defaultValue, ...rest }: Props) => {
+  return (
+    <InputStyled
+      {...rest}
+      defaultValue={defaultValue}
+      onKeyPress={onKeyPress}
+      onChange={onChange}
+    />
+  );
 };
 
 export default Input;

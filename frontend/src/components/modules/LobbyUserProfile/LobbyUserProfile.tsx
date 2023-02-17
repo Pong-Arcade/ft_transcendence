@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import useModal from "../../../hooks/useModal";
+import { IInfoState } from "../../../state/InfoState";
 import removeJWT from "../../../utils/removeJWT";
 import Avatar from "../../atoms/Avatar";
 import Board from "../../atoms/Board";
@@ -31,15 +32,27 @@ const UserInfo = styled(Board).attrs((props) => {
   };
 })``;
 
-const Wrapper = styled(Board).attrs({
-  width: "100%",
-  height: "50%",
-  flexDirection: "column",
-})`
-  gap: 0.5rem;
+const Wrapper = styled.div`
+  display: grid;
+  grid-template: repeat(3, 1fr) / 1fr;
+  width: 100%;
+  height: 50%;
+  background-color: ${(props) => props.theme.background.middle};
+  text-align: center;
 `;
 
-const LobbyUserProfile = () => {
+interface Props {
+  info: IInfoState;
+}
+
+const ProfileButton = styled(Button).attrs({
+  width: "6vw",
+  height: "5vh",
+  boxShadow: true,
+  fontSize: "1.5rem",
+})``;
+
+const LobbyUserProfile = ({ info }: Props) => {
   const {
     isModalOpen: isConfirmOpen,
     onModalOpen: onConfirmOpen,
@@ -61,42 +74,25 @@ const LobbyUserProfile = () => {
     <>
       <LobbyUserProfileStyled>
         <LogoutButton onClick={onConfirmOpen} />
-        <Avatar width={"10rem"} height={"10rem"} />
+        <Avatar width={"10rem"} height={"10rem"} src={info.avatarUrl} />
         <UserInfo>
           <Wrapper>
-            <Typography fontSize="1.5rem">user1</Typography>
+            <Typography fontSize="1.5rem">{info.nickname}</Typography>
             <Typography fontSize="1.5rem">2승 2패 (50%)</Typography>
             <Typography fontSize="1.5rem">1020 점</Typography>
           </Wrapper>
           <ButtonGroup height="30%" width="100%" justifyContent="space-between">
-            <Button
-              width="7vw"
-              height="5vh"
-              boxShadow
-              fontSize="1.5rem"
-              onClick={onUserInfoOpen}
-            >
-              내정보
-            </Button>
-            <Button
-              width="7vw"
-              height="5vh"
-              boxShadow
-              to="/ranking"
-              fontSize="1.5rem"
-            >
-              랭킹
-            </Button>
+            <ProfileButton onClick={onUserInfoOpen}>내정보</ProfileButton>
+            <ProfileButton to="/ranking">랭킹</ProfileButton>
           </ButtonGroup>
         </UserInfo>
       </LobbyUserProfileStyled>
       {isUserInfoOpen && (
         <UserInfoModal
-          userId={"3"} // TODO: 수정
+          userId={info.userId.toString()}
           onClose={onUserInfoClose}
           width="50%"
           height="90%"
-          me
         />
       )}
       {isConfirmOpen && (

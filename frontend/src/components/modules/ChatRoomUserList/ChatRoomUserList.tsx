@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import useLobbyUserList from "../../../hooks/useLobbyUserList";
 import useMenu from "../../../hooks/useMenu";
 import useModal from "../../../hooks/useModal";
-import Avatar from "../../atoms/Avatar";
 import Board from "../../atoms/Board";
 import Chat from "../Chat";
 import ChatRoomUserListPagination from "../ChatRoomUserListPagination";
@@ -17,32 +15,6 @@ const ChatRoomUserListStyled = styled(Board).attrs({
   flexDirection: "column",
   justifyContent: "space-between",
 })``;
-
-const UserCardWrapper = styled(Board).attrs({
-  width: "100%",
-  height: "100%",
-  flexDirection: "column",
-  justifyContent: "space-around",
-})``;
-
-const UserName = styled(Board).attrs((props) => {
-  return {
-    backgroundColor: props.theme.colors.vividCerulean,
-    borderRadius: true,
-    width: "100%",
-    height: "20%",
-  };
-})``;
-
-const list: React.ReactNode[] = [];
-for (let i = 0; i < 4; ++i) {
-  list.push([
-    <UserCardWrapper key={i}>
-      <Avatar width="11rem" height="11rem" />
-      <UserName>user{i}</UserName>
-    </UserCardWrapper>,
-  ]);
-}
 
 const ChatRoomUserList = () => {
   const { isOpenMenu, onOpenMenu, onCloseMenu, positionX, positionY, id } =
@@ -58,14 +30,14 @@ const ChatRoomUserList = () => {
     },
   });
   // TODO: chat room user list
-  const { onlineUsers } = useLobbyUserList();
+
   const [page, setPage] = useState(0);
 
   return (
     <>
       <ChatRoomUserListStyled>
         <ChatRoomUserListPagination
-          list={onlineUsers}
+          list={[]}
           page={page}
           onNextPage={() => setPage(page + 1)}
           onPrevPage={() => setPage(page - 1)}

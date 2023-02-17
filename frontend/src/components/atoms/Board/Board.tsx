@@ -3,8 +3,8 @@ import styled from "styled-components";
 
 interface Props {
   children?: React.ReactNode;
-  width: string;
-  height: string;
+  width?: string;
+  height?: string;
   backgroundColor?: string;
   boxShadow?: boolean;
   borderRadius?: boolean;
@@ -14,8 +14,8 @@ interface Props {
 }
 
 const BoardStyled = styled.div<Props>`
-  width: ${(props) => props.width};
-  height: ${(props) => props.height};
+  width: ${(props) => props.width || "100%"};
+  height: ${(props) => props.height || "100%"};
   background-color: ${(props) =>
     props.backgroundColor && props.backgroundColor};
   box-shadow: ${(props) => props.boxShadow && props.theme.box.shadow};
