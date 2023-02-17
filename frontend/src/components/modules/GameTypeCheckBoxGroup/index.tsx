@@ -1,1 +1,1 @@
-export { deafult } from "./GameTypeCheckBoxGroup";
+export { default } from "./GameTypeCheckBoxGroup";

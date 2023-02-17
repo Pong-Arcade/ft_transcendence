@@ -3,7 +3,7 @@ import {
   EChatRoomFormValues,
   EChatRoomMode,
   IChatRoomFormValues,
-  IErrors,
+  IChatRoomErrors,
   IUseChatRoomForm,
   MAX_PASSWORD_LENGTH,
 } from "./useChatRoomForm";
@@ -16,7 +16,7 @@ const useModifyChatRoomForm = ({ onSubmit }: IUseChatRoomForm) => {
     password: "",
     maxUserCount: "",
   });
-  const [errors, setErrors] = useState<IErrors>();
+  const [errors, setErrors] = useState<IChatRoomErrors>();
 
   const onChangeForm = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -53,7 +53,7 @@ const useModifyChatRoomForm = ({ onSubmit }: IUseChatRoomForm) => {
 };
 
 const ChatRoomFormValidator = ({ mode, password }: IChatRoomFormValues) => {
-  const errors: IErrors = {};
+  const errors: IChatRoomErrors = {};
 
   if (!(mode in EChatRoomMode)) {
     errors.mode = "방유형이 옳바르지 않습니다";

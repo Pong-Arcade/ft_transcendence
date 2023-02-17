@@ -90,7 +90,7 @@ const GameRoom = () => {
               boxShadow
               onClick={() => setStart((prev) => !prev)}
             >
-              {start ? "게임 준비" : "대기"}
+              {start ? "준비" : "대기"}
             </Button>
             <Button width="22vw" height="90%" boxShadow onClick={onConfirmOpen}>
               나가기
