@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Board from "../components/atoms/Board";
 import Button from "../components/atoms/Button";
 import Typography from "../components/atoms/Typography";
+import ButtonGroup from "../components/modules/ButtonGroup";
 import Chat from "../components/modules/Chat";
 import ExitConfirmModal from "../components/modules/ExitConfirmModal";
 import GeneralMenu from "../components/modules/GeneralMenu";
@@ -54,6 +56,7 @@ const GameRoom = () => {
     onModalClose: onConfirmClose,
   } = useModal({});
   const navigate = useNavigate();
+  const [start, setStart] = useState(false);
 
   const userList = ["kangkim1", "kangkim2"];
 
@@ -73,10 +76,26 @@ const GameRoom = () => {
               </UserProfile>
             ))}
           </UserProfileGroup>
-          <Chat width="98%" height="57%" />
-          <Button width="22vw" height="6vh" boxShadow onClick={onConfirmOpen}>
-            나가기
-          </Button>
+          <Chat width="98%" height="54%" />
+          <ButtonGroup
+            width="100%"
+            height="10%"
+            flexDirection="column"
+            backgroundColor="secondary"
+            gap="0.3vh"
+          >
+            <Button
+              width="22vw"
+              height="90%"
+              boxShadow
+              onClick={() => setStart((prev) => !prev)}
+            >
+              {start ? "게임 준비" : "대기"}
+            </Button>
+            <Button width="22vw" height="90%" boxShadow onClick={onConfirmOpen}>
+              나가기
+            </Button>
+          </ButtonGroup>
         </Wrapper>
       </GameRoomTemplate>
       <GeneralMenu

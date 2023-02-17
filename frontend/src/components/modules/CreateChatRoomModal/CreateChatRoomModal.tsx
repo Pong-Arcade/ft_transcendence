@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { createChatRoomAPI } from "../../../api/chatRoom";
+import { createChatRoomAPI } from "../../../api/room";
 import useChatRoomForm, {
   EChatRoomFormValues,
   EChatRoomMode,

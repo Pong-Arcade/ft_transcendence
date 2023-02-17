@@ -13,6 +13,7 @@ interface Props {
   disabled?: boolean;
   type?: InputType;
   placeholder?: string;
+  defaultValue?: string;
 }
 
 const LabledInputStyled = styled(Input).attrs((props) => {
