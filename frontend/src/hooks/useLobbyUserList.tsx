@@ -12,9 +12,6 @@ const useLobbyUserList = () => {
     onlineUsers,
     friendUsers,
     blockUsers,
-    setOnlineUsers,
-    setFriendUsers,
-    setBlockUsers,
   };
 };
 

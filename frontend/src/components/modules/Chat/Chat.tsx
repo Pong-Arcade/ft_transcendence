@@ -34,7 +34,6 @@ const ChatBoard = styled(Board).attrs({
   alignItems: "start",
 })``;
 
-// const Chat = ({ socket, ...rest }: Props) => {
 const Chat = ({ socket, ...rest }: Props) => {
   const [list, setList] = useState<IMessage[]>([]);
   const [msg, setMsg] = useState<string>();

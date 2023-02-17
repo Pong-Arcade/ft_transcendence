@@ -1,6 +1,5 @@
 import { MouseEvent } from "react";
 import styled from "styled-components";
-import { EChatRoomType } from "../../../hooks/useChatRoomForm";
 import Board from "../../atoms/Board";
 import Button from "../../atoms/Button";
 import ButtonGroup from "../ButtonGroup";
