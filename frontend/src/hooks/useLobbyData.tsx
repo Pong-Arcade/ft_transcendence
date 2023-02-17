@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useRecoilState } from "recoil";
-import { getChatRoomListAPI } from "../api/chatRoom";
+import { getChatRoomListAPI } from "../api/room";
 import {
   getBlockUsersAPI,
   getFriendUsersAPI,

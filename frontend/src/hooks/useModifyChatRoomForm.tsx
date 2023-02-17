@@ -3,9 +3,9 @@ import {
   EChatRoomFormValues,
   EChatRoomMode,
   IChatRoomFormValues,
-  IErrors,
+  IChatRoomErrors,
   IUseChatRoomForm,
-  MAXPASSWORD_LENGTH,
+  MAX_PASSWORD_LENGTH,
 } from "./useChatRoomForm";
 
 // TODO: 기존값 받아오기
@@ -16,7 +16,7 @@ const useModifyChatRoomForm = ({ onSubmit }: IUseChatRoomForm) => {
     password: "",
     maxUserCount: "",
   });
-  const [errors, setErrors] = useState<IErrors>();
+  const [errors, setErrors] = useState<IChatRoomErrors>();
 
   const onChangeForm = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -53,7 +53,7 @@ const useModifyChatRoomForm = ({ onSubmit }: IUseChatRoomForm) => {
 };
 
 const ChatRoomFormValidator = ({ mode, password }: IChatRoomFormValues) => {
-  const errors: IErrors = {};
+  const errors: IChatRoomErrors = {};
 
   if (!(mode in EChatRoomMode)) {
     errors.mode = "방유형이 옳바르지 않습니다";
@@ -62,8 +62,8 @@ const ChatRoomFormValidator = ({ mode, password }: IChatRoomFormValues) => {
   if (mode === EChatRoomMode.PROTECTED) {
     if (!password.length) {
       errors.password = "비밀번호를 입력해주세요";
-    } else if (password.length > MAXPASSWORD_LENGTH) {
-      errors.password = `비밀번호는 ${MAXPASSWORD_LENGTH}자 이내로 입력해주세요`;
+    } else if (password.length > MAX_PASSWORD_LENGTH) {
+      errors.password = `비밀번호는 ${MAX_PASSWORD_LENGTH}자 이내로 입력해주세요`;
     }
   }
 

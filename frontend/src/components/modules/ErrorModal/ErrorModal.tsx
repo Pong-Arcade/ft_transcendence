@@ -1,5 +1,7 @@
+import { ReactNode } from "react";
 import styled from "styled-components";
-import { IErrors } from "../../../hooks/useChatRoomForm";
+import { IChatRoomErrors } from "../../../hooks/useChatRoomForm";
+import { IGameRoomErrors } from "../../../hooks/useGameRoomForm";
 import Board from "../../atoms/Board";
 import Button from "../../atoms/Button";
 import Modal from "../../atoms/Modal";
@@ -7,9 +9,10 @@ import ModalWrapper from "../../atoms/ModalWrapper";
 import Typography from "../../atoms/Typography";
 import ModalTitle from "../ModalTitle";
 
+type ErrorType = IChatRoomErrors | IGameRoomErrors;
 interface Props {
   onClose: () => void;
-  errors?: IErrors;
+  errors: ErrorType;
 }
 const Wrapper = styled(Board).attrs((props) => {
   return {
@@ -41,12 +44,9 @@ const ErrorModal = ({ onClose, errors }: Props) => {
           방만들기 실패
         </ModalTitle>
         <Wrapper>
-          {errors?.mode && <ErrorMessage>{errors.mode}</ErrorMessage>}
-          {errors?.title && <ErrorMessage>{errors.title}</ErrorMessage>}
-          {errors?.password && <ErrorMessage>{errors.password}</ErrorMessage>}
-          {errors?.maxUserCount && (
-            <ErrorMessage>{errors.maxUserCount}</ErrorMessage>
-          )}
+          {Object.values(errors).map((value, index) => (
+            <ErrorMessage key={index}>{value as ReactNode}</ErrorMessage>
+          ))}
         </Wrapper>
         <ModalButton onClick={onClose}>확인</ModalButton>
       </Modal>

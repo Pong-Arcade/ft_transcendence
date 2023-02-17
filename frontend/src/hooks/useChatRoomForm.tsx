@@ -22,7 +22,7 @@ export interface IChatRoomFormValues {
 export interface IUseChatRoomForm {
   onSubmit: (values: IChatRoomFormValues) => void;
 }
-export interface IErrors extends Partial<IChatRoomFormValues> {}
+export interface IChatRoomErrors extends Partial<IChatRoomFormValues> {}
 
 const useChatRoomForm = ({ onSubmit }: IUseChatRoomForm) => {
   const [values, setValues] = useState<IChatRoomFormValues>({
@@ -31,7 +31,7 @@ const useChatRoomForm = ({ onSubmit }: IUseChatRoomForm) => {
     password: "",
     maxUserCount: "",
   });
-  const [errors, setErrors] = useState<IErrors>({});
+  const [errors, setErrors] = useState<IChatRoomErrors>({});
 
   const onChangeForm = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -77,10 +77,10 @@ const useChatRoomForm = ({ onSubmit }: IUseChatRoomForm) => {
   };
 };
 
-export const MAXPASSWORD_LENGTH = 10;
-export const MAXTITLE_LENGTH = 20;
-export const MINUSER_NUMBER = 2;
-export const MAXUSER_NUMBER = 10;
+export const MAX_PASSWORD_LENGTH = 10;
+export const MAX_TITLE_LENGTH = 20;
+export const MIN_USER_NUMBER = 2;
+export const MAX_USER_NUMBER = 10;
 
 const ChatRoomFormValidator = ({
   mode,
@@ -88,7 +88,7 @@ const ChatRoomFormValidator = ({
   password,
   maxUserCount,
 }: IChatRoomFormValues) => {
-  const errors: IErrors = {};
+  const errors: IChatRoomErrors = {};
 
   if (!(mode in EChatRoomMode)) {
     errors.mode = "방유형이 옳바르지 않습니다";
@@ -97,23 +97,26 @@ const ChatRoomFormValidator = ({
   if (mode === EChatRoomMode.PROTECTED) {
     if (!password.length) {
       errors.password = "비밀번호를 입력해주세요";
-    } else if (password.length > MAXPASSWORD_LENGTH) {
-      errors.password = `비밀번호는 ${MAXPASSWORD_LENGTH}자 이내로 입력해주세요`;
+    } else if (password.length > MAX_PASSWORD_LENGTH) {
+      errors.password = `비밀번호는 ${MAX_PASSWORD_LENGTH}자 이내로 입력해주세요`;
     }
   }
 
   if (mode !== EChatRoomMode.PRIVATE) {
     if (!title.length) {
       errors.title = "방제목을 입력해주세요";
-    } else if (title.length > MAXTITLE_LENGTH) {
-      errors.title = `방제목은 ${MAXTITLE_LENGTH}자 이내로 입력해주세요`;
+    } else if (title.length > MAX_TITLE_LENGTH) {
+      errors.title = `방제목은 ${MAX_TITLE_LENGTH}자 이내로 입력해주세요`;
     }
   }
 
   if (!maxUserCount.length) {
     errors.maxUserCount = "최대인원을 입력해주세요";
-  } else if (MINUSER_NUMBER > +maxUserCount || +maxUserCount > MAXUSER_NUMBER) {
-    errors.maxUserCount = `최대인원은 ${MINUSER_NUMBER} ~ ${MAXUSER_NUMBER} 이내로 입력해주세요`;
+  } else if (
+    MIN_USER_NUMBER > +maxUserCount ||
+    +maxUserCount > MAX_USER_NUMBER
+  ) {
+    errors.maxUserCount = `최대인원은 ${MIN_USER_NUMBER} ~ ${MAX_USER_NUMBER} 이내로 입력해주세요`;
   }
 
   return errors;
