@@ -2,8 +2,8 @@ import { io, Socket } from "socket.io-client";
 
 class ChatSocket {
   socket: Socket;
-  userid: number;
-  username: string;
+  userId: number;
+  userName: string;
   // ignore_list: Array<number>;
 
   // addMessage(msg: string) {

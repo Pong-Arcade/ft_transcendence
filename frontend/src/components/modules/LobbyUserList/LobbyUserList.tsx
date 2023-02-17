@@ -1,6 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRecoilState } from "recoil";
 import styled from "styled-components";
 import useMenu from "../../../hooks/useMenu";
+import { blockUsersState } from "../../../state/BlockUsersState";
+import { friendUsersState } from "../../../state/FriendUsersState";
+import { onlineUsersState } from "../../../state/OnlineUsersState";
+import ChatSocket from "../../../utils/ChatSocket";
 import Board from "../../atoms/Board";
 import GeneralMenu from "../GeneralMenu";
 import LobbyUserItem from "../LobbyUserItem";
@@ -20,6 +25,7 @@ const LobbyUserListStyled = styled(Board).attrs((props) => {
     justifyContent: "space-around",
   };
 })``;
+
 
 interface Props {
   onlineUsers: IUser[];
@@ -62,7 +68,23 @@ const LobbyUserList = ({ onlineUsers, friendUsers, blockUsers }: Props) => {
     setCurrentButton(button);
     setPage(0);
   };
-
+  const addOnlineUser = (user: IUser) => {
+    setOnlineUsers((prev) => [...prev, user]);
+  };
+  const deleteOnlineUser = (userId: string) => {
+    setOnlineUsers((prev) => {
+      let users = new Array<IUser>();
+      prev.forEach((user) => {
+        if (user.userId != userId) users.push(user);
+      });
+      return users;
+    });
+  };
+  useEffect(() => {
+    console.log(socket);
+    socket.socket.on("addOnlineUser", (user) => addOnlineUser(user));
+    socket.socket.on("deleteOnlineUser", (userId) => deleteOnlineUser(userId));
+  }, []);
   return (
     <>
       <LobbyUserListStyled>
