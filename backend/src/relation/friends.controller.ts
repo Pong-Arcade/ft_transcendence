@@ -5,7 +5,6 @@ import {
   HttpCode,
   Logger,
   Param,
-  ParseIntPipe,
   Patch,
 } from '@nestjs/common';
 import { User } from '../decorator/user.decorator';
@@ -56,7 +55,7 @@ export class FriendsController {
   async addFriend(@User() user: UserDto, @Param('user_id') userId: number) {
     this.logger.log(`Called ${this.addFriend.name}`);
     //  TODO: Business Logic!
-    this.mock.createFriendUser(userId);
+    this.mock.patchFriendUser(userId);
   }
 
   @Delete(':user_id')
@@ -73,10 +72,7 @@ export class FriendsController {
     status: 404,
     description: '존재하지 않는 유저입니다',
   })
-  async delFriend(
-    @User() user: UserDto,
-    @Param('user_id', ParseIntPipe) userId: number,
-  ) {
+  async delFriend(@User() user: UserDto, @Param('user_id') userId: number) {
     this.logger.log(`Called ${this.delFriend.name}`);
     //  TODO: Business Logic!
     this.mock.deleteFriendUser(userId);

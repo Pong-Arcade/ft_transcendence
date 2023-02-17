@@ -21,12 +21,12 @@ export class UserService {
     return await this.userRepository.createUser(userDto);
   }
 
-  async deleteUser(userId: number) {
+  async deleteUser(userId: number): Promise<void> {
     this.logger.log(`Called ${this.deleteUser.name}`);
     return await this.userRepository.deleteUser(userId);
   }
 
-  async getAllUsers(): Promise<User[]> {
+  async getAllUsers(): Promise<UserDto[]> {
     this.logger.log(`Called ${this.getAllUsers.name}`);
     return await this.userRepository.getAllUser();
   }

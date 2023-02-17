@@ -55,7 +55,7 @@ export class BlockController {
   async addBlock(@User() user: UserDto, @Param('user_id') userId: number) {
     this.logger.log(`Called ${this.addBlock.name}`);
     //  TODO: Business Logic!
-    this.mock.createBlockUser(userId);
+    this.mock.patchBlockUser(userId);
   }
 
   @Delete(':user_id')

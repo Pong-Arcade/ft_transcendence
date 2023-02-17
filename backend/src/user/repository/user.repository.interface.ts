@@ -8,6 +8,7 @@ export interface IUserRepository {
    */
   createUser(userDto: UserDto): Promise<UserDto>;
   deleteUser(userId: number): Promise<void>;
-  getUserInfo(userId: number): Promise<User>;
-  getAllUser(): Promise<User[]>;
+  getUserInfo(userId: number): Promise<UserDto>;
+  getAllUser(): Promise<UserDto[]>;
+  updateUser(userId: number, userDto: UserDto): Promise<UserDto>;
 }
