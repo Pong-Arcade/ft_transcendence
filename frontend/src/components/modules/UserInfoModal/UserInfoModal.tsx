@@ -2,7 +2,7 @@ import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { createFriendUsersAPI } from "../../../api/users";
 import useModal from "../../../hooks/useModal";
-import { myInfoState } from "../../../state/myInfoState";
+import myInfoState from "../../../state/MyInfoState";
 import Avatar from "../../atoms/Avatar";
 import Board from "../../atoms/Board";
 import Button from "../../atoms/Button";

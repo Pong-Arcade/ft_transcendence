@@ -8,9 +8,9 @@ import {
   getUserInfoAPI,
 } from "../api/users";
 import { IChatRoom, IUser } from "../components/modules/Pagination/Pagination";
-import { blockUsersState } from "../state/blockUsersState";
-import { friendUsersState } from "../state/friendUsersState";
-import { myInfoState } from "../state/myInfoState";
+import blockUsersState from "../state/BlockUsersState";
+import friendUsersState from "../state/FriendUsersState";
+import myInfoState from "../state/MyInfoState";
 import { getDecodedCookie } from "../utils/cookie";
 
 const useLobbyData = () => {

@@ -42,6 +42,7 @@ const RoomListChat = styled(Board).attrs((props) => {
   };
 })``;
 
+// TODO: 소켓 이벤트 등록하기  => LobbyUserList 파일 주석 확인
 const Lobby = ({ socket }: { socket: ChatSocket }) => {
   const { setLobbyData, getLobbyData } = useLobbyData();
   const { isLoading, endLoading } = useLoading({
@@ -54,7 +55,7 @@ const Lobby = ({ socket }: { socket: ChatSocket }) => {
       console.log("recreated socket");
     }
     if (socket) {
-      socket.socket.emit("joinLobby", socket.userid);
+      // socket.socket.emit("addUser", socket);
       // const createRoom = ({ type, roomname, password, maxUser }: any) => {
       //   socket.socket.emit("createRoom", { type, roomname, password, maxUser });
       // };

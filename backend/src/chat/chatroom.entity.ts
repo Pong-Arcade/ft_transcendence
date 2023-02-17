@@ -14,10 +14,10 @@ export class Room {
   constructor(
     id: number,
     title: string,
-    mode: ChatRoomMode,
-    password: string,
-    maxUser: number,
-    masterUser: number,
+    mode?: ChatRoomMode,
+    password?: string,
+    maxUser?: number,
+    masterUser?: number,
   ) {
     this.id = id;
     this.title = title;

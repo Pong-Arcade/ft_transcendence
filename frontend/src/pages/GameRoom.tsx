@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import Avatar from "../components/atoms/Avatar";
 import Board from "../components/atoms/Board";
 import Button from "../components/atoms/Button";
 import Typography from "../components/atoms/Typography";
@@ -66,7 +65,7 @@ const GameRoom = () => {
           <UserProfileGroup>
             {userList.map((user, idx) => (
               <UserProfile key={idx} onClick={onOpenMenu}>
-                <Avatar width="8rem" height="8rem" />
+                {/* <Avatar width="8rem" height="8rem" /> */}
                 <Typography fontSize="2rem">{user}</Typography>
                 <Typography fontSize="1.2rem">
                   {idx === 0 ? "(RED)" : "(BLUE)"}

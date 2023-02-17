@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { MyInfoState } from "../../../state/myInfoState";
+import { IMyInfoState } from "../../../state/MyInfoState";
 import Avatar from "../../atoms/Avatar";
 import Board from "../../atoms/Board";
 import Button from "../../atoms/Button";
@@ -11,7 +11,7 @@ import ModalTitle from "../ModalTitle";
 interface Props {
   onClose: () => void;
   onSubmit?: () => void;
-  info: MyInfoState;
+  info: IMyInfoState;
 }
 
 const Wrapper = styled(Board).attrs((props) => {

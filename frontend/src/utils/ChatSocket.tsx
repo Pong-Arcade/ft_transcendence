@@ -13,10 +13,6 @@ class ChatSocket {
     this.socket = io("ws://localhost:80/socket/chat");
     this.userid = userid;
     this.username = name;
-    this.socket.emit("addUser", {
-      username: this.username,
-      userid: this.userid,
-    });
   }
 }
 

@@ -7,8 +7,8 @@ import ModalWrapper from "../../atoms/ModalWrapper";
 import UserInfoModal from "../UserInfoModal";
 import RelationConfirmModal from "../RelationConfirmModal";
 import { useRecoilValue } from "recoil";
-import { friendUsersState } from "../../../state/friendUsersState";
-import { blockUsersState } from "../../../state/blockUsersState";
+import friendUsersState from "../../../state/FriendUsersState";
+import blockUsersState from "../../../state/BlockUsersState";
 
 interface Props {
   top: number;

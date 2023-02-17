@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 interface Props {
-  initialLoading: boolean;
+  initialLoading?: boolean;
   afterStartLoading?: () => void;
   afterEndLoading?: () => void;
 }

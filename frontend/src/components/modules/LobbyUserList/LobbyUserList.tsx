@@ -26,7 +26,25 @@ interface Props {
   friendUsers: IUser[];
   blockUsers: IUser[];
 }
-
+// const addOnlineUser = (user: IUser) => {
+//   console.log("add");
+//   setOnlineUsers((prev) => [...prev, user]);
+// };
+// const deleteOnlineUser = (userId: string) => {
+//   console.log("delete");
+//   setOnlineUsers((prev) => {
+//     let users = new Array<IUser>();
+//     prev.forEach((user) => {
+//       if (user.userId != userId) users.push(user);
+//     });
+//     return users;
+//   });
+// };
+// useEffect(() => {
+//   console.log(socket);
+//   socket.socket.on("addOnlineUser", (user) => addOnlineUser(user));
+//   socket.socket.on("deleteOnlineUser", (userId) => deleteOnlineUser(userId));
+// }, []);
 const LobbyUserList = ({ onlineUsers, friendUsers, blockUsers }: Props) => {
   const {
     isOpenMenu,
