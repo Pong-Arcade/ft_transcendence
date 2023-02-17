@@ -74,10 +74,9 @@ const CreateChatRoomModal = ({ title, onClose }: Props) => {
                 name={EChatRoomFormValues.TITLE}
                 value={values.title}
                 onChange={onChangeForm}
-                disabled={values.mode === EChatRoomMode.PRIVATE}
                 type="text"
                 placeholder={
-                  values.mode === EChatRoomMode.PRIVATE ? values.title : ""
+                  values.mode === EChatRoomMode.PRIVATE ? "비밀방입니다." : ""
                 }
               />
             </ModalInputWrapper>

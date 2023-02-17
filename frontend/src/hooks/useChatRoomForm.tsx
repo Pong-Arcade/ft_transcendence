@@ -39,7 +39,7 @@ const useChatRoomForm = ({ onSubmit }: IUseChatRoomForm) => {
       if (value === EChatRoomMode.PRIVATE) {
         setValues({
           [name]: value,
-          [EChatRoomFormValues.TITLE]: "비밀방입니다.",
+          [EChatRoomFormValues.TITLE]: "",
           [EChatRoomFormValues.PASSWORD]: "",
           [EChatRoomFormValues.MAXUSER_COUNT]: "",
         });
@@ -102,12 +102,10 @@ const ChatRoomFormValidator = ({
     }
   }
 
-  if (mode !== EChatRoomMode.PRIVATE) {
-    if (!title.length) {
-      errors.title = "방제목을 입력해주세요";
-    } else if (title.length > MAX_TITLE_LENGTH) {
-      errors.title = `방제목은 ${MAX_TITLE_LENGTH}자 이내로 입력해주세요`;
-    }
+  if (!title.length) {
+    errors.title = "방제목을 입력해주세요";
+  } else if (title.length > MAX_TITLE_LENGTH) {
+    errors.title = `방제목은 ${MAX_TITLE_LENGTH}자 이내로 입력해주세요`;
   }
 
   if (!maxUserCount.length) {
