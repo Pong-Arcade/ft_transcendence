@@ -5,6 +5,9 @@ import ChatList from "../../atoms/ChatList";
 import Input from "../../atoms/Input";
 import ChatSocket from "../../../utils/ChatSocket";
 import { IMessage } from "../../atoms/ChatList/ChatList";
+import { useRecoilValue } from "recoil";
+import blockUsersState from "../../../state/BlockUsersState";
+import { IUser } from "../Pagination/Pagination";
 
 interface Props {
   width: string;
@@ -37,20 +40,26 @@ const ChatBoard = styled(Board).attrs({
 const Chat = ({ socket, ...rest }: Props) => {
   const [list, setList] = useState<IMessage[]>([]);
   const [msg, setMsg] = useState<string>();
-
+  const blockUsers = useRecoilValue(blockUsersState);
   useEffect(() => {
-    const newMessage = (newMsg: IMessage) => {
-      setList((prevList) => [...prevList, newMsg]);
-    };
     // const joinRoom = (newMsg: IMessage) => {
     //   setList((prevList) => [...prevList, newMsg]);
     // };
+    const newMessage = (newMsg: IMessage) => {
+      for (const user of blockUsers) {
+        if (user.userId == newMsg.fromId) return;
+      }
+      setList((prevList) => [...prevList, newMsg]);
+    };
     if (socket) {
+      socket.socket.off("message");
+      socket.socket.off("whisper");
+      socket.socket.off("systemMsg");
       socket.socket.on("message", newMessage);
       socket.socket.on("whisper", newMessage);
       socket.socket.on("systemMsg", newMessage);
     }
-  }, []);
+  }, [blockUsers]);
 
   const enterkey = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key !== "Enter" || !msg || msg === "" || !socket) return;
@@ -65,6 +74,7 @@ const Chat = ({ socket, ...rest }: Props) => {
       console.log(msg);
       socket.socket.emit("message", {
         roomId: 0,
+        userId: socket.userId,
         userName: socket.userName,
         msg: socket.userName + ": " + msg,
       });
