@@ -64,8 +64,8 @@ const Chat = ({ socket, ...rest }: Props) => {
     } else {
       console.log(msg);
       socket.socket.emit("message", {
-        roomid: 0,
-        username: socket.userName,
+        roomId: 0,
+        userName: socket.userName,
         msg: socket.userName + ": " + msg,
       });
     }
