@@ -1,7 +1,9 @@
 import {
   Body,
+  ConflictException,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   HttpCode,
   HttpStatus,
@@ -94,8 +96,27 @@ export class GameRoomController {
       throw new NotFoundException('존재하지 않는 채팅방입니다.');
     }
     // 2. 이미 게임방에 입장한 유저인지 확인
-    // TODO:
-    return new GameRoomUsersInfoResponseDto();
+    if (
+      this.gameRoomService.isOnThatGameRoom(gameroomInfo.roomId, user.userId)
+    ) {
+      throw new ConflictException('이미 입장한 게임방입니다.');
+    }
+
+    // 3. 참여중인 게임방이 있는지 확인
+    if (this.gameRoomService.isOnGameRoom(user.userId)) {
+      throw new ConflictException('참여중인 게임방이 있습니다.');
+    }
+
+    // 4. 게임방 정원 확인
+    if (this.gameRoomService.getGameRoomUserCount(roomId) == 2) {
+      throw new ConflictException('게임방 정원이 가득 찼습니다.');
+    }
+
+    // 5. 게임방 입장
+    this.eventEmitter.emit('gameroom:join', roomId, user.userId);
+
+    // 6. 게임방에 입장한 유저 정보 반환
+    return await this.gameRoomService.getGameRoomUsersInfo(gameroomInfo);
   }
 
   @ApiOperation({
@@ -123,6 +144,21 @@ export class GameRoomController {
     @Param('room_id', ParseIntPipe) roomId: number,
   ): Promise<void> {
     this.logger.log(`Called ${this.leaveGameRoom.name}`);
+    // 1. 해당 게임방 정보 확인
+    const gameroomInfo = this.gameRoomService.getGameRoomInfo(roomId);
+    if (!gameroomInfo) {
+      throw new NotFoundException('존재하지 않는 게임방입니다.');
+    }
+
+    // 2. 해당 게임방에 입장한 유저인지 확인
+    if (
+      !this.gameRoomService.isOnThatGameRoom(gameroomInfo.roomId, user.userId)
+    ) {
+      throw new ConflictException('해당 게임방에 입장하지 않았습니다.');
+    }
+
+    // 3. 게임방 퇴장
+    this.eventEmitter.emit('gameroom:leave', roomId, user.userId);
   }
 
   @ApiOperation({
@@ -142,7 +178,28 @@ export class GameRoomController {
     gameRoomCreateRequestDto: GameRoomCreateRequestDto,
   ): Promise<GameRoomUsersInfoResponseDto> {
     this.logger.log(`Called ${this.createGameRoom.name}`);
-    return new GameRoomUsersInfoResponseDto();
+    // 1. 참여중인 게임방이 있는지 확인
+    if (this.gameRoomService.isOnGameRoom(user.userId)) {
+      throw new ConflictException('참여중인 게임방이 있습니다.');
+    }
+
+    // 2. 게임방 생성
+    this.eventEmitter.emit(
+      'gameroom:create',
+      user.userId,
+      gameRoomCreateRequestDto,
+    );
+
+    // 3. 자신이 생성한 게임방의 roomId를 반환
+    const roomId = this.gameRoomService.getMyMasterGameRoomId(user.userId);
+
+    // 4. 게임방에 입장
+    this.eventEmitter.emit('gameroom:join', roomId, user.userId);
+
+    // 5. 게임방에 입장한 유저 정보 반환
+    return await this.gameRoomService.getGameRoomUsersInfo(
+      this.gameRoomService.getGameRoomInfo(roomId),
+    );
   }
 
   @ApiOperation({
@@ -171,6 +228,24 @@ export class GameRoomController {
     gameRoomInviteRequestDto: GameRoomInviteRequestDto,
   ): Promise<void> {
     this.logger.log(`Called ${this.inviteGameRoom.name}`);
+    // 1. 해당 게임방 정보 확인
+    const gameroomInfo = this.gameRoomService.getGameRoomInfo(roomId);
+    if (!gameroomInfo) {
+      throw new NotFoundException('존재하지 않는 게임방입니다.');
+    }
+
+    // 2. 해당 게임방의 방장인지 확인
+    if (gameroomInfo.redUserId !== user.userId) {
+      throw new ForbiddenException('게임방 방장만 초대할 수 있습니다.');
+    }
+
+    // 3. 채팅방 초대
+    this.eventEmitter.emit(
+      'gameroom:invite',
+      roomId,
+      user.userId,
+      gameRoomInviteRequestDto,
+    );
   }
 
   @ApiOperation({
@@ -203,7 +278,37 @@ export class GameRoomController {
     @Param('room_id', ParseIntPipe) roomId: number,
   ): Promise<GameRoomUsersInfoResponseDto> {
     this.logger.log(`Called ${this.acceptGameRoomInvite.name}`);
-    return new GameRoomUsersInfoResponseDto();
+    // 1. 해당 게임방 정보 확인
+    const gameroomInfo = this.gameRoomService.getGameRoomInfo(roomId);
+    if (!gameroomInfo) {
+      throw new NotFoundException('존재하지 않는 게임방입니다.');
+    }
+
+    // 2. 해당 게임방에 초대를 받은 유저인지 확인
+    if (!gameroomInfo.invitedUsers.includes(user.userId)) {
+      throw new ForbiddenException('해당 게임방에 초대 받지 않았습니다.');
+    }
+
+    // 3. 이미 해당 게임방에 입장한 유저인지 확인
+    if (this.gameRoomService.isOnThatGameRoom(roomId, user.userId)) {
+      throw new ConflictException('이미 해당 게임방에 입장했습니다.');
+    }
+
+    // 4. 참여중인 게임방이 있는지 확인
+    if (this.gameRoomService.isOnGameRoom(user.userId)) {
+      throw new ConflictException('참여중인 게임방이 있습니다.');
+    }
+
+    // 5. 게임방 정원이 가득찼는지 확인
+    if (this.gameRoomService.getGameRoomUserCount(roomId) == 2) {
+      throw new ConflictException('게임방 정원이 가득찼습니다.');
+    }
+
+    // 6. 게임방에 입장
+    this.eventEmitter.emit('gameroom:join', roomId, user.userId);
+
+    // 8. 게임방에 입장한 유저 정보 반환
+    return await this.gameRoomService.getGameRoomUsersInfo(gameroomInfo);
   }
 
   @ApiOperation({
@@ -230,6 +335,19 @@ export class GameRoomController {
     @Param('room_id', ParseIntPipe) roomId: number,
   ): Promise<void> {
     this.logger.log(`Called ${this.rejectGameRoomInvite.name}`);
+    // 1. 해당 게임방 정보 확인
+    const gameroomInfo = this.gameRoomService.getGameRoomInfo(roomId);
+    if (!gameroomInfo) {
+      throw new NotFoundException('존재하지 않는 게임방입니다.');
+    }
+
+    // 2. 해당 게임방에 초대를 받은 유저인지 확인
+    if (!gameroomInfo.invitedUsers.includes(user.userId)) {
+      throw new ForbiddenException('해당 게임방에 초대 받지 않았습니다.');
+    }
+
+    // 3. 게임방 초대 거절
+    this.eventEmitter.emit('gameroom:invite:reject', roomId, user.userId);
   }
 
   @ApiOperation({
@@ -251,7 +369,7 @@ export class GameRoomController {
   })
   @ApiConflictResponse({
     description:
-      '이미 관전 중인 경우, 참여중인 게임방이 있는 경우, 게임방 관전 정원이 가득찬 경우 게임방 관전 입장에 실패합니다.',
+      '이미 해당 게임방에 입장한 경우, 참여중인 게임방이 있는 경우, 게임방 관전 정원이 가득찬 경우 게임방 관전 입장에 실패합니다.',
   })
   @HttpCode(HttpStatus.CREATED)
   @Post('/spectator/join/:room_id')
@@ -260,7 +378,32 @@ export class GameRoomController {
     @Param('room_id', ParseIntPipe) roomId: number,
   ): Promise<GameRoomUsersInfoResponseDto> {
     this.logger.log(`Called ${this.joinSpectateGameRoom.name}`);
-    return new GameRoomUsersInfoResponseDto();
+    // 1. 해당 게임방 정보 확인
+    const gameroomInfo = this.gameRoomService.getGameRoomInfo(roomId);
+    if (!gameroomInfo) {
+      throw new NotFoundException('존재하지 않는 게임방입니다.');
+    }
+
+    // 2. 이미 해당 게임방에 입장한 유저인지 확인
+    if (this.gameRoomService.isOnThatGameRoom(roomId, user.userId)) {
+      throw new ConflictException('이미 해당 게임방에 입장했습니다.');
+    }
+
+    // 3. 참여중인 게임방이 있는지 확인
+    if (this.gameRoomService.isOnGameRoom(user.userId)) {
+      throw new ConflictException('참여중인 게임방이 있습니다.');
+    }
+
+    // 4. 게임방 관전 정원이 가득찼는지 확인
+    if (gameroomInfo.spectatorUsers.length === gameroomInfo.maxSpectatorCount) {
+      throw new ConflictException('게임방 관전 정원이 가득찼습니다.');
+    }
+
+    // 5. 게임방 관전 입장
+    this.eventEmitter.emit('gameroom:spectator:join', roomId, user.userId);
+
+    // 6. 게임방에 입장한 유저 정보 반환
+    return await this.gameRoomService.getGameRoomUsersInfo(gameroomInfo);
   }
 
   @ApiOperation({
@@ -287,5 +430,18 @@ export class GameRoomController {
     @Param('room_id', ParseIntPipe) roomId: number,
   ): Promise<void> {
     this.logger.log(`Called ${this.leaveSpectateGameRoom.name}`);
+    // 1. 해당 게임방 정보 확인
+    const gameroomInfo = this.gameRoomService.getGameRoomInfo(roomId);
+    if (!gameroomInfo) {
+      throw new NotFoundException('존재하지 않는 게임방입니다.');
+    }
+
+    // 2. 관전자로 입장한 유저인지 확인
+    if (!gameroomInfo.spectatorUsers.includes(user.userId)) {
+      throw new ConflictException('관전자가 아닙니다.');
+    }
+
+    // 3. 게임방 관전 종료
+    this.eventEmitter.emit('gameroom:spectator:leave', roomId, user.userId);
   }
 }

@@ -13,6 +13,7 @@ export class GameRoom {
   type: MatchType;
   winScore: number;
   spectatorUsers: Array<number>;
+  invitedUsers: Array<number>;
   constructor(
     roomId: number,
     redUserId: number,
@@ -31,5 +32,6 @@ export class GameRoom {
     this.maxSpectatorCount = maxSpectatorCount;
     this.status = GameRoomStatus.ON_READY;
     this.spectatorUsers = new Array<number>();
+    this.invitedUsers = new Array<number>();
   }
 }
