@@ -17,13 +17,6 @@ import Stat from "./pages/Stat";
 import GlobalStyle from "./styles/GlobalStyle";
 import theme from "./styles/theme";
 
-import ChatSocket from "./utils/ChatSocket";
-const n: number = Math.floor(Math.random() * 1000);
-const socket: ChatSocket = new ChatSocket(
-  Math.floor(n),
-  "user" + Math.floor(n)
-);
-
 const router = createBrowserRouter([
   {
     path: "/",
@@ -36,7 +29,7 @@ const router = createBrowserRouter([
       },
       {
         path: "lobby",
-        element: <Lobby socket={socket} />,
+        element: <Lobby />,
       },
       {
         path: "game-rooms/:gameId",
