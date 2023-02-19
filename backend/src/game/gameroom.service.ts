@@ -2,7 +2,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { GameRoomListResponseDto } from 'src/dto/response/gameroom.list.response.dto';
 import { gameRooms } from './game.gateway';
-import { UserDto } from 'src/dto/user.dto';
 import { UserService } from 'src/user/user.service';
 import { GameRoom } from './gameroom.entity';
 import { GameRoomUsersInfoResponseDto } from 'src/dto/response/gameroom.users.info.response.dto';
@@ -11,10 +10,7 @@ import { GameRoomUsersInfoResponseDto } from 'src/dto/response/gameroom.users.in
 export class GameRoomService {
   private logger = new Logger(GameRoomService.name);
 
-  constructor(
-    private readonly eventEmitter: EventEmitter2,
-    private readonly userService: UserService,
-  ) {}
+  constructor(private readonly userService: UserService) {}
 
   /**
    * 전체 게임방 목록을 조회합니다.

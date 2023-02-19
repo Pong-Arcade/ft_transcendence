@@ -26,9 +26,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { GameGateway } from './game.gateway';
 import { GameRoomListResponseDto } from '../dto/response/gameroom.list.response.dto';
-import { GameRoomStatus } from '../enum/gameroom.status.enum';
 import { UserDto } from '../dto/user.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { GameRoomUsersInfoResponseDto } from 'src/dto/response/gameroom.users.info.response.dto';
