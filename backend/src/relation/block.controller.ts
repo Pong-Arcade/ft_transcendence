@@ -55,8 +55,8 @@ export class BlockController {
   async addBlock(@User() user: UserDto, @Param('user_id') userId: number) {
     this.logger.log(`Called ${this.addBlock.name}`);
     await this.blockService.addBlockUser({
-      user: user.userId,
-      target: userId,
+      userId: user.userId,
+      targetUserId: userId,
     });
   }
 
@@ -77,8 +77,8 @@ export class BlockController {
   async delBlock(@User() user: UserDto, @Param('user_id') userId: number) {
     this.logger.log(`Called ${this.delBlock.name}`);
     await this.blockService.delBlockUser({
-      user: user.userId,
-      target: userId,
+      userId: user.userId,
+      targetUserId: userId,
     });
   }
 

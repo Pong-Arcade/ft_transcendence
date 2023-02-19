@@ -53,7 +53,7 @@ export class FriendsController {
   })
   async addFriend(@User() user: UserDto, @Param('user_id') userId: number) {
     this.logger.log(`Called ${this.addFriend.name}`);
-    this.friendService.addFriend({ user: user.userId, target: userId });
+    this.friendService.addFriend({ userId: user.userId, targetUserId: userId });
   }
 
   @Delete(':user_id')
@@ -72,7 +72,7 @@ export class FriendsController {
   })
   async delFriend(@User() user: UserDto, @Param('user_id') userId: number) {
     this.logger.log(`Called ${this.delFriend.name}`);
-    this.friendService.delFriend({ user: user.userId, target: userId });
+    this.friendService.delFriend({ userId: user.userId, targetUserId: userId });
   }
 
   @ApiOperation({ summary: '친추테스트' })

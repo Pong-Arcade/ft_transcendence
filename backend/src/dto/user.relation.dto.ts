@@ -5,11 +5,11 @@ export class UserRelationDto {
     description: '사용자의 UserId',
     example: 1,
   })
-  user: number;
+  userId: number;
 
   @ApiProperty({
     description: '타겟의 userId',
     example: 2,
   })
-  target: number;
+  targetUserId: number;
 }

@@ -16,6 +16,7 @@ export const rooms = new Map<number, Room>();
 
 type MessageType = 'message' | 'whisper' | 'systemMsg';
 interface IMessage {
+  fromId: number;
   content: string;
   type: MessageType;
 }
@@ -60,12 +61,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('addUser')
   async onAddUser(client, info) {
     if (rooms.size == 0) rooms.set(0, new Room(0, 'lobby'));
-    users.set(info.userid, new User(info.userid, info.username, client.id));
+    users.set(info.userId, new User(info.userId, info.userName, client.id));
     client.join('lobby');
-    this.mock.patchOnlineUser(info.userid);
+    this.mock.patchOnlineUser(info.userId);
     this.server.to('lobby').emit('addOnlineUser', {
-      userId: info.userid,
-      nickname: info.username,
+      userId: info.userId,
+      nickname: info.userName,
       avatarUrl: 'asdfd',
       email: 'sfds',
     });
@@ -75,6 +76,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('message')
   async onMessage(client, msg) {
     const message: IMessage = {
+      fromId: msg.userId,
       content: msg.msg,
       type: EMessageType.MESSAGE,
     };
@@ -92,21 +94,23 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     for (const value of users.values()) {
       if (value.userName == msg.toName) {
         const toWhisperMsg: IMessage = {
+          fromId: msg.fromId,
           content: `${msg.toName}에게: ${msg.msg}`,
           type: EMessageType.WHISPER,
         };
         const fromWhisperMsg: IMessage = {
+          fromId: msg.fromId,
           content: `${msg.fromName}로부터: ${msg.msg}`,
           type: EMessageType.WHISPER,
         };
         this.server.to(client.id).emit('whisper', toWhisperMsg);
         this.server.to(value.socketId).emit('whisper', fromWhisperMsg);
-        console.log('send');
+        console.log('whisper send');
         return;
       }
     }
-
     const message: IMessage = {
+      fromId: msg.fromId,
       content: '접속중이지 않은 유저입니다.',
       type: EMessageType.SYSTEMMSG,
     };

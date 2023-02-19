@@ -13,32 +13,11 @@ export class UserService {
     private readonly userRepository: IUserRepository,
     private chatGateway: ChatGateway,
     private gameGateway: GameGateway,
-  ) {
-    this.createUser({ userId: 1, nickname: 'youngpar' });
-    this.createUser({ userId: 2, nickname: 'kangkim' });
-    this.createUser({ userId: 3, nickname: 'sichoi' });
-    this.createUser({ userId: 4, nickname: 'bson' });
-    this.createUser({ userId: 5, nickname: 'junpkim' });
-  }
+  ) {}
 
   /**
-   * userId로 유저 정보를 가져옵니다.
-   * @param userId
+   * 모든 유저 정보를 가져옵니다.
    */
-  async createUser(userDto: UserDto): Promise<UserDto> {
-    this.logger.log(`Called ${this.createUser.name}`);
-    return await this.userRepository.createUser(userDto);
-  }
-
-  async updateuser(userId: number, userDto: UserDto): Promise<UserDto> {
-    return (await this.userRepository.updateUser(userId, userDto)) as UserDto;
-  }
-
-  async deleteUser(userId: number): Promise<void> {
-    this.logger.log(`Called ${this.deleteUser.name}`);
-    return await this.userRepository.deleteUser(userId);
-  }
-
   async getAllUsers(): Promise<any> {
     this.logger.log(`Called ${this.getAllUsers.name}`);
     console.log(this.chatGateway.server.sockets);
@@ -46,8 +25,32 @@ export class UserService {
     return await this.userRepository.getAllUser();
   }
 
+  /**
+   * userId로 유저 정보를 가져옵니다.
+   * @param userId
+   */
   async getUserInfo(userId: number): Promise<UserDto> {
     this.logger.log(`Called ${this.getUserInfo.name}`);
     return await this.userRepository.getUserInfo(userId);
+  }
+
+  /**
+   * 유저 정보를 업데이트합니다.
+   * 닉네임 혹은 아바타 이미지를 변경할 수 있습니다.
+   * @param userId
+   * @param newNickname
+   * @param newAvatarUrl
+   */
+  async updateUserInfo(
+    userId: number,
+    newNickname?: string,
+    newAvatarUrl?: string,
+  ): Promise<UserDto> {
+    this.logger.log(`Called ${this.updateUserInfo.name}`);
+    return await this.userRepository.updateUserInfo(
+      userId,
+      newNickname,
+      newAvatarUrl,
+    );
   }
 }

@@ -39,8 +39,8 @@ export class RelationRepository {
     this.logger.log(`Called ${this.addBlock.name}`);
     await this.relationRepository.save(
       this.relationRepository.create({
-        userId: relation.user,
-        otherUserId: relation.target,
+        userId: relation.userId,
+        otherUserId: relation.targetUserId,
         relationType: UserRelationType.BLOCK,
       }),
     );
@@ -49,10 +49,10 @@ export class RelationRepository {
   async delBlock(relation: UserRelationDto): Promise<void> {
     this.logger.log(`Called ${this.delBlock.name}`);
     const relations = await this.relationRepository.find({
-      where: { userId: relation.user, relationType: UserRelationType.BLOCK },
+      where: { userId: relation.userId, relationType: UserRelationType.BLOCK },
     });
     await this.relationRepository.delete(
-      relations.find((r) => r.otherUserId === relation.target),
+      relations.find((r) => r.otherUserId === relation.targetUserId),
     );
   }
 
@@ -79,8 +79,8 @@ export class RelationRepository {
     this.logger.log(`Called ${this.addFriend.name}`);
     await this.relationRepository.save(
       this.relationRepository.create({
-        userId: relation.user,
-        otherUserId: relation.target,
+        userId: relation.userId,
+        otherUserId: relation.targetUserId,
         relationType: UserRelationType.FRIEND,
       }),
     );
@@ -89,10 +89,10 @@ export class RelationRepository {
   async delFriend(relation: UserRelationDto): Promise<void> {
     this.logger.log(`Called ${this.delFriend.name}`);
     const relations = await this.relationRepository.find({
-      where: { userId: relation.user, relationType: UserRelationType.FRIEND },
+      where: { userId: relation.userId, relationType: UserRelationType.FRIEND },
     });
     await this.relationRepository.delete(
-      relations.find((r) => r.otherUserId === relation.target),
+      relations.find((r) => r.otherUserId === relation.targetUserId),
     );
   }
 }

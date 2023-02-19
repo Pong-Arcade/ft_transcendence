@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "@nestjs/event-emitter": "^1.4.1",
-    "eslint": "^8.33.0"
-  }
-}

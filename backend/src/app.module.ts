@@ -12,6 +12,8 @@ import { ChatModule } from './chat/chat.module';
 import { RelationModule } from './relation/relation.module';
 import { StatModule } from './stat/stat.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -27,6 +29,10 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
       isGlobal: true,
     }),
     EventEmitterModule.forRoot(),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),
+      serveRoot: '/static',
+    }),
     AuthModule,
     UserModule,
     ChatModule,
