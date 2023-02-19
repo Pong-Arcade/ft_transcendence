@@ -48,7 +48,6 @@ const Lobby = ({ socket }: { socket: ChatSocket }) => {
   const { isLoading, endLoading } = useLoading({
     initialLoading: true,
   });
-
   useEffect(() => {
     if (socket === undefined) {
       socket = new ChatSocket(1, "user" + Math.floor(Math.random() * 100));

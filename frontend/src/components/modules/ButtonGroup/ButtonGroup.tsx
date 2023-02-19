@@ -10,6 +10,7 @@ interface Props {
   alignItems?: string;
   boxShadow?: boolean;
   gap?: string;
+  flexDirection?: string;
 }
 
 const ButtonGroupStyled = styled.div<Props>`
@@ -25,6 +26,7 @@ const ButtonGroupStyled = styled.div<Props>`
   border-radius: ${(props) => props.theme.border.board};
   box-shadow: ${(props) => props.boxShadow && props.theme.box.shadow};
   gap: ${(props) => props.gap || "0"};
+  flex-direction: ${(props) => props.flexDirection || "row"};
 `;
 
 const ButtonGroup = ({ children, ...rest }: Props) => {

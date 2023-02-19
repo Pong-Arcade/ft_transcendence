@@ -1,8 +1,8 @@
 import React from "react";
 import {
-  EChatRoomMode,
-  EChatRoomFormValues,
-} from "../../../hooks/useChatRoomForm";
+  EGameRoomFormValues,
+  EGameRoomMode,
+} from "../../../hooks/useGameRoomForm";
 import CheckBox from "../../atoms/CheckBox";
 import InputLabel from "../../atoms/InputLabel";
 import InputWrapper from "../../atoms/InputWrapper/InputWrapper";
@@ -13,12 +13,8 @@ interface Props {
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const RoomTypeCheckBoxGroup = ({ title, onChange, checked }: Props) => {
-  const titleList = [
-    EChatRoomMode.PUBLIC,
-    EChatRoomMode.PROTECTED,
-    EChatRoomMode.PRIVATE,
-  ];
+const GameTypeCheckBoxGroup = ({ title, onChange, checked }: Props) => {
+  const titleList = [EGameRoomMode.NORMAL, EGameRoomMode.POWER_UP];
   return (
     <>
       <InputLabel htmlFor={title}>{title}</InputLabel>
@@ -27,7 +23,7 @@ const RoomTypeCheckBoxGroup = ({ title, onChange, checked }: Props) => {
           <CheckBox
             onChange={onChange}
             title={title}
-            name={EChatRoomFormValues.MODE}
+            name={EGameRoomFormValues.MODE}
             checked={title === checked}
             key={title}
           />
@@ -37,4 +33,4 @@ const RoomTypeCheckBoxGroup = ({ title, onChange, checked }: Props) => {
   );
 };
 
-export default RoomTypeCheckBoxGroup;
+export default GameTypeCheckBoxGroup;

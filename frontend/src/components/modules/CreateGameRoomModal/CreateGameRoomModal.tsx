@@ -1,12 +1,16 @@
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { createGameRoomAPI } from "../../../api/room";
+import { ERoomCreateButtonName } from "../../../hooks/useCreateRoom";
 import useGameRoomForm, {
   EGameRoomFormValues,
+  EGameType,
 } from "../../../hooks/useGameRoomForm";
 import Button from "../../atoms/Button";
 import Modal from "../../atoms/Modal";
 import ModalInputWrapper from "../../atoms/ModalInputWrapper";
 import ErrorModal from "../ErrorModal";
+import GameTypeCheckBoxGroup from "../GameTypeCheckBoxGroup/GameTypeCheckBoxGroup";
 import LabledInput from "../LabledInput";
 import ModalInputListWrapper from "../ModalInputListWrapper";
 import ModalTitle from "../ModalTitle";
@@ -27,7 +31,7 @@ const CreateRoomForm = styled.form`
 
 const SubmitButton = styled(Button).attrs({
   width: "30%",
-  height: "15%",
+  height: "10%",
   boxShadow: true,
   type: "submit",
 })``;
@@ -36,7 +40,10 @@ const CreateGameRoomModal = ({ title, onClose }: Props) => {
   const navigate = useNavigate();
   const { values, errors, onErrorModalClose, onChangeForm, onSubmitForm } =
     useGameRoomForm({
-      onSubmit: () => {
+      onSubmit: async () => {
+        if (title === ERoomCreateButtonName.LADDERGAME)
+          await createGameRoomAPI(EGameType.NORMAL, values);
+        else await createGameRoomAPI(EGameType.LADDER, values);
         onClose();
         navigate("/game-rooms/123");
       },
@@ -44,15 +51,19 @@ const CreateGameRoomModal = ({ title, onClose }: Props) => {
 
   return (
     <>
-      <Modal width="50%" height="40%">
+      <Modal width="60%" height="70%">
         <CreateRoomForm onSubmit={onSubmitForm}>
-          <ModalTitle onClose={onClose} fontSize="3rem" height="20%">
+          <ModalTitle onClose={onClose} fontSize="3rem">
             {title}
           </ModalTitle>
-          <ModalInputListWrapper
-            height="62%"
-            gridTemplate="repeat(2, 1fr) / 1fr"
-          >
+          <ModalInputListWrapper gridTemplate="repeat(4, 1fr) / 1fr">
+            <ModalInputWrapper>
+              <GameTypeCheckBoxGroup
+                title="게임유형"
+                onChange={onChangeForm}
+                checked={values.mode}
+              />
+            </ModalInputWrapper>
             <ModalInputWrapper>
               <LabledInput
                 title="방제목"
@@ -64,18 +75,31 @@ const CreateGameRoomModal = ({ title, onClose }: Props) => {
             </ModalInputWrapper>
             <ModalInputWrapper>
               <LabledInput
-                title="최대인원"
-                name={EGameRoomFormValues.MAXUSER}
-                value={values.maxUserCount}
+                placeholder="1점 이상 입력하세요"
+                title="승리점수"
+                name={EGameRoomFormValues.WINSCORE}
+                value={values.winScore}
                 onChange={onChangeForm}
                 type="number"
+              />
+            </ModalInputWrapper>
+            <ModalInputWrapper>
+              <LabledInput
+                title="최대인원"
+                name={EGameRoomFormValues.MAX_SPECTATOR_COUNT}
+                value={values.maxSpectatorCount}
+                onChange={onChangeForm}
+                type="number"
+                placeholder="2 ~ 10 숫자만 입력하세요"
               />
             </ModalInputWrapper>
           </ModalInputListWrapper>
           <SubmitButton>생성</SubmitButton>
         </CreateRoomForm>
       </Modal>
-      {errors && <ErrorModal onClose={onErrorModalClose} errors={errors} />}
+      {Object.keys(errors).length && (
+        <ErrorModal onClose={onErrorModalClose} errors={errors} />
+      )}
     </>
   );
 };
