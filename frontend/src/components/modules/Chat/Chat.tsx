@@ -1,9 +1,9 @@
-import React, { useEffect, KeyboardEvent, useState } from "react";
+import React, { useEffect, KeyboardEvent, useState, useContext } from "react";
 import styled from "styled-components";
 import Board from "../../atoms/Board";
 import ChatList from "../../atoms/ChatList";
 import Input from "../../atoms/Input";
-import ChatSocket from "../../../utils/ChatSocket";
+import ChatSocket, { SocketContext } from "../../../utils/ChatSocket";
 import { IMessage } from "../../atoms/ChatList/ChatList";
 import { useRecoilValue } from "recoil";
 import blockUsersState from "../../../state/BlockUsersState";
@@ -13,7 +13,6 @@ interface Props {
   width: string;
   height: string;
   boxShadow?: boolean;
-  socket?: ChatSocket;
 }
 
 const ChatStyled = styled(Board).attrs((props) => {
@@ -37,10 +36,12 @@ const ChatBoard = styled(Board).attrs({
   alignItems: "start",
 })``;
 
-const Chat = ({ socket, ...rest }: Props) => {
+const Chat = ({ ...rest }: Props) => {
   const [list, setList] = useState<IMessage[]>([]);
   const [msg, setMsg] = useState<string>();
   const blockUsers = useRecoilValue(blockUsersState);
+  const socket = useContext(SocketContext);
+
   useEffect(() => {
     // const joinRoom = (newMsg: IMessage) => {
     //   setList((prevList) => [...prevList, newMsg]);
@@ -83,23 +84,25 @@ const Chat = ({ socket, ...rest }: Props) => {
   };
 
   return (
-    <ChatStyled {...rest}>
-      <ChatBoard>
-        <ChatList list={list} height="87%" width="100%" />
-        <Input
-          width="100%"
-          height="10%"
-          borderRadius
-          padding="1rem"
-          fontSize="1.5rem"
-          onKeyPress={enterkey}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setMsg(e.target.value)
-          }
-          value={msg ? msg : ""}
-        />
-      </ChatBoard>
-    </ChatStyled>
+    <SocketContext.Provider value={socket}>
+      <ChatStyled {...rest}>
+        <ChatBoard>
+          <ChatList list={list} height="87%" width="100%" />
+          <Input
+            width="100%"
+            height="10%"
+            borderRadius
+            padding="1rem"
+            fontSize="1.5rem"
+            onKeyPress={enterkey}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setMsg(e.target.value)
+            }
+            value={msg ? msg : ""}
+          />
+        </ChatBoard>
+      </ChatStyled>
+    </SocketContext.Provider>
   );
 };
 
