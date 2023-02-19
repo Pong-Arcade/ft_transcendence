@@ -1,19 +1,29 @@
 import { UserRelationType } from 'src/enum/user.relation.enum';
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import User from './user.entity';
 
 @Entity('relation')
 export default class Relation {
-  @PrimaryColumn({
-    name: 'user_id',
+  @PrimaryGeneratedColumn({
+    name: 'relation_id',
     type: 'int',
   })
-  userId: number;
+  relationId: number;
 
-  @PrimaryColumn({
-    name: 'other_user_id',
-    type: 'int',
-  })
-  otherUserId: number;
+  @ManyToOne(() => User, (user) => user.relations)
+  @JoinColumn({ name: 'user_id' })
+  user: User;
+
+  @ManyToOne(() => User, (user) => user.relations)
+  @JoinColumn({ name: 'target_user_id' })
+  targetUser: User;
 
   @Column({
     name: 'relation_type',

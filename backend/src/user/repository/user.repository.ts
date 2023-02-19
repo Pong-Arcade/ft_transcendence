@@ -28,7 +28,6 @@ export class UserRepository implements IUserRepository {
     const user = await this.userRepository.findOne({
       where: { userId },
     });
-    console.log(user);
     if (!user) {
       return null;
     }
