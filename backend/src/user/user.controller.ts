@@ -8,6 +8,7 @@ import {
   Inject,
   Logger,
   Param,
+  ParseIntPipe,
   Patch,
   Res,
   UploadedFile,
@@ -83,7 +84,10 @@ export class UserController {
     description: '존재하지 않는 유저입니다.',
   })
   @Get(':user_id')
-  async getUserDetail(@User() user: UserDto, @Param('user_id') userId) {
+  async getUserDetail(
+    @User() user: UserDto,
+    @Param('user_id', ParseIntPipe) userId,
+  ) {
     this.logger.log(`Called ${this.getUserDetail.name}`);
     return await this.userService.getUserInfo(userId);
   }
