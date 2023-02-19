@@ -1,6 +1,5 @@
 import {
   ConflictException,
-  Inject,
   Injectable,
   Logger,
   NotFoundException,
@@ -11,7 +10,6 @@ import { UserBlockListResponseDto } from '../dto/response/user.block.list.respon
 import { InjectRepository } from '@nestjs/typeorm';
 import Relation from 'src/entity/relation.entity';
 import { Repository } from 'typeorm';
-import User from 'src/entity/user.entity';
 import { UserRelationType } from 'src/enum/user.relation.enum';
 import { UserService } from 'src/user/user.service';
 

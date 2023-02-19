@@ -4,8 +4,6 @@ import { UserDto } from 'src/dto/user.dto';
 import User from 'src/entity/user.entity';
 import { Repository } from 'typeorm';
 import { IUserRepository } from './user.repository.interface';
-import Relation from '../../entity/relation.entity';
-import { UserFriendListResponseDto } from '../../dto/response/user.friend.list.response.dto';
 
 export class UserRepository implements IUserRepository {
   private logger = new Logger(UserRepository.name);
