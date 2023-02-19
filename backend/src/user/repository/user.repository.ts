@@ -13,6 +13,14 @@ export class UserRepository implements IUserRepository {
     private readonly userRepository: Repository<User>,
   ) {}
 
+  async getAllUser(): Promise<UserDto[]> {
+    this.logger.log(`Called ${this.getAllUser.name}`);
+    const ret = await this.userRepository.find();
+    const userPromises = ret.map((user: User) => user as UserDto);
+
+    return (await Promise.all(userPromises)) as UserDto[];
+  }
+
   async getUserInfo(userId: number): Promise<UserDto> {
     this.logger.log(`Called ${this.getUserInfo.name}`);
     const user = await this.userRepository.findOne({
@@ -24,7 +32,9 @@ export class UserRepository implements IUserRepository {
     return {
       userId: user.userId,
       nickname: user.nickname,
+      email: user.email,
       avatarUrl: user.avatarUrl,
+      firstLogin: user.firstLogin,
     } as UserDto;
   }
 

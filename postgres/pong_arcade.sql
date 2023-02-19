@@ -228,13 +228,21 @@ COMMENT ON COLUMN public.normal_stat.lose_count IS '패배횟수';
 --
 
 CREATE TABLE public.relation (
+    relation_id integer NOT NULL,
     user_id integer NOT NULL,
-    other_user_id integer NOT NULL,
+    target_user_id integer NOT NULL,
     relation_type character varying(16) NOT NULL
 );
 
 
 ALTER TABLE public.relation OWNER TO arcade;
+
+--
+-- Name: COLUMN relation.relation_id; Type: COMMENT; Schema: public; Owner: arcade
+--
+
+COMMENT ON COLUMN public.relation.relation_id IS '관계 ID';
+
 
 --
 -- Name: COLUMN relation.user_id; Type: COMMENT; Schema: public; Owner: arcade
@@ -244,10 +252,10 @@ COMMENT ON COLUMN public.relation.user_id IS '유저의 ID';
 
 
 --
--- Name: COLUMN relation.other_user_id; Type: COMMENT; Schema: public; Owner: arcade
+-- Name: COLUMN relation.target_user_id; Type: COMMENT; Schema: public; Owner: arcade
 --
 
-COMMENT ON COLUMN public.relation.other_user_id IS '유저가 관계를 갖는 다른 유저의 ID';
+COMMENT ON COLUMN public.relation.target_user_id IS '유저가 관계를 갖는 대상 유저의 ID';
 
 
 --
@@ -255,6 +263,28 @@ COMMENT ON COLUMN public.relation.other_user_id IS '유저가 관계를 갖는 �
 --
 
 COMMENT ON COLUMN public.relation.relation_type IS '관계 유형';
+
+
+--
+-- Name: relation_relation_id_seq; Type: SEQUENCE; Schema: public; Owner: arcade
+--
+
+CREATE SEQUENCE public.relation_relation_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.relation_relation_id_seq OWNER TO arcade;
+
+--
+-- Name: relation_relation_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: arcade
+--
+
+ALTER SEQUENCE public.relation_relation_id_seq OWNED BY public.relation.relation_id;
 
 
 --
@@ -315,6 +345,13 @@ COMMENT ON COLUMN public."user".first_login IS '최초 로그인 시간';
 
 
 --
+-- Name: relation relation_id; Type: DEFAULT; Schema: public; Owner: arcade
+--
+
+ALTER TABLE ONLY public.relation ALTER COLUMN relation_id SET DEFAULT nextval('public.relation_relation_id_seq'::regclass);
+
+
+--
 -- Data for Name: ladder_stat; Type: TABLE DATA; Schema: public; Owner: arcade
 --
 
@@ -342,7 +379,7 @@ COPY public.normal_stat (user_id, win_count, lose_count) FROM stdin;
 -- Data for Name: relation; Type: TABLE DATA; Schema: public; Owner: arcade
 --
 
-COPY public.relation (user_id, other_user_id, relation_type) FROM stdin;
+COPY public.relation (relation_id, user_id, target_user_id, relation_type) FROM stdin;
 \.
 
 
@@ -359,6 +396,13 @@ COPY public."user" (user_id, nickname, avatar_url, email, first_login) FROM stdi
 --
 
 SELECT pg_catalog.setval('public.match_history_history_id_seq', 1, false);
+
+
+--
+-- Name: relation_relation_id_seq; Type: SEQUENCE SET; Schema: public; Owner: arcade
+--
+
+SELECT pg_catalog.setval('public.relation_relation_id_seq', 9, true);
 
 
 --
@@ -406,7 +450,15 @@ ALTER TABLE ONLY public.normal_stat
 --
 
 ALTER TABLE ONLY public.relation
-    ADD CONSTRAINT relation_pk PRIMARY KEY (user_id, other_user_id);
+    ADD CONSTRAINT relation_pk PRIMARY KEY (relation_id);
+
+
+--
+-- Name: relation relation_unique; Type: CONSTRAINT; Schema: public; Owner: arcade
+--
+
+ALTER TABLE ONLY public.relation
+    ADD CONSTRAINT relation_unique UNIQUE (user_id, target_user_id);
 
 
 --
@@ -478,7 +530,7 @@ ALTER TABLE ONLY public.normal_stat
 --
 
 ALTER TABLE ONLY public.relation
-    ADD CONSTRAINT relation_user_fk1 FOREIGN KEY (user_id) REFERENCES public."user"(user_id);
+    ADD CONSTRAINT relation_user_fk1 FOREIGN KEY (user_id) REFERENCES public."user"(user_id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -486,7 +538,7 @@ ALTER TABLE ONLY public.relation
 --
 
 ALTER TABLE ONLY public.relation
-    ADD CONSTRAINT relation_user_fk2 FOREIGN KEY (other_user_id) REFERENCES public."user"(user_id);
+    ADD CONSTRAINT relation_user_fk2 FOREIGN KEY (target_user_id) REFERENCES public."user"(user_id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
