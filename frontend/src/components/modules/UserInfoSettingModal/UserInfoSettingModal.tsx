@@ -1,5 +1,10 @@
+import imageCompression from "browser-image-compression";
+import { read } from "fs";
+import { ChangeEvent, useEffect, useState } from "react";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import styled from "styled-components";
-import { IInfoState } from "../../../state/InfoState";
+import { getUserInfoAPI, updateUserInfoAPI } from "../../../api/users";
+import infoState, { IInfoState } from "../../../state/InfoState";
 import Avatar from "../../atoms/Avatar";
 import Board from "../../atoms/Board";
 import Button from "../../atoms/Button";
@@ -10,7 +15,6 @@ import ModalTitle from "../ModalTitle";
 
 interface Props {
   onClose: () => void;
-  onSubmit?: () => void;
   info: IInfoState;
 }
 
@@ -41,8 +45,60 @@ const NicknameInput = styled(Input).attrs({
   text-align: center;
 `;
 
-const UserInfoSettingModal = ({ onClose, onSubmit, info }: Props) => {
+interface IUserInfo {
+  nickname: string;
+  avatarImage?: File;
+}
+
+const UserInfoSettingModal = ({ onClose, info }: Props) => {
   if (info.userId === -1) return null;
+
+  const [userInfo, setUserInfo] = useState<IUserInfo>({
+    nickname: info.nickname,
+  });
+  const [avatarUrl, setAvatarUrl] = useState<string>(info.avatarUrl);
+  const setMyInfo = useSetRecoilState(infoState);
+
+  const onSubmit = async () => {
+    if (userInfo.avatarImage) {
+      const options = {
+        maxWidthOrHeight: 200,
+      };
+      try {
+        const compressedFile = await imageCompression(
+          userInfo.avatarImage,
+          options
+        );
+        await updateUserInfoAPI(userInfo.nickname, compressedFile);
+      } catch (e) {
+        console.log(e);
+      }
+    } else {
+      await updateUserInfoAPI(userInfo.nickname);
+    }
+    setMyInfo(await getUserInfoAPI(info.userId));
+    onClose();
+  };
+
+  const onChangeUserInfo = async (e: ChangeEvent<HTMLInputElement>) => {
+    switch (e.target.type) {
+      case "text":
+        setUserInfo((prev) => ({ ...prev, nickname: e.target.value }));
+        break;
+      case "file":
+        const imageFile = e.target.files?.[0];
+        if (!imageFile) return;
+
+        setUserInfo((prev) => ({ ...prev, avatarImage: imageFile }));
+        const reader = new FileReader();
+        reader.readAsDataURL(imageFile);
+        reader.onloadend = () => {
+          setAvatarUrl(reader.result as string);
+        };
+        break;
+    }
+  };
+
   return (
     <ModalWrapper>
       <Modal width="30%" height="60%" animation>
@@ -50,8 +106,18 @@ const UserInfoSettingModal = ({ onClose, onSubmit, info }: Props) => {
           프로필설정
         </ModalTitle>
         <Wrapper>
-          <Avatar width="15vw" height="15vw" upload src={info.avatarUrl} />
-          <NicknameInput defaultValue={info.nickname} />
+          <Avatar
+            width="15vw"
+            height="15vw"
+            upload
+            onChange={onChangeUserInfo}
+            // src={userInfo.avatarImage}
+            src={avatarUrl}
+          />
+          <NicknameInput
+            onChange={onChangeUserInfo}
+            value={userInfo.nickname}
+          />
           <SubmitButton onClick={onSubmit}>설정완료</SubmitButton>
         </Wrapper>
       </Modal>

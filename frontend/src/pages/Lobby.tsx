@@ -71,8 +71,7 @@ const Lobby = ({ socket }: { socket: ChatSocket }) => {
   }, []);
   const { onlineUsers, friendUsers, blockUsers, chatRoomList, myInfo } =
     getLobbyData();
-  const { isFirstLoginModal, FirstLoginModalClose, FirstLoginModalSubmit } =
-    useFirstLoginModal();
+  const { isFirstLoginModal, FirstLoginModalClose } = useFirstLoginModal();
 
   return (
     <>
@@ -95,11 +94,7 @@ const Lobby = ({ socket }: { socket: ChatSocket }) => {
         </RoomListChatWrapper>
       </LobbyTemplate>
       {isFirstLoginModal && (
-        <UserInfoSettingModal
-          onSubmit={FirstLoginModalSubmit}
-          onClose={FirstLoginModalClose}
-          info={myInfo}
-        />
+        <UserInfoSettingModal onClose={FirstLoginModalClose} info={myInfo} />
       )}
       {isLoading && <FullSpinner />}
     </>

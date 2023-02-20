@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import imageCompression from "browser-image-compression";
 import React from "react";
 
 // TODO: 본인 것만 업로드 할 수 있도록 처리
@@ -8,6 +7,7 @@ interface Props {
   height: string;
   src: string;
   upload?: boolean;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const AvatarStyled = styled.div<Props>`
@@ -42,26 +42,7 @@ const AvatarLabel = styled.label<AvatarLabelProps>`
   }
 `;
 
-const Avatar = ({ upload, src, ...rest }: Props) => {
-  const uploadToServer = (file: File) => {
-    console.log(file);
-  };
-
-  const handleImageUpload = async (e: React.FormEvent<HTMLInputElement>) => {
-    const imageFile = (e.target as HTMLInputElement).files?.[0];
-    if (!imageFile) return;
-
-    const options = {
-      maxWidthOrHeight: 200,
-    };
-    try {
-      const compressedFile = await imageCompression(imageFile, options);
-      await uploadToServer(compressedFile);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
+const Avatar = ({ upload, src, onChange, ...rest }: Props) => {
   if (upload) {
     return (
       <>
@@ -71,7 +52,7 @@ const Avatar = ({ upload, src, ...rest }: Props) => {
           id="avatar"
           style={{ display: "none" }}
           accept="image/*"
-          onChange={handleImageUpload}
+          onChange={onChange}
         />
       </>
     );
