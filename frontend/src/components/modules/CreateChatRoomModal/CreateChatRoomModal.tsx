@@ -1,10 +1,12 @@
 import { useNavigate } from "react-router-dom";
+import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import { createChatRoomAPI } from "../../../api/room";
 import useChatRoomForm, {
   EChatRoomFormValues,
   EChatRoomMode,
 } from "../../../hooks/useChatRoomForm";
+import chatRoomState from "../../../state/ChatRoomState";
 import Button from "../../atoms/Button";
 import Modal from "../../atoms/Modal";
 import ModalInputWrapper from "../../atoms/ModalInputWrapper";
@@ -42,11 +44,13 @@ const SubmitButton = styled(Button).attrs({
 
 const CreateChatRoomModal = ({ title, onClose }: Props) => {
   const navigate = useNavigate();
+  const setChatRoomState = useSetRecoilState(chatRoomState);
   const { values, errors, onErrorModalClose, onChangeForm, onSubmitForm } =
     useChatRoomForm({
       onSubmit: () => {
         (async () => {
           const response = await createChatRoomAPI(values);
+          setChatRoomState(response.data);
           onClose();
           navigate(`/chat-rooms/${response.data.roomId}`);
         })();

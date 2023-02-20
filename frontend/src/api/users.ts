@@ -1,5 +1,3 @@
-import axios from "axios";
-import { getCookie } from "../utils/cookie";
 import { deleteRequest, getRequest, patchRequest } from "./axios";
 
 // TODO: 실패 처리
@@ -20,16 +18,18 @@ export const updateUserInfoAPI = async (
   if (avatarImage) {
     const formData = new FormData();
     formData.append("file", avatarImage);
-
-    const response = await patchRequest("users/update", {
-      nickname,
-      formData,
-      options: {
-        headers: {
-          "Content-Type": `multipart/form-data; `,
-        },
+    const response = await patchRequest(
+      "users/update",
+      {
+        nickname,
+        formData,
       },
-    });
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
     return response;
   } else {
     const response = await patchRequest("users/update", {

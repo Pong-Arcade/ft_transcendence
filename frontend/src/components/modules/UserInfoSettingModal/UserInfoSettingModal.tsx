@@ -1,7 +1,6 @@
 import imageCompression from "browser-image-compression";
-import { read } from "fs";
-import { ChangeEvent, useEffect, useState } from "react";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { ChangeEvent, useState } from "react";
+import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import { getUserInfoAPI, updateUserInfoAPI } from "../../../api/users";
 import infoState, { IInfoState } from "../../../state/InfoState";

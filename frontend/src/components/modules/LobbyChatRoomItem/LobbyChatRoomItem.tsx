@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import Button from "../../atoms/Button";
-import { IChatRoom, IPaginationItem } from "../Pagination/Pagination";
+import { ILobbyChatRoom, IPaginationItem } from "../Pagination/Pagination";
 import { ReactComponent as Logo } from "../../../assets/chat.svg";
 import Board from "../../atoms/Board";
 import Typography from "../../atoms/Typography";
@@ -41,7 +41,7 @@ const ChatRoomContent = styled(Board).attrs({
 `;
 
 const LobbyChatRoomItem = ({ item, onItemClick }: IPaginationItem) => {
-  const { title, mode, maxUserCount, currentCount } = item as IChatRoom;
+  const { title, mode, maxUserCount, currentCount } = item as ILobbyChatRoom;
   return (
     <LobbyChatRoomItemStyled onClick={onItemClick}>
       <ChatRoomTitle>{title}</ChatRoomTitle>
