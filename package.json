@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "@nestjs/serve-static": "^3.0.1",
-    "eslint": "^8.33.0"
-  }
-}

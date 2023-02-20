@@ -39,5 +39,6 @@ export default class User {
   })
   firstLogin: Date;
 
-  // TODO: Relation과의 관계를 정의해야 함
+  @OneToMany(() => Relation, (relation) => relation.user)
+  relations: Relation[];
 }

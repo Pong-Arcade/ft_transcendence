@@ -14,22 +14,17 @@ import {
   UploadedFile,
   UseGuards,
   UseInterceptors,
-  ValidationPipe,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiBody,
   ApiConsumes,
-  ApiOkResponse,
   ApiOperation,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { User } from 'src/decorator/user.decorator';
 import { UserDto } from 'src/dto/user.dto';
-import { ChatGateway } from '../chat/chat.geteway';
-import { GameGateway } from '../game/game.gateway';
-import { MockRepository } from '../mock/mock.repository';
 import { OnlineUsersResponseDto } from '../dto/response/online.users.response.dto';
 import { UserService } from './user.service';
 import { UpdateUserInfoRequestDto } from 'src/dto/request/update.user.info.request.dto';
@@ -49,10 +44,7 @@ import { v4 as uuid } from 'uuid';
 @Controller('/api/users')
 export class UserController {
   private logger = new Logger(UserController.name);
-  private mock = new MockRepository();
   constructor(
-    private chatGateway: ChatGateway,
-    private gameGateway: GameGateway,
     private readonly userService: UserService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private jwtService: JwtService,
@@ -71,7 +63,7 @@ export class UserController {
   @Get()
   async getAllUsers() {
     this.logger.log(`Called ${this.getAllUsers.name}`);
-    return this.mock.getOnlineUser();
+    return await this.userService.getAllUsers();
   }
 
   @ApiOperation({
@@ -94,7 +86,7 @@ export class UserController {
   @Get(':user_id')
   async getUserDetail(
     @User() user: UserDto,
-    @Param('user_id', ParseIntPipe) userId: number,
+    @Param('user_id', ParseIntPipe) userId,
   ) {
     this.logger.log(`Called ${this.getUserDetail.name}`);
     return await this.userService.getUserInfo(userId);

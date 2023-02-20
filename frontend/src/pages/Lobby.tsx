@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useContext } from "react";
 import styled from "styled-components";
 import Board from "../components/atoms/Board";
 import Chat from "../components/modules/Chat";
@@ -8,7 +8,7 @@ import LobbyUserList from "../components/modules/LobbyUserList";
 import LobbyUserProfile from "../components/modules/LobbyUserProfile";
 import UserInfoSettingModal from "../components/modules/UserInfoSettingModal";
 import LobbyTemplate from "../components/templates/LobbyTemplate";
-import ChatSocket from "../utils/ChatSocket";
+import ChatSocket, { SocketContext } from "../utils/ChatSocket";
 import useFirstLoginModal from "../hooks/useFirstLoginModal";
 import useLoading from "../hooks/useLoading";
 import FullSpinner from "../components/atoms/FullSpinner";
@@ -43,35 +43,28 @@ const RoomListChat = styled(Board).attrs((props) => {
 })``;
 
 // TODO: 소켓 이벤트 등록하기  => LobbyUserList 파일 주석 확인
-const Lobby = ({ socket }: { socket: ChatSocket }) => {
+const Lobby = () => {
   const { setLobbyData, getLobbyData } = useLobbyData();
   const { isLoading, endLoading } = useLoading({
     initialLoading: true,
   });
+  const socket = useContext(SocketContext);
+  const { onlineUsers, friendUsers, blockUsers, chatRoomList, myInfo } =
+    getLobbyData();
+  const { isFirstLoginModal, FirstLoginModalClose } = useFirstLoginModal();
   useEffect(() => {
-    if (socket === undefined) {
-      socket = new ChatSocket(1, "user" + Math.floor(Math.random() * 100));
-      console.log("recreated socket");
-    }
-    if (socket) {
-      // socket.socket.emit("addUser", socket);
-      socket.socket.emit("addUser", {
-        userId: socket.userId,
-        userName: socket.userName,
-      });
-
-      // const createRoom = ({ type, roomname, password, maxUser }: any) => {
-      //   socket.socket.emit("createRoom", { type, roomname, password, maxUser });
-      // };
-    }
     (async () => {
       await setLobbyData();
       endLoading();
     })();
   }, []);
-  const { onlineUsers, friendUsers, blockUsers, chatRoomList, myInfo } =
-    getLobbyData();
-  const { isFirstLoginModal, FirstLoginModalClose } = useFirstLoginModal();
+  useEffect(() => {
+    socket.setUser(myInfo.userId, myInfo.nickname);
+    socket.socket.emit("addUser", {
+      userId: socket.userId,
+      userName: socket.userName,
+    });
+  }, [myInfo]);
 
   return (
     <>
@@ -89,7 +82,7 @@ const Lobby = ({ socket }: { socket: ChatSocket }) => {
           <RoomListChat>
             <LobbyChatRoomList list={chatRoomList} />
             {/* <LobbyGameRoomList /> */}
-            <Chat width="98%" height="40%" boxShadow socket={socket} />
+            <Chat width="98%" height="40%" boxShadow />
           </RoomListChat>
         </RoomListChatWrapper>
       </LobbyTemplate>

@@ -6,6 +6,7 @@ import { UserRepository } from './repository/user.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import User from 'src/entity/user.entity';
 import { UserService } from './user.service';
+import { StatusModule } from '../status/status.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 
@@ -27,7 +28,8 @@ const repo = {
     }),
     TypeOrmModule.forFeature([User]),
     forwardRef(() => ChatModule),
-    GameModule,
+    forwardRef(() => GameModule),
+    StatusModule,
   ],
   controllers: [UserController],
   providers: [UserService, repo],
