@@ -5,7 +5,7 @@ import React from "react";
 interface Props {
   width: string;
   height: string;
-  src: string;
+  src?: string;
   upload?: boolean;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
@@ -21,7 +21,7 @@ const AvatarStyled = styled.div<Props>`
 `;
 
 interface AvatarLabelProps {
-  src: string;
+  src?: string;
 }
 
 const AvatarLabel = styled.label<AvatarLabelProps>`
