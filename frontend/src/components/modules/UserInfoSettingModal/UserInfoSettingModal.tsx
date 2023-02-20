@@ -110,7 +110,6 @@ const UserInfoSettingModal = ({ onClose, info }: Props) => {
             height="15vw"
             upload
             onChange={onChangeUserInfo}
-            // src={userInfo.avatarImage}
             src={avatarUrl}
           />
           <NicknameInput
