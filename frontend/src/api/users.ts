@@ -16,13 +16,11 @@ export const updateUserInfoAPI = async (
   avatarImage?: File
 ) => {
   if (avatarImage) {
-    const formData = new FormData();
-    formData.append("file", avatarImage);
     const response = await patchRequest(
       "users/update",
       {
         nickname,
-        formData,
+        avatarImage,
       },
       {
         headers: {

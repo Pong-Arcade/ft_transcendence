@@ -113,12 +113,6 @@ export class UserController {
   @Patch('update')
   @UseInterceptors(
     FileInterceptor('avatarImage', {
-      fileFilter: (req, file, cb) => {
-        if (!file.originalname.match(/\.(jpg|jpeg|png|gif|svg|ico)$/)) {
-          return cb(new Error('지원되지 않는 확장자입니다.'), false);
-        }
-        cb(null, true);
-      },
       storage: diskStorage({
         destination: (req, file, cb) => {
           const path = `uploads`;
@@ -128,7 +122,7 @@ export class UserController {
           cb(null, path);
         },
         filename: (req, file, cb) => {
-          cb(null, `${uuid()}-${file.originalname}`);
+          cb(null, `${uuid()}.${file.mimetype.split('/')[1]}`);
         },
       }),
     }),
