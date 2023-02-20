@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import useMenu from "../../../hooks/useMenu";
 import useModal from "../../../hooks/useModal";
+import chatRoomState from "../../../state/ChatRoomState";
 import Board from "../../atoms/Board";
 import Chat from "../Chat";
 import ChatRoomUserListPagination from "../ChatRoomUserListPagination";
@@ -19,6 +21,7 @@ const ChatRoomUserListStyled = styled(Board).attrs({
 const ChatRoomUserList = () => {
   const { isOpenMenu, onOpenMenu, onCloseMenu, positionX, positionY, id } =
     useMenu();
+  const chatRoomInfo = useRecoilValue(chatRoomState);
 
   const {
     isModalOpen: isUserInfoOpen,
@@ -37,12 +40,12 @@ const ChatRoomUserList = () => {
     <>
       <ChatRoomUserListStyled>
         <ChatRoomUserListPagination
-          list={[]}
+          list={chatRoomInfo.users}
           page={page}
           onNextPage={() => setPage(page + 1)}
           onPrevPage={() => setPage(page - 1)}
           onItemClick={onOpenMenu}
-          PaginationItem={LobbyUserItem} //TODO: LobbyLobbyChatRoomItem
+          PaginationItem={LobbyUserItem} //TODO: LobbyChatRoomItem
         />
         <Chat width="100%" height="55%" />
       </ChatRoomUserListStyled>

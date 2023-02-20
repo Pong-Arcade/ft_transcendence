@@ -13,25 +13,26 @@ export enum EChatRoomMode {
   PRIVATE = "PRIVATE",
 }
 
-export interface IChatRoomFormValues {
+export interface ILobbyChatRoomFormValues {
   mode: string;
   title: string;
   password: string;
   maxUserCount: string;
 }
 export interface IUseChatRoomForm {
-  onSubmit: (values: IChatRoomFormValues) => void;
+  onSubmit: (values: ILobbyChatRoomFormValues) => void;
 }
-export interface IChatRoomErrors extends Partial<IChatRoomFormValues> {}
+export interface ILobbyChatRoomErrors
+  extends Partial<ILobbyChatRoomFormValues> {}
 
 const useChatRoomForm = ({ onSubmit }: IUseChatRoomForm) => {
-  const [values, setValues] = useState<IChatRoomFormValues>({
+  const [values, setValues] = useState<ILobbyChatRoomFormValues>({
     mode: EChatRoomMode.PUBLIC as string,
     title: "",
     password: "",
     maxUserCount: "",
   });
-  const [errors, setErrors] = useState<IChatRoomErrors>({});
+  const [errors, setErrors] = useState<ILobbyChatRoomErrors>({});
 
   const onChangeForm = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -87,8 +88,8 @@ const ChatRoomFormValidator = ({
   title,
   password,
   maxUserCount,
-}: IChatRoomFormValues) => {
-  const errors: IChatRoomErrors = {};
+}: ILobbyChatRoomFormValues) => {
+  const errors: ILobbyChatRoomErrors = {};
 
   if (!(mode in EChatRoomMode)) {
     errors.mode = "방유형이 옳바르지 않습니다";

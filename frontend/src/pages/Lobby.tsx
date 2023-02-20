@@ -8,7 +8,7 @@ import LobbyUserList from "../components/modules/LobbyUserList";
 import LobbyUserProfile from "../components/modules/LobbyUserProfile";
 import UserInfoSettingModal from "../components/modules/UserInfoSettingModal";
 import LobbyTemplate from "../components/templates/LobbyTemplate";
-import ChatSocket, { SocketContext } from "../utils/ChatSocket";
+import { SocketContext } from "../utils/ChatSocket";
 import useFirstLoginModal from "../hooks/useFirstLoginModal";
 import useLoading from "../hooks/useLoading";
 import FullSpinner from "../components/atoms/FullSpinner";
@@ -51,8 +51,7 @@ const Lobby = () => {
   const socket = useContext(SocketContext);
   const { onlineUsers, friendUsers, blockUsers, chatRoomList, myInfo } =
     getLobbyData();
-  const { isFirstLoginModal, FirstLoginModalClose, FirstLoginModalSubmit } =
-    useFirstLoginModal();
+  const { isFirstLoginModal, FirstLoginModalClose } = useFirstLoginModal();
   useEffect(() => {
     (async () => {
       await setLobbyData();
@@ -88,11 +87,7 @@ const Lobby = () => {
         </RoomListChatWrapper>
       </LobbyTemplate>
       {isFirstLoginModal && (
-        <UserInfoSettingModal
-          onSubmit={FirstLoginModalSubmit}
-          onClose={FirstLoginModalClose}
-          info={myInfo}
-        />
+        <UserInfoSettingModal onClose={FirstLoginModalClose} info={myInfo} />
       )}
       {isLoading && <FullSpinner />}
     </>

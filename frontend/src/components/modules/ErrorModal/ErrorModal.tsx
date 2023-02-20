@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import styled from "styled-components";
-import { IChatRoomErrors } from "../../../hooks/useChatRoomForm";
+import { ILobbyChatRoomErrors } from "../../../hooks/useChatRoomForm";
 import { IGameRoomErrors } from "../../../hooks/useGameRoomForm";
 import Board from "../../atoms/Board";
 import Button from "../../atoms/Button";
@@ -9,7 +9,7 @@ import ModalWrapper from "../../atoms/ModalWrapper";
 import Typography from "../../atoms/Typography";
 import ModalTitle from "../ModalTitle";
 
-type ErrorType = IChatRoomErrors | IGameRoomErrors;
+type ErrorType = ILobbyChatRoomErrors | IGameRoomErrors;
 interface Props {
   onClose: () => void;
   errors: ErrorType;

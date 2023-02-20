@@ -7,7 +7,10 @@ import {
   getOnlineUsersAPI,
   getUserInfoAPI,
 } from "../api/users";
-import { IChatRoom, IUser } from "../components/modules/Pagination/Pagination";
+import {
+  ILobbyChatRoom,
+  IUser,
+} from "../components/modules/Pagination/Pagination";
 import blockUsersState from "../state/BlockUsersState";
 import friendUsersState from "../state/FriendUsersState";
 import infoState from "../state/InfoState";
@@ -18,7 +21,7 @@ const useLobbyData = () => {
   const [friendUsers, setFriendUsers] =
     useRecoilState<IUser[]>(friendUsersState);
   const [blockUsers, setBlockUsers] = useRecoilState<IUser[]>(blockUsersState);
-  const [chatRoomList, setChatRoomList] = useState<IChatRoom[]>([]);
+  const [chatRoomList, setChatRoomList] = useState<ILobbyChatRoom[]>([]);
   const [myInfo, setMyInfo] = useRecoilState(infoState);
 
   const setLobbyData = async () => {

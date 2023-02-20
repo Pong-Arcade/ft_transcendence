@@ -1,4 +1,4 @@
-import { IChatRoomFormValues } from "../hooks/useChatRoomForm";
+import { ILobbyChatRoomFormValues } from "../hooks/useChatRoomForm";
 import { EGameType, IGameRoomFormValues } from "../hooks/useGameRoomForm";
 import { getRequest, postRequest } from "./axios";
 
@@ -7,7 +7,7 @@ export const getChatRoomListAPI = async () => {
   return response.data.chatRooms;
 };
 
-export const createChatRoomAPI = async (values: IChatRoomFormValues) => {
+export const createChatRoomAPI = async (values: ILobbyChatRoomFormValues) => {
   const response = await postRequest("chat-rooms/create", {
     ...values,
     maxUserCount: +values.maxUserCount,

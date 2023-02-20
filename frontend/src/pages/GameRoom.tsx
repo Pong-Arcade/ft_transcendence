@@ -99,7 +99,7 @@ const GameRoom = () => {
         </Wrapper>
       </GameRoomTemplate>
       <GeneralMenu
-        userId={"2"} // TODO: 정보보기 제외 다른 기능 추가 시 리팩토링 필요
+        userId={2} // TODO: 정보보기 제외 다른 기능 추가 시 리팩토링 필요
         name="kangkim" // TODO: 임시값
         isOpenMenu={isOpenMenu}
         onClose={onCloseMenu}
