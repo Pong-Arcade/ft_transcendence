@@ -6,6 +6,7 @@ import { ChatRoomListResponseDto } from 'src/dto/response/chatroom.list.response
 import { ChatroomUsersInfoResponseDto } from 'src/dto/response/chatroom.users.info.response.dto';
 import { UserService } from 'src/user/user.service';
 import { ChatroomCreateUsersInfoResponseDto } from 'src/dto/response/chatroom.create.users.info.response.dto';
+import { UserChatDto } from 'src/dto/user.chat.dto';
 
 @Injectable()
 export class ChatroomService {
@@ -50,6 +51,7 @@ export class ChatroomService {
     const chatroomUsersInfo = new ChatroomCreateUsersInfoResponseDto();
     chatroomUsersInfo.roomId = chatroomInfo.id;
     chatroomUsersInfo.mastUserId = chatroomInfo.masterUser;
+    chatroomUsersInfo.users = new Array<UserChatDto>();
     for (const userId of chatroomInfo.users) {
       const userInfo = await this.userService.getUserInfo(userId);
       chatroomUsersInfo.users.push({

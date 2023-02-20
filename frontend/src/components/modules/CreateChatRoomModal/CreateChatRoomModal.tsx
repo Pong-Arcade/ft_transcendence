@@ -49,6 +49,7 @@ const CreateChatRoomModal = ({ title, onClose }: Props) => {
           const response = await createChatRoomAPI(values);
           onClose();
           navigate(`/chat-rooms/${response.data.roomId}`);
+          console.log(response);
         })();
       },
     });

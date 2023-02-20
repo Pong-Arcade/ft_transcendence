@@ -1,9 +1,10 @@
-import { MouseEvent } from "react";
+import { MouseEvent, useContext, useEffect } from "react";
+import { SocketContext } from "../../../utils/ChatSocket";
 import Pagination from "../Pagination";
 import { IItem, IPaginationItem } from "../Pagination/Pagination";
-
+import { IChatRoom } from "../Pagination/Pagination";
 interface Props {
-  list: IItem[];
+  list: IChatRoom[];
   PaginationItem: (arg: IPaginationItem) => JSX.Element;
   page: number;
   onItemClick?: (e: MouseEvent<HTMLButtonElement>) => void;
@@ -20,6 +21,17 @@ const LobbyChatRoomPagination = ({
   onPrevPage,
 }: Props) => {
   const pageLength = 4;
+  const socket = useContext(SocketContext);
+  useEffect(() => {
+    socket.socket.on("addChatRoom", (room: IChatRoom) => {
+      list.push(room);
+    });
+    socket.socket.on("deleteChatRoom", (roomId: number) => {
+      list.filter((room) => {
+        room.roomId !== roomId.toString();
+      });
+    });
+  });
 
   return (
     <Pagination
