@@ -1,9 +1,11 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { GameGateway } from './game.gateway';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { AuthModule } from 'src/auth/auth.module';
 import { GameRoomController } from './gameroom.controller';
+import { GameRoomService } from './gameroom.service';
+import { UserModule } from 'src/user/user.module';
 
 @Module({
   imports: [
@@ -17,8 +19,9 @@ import { GameRoomController } from './gameroom.controller';
       inject: [ConfigService],
     }),
     AuthModule,
+    forwardRef(() => UserModule),
   ],
-  providers: [GameGateway],
+  providers: [GameGateway, GameRoomService],
   exports: [GameGateway],
   controllers: [GameRoomController],
 })
