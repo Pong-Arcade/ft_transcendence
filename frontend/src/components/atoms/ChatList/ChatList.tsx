@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { useRecoilValue } from "recoil";
 import styled from "styled-components";
+import blockUsersState from "../../../state/BlockUsersState";
+import { SocketContext } from "../../../utils/ChatSocket";
 import ChatListItem from "../ChatListItem";
 
 interface Props {
-  list?: IMessage[];
+  // list?: IMessage[];
   width: string;
   height: string;
   backgroundColor?: string;
@@ -54,9 +57,26 @@ export enum EMessageType {
   SYSTEMMSG = "systemMsg",
 }
 
-const ChatList = ({ list, ...rest }: Props) => {
-  if (!list) return <ChatListStyled {...rest}></ChatListStyled>;
-
+const ChatList = ({ ...rest }: Props) => {
+  const [list, setList] = useState<IMessage[]>([]);
+  const blockUsers = useRecoilValue(blockUsersState);
+  const socket = useContext(SocketContext);
+  useEffect(() => {
+    const newMessage = (newMsg: IMessage) => {
+      for (const user of blockUsers) {
+        if (user.userId == newMsg.fromId) return;
+      }
+      setList((prevList) => [...prevList, newMsg]);
+    };
+    if (socket) {
+      socket.socket.off("message");
+      socket.socket.off("whisper");
+      socket.socket.off("systemMsg");
+      socket.socket.on("message", newMessage);
+      socket.socket.on("whisper", newMessage);
+      socket.socket.on("systemMsg", newMessage);
+    }
+  }, [blockUsers]);
   return (
     <ChatListStyled {...rest}>
       {list.map((item, index) =>
