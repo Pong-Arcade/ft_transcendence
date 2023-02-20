@@ -5,7 +5,7 @@ import Button from "../../atoms/Button";
 import ButtonGroup from "../ButtonGroup";
 
 export interface IUser {
-  userId: string;
+  userId: number;
   nickname: string;
   avatarUrl?: string;
   email?: string;

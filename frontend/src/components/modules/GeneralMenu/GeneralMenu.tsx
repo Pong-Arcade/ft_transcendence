@@ -15,7 +15,7 @@ interface Props {
   left: number;
   isOpenMenu: boolean;
   onClose: () => void;
-  userId: string;
+  userId: number;
   name: string;
 }
 

@@ -46,7 +46,7 @@ const ChatListStyled = styled.div<Props>`
 
 export type MessageType = "message" | "whisper" | "systemMsg";
 export interface IMessage {
-  fromId: string;
+  fromId: number;
   content: string;
   type: MessageType;
 }

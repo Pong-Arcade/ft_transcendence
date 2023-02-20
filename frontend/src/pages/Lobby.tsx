@@ -8,7 +8,7 @@ import LobbyUserList from "../components/modules/LobbyUserList";
 import LobbyUserProfile from "../components/modules/LobbyUserProfile";
 import UserInfoSettingModal from "../components/modules/UserInfoSettingModal";
 import LobbyTemplate from "../components/templates/LobbyTemplate";
-import ChatSocket, { SocketContext } from "../utils/ChatSocket";
+import { SocketContext } from "../utils/ChatSocket";
 import useFirstLoginModal from "../hooks/useFirstLoginModal";
 import useLoading from "../hooks/useLoading";
 import FullSpinner from "../components/atoms/FullSpinner";

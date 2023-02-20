@@ -89,7 +89,7 @@ const LobbyUserProfile = ({ info }: Props) => {
       </LobbyUserProfileStyled>
       {isUserInfoOpen && (
         <UserInfoModal
-          userId={info.userId.toString()}
+          userId={info.userId}
           onClose={onUserInfoClose}
           width="50%"
           height="90%"

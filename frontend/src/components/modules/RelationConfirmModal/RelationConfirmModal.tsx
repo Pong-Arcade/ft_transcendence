@@ -10,7 +10,7 @@ interface Props {
   onNoConfirm: () => void;
   onClose: () => void;
   currentOn?: ECurrentOn;
-  userId: string;
+  userId: number;
   name: string;
 }
 
