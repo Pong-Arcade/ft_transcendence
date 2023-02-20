@@ -6,7 +6,7 @@ import LobbyChatRoomPagination from "../LobbyChatRoomPagination";
 import LobbyGameRoomPagination from "../LobbyGameRoomPagination";
 import LobbyRoomListTypeChoiceButtonGroup from "../LobbyRoomListTypeChoiceButtonGroup";
 import { EROOM_BUTTON } from "../LobbyRoomListTypeChoiceButtonGroup/LobbyRoomListTypeChoiceButtonGroup";
-import { IChatRoom } from "../Pagination/Pagination";
+import { ILobbyChatRoom } from "../Pagination/Pagination";
 
 const LobbyChatRoomListStyled = styled(Board).attrs((props) => {
   return {
@@ -20,7 +20,7 @@ const LobbyChatRoomListStyled = styled(Board).attrs((props) => {
 })``;
 
 interface Props {
-  list: IChatRoom[];
+  list: ILobbyChatRoom[];
 }
 
 // TODO: game room list

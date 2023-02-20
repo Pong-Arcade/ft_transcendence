@@ -10,7 +10,7 @@ import {
 import blockUsersState from "../state/BlockUsersState";
 import friendUsersState from "../state/FriendUsersState";
 
-const useRelation = (userId: string) => {
+const useRelation = (userId: number) => {
   const setFriendUsers = useSetRecoilState(friendUsersState);
   const setBlockUsers = useSetRecoilState(blockUsersState);
 

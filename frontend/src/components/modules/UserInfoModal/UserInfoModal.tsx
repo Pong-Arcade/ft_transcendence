@@ -17,7 +17,7 @@ interface Props {
   onClose: () => void;
   width: string;
   height: string;
-  userId: string;
+  userId: number;
 }
 
 const UserInfoModalButton = styled(Button).attrs({
