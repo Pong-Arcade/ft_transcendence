@@ -4,6 +4,7 @@ import { IUserRepository } from './repository/user.repository.interface';
 import { Cache } from 'cache-manager';
 import { ChatGateway } from 'src/chat/chat.geteway';
 import { GameGateway } from 'src/game/game.gateway';
+import { OnlineUsersResponseDto } from 'src/dto/response/online.users.response.dto';
 
 @Injectable()
 export class UserService {
@@ -20,11 +21,13 @@ export class UserService {
   /**
    * 모든 유저 정보를 가져옵니다.
    */
-  async getAllUsers(): Promise<any> {
+  async getAllUsers(): Promise<OnlineUsersResponseDto> {
     this.logger.log(`Called ${this.getAllUsers.name}`);
     console.log(this.chatGateway.server.sockets);
     console.log(this.gameGateway.server.sockets);
-    return await this.userRepository.getAllUser();
+    return {
+      onlineUsers: await this.userRepository.getAllUser(),
+    };
   }
 
   /**
