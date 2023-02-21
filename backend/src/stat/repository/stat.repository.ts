@@ -36,7 +36,9 @@ export class StatRepository implements IStatRepository {
         'ladder_stat.ladderScore as ladderScore',
         'ladder_stat.winCount as winCount',
         'ladder_stat.loseCount as loseCount',
-        '(ladder_stat.winCount * 100 / (ladder_stat.winCount + ladder_stat.loseCount)) AS winRate',
+        // winCount + loseCount가 0이면 0으로 나누는 에러가 발생하므로
+        // winCount + loseCount가 0이면 0으로 설정한다.
+        'CASE WHEN ladder_stat.winCount + ladder_stat.loseCount = 0 THEN 0 ELSE ladder_stat.winCount * 100 / (ladder_stat.winCount + ladder_stat.loseCount) END AS winRate',
       ])
       .orderBy(filter, order as 'ASC' | 'DESC')
       .getRawMany();
