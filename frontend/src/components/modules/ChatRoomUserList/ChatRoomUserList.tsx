@@ -93,12 +93,7 @@ const ChatRoomUserList = () => {
         name={name}
       />
       {isUserInfoOpen && (
-        <UserInfoModal
-          userId={id}
-          onClose={onUserInfoClose}
-          width="50%"
-          height="90%"
-        />
+        <UserInfoModal userId={id} onClose={onUserInfoClose} />
       )}
     </>
   );
