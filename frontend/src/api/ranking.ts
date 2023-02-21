@@ -1,4 +1,7 @@
-import { ERankingFilter, ERankingOrder } from "../hooks/useRanking";
+import {
+  ERankingFilter,
+  ERankingOrder,
+} from "../components/atoms/RankingFilter/RankingFilter";
 import { getRequest } from "./axios";
 
 // TODO: 실패 처리
