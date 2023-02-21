@@ -46,22 +46,22 @@ const RelationConfirmModal = ({
   switch (currentOn) {
     case EGeneralCurrentOn.ADD_FRIEND:
       title = EMenu.ADD_FRIEND;
-      content = `정말 ${name}님을 친구추가하시겠습니까?`;
+      content = `${name}님을 친구추가하시겠습니까?`;
       onYesConfirm = onAddFriend;
       break;
     case EGeneralCurrentOn.DEL_FRIEND:
       title = EMenu.DEL_FRIEND;
-      content = `정말 ${name}님을 친구삭제하시겠습니까?`;
+      content = `${name}님을 친구삭제하시겠습니까?`;
       onYesConfirm = onDelFriend;
       break;
     case EGeneralCurrentOn.ADD_BLOCK:
       title = EMenu.ADD_BLOCK;
-      content = `정말 ${name}님을 차단하시겠습니까?`;
+      content = `${name}님을 차단하시겠습니까?`;
       onYesConfirm = onAddBlock;
       break;
     case EGeneralCurrentOn.DEL_BLOCK:
       title = EMenu.DEL_BLOCK;
-      content = `정말 ${name}님을 차단해제하시겠습니까?`;
+      content = `${name}님을 차단해제하시겠습니까?`;
       onYesConfirm = onDelBlock;
       break;
   }

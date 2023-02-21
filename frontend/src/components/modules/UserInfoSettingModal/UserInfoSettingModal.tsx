@@ -3,7 +3,7 @@ import { ChangeEvent, useState } from "react";
 import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import { getUserInfoAPI, updateUserInfoAPI } from "../../../api/users";
-import infoState, { IInfoState } from "../../../state/InfoState";
+import infoState from "../../../state/InfoState";
 import Avatar from "../../atoms/Avatar";
 import Board from "../../atoms/Board";
 import Button from "../../atoms/Button";
@@ -11,10 +11,11 @@ import Input from "../../atoms/Input";
 import Modal from "../../atoms/Modal";
 import ModalWrapper from "../../atoms/ModalWrapper";
 import ModalTitle from "../ModalTitle";
+import { IUser } from "../Pagination/Pagination";
 
 interface Props {
   onClose: () => void;
-  info: IInfoState;
+  info: IUser;
 }
 
 const Wrapper = styled(Board).attrs((props) => {
@@ -50,7 +51,7 @@ interface IUserInfo {
 }
 
 const UserInfoSettingModal = ({ onClose, info }: Props) => {
-  if (info.userId === -1) return null;
+  if (info.userId === -1 || info.avatarUrl === undefined) return null;
 
   const [userInfo, setUserInfo] = useState<IUserInfo>({
     nickname: info.nickname,

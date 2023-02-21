@@ -194,12 +194,7 @@ const GeneralMenu = ({
         </ModalWrapper>
       )}
       {isUserInfoOpen && (
-        <UserInfoModal
-          userId={userId}
-          onClose={onUserInfoClose}
-          width="50%"
-          height="90%"
-        />
+        <UserInfoModal userId={userId} onClose={onUserInfoClose} />
       )}
       {isConfirmOpen && (
         <RelationConfirmModal

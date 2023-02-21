@@ -9,6 +9,7 @@ export interface IUser {
   nickname: string;
   avatarUrl?: string;
   email?: string;
+  firstLogin?: string;
 }
 
 export interface IRanking {

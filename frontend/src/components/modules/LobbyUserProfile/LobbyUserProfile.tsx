@@ -88,12 +88,7 @@ const LobbyUserProfile = ({ info }: Props) => {
         </UserInfo>
       </LobbyUserProfileStyled>
       {isUserInfoOpen && (
-        <UserInfoModal
-          userId={info.userId}
-          onClose={onUserInfoClose}
-          width="50%"
-          height="90%"
-        />
+        <UserInfoModal userId={info.userId} onClose={onUserInfoClose} />
       )}
       {isConfirmOpen && (
         <LogoutConfirmModal
