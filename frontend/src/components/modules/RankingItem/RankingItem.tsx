@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import Button from "../../atoms/Button";
-import { IPaginationItem } from "../Pagination/Pagination";
+import { IPaginationItem, IRanking } from "../Pagination/Pagination";
 
 const LobbyUserItemStyled = styled(Button).attrs((props) => {
   return {
@@ -10,7 +10,11 @@ const LobbyUserItemStyled = styled(Button).attrs((props) => {
   };
 })`
   display: grid;
+  cursor: auto;
   grid-template-columns: repeat(6, 1fr);
+  &:hover {
+    box-shadow: none;
+  }
 `;
 
 const Field = styled.div`
@@ -22,19 +26,17 @@ const Field = styled.div`
 `;
 
 const RankingItem = ({ item, onItemClick }: IPaginationItem) => {
-  if (!("ranking" in item)) return <div></div>;
-
   const {
     ranking,
-    userInfo: { nickname },
+    userInfo: { userId, nickname },
     ladderScore,
     winCount,
     loseCount,
     winRate,
-  } = item;
+  } = item as IRanking;
 
   return (
-    <LobbyUserItemStyled onClick={onItemClick}>
+    <LobbyUserItemStyled id={userId.toString()} onClick={onItemClick}>
       <Field>{ranking}</Field>
       <Field>{nickname}</Field>
       <Field>{ladderScore}</Field>

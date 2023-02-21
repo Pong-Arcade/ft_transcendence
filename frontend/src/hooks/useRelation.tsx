@@ -16,7 +16,8 @@ const useRelation = (userId: number) => {
 
   const onAddFriend = async () => {
     const response = await createFriendUsersAPI(userId);
-    if (response.status === 201) {
+
+    if (response.status === 200) {
       const newFriendUsers = await getFriendUsersAPI();
       setFriendUsers(newFriendUsers);
     }
@@ -30,7 +31,7 @@ const useRelation = (userId: number) => {
   };
   const onAddBlock = async () => {
     const response = await createBlockUsersAPI(userId);
-    if (response.status === 201) {
+    if (response.status === 200) {
       const newBlockUsers = await getBlockUsersAPI();
       setBlockUsers(newBlockUsers);
     }
