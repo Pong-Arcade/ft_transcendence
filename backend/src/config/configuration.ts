@@ -1,5 +1,6 @@
 export default () => ({
   fe_host: process.env.FE_HOST,
+  be_host: process.env.BE_HOST,
   port: parseInt(process.env.PORT, 10),
   debug: {
     log: process.env.DEBUG_LOG === 'true' ? true : false,
