@@ -1,4 +1,4 @@
-import { deleteRequest, getRequest, patchRequest } from "./axios";
+import { deleteRequest, getRequest, patchRequest, postRequest } from "./axios";
 
 // TODO: 실패 처리
 export const getOnlineUsersAPI = async () => {
@@ -16,21 +16,18 @@ export const updateUserInfoAPI = async (
   avatarImage?: File
 ) => {
   if (avatarImage) {
-    const response = await patchRequest(
-      "users/update",
-      {
-        nickname,
-        avatarImage,
+    const formData = new FormData();
+    formData.append("avatarImage", avatarImage);
+    formData.append("nickname", nickname);
+
+    const response = await postRequest("users/update", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
       },
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
+    });
     return response;
   } else {
-    const response = await patchRequest("users/update", {
+    const response = await postRequest("users/update", {
       nickname,
     });
     return response;
