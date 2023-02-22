@@ -9,7 +9,7 @@ import {
   Logger,
   Param,
   ParseIntPipe,
-  Patch,
+  Post,
   Res,
   UploadedFile,
   UseGuards,
@@ -61,9 +61,11 @@ export class UserController {
     type: OnlineUsersResponseDto,
   })
   @Get()
-  async getAllUsers() {
+  async getAllUsers(): Promise<OnlineUsersResponseDto> {
     this.logger.log(`Called ${this.getAllUsers.name}`);
-    return await this.userService.getAllUsers();
+    let response = new OnlineUsersResponseDto();
+    response.onlineUsers = await this.userService.getAllUsers();
+    return response;
   }
 
   @ApiOperation({
@@ -98,7 +100,7 @@ export class UserController {
       '유저 정보를 업데이트합니다. 닉네임 혹은 아바타 이미지를 변경할 수 있습니다.',
   })
   @ApiResponse({
-    status: 200,
+    status: 201,
     description: '유저 정보 업데이트에 성공했습니다.',
   })
   @ApiResponse({
@@ -109,16 +111,10 @@ export class UserController {
     status: 404,
     description: '존재하지 않는 유저입니다.',
   })
-  @HttpCode(200)
-  @Patch('update')
+  @HttpCode(201)
+  @Post('update')
   @UseInterceptors(
     FileInterceptor('avatarImage', {
-      fileFilter: (req, file, cb) => {
-        if (!file.originalname.match(/\.(jpg|jpeg|png|gif|svg|ico)$/)) {
-          return cb(new Error('지원되지 않는 확장자입니다.'), false);
-        }
-        cb(null, true);
-      },
       storage: diskStorage({
         destination: (req, file, cb) => {
           const path = `uploads`;
@@ -128,7 +124,7 @@ export class UserController {
           cb(null, path);
         },
         filename: (req, file, cb) => {
-          cb(null, `${uuid()}-${file.originalname}`);
+          cb(null, `${uuid()}.${file.mimetype.split('/')[1]}`);
         },
       }),
     }),
@@ -148,7 +144,9 @@ export class UserController {
 
     // 아바타 이미지가 변경된 경우, 파일 경로를 저장합니다.
     if (avatarImage) {
-      newAvatarUrl = avatarImage.path;
+      newAvatarUrl = `${this.configService.get<string>('be_host')}/${
+        avatarImage.path
+      }`;
     }
 
     const userInfo = await this.userService.updateUserInfo(
@@ -173,6 +171,6 @@ export class UserController {
         domain,
       });
     }
-    res.status(HttpStatus.OK).send();
+    res.status(HttpStatus.CREATED).send();
   }
 }

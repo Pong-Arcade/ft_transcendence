@@ -50,10 +50,14 @@ const Field = styled.div<{ win?: boolean }>`
   font-size: 1.7rem;
   color: ${(props) => (props.win ? "#05f87f" : "#f7f300")};
 `;
+const TimeField = styled.div`
+  display: grid;
+  grid-template: repeat(2, 1fr) / 1fr;
+`;
 interface Props {
   list: IStat[];
 }
-
+// TODO: 최근 전적 없을 시 나오는 화면 추가
 const StatList = ({ list }: Props) => {
   const attrList = ["결과", "상대ID", "분류", "점수", "플레이시간", "시작시간"];
   return (
@@ -79,9 +83,17 @@ const StatList = ({ list }: Props) => {
                 {myScore} : {opponentScore}
               </Field>
               <Field win={matchResult === "WIN"}>
-                {Math.floor(matchTime / 60)}분 {matchTime % 60}초
+                {Math.floor(matchTime / 1000 / 60)}분 {(matchTime / 1000) % 60}
+                초
               </Field>
-              <Field win={matchResult === "WIN"}>{beginDate}</Field>
+              <TimeField>
+                <Field win={matchResult === "WIN"}>
+                  {beginDate.split("T")[0]}
+                </Field>
+                <Field win={matchResult === "WIN"}>
+                  {beginDate.split("T")[1].split(".")[0]}
+                </Field>
+              </TimeField>
             </FieldWrapper>
           )
         )}

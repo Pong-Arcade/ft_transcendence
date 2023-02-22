@@ -6,9 +6,10 @@ import { UserDto } from 'src/dto/user.dto';
 import { AuthService } from './auth.service';
 import { ConfigService } from '@nestjs/config';
 import { JWTSignGuard } from './jwt/jwt.sign.guard';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Auth')
+@ApiBearerAuth()
 @Controller('/api/auth')
 export class AuthController {
   private logger = new Logger(AuthController.name);

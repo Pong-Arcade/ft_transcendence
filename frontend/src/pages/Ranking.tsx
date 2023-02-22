@@ -7,7 +7,7 @@ import ModalTitle from "../components/modules/ModalTitle";
 import RankingItem from "../components/modules/RankingItem";
 import RankingPagination from "../components/modules/RankingPagination";
 import RankingTemplate from "../components/templates/RankingTemplate";
-import useRankList from "../hooks/useRankList";
+import useRanking from "../hooks/useRanking";
 
 const Wrapper = styled(Board).attrs({
   width: "100%",
@@ -17,11 +17,11 @@ const Wrapper = styled(Board).attrs({
   justifyContent: "space-between",
 })``;
 
-// TODO: filter 버튼 클릭으로 api 요청 기능 추가
 const Ranking = () => {
   const navigate = useNavigate();
-  const { rankList } = useRankList();
   const [page, setPage] = useState(0);
+  const { rankingList, setFilter, setOrder } = useRanking();
+
   return (
     <RankingTemplate>
       <ModalTitle
@@ -31,10 +31,10 @@ const Ranking = () => {
       >
         랭킹
       </ModalTitle>
-      <RankingFilter />
+      <RankingFilter setFilter={setFilter} setOrder={setOrder} />
       <Wrapper>
         <RankingPagination
-          list={rankList}
+          list={rankingList}
           page={page}
           onNextPage={() => setPage(page + 1)}
           onPrevPage={() => setPage(page - 1)}

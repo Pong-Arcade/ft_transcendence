@@ -219,11 +219,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     room.adminUsers.filter((id) => id !== userId);
     this.server.in(room.title).emit('deleteAdmin', userId);
   }
-  @OnEvent('chatroom:mute-user')
-  async muteUser(roomId, userId, duration) {}
-  @OnEvent('chatroom:unmute-user')
-  async unmuteUser(roomId, userId, duration) {}
+  // @OnEvent('chatroom:mute-user')
+  // async muteUser(roomId, userId, duration) {}
+  // @OnEvent('chatroom:unmute-user')
+  // async unmuteUser(roomId, userId, duration) {}
 
-  @OnEvent('chatroom:change-info')
-  async updateChatRoom(roomId, roomInfo) {}
+  // @OnEvent('chatroom:change-info')
+  // async updateChatRoom(roomId, roomInfo) {}
 }

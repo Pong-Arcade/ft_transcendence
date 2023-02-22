@@ -11,11 +11,12 @@ export enum userMode {
 }
 
 export interface IUser {
-  userId: string;
+  userId: number;
   nickname: string;
   avatarUrl?: string;
   email?: string;
   mode?: userMode;
+  firstLogin?: string;
 }
 
 export interface IRanking {
@@ -27,7 +28,7 @@ export interface IRanking {
   winRate: number;
 }
 
-export interface IChatRoom {
+export interface ILobbyChatRoom {
   roomId: string;
   title: string;
   mode: string;
@@ -35,7 +36,13 @@ export interface IChatRoom {
   currentCount: string;
 }
 
-export type IItem = IUser | IRanking | IChatRoom;
+export interface IChatRoom {
+  roomId: number;
+  mastUserId: number;
+  users: IUser[];
+}
+
+export type IItem = IUser | IRanking | ILobbyChatRoom | IChatRoom;
 
 export interface IPaginationItem {
   item: IItem;

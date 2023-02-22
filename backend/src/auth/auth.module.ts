@@ -8,6 +8,8 @@ import User from 'src/entity/user.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './jwt/jwt.strategy';
+import NormalStat from 'src/entity/normal.stat.entity';
+import LadderStat from 'src/entity/ladder.stat.entity';
 
 const repo = {
   provide: 'IAuthRepository',
@@ -25,7 +27,7 @@ const repo = {
       }),
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, NormalStat, LadderStat]),
   ],
   providers: [FtStrategy, JwtStrategy, AuthService, repo],
   controllers: [AuthController],

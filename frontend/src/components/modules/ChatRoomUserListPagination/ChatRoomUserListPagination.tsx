@@ -29,7 +29,7 @@ const ChatRoomUserListPagination = ({
     });
     socket.socket.on("leaveChatRoom", (userId: number) => {
       list.filter((user) => {
-        user.userId !== userId.toString();
+        user.userId !== userId;
       });
     });
     socket.socket.on("destructChatRoom", () => {

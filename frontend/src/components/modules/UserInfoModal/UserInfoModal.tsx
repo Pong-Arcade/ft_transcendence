@@ -1,6 +1,8 @@
+import { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
-import { createFriendUsersAPI } from "../../../api/users";
+import { getUserInfoAPI } from "../../../api/users";
+import useFriendUsers from "../../../hooks/useFriendUsers";
 import useModal from "../../../hooks/useModal";
 import infoState from "../../../state/InfoState";
 import Avatar from "../../atoms/Avatar";
@@ -11,13 +13,12 @@ import ModalWrapper from "../../atoms/ModalWrapper";
 import Typography from "../../atoms/Typography";
 import ButtonGroup from "../ButtonGroup";
 import ModalTitle from "../ModalTitle";
+import { IUser } from "../Pagination/Pagination";
 import UserInfoSettingModal from "../UserInfoSettingModal";
 
 interface Props {
   onClose: () => void;
-  width: string;
-  height: string;
-  userId: string;
+  userId: number;
 }
 
 const UserInfoModalButton = styled(Button).attrs({
@@ -114,10 +115,27 @@ const CurrentLocationContent = styled(Board).attrs({
   background-color: ${(props) => props.theme.background.middle};
 `;
 
-const UserInfoModal = ({ onClose, width, height, userId }: Props) => {
+// TODO: 버튼 이상한 랜더링 해결
+const UserInfoModal = ({ onClose, userId }: Props) => {
   const myInfo = useRecoilValue(infoState);
+  const [userInfo, setUserInfo] = useState<IUser>({
+    userId: -1,
+    nickname: "",
+  });
+  useEffect(() => {
+    (async () => {
+      const data = await getUserInfoAPI(userId);
+      const date = new Date(data.firstLogin);
+      setUserInfo({ ...data, firstLogin: date.toISOString().split("T")[0] });
+    })();
+  }, []);
+
   const infoTitleList = ["이름", "가입일", "이메일"];
-  const infoContentList = [myInfo.nickname, "2021-08-01", "kangkim@naver.com"];
+  const infoContentList = [
+    userInfo.nickname,
+    userInfo.firstLogin,
+    userInfo.email,
+  ];
   const gameStatTitleList = ["게임종류", "승리", "패배", "승률"];
   const gameStatContentList = [
     "레더게임",
@@ -134,19 +152,16 @@ const UserInfoModal = ({ onClose, width, height, userId }: Props) => {
     onModalOpen: onInfoSettingOpen,
     onModalClose: InfoSettingClose,
   } = useModal({});
+  const { onAddFriend } = useFriendUsers(userId);
 
-  const onAddFriend = async () => {
-    const status = await createFriendUsersAPI(userId);
-    console.log(`id : ${userId}, status : ${status}`);
-  };
   return (
     <ModalWrapper>
-      <Modal width={width} height={height}>
+      <Modal width={"60%"} height={"95%"}>
         <ModalTitle onClose={onClose} fontSize="3rem" height="10%">
-          {myInfo.nickname}
+          {userInfo.nickname}
         </ModalTitle>
         <GridWrapper>
-          <MyAvatar key={myInfo.avatarUrl} src={myInfo.avatarUrl} />
+          <MyAvatar key={userInfo.avatarUrl} src={userInfo.avatarUrl} />
           {infoTitleList.map((title, index) => (
             <InfoWrapper key={index} row={index}>
               <InfoTitle>{title}</InfoTitle>
@@ -171,13 +186,13 @@ const UserInfoModal = ({ onClose, width, height, userId }: Props) => {
           <CurrentLocationContent>로비에 있습니다</CurrentLocationContent>
         </GridWrapper>
         <ButtonGroup width="100%" height="8%" backgroundColor="secondary">
-          {myInfo.userId === +userId ? (
+          {userInfo.userId === myInfo.userId ? (
             <UserInfoModalButton onClick={onInfoSettingOpen}>
               프로필설정
             </UserInfoModalButton>
           ) : (
             <>
-              <UserInfoModalButton onClick={onAddFriend}>
+              <UserInfoModalButton onClick={async () => await onAddFriend()}>
                 친구추가
               </UserInfoModalButton>
               <UserInfoModalButton>관전하기</UserInfoModalButton>
@@ -189,7 +204,7 @@ const UserInfoModal = ({ onClose, width, height, userId }: Props) => {
         </ButtonGroup>
       </Modal>
       {isInfoSettingOpen && (
-        <UserInfoSettingModal onClose={InfoSettingClose} info={myInfo} />
+        <UserInfoSettingModal onClose={InfoSettingClose} info={userInfo} />
       )}
     </ModalWrapper>
   );

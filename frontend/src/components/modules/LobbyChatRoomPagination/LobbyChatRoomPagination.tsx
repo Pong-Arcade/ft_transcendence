@@ -2,9 +2,9 @@ import { MouseEvent, useContext, useEffect } from "react";
 import { SocketContext } from "../../../utils/ChatSocket";
 import Pagination from "../Pagination";
 import { IItem, IPaginationItem } from "../Pagination/Pagination";
-import { IChatRoom } from "../Pagination/Pagination";
+import { ILobbyChatRoom } from "../Pagination/Pagination";
 interface Props {
-  list: IChatRoom[];
+  list: ILobbyChatRoom[];
   PaginationItem: (arg: IPaginationItem) => JSX.Element;
   page: number;
   onItemClick?: (e: MouseEvent<HTMLButtonElement>) => void;

@@ -3,14 +3,15 @@ import useRelation from "../../../hooks/useRelation";
 import Button from "../../atoms/Button";
 import Typography from "../../atoms/Typography";
 import ButtonGroup from "../ButtonGroup";
+import { EChatCurrentOn } from "../ChatRoomMenu/ChatRoomMenu";
 import ConfirmModal from "../ConfirmModal";
-import { ECurrentOn, EMenu } from "../GeneralMenu/GeneralMenu";
+import { EGeneralCurrentOn, EMenu } from "../GeneralMenu/GeneralMenu";
 
 interface Props {
   onNoConfirm: () => void;
   onClose: () => void;
-  currentOn?: ECurrentOn;
-  userId: string;
+  currentOn?: EGeneralCurrentOn | EChatCurrentOn;
+  userId: number;
   name: string;
 }
 
@@ -43,24 +44,24 @@ const RelationConfirmModal = ({
   };
 
   switch (currentOn) {
-    case ECurrentOn.ADD_FRIEND:
+    case EGeneralCurrentOn.ADD_FRIEND:
       title = EMenu.ADD_FRIEND;
-      content = `정말 ${name}님을 친구추가하시겠습니까?`;
+      content = `${name}님을 친구추가하시겠습니까?`;
       onYesConfirm = onAddFriend;
       break;
-    case ECurrentOn.DEL_FRIEND:
+    case EGeneralCurrentOn.DEL_FRIEND:
       title = EMenu.DEL_FRIEND;
-      content = `정말 ${name}님을 친구삭제하시겠습니까?`;
+      content = `${name}님을 친구삭제하시겠습니까?`;
       onYesConfirm = onDelFriend;
       break;
-    case ECurrentOn.ADD_BLOCK:
+    case EGeneralCurrentOn.ADD_BLOCK:
       title = EMenu.ADD_BLOCK;
-      content = `정말 ${name}님을 차단하시겠습니까?`;
+      content = `${name}님을 차단하시겠습니까?`;
       onYesConfirm = onAddBlock;
       break;
-    case ECurrentOn.DEL_BLOCK:
+    case EGeneralCurrentOn.DEL_BLOCK:
       title = EMenu.DEL_BLOCK;
-      content = `정말 ${name}님을 차단해제하시겠습니까?`;
+      content = `${name}님을 차단해제하시겠습니까?`;
       onYesConfirm = onDelBlock;
       break;
   }

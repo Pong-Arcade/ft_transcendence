@@ -17,6 +17,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiForbiddenResponse,
@@ -37,6 +38,7 @@ import { JwtAuthGuard } from 'src/auth/jwt/jwt.auth.guard';
 import { GameRoomService } from './gameroom.service';
 
 @ApiTags('Game')
+@ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('api/game-rooms')
 export class GameRoomController {
