@@ -25,20 +25,13 @@ const useLobbyData = () => {
   const [chatRoomList, setChatRoomList] = useState<ILobbyChatRoom[]>([]);
   const [myInfo, setMyInfo] = useRecoilState(infoState);
   const socket = useContext(SocketContext);
-  socket.socket.on("addChatRoom", (addRoom: ILobbyChatRoom) => {
-    console.log("addchat", addRoom);
-    const newList = new Array<ILobbyChatRoom>();
-    chatRoomList.forEach((room) => {
-      newList.push(room);
+  useEffect(() => {
+    socket.socket.on("addChatRoom", (addRoom: ILobbyChatRoom) => {
+      setChatRoomList((prev) => [...prev, addRoom]);
     });
-    newList.push(addRoom);
-    setChatRoomList(newList);
-  });
-  socket.socket.on("deleteChatRoom", (roomId: number) => {
-    // list.filter((room) => {
-    //   room.roomId !== roomId.toString();
-    // });
-  });
+
+    socket.socket.on("deleteChatRoom", (roomId: number) => {});
+  }, []);
   const setLobbyData = async () => {
     const info = JSON.parse(getDecodedCookie());
 

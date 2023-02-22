@@ -27,7 +27,7 @@ const LobbyUserListPagination = ({
       console.log("joinchat", user);
       list.push(user);
     });
-  });
+  }, []);
 
   return (
     <Pagination
