@@ -6,11 +6,13 @@ import {
   ParseEnumPipe,
   ParseIntPipe,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { UserRecentMatchHistoryResponseDto } from '../dto/response/user.recent.match.history.response.dto';
 import { RankListResponseDto } from '../dto/response/rank.list.response.dto';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
@@ -19,8 +21,11 @@ import {
 import { StatService } from './stat.service';
 import { RankingFilter } from 'src/enum/ranking.filter.enum';
 import { SortDirection } from 'src/enum/sort.direction.enum';
+import { JwtAuthGuard } from 'src/auth/jwt/jwt.auth.guard';
 
 @ApiTags('Stat')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @Controller('api/stat')
 export class StatController {
   private logger = new Logger(StatController.name);

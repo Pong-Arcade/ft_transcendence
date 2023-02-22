@@ -18,6 +18,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiForbiddenResponse,
@@ -44,6 +45,7 @@ import { JwtAuthGuard } from 'src/auth/jwt/jwt.auth.guard';
 import { MockRepository } from 'src/mock/mock.repository';
 
 @ApiTags('Chat')
+@ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('api/chat-rooms')
 export class ChatroomController {
