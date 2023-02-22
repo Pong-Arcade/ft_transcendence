@@ -24,7 +24,8 @@ const LobbyUserListPagination = ({
   const socket = useContext(SocketContext);
   useEffect(() => {
     socket.socket.on("joinChatRoom", (user) => {
-      list.push();
+      console.log("joinchat", user);
+      list.push(user);
     });
   });
 

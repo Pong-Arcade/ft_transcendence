@@ -59,8 +59,8 @@ const Lobby = () => {
       endLoading();
     })();
   }, []);
-  socket.setUser(myInfo.userId, myInfo.nickname);
   useEffect(() => {
+    socket.setUser(myInfo.userId, myInfo.nickname);
     socket.socket.emit("addUser", {
       userId: socket.userId,
       userName: socket.userName,

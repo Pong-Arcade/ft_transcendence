@@ -21,18 +21,6 @@ const LobbyChatRoomPagination = ({
   onPrevPage,
 }: Props) => {
   const pageLength = 4;
-  const socket = useContext(SocketContext);
-  useEffect(() => {
-    socket.socket.on("addChatRoom", (room: IChatRoom) => {
-      list.push(room);
-    });
-    socket.socket.on("deleteChatRoom", (roomId: number) => {
-      list.filter((room) => {
-        room.roomId !== roomId.toString();
-      });
-    });
-  });
-
   return (
     <Pagination
       list={list.slice(page * pageLength, (page + 1) * pageLength)}

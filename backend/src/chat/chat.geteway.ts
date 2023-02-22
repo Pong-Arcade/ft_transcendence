@@ -14,6 +14,8 @@ import { MockRepository } from 'src/mock/mock.repository';
 import { ChatroomCreateRequestDto } from 'src/dto/request/chatroom.create.request.dto';
 import { ChatroomService } from './chat.service';
 import { UserService } from 'src/user/user.service';
+import { Socket } from 'dgram';
+import { Inject } from '@nestjs/common';
 export const rooms = new Map<number, Room>();
 let roomCount = 1;
 
@@ -35,8 +37,14 @@ enum EMessageType {
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   mock = new MockRepository();
   eventEmitter = new EventEmitter2();
-  private readonly chatService: ChatroomService;
-  private readonly userService: UserService;
+
+  // private readonly userService: UserService;
+  constructor(
+    private readonly chatService: ChatroomService,
+    //@Inject(UserService)
+    private readonly userService: UserService,
+  ) {}
+
   @WebSocketServer() server: Namespace;
   async handleConnection(socket) {
     // 연결 끊김 핸들러
@@ -77,6 +85,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       email: 'sfds',
     });
     console.log('addOnlineUser');
+    console.log(users);
   }
 
   @SubscribeMessage('message')
@@ -124,14 +133,20 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @OnEvent('chatroom:join')
-  joinChatRoom(roomId, userId) {
+  async joinChatRoom(roomId, userId) {
     const room = rooms.get(roomId);
+    console.log('joinUser: ', await this.userService.getUserInfo(userId));
     const user = users.get(userId);
+    // console.log('joinuser2: ', user);
     this.server.in(user.socketId).socketsLeave('lobby');
     this.server.in(user.socketId).socketsJoin(room.title);
     this.server
       .in(room.title)
-      .emit('joinChatRoom', this.userService.getUserInfo(userId));
+      .emit('joinChatRoom', await this.userService.getUserInfo(userId));
+
+    this.server
+      .in(room.title)
+      .emit('systemMsg', user.userName + '님이 입장하였습니다.');
     room.users.push(userId);
   }
   @OnEvent('chatroom:leave')
