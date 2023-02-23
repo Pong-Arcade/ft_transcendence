@@ -45,10 +45,12 @@ export class GameGateway
     //   if (!deletedRoom) {
     //     return;
     //   }
+    //
     //   this.server.emit('delete-room', deletedRoom);
     //   gameRooms = gameRooms.filter((roomName) => roomName !== deletedRoom);
     //   this.logger.log(`room ${room} deleted`);
     // });
+    //
     this.logger.log('Initialized');
   }
 
