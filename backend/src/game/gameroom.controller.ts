@@ -184,7 +184,7 @@ export class GameRoomController {
     }
 
     // 2. 게임방 생성
-    this.eventEmitter.emit(
+    await this.eventEmitter.emitAsync(
       'gameroom:create',
       user.userId,
       gameRoomCreateRequestDto,

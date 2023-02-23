@@ -14,6 +14,8 @@ import {
 import { Namespace, Socket } from 'socket.io';
 import { AuthService } from 'src/auth/auth.service';
 import { GameRoom } from './gameroom.entity';
+import { OnEvent } from '@nestjs/event-emitter';
+import { GameRoomCreateRequestDto } from 'src/dto/request/gameroom.create.request.dto';
 
 export const gameRooms = new Map<number, GameRoom>();
 @WebSocketGateway({
@@ -136,5 +138,33 @@ export class GameGateway
   //   socket.leave(roomName);
   //   this.logger.log(`${socket.id} left ${roomName}`);
   //   return { success: true, payload: roomName };
+  // }
+
+  @OnEvent('gameroom:create')
+  async addGameRoom(
+    userId: number,
+    gameRoomCreateRequestDto: GameRoomCreateRequestDto,
+  ) {
+    this.logger.log(`Called ${this.addGameRoom.name}`);
+    const roomId = gameRooms.size + 1;
+    const gameRoom = new GameRoom(
+      roomId,
+      userId,
+      gameRoomCreateRequestDto.mode,
+      gameRoomCreateRequestDto.type,
+      gameRoomCreateRequestDto.winScore,
+      gameRoomCreateRequestDto.title,
+      gameRoomCreateRequestDto.maxSpectatorCount,
+    );
+    gameRooms.set(roomId, gameRoom);
+    this.server.in('lobby').emit('addGameRoom', gameRoom);
+  }
+
+  // /**
+  //  * gameRoom
+  //  */
+  // @OnEvent('gameroom:join')
+  // async joinGame(roomId: number, userId: number) {
+
   // }
 }
