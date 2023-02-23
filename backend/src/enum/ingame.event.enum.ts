@@ -4,4 +4,9 @@ export enum InGameKeyEvent {
   STOP = 0,
 }
 
+export enum InGamePlayer {
+  RED = 'RED',
+  BLUE = 'BLUE',
+}
+
 export enum InGameEvent {}
