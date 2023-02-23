@@ -1,6 +1,6 @@
 import { ILobbyChatRoomFormValues } from "../hooks/useChatRoomForm";
 import { EGameType, IGameRoomFormValues } from "../hooks/useGameRoomForm";
-import { getRequest, postRequest } from "./axios";
+import { deleteRequest, getRequest, postRequest } from "./axios";
 
 export const getChatRoomListAPI = async () => {
   const response = await getRequest("chat-rooms");
@@ -15,6 +15,9 @@ export const createChatRoomAPI = async (values: ILobbyChatRoomFormValues) => {
   return response;
 };
 
+export const leaveChatRoomAPI = async (values: number) => {
+  const response = await deleteRequest("chat-rooms/");
+};
 export const joinChatRoomAPI = async (roomId: string) => {
   const response = await postRequest(`chat-rooms/join/${roomId}`);
   return response;

@@ -44,7 +44,7 @@ const LobbyChatRoomItem = ({ item, onItemClick }: IPaginationItem) => {
   const { roomId, title, mode, maxUserCount, currentCount } =
     item as ILobbyChatRoom;
   return (
-    <LobbyChatRoomItemStyled id={roomId.toString()} onClick={onItemClick}>
+    <LobbyChatRoomItemStyled id={roomId} onClick={onItemClick}>
       <ChatRoomTitle>{title}</ChatRoomTitle>
       <ChatLogo />
       <ChatRoomContent>

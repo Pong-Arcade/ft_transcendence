@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 // import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import useMenu from "../../../hooks/useMenu";
@@ -11,6 +11,10 @@ import ChatRoomUserListPagination from "../ChatRoomUserListPagination";
 // import Menu from "../ChatRoomMenu";
 import UserInfoModal from "../UserInfoModal";
 import ChatRoomMenu from "../ChatRoomMenu";
+import { IUser } from "../Pagination/Pagination";
+import { SocketContext } from "../../../utils/ChatSocket";
+import { useNavigate } from "react-router-dom";
+import { userMode } from "../Pagination/Pagination";
 
 const ChatRoomUserListStyled = styled(Board).attrs({
   width: "100%",
@@ -41,41 +45,76 @@ const ChatRoomUserList = () => {
     },
   });
   // TODO: chat room user list
-
+  const socket = useContext(SocketContext);
   const [page, setPage] = useState(0);
+  const [userList, setUserList] = useState<IUser[]>();
+  useEffect(() => {
+    socket.socket.on("joinChatRoom", (user: IUser) => {
+      setUserList((prev) => (prev ? [...prev, user] : new Array<IUser>(user)));
+    });
+    socket.socket.on("leaveChatRoom", (userId: number) => {
+      setUserList(
+        userList?.filter((user) => {
+          user.userId !== userId;
+        })
+      );
+    });
+    socket.socket.on("destructChatRoom", () => {
+      const navigate = useNavigate();
+      navigate(`/lobby`);
+    });
+    socket.socket.on("banChatRoom", () => {
+      const navigate = useNavigate();
+      navigate(`/lobby`);
+    });
+    socket.socket.on("addAdmin", (userId) => {
+      setUserList(
+        userList?.map((user) =>
+          user.userId == userId ? { ...user, mode: userMode.ADMIN } : user
+        )
+      );
+    });
+    socket.socket.on("deleteAdmin", (userId) => {
+      setUserList(
+        userList?.map((user) =>
+          user.userId == userId ? { ...user, mode: userMode.NORMAL } : user
+        )
+      );
+    });
+  }, []);
 
   return (
     <>
       <ChatRoomUserListStyled>
         <ChatRoomUserListPagination
-          // list={chatRoomInfo.users}
-          list={[
-            {
-              userId: 1,
-              nickname: "test",
-              avatarUrl: "example.com",
-            },
-            {
-              userId: 2,
-              nickname: "test",
-              avatarUrl: "example.com",
-            },
-            {
-              userId: 3,
-              nickname: "test",
-              avatarUrl: "example.com",
-            },
-            {
-              userId: 1,
-              nickname: "test",
-              avatarUrl: "example.com",
-            },
-            {
-              userId: 1,
-              nickname: "test",
-              avatarUrl: "example.com",
-            },
-          ]}
+          list={userList ? userList : new Array<IUser>()}
+          // list={[
+          //   {
+          //     userId: 1,
+          //     nickname: "test",
+          //     avatarUrl: "example.com",
+          //   },
+          //   {
+          //     userId: 2,
+          //     nickname: "test",
+          //     avatarUrl: "example.com",
+          //   },
+          //   {
+          //     userId: 3,
+          //     nickname: "test",
+          //     avatarUrl: "example.com",
+          //   },
+          //   {
+          //     userId: 1,
+          //     nickname: "test",
+          //     avatarUrl: "example.com",
+          //   },
+          //   {
+          //     userId: 1,
+          //     nickname: "test",
+          //     avatarUrl: "example.com",
+          //   },
+          // ]}
           page={page}
           onNextPage={() => setPage(page + 1)}
           onPrevPage={() => setPage(page - 1)}

@@ -7,6 +7,11 @@ class ChatSocket {
   userName: string;
   // ignore_list: Array<IUser>;
 
+  // constructor(userId: number, userName: string) {
+  //   this.socket = io("ws://localhost:80/socket/chat");
+  //   this.userId = userId;
+  //   this.userName = userName;
+  // }
   constructor() {
     this.socket = io("ws://localhost:80/socket/chat");
     this.userId = -1;
