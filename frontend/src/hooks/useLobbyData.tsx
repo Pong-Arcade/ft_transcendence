@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { getChatRoomListAPI, getGameRoomListAPI } from "../api/room";
 import {
@@ -27,21 +27,22 @@ const useLobbyData = () => {
   const [gameRoomList, setGameRoomList] = useState<ILobbyGameRoom[]>([]);
   const [myInfo, setMyInfo] = useRecoilState(infoState);
   const socket = useContext(SocketContext);
-
-  socket.socket.on("addChatRoom", (addRoom: ILobbyChatRoom) => {
-    console.log("addchat", addRoom);
-    const newList = new Array<ILobbyChatRoom>();
-    chatRoomList.forEach((room) => {
-      newList.push(room);
+  useEffect(() => {
+    socket.socket.on("addChatRoom", (addRoom: ILobbyChatRoom) => {
+      setChatRoomList((prev) => [...prev, addRoom]);
     });
-    newList.push(addRoom);
-    setChatRoomList(newList);
-  });
-  // socket.socket.on("deleteChatRoom", (roomId: number) => {
-  //   list.filter((room) => {
-  //     room.roomId !== roomId.toString();
-  //   });
-  // });
+
+    socket.socket.on("deleteChatRoom", (roomId: number) => {
+      setChatRoomList(
+        chatRoomList.filter((room) => {
+          room.roomId !== roomId.toString();
+        })
+      );
+    });
+    socket.socket.on("addGameRoom", (addRoom: ILobbyGameRoom) => {
+      console.log("addgame : ", addRoom);
+    });
+  }, []);
   const setLobbyData = async () => {
     const info = JSON.parse(getDecodedCookie());
 

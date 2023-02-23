@@ -175,6 +175,7 @@ export class GameGateway
       gameRoomCreateRequestDto.maxSpectatorCount,
     );
     gameRooms.set(roomId, gameRoom);
+    console.log('gameRoom : ', gameRoom);
     this.server.in('lobby').emit('addGameRoom', gameRoom);
   }
 
@@ -244,3 +245,4 @@ export class GameGateway
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   async unreadyGame(roomId: number, userId: number) {}
 }
+//test

@@ -1,4 +1,5 @@
 import { MouseEvent, useContext, useEffect } from "react";
+import { useSetRecoilState } from "recoil";
 import { SocketContext } from "../../../utils/ChatSocket";
 import Pagination from "../Pagination";
 import { IItem, IPaginationItem } from "../Pagination/Pagination";
@@ -21,13 +22,6 @@ const LobbyUserListPagination = ({
   onPrevPage,
 }: Props) => {
   const pageLength = 10;
-  const socket = useContext(SocketContext);
-  useEffect(() => {
-    socket.socket.on("joinChatRoom", (user) => {
-      console.log("joinchat", user);
-      list.push(user);
-    });
-  });
 
   return (
     <Pagination

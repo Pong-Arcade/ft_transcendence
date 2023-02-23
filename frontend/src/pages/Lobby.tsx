@@ -53,6 +53,7 @@ const Lobby = () => {
     initialLoading: true,
   });
   const socket = useContext(SocketContext);
+  // const [socket, setSocket] = useRecoilValue(socketState);
   const {
     onlineUsers,
     friendUsers,
