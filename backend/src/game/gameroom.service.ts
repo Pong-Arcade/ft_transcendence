@@ -68,7 +68,7 @@ export class GameRoomService {
   /**
    * 해당 게임방의 정보를 조회합니다.
    * @param roomId
-   * @returns
+   * @returnshat
    */
   getGameRoomInfo(roomId: number): GameRoom {
     this.logger.log(`Called ${this.getGameRoomInfo.name}`);
@@ -87,8 +87,8 @@ export class GameRoomService {
     const room = gameRooms.get(roomId);
     if (room) {
       if (
-        room.redUser.userId === userId ||
-        room.blueUser.userId === userId ||
+        room.redUser?.userId === userId ||
+        room.blueUser?.userId === userId ||
         room.spectatorUsers.includes(userId)
       ) {
         return true;
@@ -107,8 +107,8 @@ export class GameRoomService {
     this.logger.log(`Called ${this.isOnGameRoom.name}`);
     for (const room of gameRooms.values()) {
       if (
-        room.redUser.userId === userId ||
-        room.blueUser.userId === userId ||
+        room.redUser?.userId === userId ||
+        room.blueUser?.userId === userId ||
         room.spectatorUsers.includes(userId)
       ) {
         return true;
@@ -128,9 +128,9 @@ export class GameRoomService {
   getGameRoomUserCount(roomId: number): number {
     const room = gameRooms.get(roomId);
     if (room) {
-      if (room.redUser.userId && room.blueUser.userId) {
+      if (room.redUser?.userId && room.blueUser?.userId) {
         return 2;
-      } else if (room.redUser.userId) {
+      } else if (room.redUser?.userId) {
         return 1;
       }
     }
@@ -146,7 +146,7 @@ export class GameRoomService {
   getMyMasterGameRoomId(userId: number): number {
     this.logger.log(`Called ${this.getMyMasterGameRoomId.name}`);
     for (const room of gameRooms.values()) {
-      if (room.redUser.userId === userId) {
+      if (room.redUser?.userId === userId) {
         return room.roomId;
       }
     }
