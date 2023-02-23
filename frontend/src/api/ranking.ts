@@ -12,6 +12,5 @@ export const getRankListAPI = async (
   const response = await getRequest(
     `stat/ranking/?filter=${filter}&order=${order}`
   );
-  console.log(response);
   return response.data.rankList;
 };

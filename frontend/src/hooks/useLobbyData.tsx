@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { useRecoilState } from "recoil";
 import { getChatRoomListAPI } from "../api/room";
 import {
@@ -34,11 +34,11 @@ const useLobbyData = () => {
     newList.push(addRoom);
     setChatRoomList(newList);
   });
-  socket.socket.on("deleteChatRoom", (roomId: number) => {
-    // list.filter((room) => {
-    //   room.roomId !== roomId.toString();
-    // });
-  });
+  // socket.socket.on("deleteChatRoom", (roomId: number) => {
+  //   list.filter((room) => {
+  //     room.roomId !== roomId.toString();
+  //   });
+  // });
   const setLobbyData = async () => {
     const info = JSON.parse(getDecodedCookie());
 

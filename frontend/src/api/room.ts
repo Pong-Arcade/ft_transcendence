@@ -15,6 +15,11 @@ export const createChatRoomAPI = async (values: ILobbyChatRoomFormValues) => {
   return response;
 };
 
+export const joinChatRoomAPI = async (roomId: string) => {
+  const response = await postRequest(`chat-rooms/join/${roomId}`);
+  return response;
+};
+
 export const createGameRoomAPI = async (
   mode: EGameType,
   values: IGameRoomFormValues
