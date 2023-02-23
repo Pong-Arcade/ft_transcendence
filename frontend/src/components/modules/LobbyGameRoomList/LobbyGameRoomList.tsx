@@ -5,13 +5,13 @@ import { joinChatRoomAPI } from "../../../api/room";
 import Board from "../../atoms/Board";
 import ErrorModal from "../ErrorModal";
 import LobbyChatRoomItem from "../LobbyChatRoomItem";
-import LobbyChatRoomPagination from "../LobbyChatRoomPagination";
-import { ILobbyChatRoom } from "../Pagination/Pagination";
+import LobbyGameRoomPagination from "../LobbyGameRoomPagination";
+import { ILobbyGameRoom } from "../Pagination/Pagination";
 
 const LobbyChatRoomListStyled = styled(Board).attrs((props) => {
   return {
     width: "100%",
-    height: "49%",
+    height: "59%",
     backgroundColor: props.theme.background.middle,
     flexDirection: "column",
     justifyContent: "space-around",
@@ -20,7 +20,7 @@ const LobbyChatRoomListStyled = styled(Board).attrs((props) => {
 })``;
 
 interface Props {
-  list: ILobbyChatRoom[];
+  list: ILobbyGameRoom[];
   page: number;
   onNextPage: () => void;
   onPrevPage: () => void;
@@ -45,13 +45,12 @@ const LobbyChatRoomList = ({ list, page, onNextPage, onPrevPage }: Props) => {
 
   return (
     <LobbyChatRoomListStyled>
-      <LobbyChatRoomPagination
+      <LobbyGameRoomPagination
         list={list}
         page={page}
         onNextPage={onNextPage}
         onPrevPage={onPrevPage}
         PaginationItem={LobbyChatRoomItem}
-        onItemClick={joinChatRoom}
       />
       {error && (
         <ErrorModal

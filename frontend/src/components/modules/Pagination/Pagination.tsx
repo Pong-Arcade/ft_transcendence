@@ -29,11 +29,25 @@ export interface IRanking {
 }
 
 export interface ILobbyChatRoom {
-  roomId: string;
+  roomId: string; // FIXME: number 로 바꾸기
   title: string;
   mode: string;
   maxUserCount: string;
   currentCount: string;
+}
+
+type IGameStatus = "READY" | "UN_READY";
+type GameMode = "NORMAL" | "POWER_UP";
+
+export interface ILobbyGameRoom {
+  roomId: number;
+  redUser: IUser;
+  blueUser: IUser;
+  maxSpectatorCount: number;
+  curSpectatorCount: number;
+  roomStatus: IGameStatus;
+  title: string;
+  mode: GameMode;
 }
 
 export interface IChatRoom {
@@ -42,7 +56,17 @@ export interface IChatRoom {
   users: IUser[];
 }
 
-export type IItem = IUser | IRanking | ILobbyChatRoom | IChatRoom;
+export interface IGameRoom {
+  roomId: number;
+  users: IUser[];
+}
+
+export type IItem =
+  | IUser
+  | IRanking
+  | ILobbyChatRoom
+  | IChatRoom
+  | ILobbyGameRoom;
 
 export interface IPaginationItem {
   item: IItem;

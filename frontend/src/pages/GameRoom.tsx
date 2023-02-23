@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useRecoilValue } from "recoil";
 import styled from "styled-components";
+import Avatar from "../components/atoms/Avatar";
 import Board from "../components/atoms/Board";
 import Button from "../components/atoms/Button";
 import Typography from "../components/atoms/Typography";
@@ -11,6 +13,7 @@ import GeneralMenu from "../components/modules/GeneralMenu";
 import GameRoomTemplate from "../components/templates/GameRoomTemplate";
 import useMenu from "../hooks/useMenu";
 import useModal from "../hooks/useModal";
+import gameRoomState from "../state/GameRoomState";
 
 const GameBoard = styled(Board).attrs((props) => {
   return {
@@ -27,6 +30,12 @@ const Wrapper = styled(Board).attrs({
   borderRadius: true,
   flexDirection: "column",
   justifyContent: "space-between",
+})``;
+
+const GameRoomButton = styled(Button).attrs({
+  width: "22vw",
+  height: "90%",
+  boxShadow: true,
 })``;
 
 const UserProfileGroup = styled(Board).attrs({
@@ -57,9 +66,9 @@ const GameRoom = () => {
   } = useModal({});
   const navigate = useNavigate();
   const [start, setStart] = useState(false);
-
-  const userList = ["kangkim1", "kangkim2"];
-
+  const gameState = useRecoilValue(gameRoomState);
+  const userList = [...gameState.users];
+  console.log(userList);
   return (
     <>
       <GameRoomTemplate>
@@ -68,8 +77,8 @@ const GameRoom = () => {
           <UserProfileGroup>
             {userList.map((user, idx) => (
               <UserProfile key={idx} onClick={onOpenMenu}>
-                {/* <Avatar width="8rem" height="8rem" /> */}
-                <Typography fontSize="2rem">{user}</Typography>
+                <Avatar width="8rem" height="8rem" src={user?.avatarUrl} />
+                <Typography fontSize="2rem">{user?.nickname}</Typography>
                 <Typography fontSize="1.2rem">
                   {idx === 0 ? "(RED)" : "(BLUE)"}
                 </Typography>
@@ -84,17 +93,10 @@ const GameRoom = () => {
             backgroundColor="secondary"
             gap="0.3vh"
           >
-            <Button
-              width="22vw"
-              height="90%"
-              boxShadow
-              onClick={() => setStart((prev) => !prev)}
-            >
+            <GameRoomButton onClick={() => setStart((prev) => !prev)}>
               {start ? "준비" : "대기"}
-            </Button>
-            <Button width="22vw" height="90%" boxShadow onClick={onConfirmOpen}>
-              나가기
-            </Button>
+            </GameRoomButton>
+            <GameRoomButton onClick={onConfirmOpen}>나가기</GameRoomButton>
           </ButtonGroup>
         </Wrapper>
       </GameRoomTemplate>

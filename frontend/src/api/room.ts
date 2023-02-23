@@ -20,6 +20,11 @@ export const joinChatRoomAPI = async (roomId: string) => {
   return response;
 };
 
+export const getGameRoomListAPI = async () => {
+  const response = await getRequest("game-rooms");
+  return response.data.gameRooms;
+};
+
 export const createGameRoomAPI = async (
   mode: EGameType,
   values: IGameRoomFormValues
@@ -30,5 +35,5 @@ export const createGameRoomAPI = async (
     winScore: +values.winScore,
     type: mode,
   });
-  return response;
+  return response.data;
 };

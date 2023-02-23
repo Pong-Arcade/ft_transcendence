@@ -47,8 +47,12 @@ export class GameRoomService {
     this.logger.log(`Called ${this.getGameRoomUsersInfo.name}`);
     const gameRoomUsersInfo: GameRoomUsersInfoResponseDto = {
       roomId: gameRoomInfo.roomId,
-      redUser: await this.userService.getUserInfo(gameRoomInfo.redUserId),
-      blueUser: await this.userService.getUserInfo(gameRoomInfo.blueUserId),
+      redUser: gameRoomInfo.redUserId
+        ? await this.userService.getUserInfo(gameRoomInfo.redUserId)
+        : null,
+      blueUser: gameRoomInfo.blueUserId
+        ? await this.userService.getUserInfo(gameRoomInfo.blueUserId)
+        : null,
       maxSpectatorCount: gameRoomInfo.maxSpectatorCount,
       curSpectatorCount: gameRoomInfo.spectatorUsers.length,
       title: gameRoomInfo.title,

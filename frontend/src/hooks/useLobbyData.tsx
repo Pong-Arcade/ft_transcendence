@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
 import { useRecoilState } from "recoil";
-import { getChatRoomListAPI } from "../api/room";
+import { getChatRoomListAPI, getGameRoomListAPI } from "../api/room";
 import {
   getBlockUsersAPI,
   getFriendUsersAPI,
@@ -9,6 +9,7 @@ import {
 } from "../api/users";
 import {
   ILobbyChatRoom,
+  ILobbyGameRoom,
   IUser,
 } from "../components/modules/Pagination/Pagination";
 import blockUsersState from "../state/BlockUsersState";
@@ -23,8 +24,10 @@ const useLobbyData = () => {
     useRecoilState<IUser[]>(friendUsersState);
   const [blockUsers, setBlockUsers] = useRecoilState<IUser[]>(blockUsersState);
   const [chatRoomList, setChatRoomList] = useState<ILobbyChatRoom[]>([]);
+  const [gameRoomList, setGameRoomList] = useState<ILobbyGameRoom[]>([]);
   const [myInfo, setMyInfo] = useRecoilState(infoState);
   const socket = useContext(SocketContext);
+
   socket.socket.on("addChatRoom", (addRoom: ILobbyChatRoom) => {
     console.log("addchat", addRoom);
     const newList = new Array<ILobbyChatRoom>();
@@ -47,6 +50,7 @@ const useLobbyData = () => {
     setFriendUsers(await getFriendUsersAPI());
     setBlockUsers(await getBlockUsersAPI());
     setChatRoomList(await getChatRoomListAPI());
+    setGameRoomList(await getGameRoomListAPI());
   };
 
   const getLobbyData = () => {
@@ -55,6 +59,7 @@ const useLobbyData = () => {
       friendUsers,
       blockUsers,
       chatRoomList,
+      gameRoomList,
       myInfo,
     };
   };

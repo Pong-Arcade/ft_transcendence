@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import { createGameRoomAPI } from "../../../api/room";
 import { ERoomCreateButtonName } from "../../../hooks/useCreateRoom";
@@ -6,6 +7,7 @@ import useGameRoomForm, {
   EGameRoomFormValues,
   EGameType,
 } from "../../../hooks/useGameRoomForm";
+import gameRoomState from "../../../state/GameRoomState";
 import Button from "../../atoms/Button";
 import Modal from "../../atoms/Modal";
 import ModalInputWrapper from "../../atoms/ModalInputWrapper";
@@ -38,14 +40,21 @@ const SubmitButton = styled(Button).attrs({
 
 const CreateGameRoomModal = ({ title, onClose }: Props) => {
   const navigate = useNavigate();
+  const setGameRoomState = useSetRecoilState(gameRoomState);
   const { values, errors, onErrorModalClose, onChangeForm, onSubmitForm } =
     useGameRoomForm({
       onSubmit: async () => {
+        let data;
         if (title === ERoomCreateButtonName.LADDERGAME)
-          await createGameRoomAPI(EGameType.NORMAL, values);
-        else await createGameRoomAPI(EGameType.LADDER, values);
+          data = await createGameRoomAPI(EGameType.NORMAL, values);
+        else data = await createGameRoomAPI(EGameType.LADDER, values);
         onClose();
-        navigate("/game-rooms/123");
+        console.log(data);
+        setGameRoomState({
+          roomId: data.roomId,
+          users: [data.redUser, data.blueUser],
+        });
+        navigate(`/game-rooms/${data.roomId}`);
       },
     });
 

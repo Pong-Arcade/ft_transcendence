@@ -16,6 +16,8 @@ import { AuthService } from 'src/auth/auth.service';
 import { GameRoom } from './gameroom.entity';
 import { OnEvent } from '@nestjs/event-emitter';
 import { GameRoomCreateRequestDto } from 'src/dto/request/gameroom.create.request.dto';
+import { users } from 'src/status/status.module';
+import { UserService } from 'src/user/user.service';
 
 export const gameRooms = new Map<number, GameRoom>();
 @WebSocketGateway({
@@ -31,6 +33,7 @@ export class GameGateway
     private readonly jwtService: JwtService,
     private readonly authService: AuthService,
     private readonly configService: ConfigService,
+    private readonly userService: UserService,
   ) {}
 
   afterInit(server: Namespace) {
@@ -140,6 +143,12 @@ export class GameGateway
   //   return { success: true, payload: roomName };
   // }
 
+  /**
+   * 게임방을 생성합니다.
+   * 게임방 객체를 생성하고, 로비에 있는 유저들에게 게임방 리스트를 추가하라는 이벤트를 발생시킵니다.
+   * @param userId
+   * @param gameRoomCreateRequestDto
+   */
   @OnEvent('gameroom:create')
   async addGameRoom(
     userId: number,
@@ -160,11 +169,50 @@ export class GameGateway
     this.server.in('lobby').emit('addGameRoom', gameRoom);
   }
 
-  // /**
-  //  * gameRoom
-  //  */
-  // @OnEvent('gameroom:join')
-  // async joinGame(roomId: number, userId: number) {
+  /**
+   * 게임방에 입장합니다.
+   * 게임방에 입장한 유저의 정보를 게임방에 있는 유저들에게 전달하고, 입장 메시지를 전달합니다.
+   */
+  @OnEvent('gameroom:join')
+  async joinGame(roomId: number, userId: number) {
+    const user = users.get(userId);
 
-  // }
+    this.server.in(user.socketId).socketsLeave('lobby');
+    this.server.in(user.socketId).socketsJoin(`gameroom-${roomId}`);
+    this.server
+      .in(`gameroom-${roomId}`)
+      .emit('joinGameRoom', await this.userService.getUserInfo(userId));
+
+    this.server
+      .in(`gameroom-${roomId}`)
+      .emit('systemMsg', user.userName + '님이 입장하였습니다.');
+  }
+
+  @OnEvent('gameroom:leave')
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  async leaveGame(roomId: number, userId: number) {}
+
+  @OnEvent('gameroom:invite')
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  async inviteGame(roomId: number, userId: number) {}
+
+  @OnEvent('gameroom:invite:reject')
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  async rejectInviteGame(roomId: number, userId: number) {}
+
+  @OnEvent('gameroom:spectator:join')
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  async joinSpectator(roomId: number, userId: number) {}
+
+  @OnEvent('gameroom:spectator:leave')
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  async leaveSpectator(roomId: number, userId: number) {}
+
+  @OnEvent('gameroom:ready')
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  async readyGame(roomId: number, userId: number) {}
+
+  @OnEvent('gameroom:unready')
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  async unreadyGame(roomId: number, userId: number) {}
 }
