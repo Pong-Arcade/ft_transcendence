@@ -22,6 +22,7 @@ export const joinChatRoomAPI = async (roomId: string) => {
 
 export const getGameRoomListAPI = async () => {
   const response = await getRequest("game-rooms");
+  console.log(response);
   return response.data.gameRooms;
 };
 

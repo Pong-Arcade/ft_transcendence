@@ -24,7 +24,7 @@ import { GameRoomUserStatus } from 'src/enum/gameroom.user.status.enum';
 
 export const gameRooms = new Map<number, GameRoom>();
 @WebSocketGateway({
-  namespace: 'game',
+  namespace: 'socket/game',
 })
 export class GameGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect

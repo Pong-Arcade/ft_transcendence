@@ -20,6 +20,7 @@ export class GameRoomService {
   async getAllGameRooms(): Promise<GameRoomListResponseDto> {
     this.logger.log(`Called ${this.getAllGameRooms.name}`);
     const rooms = new GameRoomListResponseDto();
+    rooms.gameRooms = [];
     for (const [roomId, room] of gameRooms.entries()) {
       rooms.gameRooms.push({
         roomId: roomId,
