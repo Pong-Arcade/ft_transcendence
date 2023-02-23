@@ -1,5 +1,8 @@
 import { Outlet } from "react-router-dom";
+import { useRecoilValue } from "recoil";
 import styled from "styled-components";
+import UnauthorizedModal from "../components/modules/UnauthorizedModal";
+import errorState from "../state/ErrorState";
 
 const RootStyled = styled.div`
   background-color: ${(props) => props.theme.colors.chineseWhite};
@@ -11,10 +14,15 @@ const RootStyled = styled.div`
 `;
 
 const Root = () => {
+  const error = useRecoilValue(errorState);
+
   return (
-    <RootStyled>
-      <Outlet />
-    </RootStyled>
+    <>
+      <RootStyled>
+        <Outlet />
+      </RootStyled>
+      {error && <UnauthorizedModal />}
+    </>
   );
 };
 
