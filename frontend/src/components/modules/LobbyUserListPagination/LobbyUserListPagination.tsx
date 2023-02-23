@@ -1,10 +1,10 @@
 import { MouseEvent, useContext, useEffect } from "react";
 import { SocketContext } from "../../../utils/ChatSocket";
 import Pagination from "../Pagination";
-import { IItem, IPaginationItem, IUser } from "../Pagination/Pagination";
+import { IItem, IPaginationItem } from "../Pagination/Pagination";
 
 interface Props {
-  list: IUser[];
+  list: IItem[];
   PaginationItem: (arg: IPaginationItem) => JSX.Element;
   page: number;
   onItemClick?: (e: MouseEvent<HTMLButtonElement>) => void;

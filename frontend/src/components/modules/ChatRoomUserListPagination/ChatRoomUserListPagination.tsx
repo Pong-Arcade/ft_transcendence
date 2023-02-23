@@ -5,7 +5,7 @@ import Pagination from "../Pagination";
 import { IItem, IPaginationItem, IUser } from "../Pagination/Pagination";
 
 interface Props {
-  list: IUser[];
+  list: IItem[];
   PaginationItem: (arg: IPaginationItem) => JSX.Element;
   page: number;
   onItemClick?: (e: MouseEvent<HTMLButtonElement>) => void;
@@ -29,7 +29,7 @@ const ChatRoomUserListPagination = ({
     });
     socket.socket.on("leaveChatRoom", (userId: number) => {
       list.filter((user) => {
-        user.userId !== userId;
+        (user as IUser).userId !== userId;
       });
     });
     socket.socket.on("destructChatRoom", () => {
