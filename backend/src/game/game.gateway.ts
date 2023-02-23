@@ -21,6 +21,7 @@ import { UserService } from 'src/user/user.service';
 import { UserDto } from 'src/dto/user.dto';
 import { GameUserStatusDto } from 'src/dto/game.user.status.dto';
 import { GameRoomUserStatus } from 'src/enum/gameroom.user.status.enum';
+import { GameRoomStatus } from 'src/enum/gameroom.status.enum';
 
 export const gameRooms = new Map<number, GameRoom>();
 @WebSocketGateway({
@@ -78,75 +79,6 @@ export class GameGateway
     this.logger.log(`Client disconnected: ${socket.id}`);
   }
 
-  @SubscribeMessage('chat')
-  handleMessage(
-    @ConnectedSocket() socket: Socket,
-    @MessageBody() { roomName, message },
-  ) {
-    this.logger.log(`message from ${socket.id}: ${message}`);
-    socket.broadcast
-      .to(roomName)
-      .emit('chat', { username: socket.id, message });
-    return { username: socket.id, message };
-  }
-
-  @SubscribeMessage('room-list')
-  handleRoomList() {
-    this.logger.log(`room list requested`);
-    this.server.emit('room-list', gameRooms);
-    return gameRooms;
-  }
-
-  // @SubscribeMessage('create-room')
-  // handleCreateRoom(
-  //   @ConnectedSocket() socket: Socket,
-  //   @MessageBody() roomName: string,
-  // ) {
-  //   const room = gameRooms.find((roomName) => roomName === roomName);
-  //   if (room) {
-  //     return { success: false, payload: '이미 존재하는 방입니다.' };
-  //   }
-  //   socket.join(roomName); // 기존에 없는 방에 Join하면 새로 생성된다.
-  //   this.logger.log(`room ${roomName} created`);
-  //   gameRooms.push(roomName);
-  //   this.server.emit('create-room', roomName);
-  //   return { success: true, payload: roomName };
-  // }
-
-  // @SubscribeMessage('join-room')
-  // handleJoinRoom(
-  //   @ConnectedSocket() socket: Socket,
-  //   @MessageBody() roomName: string,
-  // ) {
-  //   const room = gameRooms.find((roomName) => roomName === roomName);
-  //   if (!room) {
-  //     return { success: false, payload: '존재하지 않는 방입니다.' };
-  //   }
-  //   socket.join(roomName);
-  //   this.logger.log(`${socket.id} joined ${roomName}`);
-  //   socket.broadcast
-  //     .to(roomName)
-  //     .emit('chat', `${socket.id} 님이 입장하셨습니다.`);
-  //   return { success: true, payload: roomName };
-  // }
-
-  // @SubscribeMessage('leave-room')
-  // handleLeaveRoom(
-  //   @ConnectedSocket() socket: Socket,
-  //   @MessageBody() roomName: string,
-  // ) {
-  //   const room = gameRooms.get((roomName) => roomName === roomName);
-  //   if (!room) {
-  //     return { success: false, payload: '존재하지 않는 방입니다.' };
-  //   }
-  //   socket.broadcast
-  //     .to(roomName)
-  //     .emit('chat', `${socket.id} 님이 퇴장하셨습니다.`);
-  //   socket.leave(roomName);
-  //   this.logger.log(`${socket.id} left ${roomName}`);
-  //   return { success: true, payload: roomName };
-  // }
-
   /**
    * 게임방을 생성합니다.
    * 게임방 객체를 생성하고, 로비에 있는 유저들에게 게임방 리스트를 추가하라는 이벤트를 발생시킵니다.
@@ -175,8 +107,8 @@ export class GameGateway
       gameRoomCreateRequestDto.maxSpectatorCount,
     );
     gameRooms.set(roomId, gameRoom);
-    console.log('gameRoom : ', gameRoom);
-    this.server.in('lobby').emit('addGameRoom', gameRoom);
+    // FIXME: chat gameway의 socket server에 접근하는 방법을 찾아야 함.
+    // this.server.in('lobby').emit('addGameRoom', gameRoom);
   }
 
   /**
@@ -185,8 +117,10 @@ export class GameGateway
    */
   @OnEvent('gameroom:join')
   async joinGame(roomId: number, user: UserDto) {
+    this.logger.log(`Called ${this.joinGame.name}`);
     const userSocketInfo = users.get(user.userId);
-    this.server.in(userSocketInfo.socketId).socketsLeave('lobby');
+    // FIXME: chat gameway의 socket server에 접근하는 방법을 찾아야 함.
+    // this.server.in(userSocketInfo.socketId).socketsLeave('lobby');
     this.server.in(userSocketInfo.socketId).socketsJoin(`gameroom-${roomId}`);
     this.server
       .in(`gameroom-${roomId}`)
@@ -211,9 +145,31 @@ export class GameGateway
   }
 
   @OnEvent('gameroom:leave')
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  async leaveGame(roomId: number, userId: number) {}
+  async leaveGame(roomId: number, userId: number) {
+    this.logger.log(`Called ${this.leaveGame.name}`);
+    // userId가 방장이면 redUser를 user에 저장하고, 그렇지 않으면 blueUser를 user에 저장함.
+    const room = gameRooms.get(roomId);
+    const user = room.redUser.userId === userId ? room.redUser : room.blueUser;
+    const userSocketInfo = users.get(user.userId);
+    if (user.userId === room.redUser.userId) {
+      this.server.in(`gameroom-${room.roomId}`).emit('destructGameRoom');
+      // FIXME: chat gameway의 socket server에 접근하는 방법을 찾아야 함.
+      // this.server.in(`gameroom-${room.roomId}`).socketsJoin('lobby');
+      this.server
+        .in(`gameroom-${room.roomId}`)
+        .socketsLeave(`gameroom-${room.roomId}`);
+      // FIXME: chat gameway의 socket server에 접근하는 방법을 찾아야 함.
+      // this.server.in('lobby').emit('deleteGameRoom', roomId);
+      gameRooms.delete(roomId);
+    } else {
+      this.server
+        .in(userSocketInfo.socketId)
+        .socketsLeave(`gameroom-${room.roomId}`);
+      // FIXME: chat gameway의 socket server에 접근하는 방법을 찾아야 함.
+      // this.server.in(userSocketInfo.socketId).socketsJoin('lobby');
+      this.server.in(`gameroom-${room.roomId}`).emit('leaveChatRoom', userId);
+    }
+  }
 
   @OnEvent('gameroom:invite')
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -235,14 +191,38 @@ export class GameGateway
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   async leaveSpectator(roomId: number, userId: number) {}
 
+  /**
+   * 게임방의 유저가 게임을 준비합니다.
+   * 두 유저가 모두 준비가 되면 startGame 이벤트를 발생시킵니다.
+   * @param roomId
+   * @param userId
+   */
   @OnEvent('gameroom:ready')
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  async readyGame(roomId: number, userId: number) {}
+  async readyGame(roomId: number, userId: number) {
+    this.logger.log(`Called ${this.readyGame.name}`);
+    const room = gameRooms.get(roomId);
+    if (room.redUser.userId === userId) {
+      room.redUser.status = GameRoomUserStatus.READY;
+    } else {
+      room.blueUser.status = GameRoomUserStatus.READY;
+    }
+    if (
+      room.redUser.status === GameRoomUserStatus.READY &&
+      room.blueUser.status === GameRoomUserStatus.READY
+    ) {
+      room.status = GameRoomStatus.ON_GAME;
+      this.server.in(`gameroom-${roomId}`).emit('startGame');
+    }
+  }
 
   @OnEvent('gameroom:unready')
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  async unreadyGame(roomId: number, userId: number) {}
+  async unreadyGame(roomId: number, userId: number) {
+    this.logger.log(`Called ${this.unreadyGame.name}`);
+    const room = gameRooms.get(roomId);
+    if (room.redUser.userId === userId) {
+      room.redUser.status = GameRoomUserStatus.UN_READY;
+    } else {
+      room.blueUser.status = GameRoomUserStatus.UN_READY;
+    }
+  }
 }
-//test
