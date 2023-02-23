@@ -356,6 +356,12 @@ ALTER TABLE ONLY public.relation ALTER COLUMN relation_id SET DEFAULT nextval('p
 --
 
 COPY public.ladder_stat (user_id, win_count, lose_count, ladder_score) FROM stdin;
+1	2	1	1100
+2	0	0	1000
+3	0	1	900
+4	1	0	1100
+5	0	1	900
+6	0	0	1000
 \.
 
 
@@ -364,6 +370,11 @@ COPY public.ladder_stat (user_id, win_count, lose_count, ladder_score) FROM stdi
 --
 
 COPY public.match_history (match_id, red_user_id, blue_user_id, red_score, blue_score, begin_date, end_date, match_type) FROM stdin;
+1	1	2	11	9	2023-02-19 21:46:12	2023-02-19 21:56:16	NORMAL
+2	1	3	11	8	2023-02-20 21:46:12	2023-02-20 21:56:16	LADDER
+3	4	1	11	6	2023-02-20 21:51:28	2023-02-20 22:01:30	LADDER
+4	5	1	5	11	2023-02-20 21:55:34	2023-02-20 22:00:34	LADDER
+5	3	4	11	8	2023-02-20 21:57:14	2023-02-20 22:02:14	NORMAL
 \.
 
 
@@ -372,6 +383,12 @@ COPY public.match_history (match_id, red_user_id, blue_user_id, red_score, blue_
 --
 
 COPY public.normal_stat (user_id, win_count, lose_count) FROM stdin;
+1	1	0
+2	0	1
+3	1	0
+4	0	1
+5	0	0
+6	0	0
 \.
 
 
@@ -388,6 +405,12 @@ COPY public.relation (relation_id, user_id, target_user_id, relation_type) FROM 
 --
 
 COPY public."user" (user_id, nickname, avatar_url, email, first_login) FROM stdin;
+1	test1	https://profile.intra.42.fr/assets/42_logo_black-684989d43d629b3c0ff6fd7e1157ee04db9bb7a73fba8ec4e01543d650a1c607.png	\N	2023-02-21 00:39:37
+2	test2	https://profile.intra.42.fr/assets/42_logo_black-684989d43d629b3c0ff6fd7e1157ee04db9bb7a73fba8ec4e01543d650a1c607.png	\N	2023-02-21 00:39:37
+3	test3	https://profile.intra.42.fr/assets/42_logo_black-684989d43d629b3c0ff6fd7e1157ee04db9bb7a73fba8ec4e01543d650a1c607.png	\N	2023-02-21 00:39:37
+4	test4	https://profile.intra.42.fr/assets/42_logo_black-684989d43d629b3c0ff6fd7e1157ee04db9bb7a73fba8ec4e01543d650a1c607.png	\N	2023-02-21 00:39:37
+5	test5	https://profile.intra.42.fr/assets/42_logo_black-684989d43d629b3c0ff6fd7e1157ee04db9bb7a73fba8ec4e01543d650a1c607.png	\N	2023-02-21 00:39:37
+6	test6	https://profile.intra.42.fr/assets/42_logo_black-684989d43d629b3c0ff6fd7e1157ee04db9bb7a73fba8ec4e01543d650a1c607.png	\N	2023-02-21 00:39:37
 \.
 
 

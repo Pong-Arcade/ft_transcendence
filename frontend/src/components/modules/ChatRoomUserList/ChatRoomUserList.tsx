@@ -13,6 +13,8 @@ import UserInfoModal from "../UserInfoModal";
 import ChatRoomMenu from "../ChatRoomMenu";
 import { IUser } from "../Pagination/Pagination";
 import { SocketContext } from "../../../utils/ChatSocket";
+import { useNavigate } from "react-router-dom";
+import { userMode } from "../Pagination/Pagination";
 
 const ChatRoomUserListStyled = styled(Board).attrs({
   width: "100%",
@@ -49,6 +51,35 @@ const ChatRoomUserList = () => {
   useEffect(() => {
     socket.socket.on("joinChatRoom", (user: IUser) => {
       setUserList((prev) => (prev ? [...prev, user] : new Array<IUser>(user)));
+    });
+    socket.socket.on("leaveChatRoom", (userId: number) => {
+      setUserList(
+        userList?.filter((user) => {
+          user.userId !== userId;
+        })
+      );
+    });
+    socket.socket.on("destructChatRoom", () => {
+      const navigate = useNavigate();
+      navigate(`/lobby`);
+    });
+    socket.socket.on("banChatRoom", () => {
+      const navigate = useNavigate();
+      navigate(`/lobby`);
+    });
+    socket.socket.on("addAdmin", (userId) => {
+      setUserList(
+        userList?.map((user) =>
+          user.userId == userId ? { ...user, mode: userMode.ADMIN } : user
+        )
+      );
+    });
+    socket.socket.on("deleteAdmin", (userId) => {
+      setUserList(
+        userList?.map((user) =>
+          user.userId == userId ? { ...user, mode: userMode.NORMAL } : user
+        )
+      );
     });
   }, []);
 

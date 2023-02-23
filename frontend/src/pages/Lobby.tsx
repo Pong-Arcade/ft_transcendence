@@ -13,6 +13,8 @@ import useFirstLoginModal from "../hooks/useFirstLoginModal";
 import useLoading from "../hooks/useLoading";
 import FullSpinner from "../components/atoms/FullSpinner";
 import useLobbyData from "../hooks/useLobbyData";
+import socketState from "../state/SocketState";
+import { useRecoilValue } from "recoil";
 
 const UserWrapper = styled(Board).attrs({
   width: "25%",
@@ -49,8 +51,15 @@ const Lobby = () => {
     initialLoading: true,
   });
   const socket = useContext(SocketContext);
-  const { onlineUsers, friendUsers, blockUsers, chatRoomList, myInfo } =
-    getLobbyData();
+  // const [socket, setSocket] = useRecoilValue(socketState);
+  const {
+    onlineUsers,
+    setOnlineUsers,
+    friendUsers,
+    blockUsers,
+    chatRoomList,
+    myInfo,
+  } = getLobbyData();
   const { isFirstLoginModal, FirstLoginModalClose } = useFirstLoginModal();
   useEffect(() => {
     (async () => {

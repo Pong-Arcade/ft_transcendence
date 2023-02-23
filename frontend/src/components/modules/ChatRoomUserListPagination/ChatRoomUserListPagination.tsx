@@ -22,25 +22,6 @@ const ChatRoomUserListPagination = ({
   onPrevPage,
 }: Props) => {
   const pageLength = 5;
-  const socket = useContext(SocketContext);
-  useEffect(() => {
-    socket.socket.on("joinChatRoom", (user: IUser) => {
-      list.push(user);
-    });
-    socket.socket.on("leaveChatRoom", (userId: number) => {
-      list.filter((user) => {
-        user.userId !== userId;
-      });
-    });
-    socket.socket.on("destructChatRoom", () => {
-      const navigate = useNavigate();
-      navigate(`/lobby`);
-    });
-    socket.socket.on("banChatRoom", () => {
-      const navigate = useNavigate();
-      navigate(`/lobby`);
-    });
-  });
 
   return (
     <Pagination

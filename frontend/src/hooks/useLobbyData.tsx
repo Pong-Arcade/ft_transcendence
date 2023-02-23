@@ -30,7 +30,13 @@ const useLobbyData = () => {
       setChatRoomList((prev) => [...prev, addRoom]);
     });
 
-    socket.socket.on("deleteChatRoom", (roomId: number) => {});
+    socket.socket.on("deleteChatRoom", (roomId: number) => {
+      setChatRoomList(
+        chatRoomList.filter((room) => {
+          room.roomId !== roomId.toString();
+        })
+      );
+    });
   }, []);
   const setLobbyData = async () => {
     const info = JSON.parse(getDecodedCookie());
@@ -45,6 +51,7 @@ const useLobbyData = () => {
   const getLobbyData = () => {
     return {
       onlineUsers,
+      setOnlineUsers,
       friendUsers,
       blockUsers,
       chatRoomList,
