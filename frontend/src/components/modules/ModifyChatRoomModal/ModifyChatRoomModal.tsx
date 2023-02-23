@@ -100,7 +100,13 @@ const CreateChatRoomModal = ({ title, onClose }: Props) => {
           <SubmitButton>생성</SubmitButton>
         </CreateRoomForm>
       </Modal>
-      {errors && <ErrorModal onClose={onErrorModalClose} errors={errors} />}
+      {errors && (
+        <ErrorModal
+          onClose={onErrorModalClose}
+          errors={errors}
+          title="변경 실패"
+        />
+      )}
     </ModalWrapper>
   );
 };

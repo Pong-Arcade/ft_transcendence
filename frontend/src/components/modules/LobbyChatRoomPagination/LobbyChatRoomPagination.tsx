@@ -1,7 +1,6 @@
-import { MouseEvent, useContext, useEffect } from "react";
-import { SocketContext } from "../../../utils/ChatSocket";
+import { MouseEvent } from "react";
 import Pagination from "../Pagination";
-import { IItem, IPaginationItem } from "../Pagination/Pagination";
+import { IPaginationItem } from "../Pagination/Pagination";
 import { ILobbyChatRoom } from "../Pagination/Pagination";
 interface Props {
   list: ILobbyChatRoom[];

@@ -1,6 +1,9 @@
+import { AxiosError } from "axios";
 import { MouseEvent, useState } from "react";
 import styled from "styled-components";
+import { joinChatRoomAPI } from "../../../api/room";
 import Board from "../../atoms/Board";
+import ErrorModal from "../ErrorModal";
 import LobbyChatRoomItem from "../LobbyChatRoomItem";
 import LobbyChatRoomPagination from "../LobbyChatRoomPagination";
 import LobbyGameRoomPagination from "../LobbyGameRoomPagination";
@@ -23,18 +26,28 @@ interface Props {
   list: ILobbyChatRoom[];
 }
 
-// TODO: game room list
+// TODO: game room list, 게임방 밖으로 빼기
 const LobbyChatRoomList = ({ list }: Props) => {
   const [page, setPage] = useState(0);
   const [currentButton, setCurrentButton] = useState(EROOM_BUTTON.CHATROOM);
+  const [error, setError] = useState(false);
+  const [errorContent, setErrorContent] = useState("");
 
   const onChoiceButtonClick = (button: EROOM_BUTTON) => {
     setCurrentButton(button);
     setPage(0);
   };
 
-  const joinChatRoom = (event: MouseEvent<HTMLButtonElement>) => {
-    console.log(event);
+  const joinChatRoom = async (event: MouseEvent<HTMLButtonElement>) => {
+    try {
+      await joinChatRoomAPI(event.currentTarget.id);
+      // 준표님 로직 추가하세요
+    } catch (e: any | AxiosError) {
+      if (e instanceof AxiosError) {
+        setError(true);
+        setErrorContent(e.response?.data.message);
+      }
+    }
   };
 
   return (
@@ -59,6 +72,13 @@ const LobbyChatRoomList = ({ list }: Props) => {
           onNextPage={() => setPage(page + 1)}
           onPrevPage={() => setPage(page - 1)}
           PaginationItem={LobbyChatRoomItem} //TODO: LobbyGameRoomItem
+        />
+      )}
+      {error && (
+        <ErrorModal
+          onClose={() => setError(false)}
+          errors={errorContent}
+          title="방입장 실패"
         />
       )}
     </LobbyChatRoomListStyled>

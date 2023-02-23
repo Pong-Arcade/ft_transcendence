@@ -1,7 +1,7 @@
-import { ReactNode } from "react";
+import { useNavigate } from "react-router-dom";
+import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
-import { ILobbyChatRoomErrors } from "../../../hooks/useChatRoomForm";
-import { IGameRoomErrors } from "../../../hooks/useGameRoomForm";
+import errorState from "../../../state/ErrorState";
 import Board from "../../atoms/Board";
 import Button from "../../atoms/Button";
 import Modal from "../../atoms/Modal";
@@ -9,12 +9,6 @@ import ModalWrapper from "../../atoms/ModalWrapper";
 import Typography from "../../atoms/Typography";
 import ModalTitle from "../ModalTitle";
 
-type ErrorType = ILobbyChatRoomErrors | IGameRoomErrors;
-interface Props {
-  onClose: () => void;
-  title: string;
-  errors: ErrorType | string;
-}
 const Wrapper = styled(Board).attrs((props) => {
   return {
     backgroundColor: props.theme.background.middle,
@@ -37,26 +31,28 @@ const ModalButton = styled(Button).attrs({
   height: "20%",
 })``;
 
-const ErrorModal = ({ onClose, errors, title }: Props) => {
+const UnauthorizedModal = () => {
+  const navigate = useNavigate();
+  const setError = useSetRecoilState(errorState);
+
+  const onClose = () => {
+    navigate("/");
+    setError(false);
+  };
+
   return (
-    <ModalWrapper>
+    <ModalWrapper backgroundColor="black">
       <Modal width="30%" height="30%">
         <ModalTitle onClose={onClose} height="25%" fontSize="2rem">
-          {title}
+          로그인 인증 필요
         </ModalTitle>
         <Wrapper>
-          {typeof errors === "string" ? (
-            <ErrorMessage>{errors}</ErrorMessage>
-          ) : (
-            Object.values(errors).map((value, index) => (
-              <ErrorMessage key={index}>{value as ReactNode}</ErrorMessage>
-            ))
-          )}
+          <ErrorMessage>로그인이 필요한 서비스입니다</ErrorMessage>
         </Wrapper>
-        <ModalButton onClick={onClose}>확인</ModalButton>
+        <ModalButton onClick={onClose}>로그인 화면으로</ModalButton>
       </Modal>
     </ModalWrapper>
   );
 };
 
-export default ErrorModal;
+export default UnauthorizedModal;

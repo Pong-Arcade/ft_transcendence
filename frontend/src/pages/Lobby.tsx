@@ -15,6 +15,8 @@ import FullSpinner from "../components/atoms/FullSpinner";
 import useLobbyData from "../hooks/useLobbyData";
 import socketState from "../state/SocketState";
 import { useRecoilValue } from "recoil";
+import { useSetRecoilState } from "recoil";
+import errorState from "../state/ErrorState";
 
 const UserWrapper = styled(Board).attrs({
   width: "25%",
@@ -44,7 +46,6 @@ const RoomListChat = styled(Board).attrs((props) => {
   };
 })``;
 
-// TODO: 소켓 이벤트 등록하기  => LobbyUserList 파일 주석 확인
 const Lobby = () => {
   const { setLobbyData, getLobbyData } = useLobbyData();
   const { isLoading, endLoading } = useLoading({
@@ -61,9 +62,11 @@ const Lobby = () => {
     myInfo,
   } = getLobbyData();
   const { isFirstLoginModal, FirstLoginModalClose } = useFirstLoginModal();
+  const setError = useSetRecoilState(errorState);
+
   useEffect(() => {
     (async () => {
-      await setLobbyData();
+      await setLobbyData().catch(() => setError(true));
       endLoading();
     })();
   }, []);
