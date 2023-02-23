@@ -13,21 +13,17 @@ export class UserService {
   constructor(
     @Inject('IUserRepository')
     private readonly userRepository: IUserRepository,
-    @Inject(CACHE_MANAGER) private cacheManager: Cache,
-    private chatGateway: ChatGateway,
-    private gameGateway: GameGateway,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache, //private chatGateway: ChatGateway, //private gameGateway: GameGateway,
   ) {}
 
   /**
    * 모든 유저 정보를 가져옵니다.
    */
-  async getAllUsers(): Promise<OnlineUsersResponseDto> {
+  async getAllUsers(): Promise<UserDto[]> {
     this.logger.log(`Called ${this.getAllUsers.name}`);
-    console.log(this.chatGateway.server.sockets);
-    console.log(this.gameGateway.server.sockets);
-    return {
-      onlineUsers: await this.userRepository.getAllUser(),
-    };
+    //console.log(this.chatGateway.server.sockets);
+    //console.log(this.gameGateway.server.sockets);
+    return await this.userRepository.getAllUser();
   }
 
   /**
@@ -42,6 +38,7 @@ export class UserService {
     let userInfo = await this.cacheManager.get<UserDto>(`user-${userId}`);
     if (!userInfo) {
       userInfo = await this.userRepository.getUserInfo(userId);
+      console.log('service userinfo:', userInfo);
       await this.cacheManager.set(`user-${userId}`, userInfo, 60 * 10);
     }
     return userInfo;

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { MouseEvent, useState } from "react";
 import styled from "styled-components";
 import Board from "../../atoms/Board";
 import LobbyChatRoomItem from "../LobbyChatRoomItem";
@@ -33,6 +33,10 @@ const LobbyChatRoomList = ({ list }: Props) => {
     setPage(0);
   };
 
+  const joinChatRoom = (event: MouseEvent<HTMLButtonElement>) => {
+    console.log(event);
+  };
+
   return (
     <LobbyChatRoomListStyled>
       <LobbyRoomListTypeChoiceButtonGroup
@@ -46,6 +50,7 @@ const LobbyChatRoomList = ({ list }: Props) => {
           onNextPage={() => setPage(page + 1)}
           onPrevPage={() => setPage(page - 1)}
           PaginationItem={LobbyChatRoomItem}
+          onItemClick={joinChatRoom}
         />
       ) : (
         <LobbyGameRoomPagination

@@ -4,11 +4,18 @@ import Board from "../../atoms/Board";
 import Button from "../../atoms/Button";
 import ButtonGroup from "../ButtonGroup";
 
+export enum userMode {
+  MASTER = "MASTER",
+  ADMIN = "ADMIN",
+  NORMAL = "NORMAL",
+}
+
 export interface IUser {
   userId: number;
   nickname: string;
   avatarUrl?: string;
   email?: string;
+  mode?: userMode;
   firstLogin?: string;
 }
 
@@ -133,7 +140,7 @@ const Pagination = ({
   return (
     <PaginationStyled {...rest}>
       <Page itemGap={itemGap} gridTemplate={gridTemplate}>
-        {list.map((item, idx) => (
+        {list?.map((item, idx) => (
           <PaginationItem
             onItemClick={onItemClick}
             item={item}

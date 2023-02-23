@@ -1,9 +1,10 @@
-import { MouseEvent } from "react";
+import { MouseEvent, useContext, useEffect } from "react";
+import { SocketContext } from "../../../utils/ChatSocket";
 import Pagination from "../Pagination";
 import { IItem, IPaginationItem } from "../Pagination/Pagination";
-
+import { ILobbyChatRoom } from "../Pagination/Pagination";
 interface Props {
-  list: IItem[];
+  list: ILobbyChatRoom[];
   PaginationItem: (arg: IPaginationItem) => JSX.Element;
   page: number;
   onItemClick?: (e: MouseEvent<HTMLButtonElement>) => void;
@@ -20,7 +21,6 @@ const LobbyChatRoomPagination = ({
   onPrevPage,
 }: Props) => {
   const pageLength = 4;
-
   return (
     <Pagination
       list={list.slice(page * pageLength, (page + 1) * pageLength)}
