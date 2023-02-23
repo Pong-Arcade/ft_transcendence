@@ -92,7 +92,6 @@ export class GameGateway
 
   @SubscribeMessage('room-list')
   handleRoomList() {
-    console.log(gameRooms);
     this.logger.log(`room list requested`);
     this.server.emit('room-list', gameRooms);
     return gameRooms;
@@ -186,7 +185,6 @@ export class GameGateway
   @OnEvent('gameroom:join')
   async joinGame(roomId: number, user: UserDto) {
     const userSocketInfo = users.get(user.userId);
-
     this.server.in(userSocketInfo.socketId).socketsLeave('lobby');
     this.server.in(userSocketInfo.socketId).socketsJoin(`gameroom-${roomId}`);
     this.server
@@ -201,7 +199,7 @@ export class GameGateway
       .emit('systemMsg', userSocketInfo.userName + '님이 입장하였습니다.');
 
     const room = gameRooms.get(roomId);
-    if (room.redUser) {
+    if (room.redUser && room.redUser.userId != user.userId) {
       room.blueUser = {
         userId: user.userId,
         nickname: user.nickname,
