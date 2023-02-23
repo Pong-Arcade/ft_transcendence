@@ -25,6 +25,12 @@ export class ChatroomService {
     this.logger.log(`Called ${this.getChatroomUsersInfo.name}`);
     const chatroomUsersInfo = new ChatroomUsersInfoResponseDto();
     chatroomUsersInfo.mastUserId = chatroomInfo.masterUser;
+    chatroomUsersInfo.adminUsers = new Array<number>();
+    for (const admin of chatroomInfo.adminUsers) {
+      chatroomUsersInfo.adminUsers.push(admin);
+    }
+    chatroomUsersInfo.users = new Array<UserChatDto>();
+    console.log('chatroomInfo:', chatroomUsersInfo);
     for (const userId of chatroomInfo.users) {
       const userInfo = await this.userService.getUserInfo(userId);
       chatroomUsersInfo.users.push({

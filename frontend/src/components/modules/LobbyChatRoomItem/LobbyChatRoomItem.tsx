@@ -43,6 +43,7 @@ const ChatRoomContent = styled(Board).attrs({
 const LobbyChatRoomItem = ({ item, onItemClick }: IPaginationItem) => {
   const { roomId, title, mode, maxUserCount, currentCount } =
     item as ILobbyChatRoom;
+
   return (
     <LobbyChatRoomItemStyled id={roomId} onClick={onItemClick}>
       <ChatRoomTitle>{title}</ChatRoomTitle>

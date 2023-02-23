@@ -15,11 +15,15 @@ export const createChatRoomAPI = async (values: ILobbyChatRoomFormValues) => {
   return response;
 };
 
-export const leaveChatRoomAPI = async (values: number) => {
-  const response = await deleteRequest("chat-rooms/");
+export const leaveChatRoomAPI = async (roomId: number) => {
+  const response = await deleteRequest(`chat-rooms/leave/${roomId}`);
+  console.log("response: ", response);
+  return response;
 };
 export const joinChatRoomAPI = async (roomId: string) => {
+  console.log(`chat-rooms/join/${roomId}`);
   const response = await postRequest(`chat-rooms/join/${roomId}`);
+  console.log("response:", response);
   return response;
 };
 

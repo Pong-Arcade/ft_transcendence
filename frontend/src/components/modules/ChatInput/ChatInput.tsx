@@ -46,7 +46,6 @@ const ChatInput = () => {
       });
     } else {
       socket.socket.emit("message", {
-        roomId: 0,
         userId: socket.userId,
         userName: socket.userName,
         msg: socket.userName + ": " + msg,
