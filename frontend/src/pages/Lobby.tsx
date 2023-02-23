@@ -19,6 +19,8 @@ import LobbyRoomListTypeChoiceButtonGroup from "../components/modules/LobbyRoomL
 import { EROOM_BUTTON } from "../components/modules/LobbyRoomListTypeChoiceButtonGroup/LobbyRoomListTypeChoiceButtonGroup";
 import LobbyGameRoomList from "../components/modules/LobbyGameRoomList";
 
+import { getGameRoomListAPI } from "../api/room";
+
 const UserWrapper = styled(Board).attrs({
   width: "25%",
   height: "98%",
@@ -60,6 +62,7 @@ const Lobby = () => {
     blockUsers,
     chatRoomList,
     gameRoomList,
+    setGameRoomList, //FIXME: 임시로 여기에 둠
     myInfo,
   } = getLobbyData();
   const { isFirstLoginModal, FirstLoginModalClose } = useFirstLoginModal();
@@ -67,14 +70,17 @@ const Lobby = () => {
   const [currentButton, setCurrentButton] = useState(EROOM_BUTTON.CHATROOM);
   const [page, setPage] = useState(0);
 
-  const onChoiceButtonClick = (button: EROOM_BUTTON) => {
+  const onChoiceButtonClick = async (button: EROOM_BUTTON) => {
+    if (button === EROOM_BUTTON.GAMEROOM) {
+      setGameRoomList(await getGameRoomListAPI()); //FIXME: 임시로 여기에 둠
+    }
     setCurrentButton(button);
     setPage(0);
   };
 
   useEffect(() => {
     (async () => {
-      await setLobbyData().catch((e) => {
+      await setLobbyData().catch(() => {
         setError(true);
       });
       endLoading();
@@ -94,6 +100,7 @@ const Lobby = () => {
   const onPrevPage = () => {
     setPage(page - 1);
   };
+
   return (
     <>
       <LobbyTemplate>

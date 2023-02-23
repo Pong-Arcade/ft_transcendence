@@ -125,6 +125,7 @@ export class GameGateway
     // FIXME: chat gameway의 socket server에 접근하는 방법을 찾아야 함.
     // this.server.in(userSocketInfo.socketId).socketsLeave('lobby');
     this.server.in(userSocketInfo.socketId).socketsJoin(`gameroom-${roomId}`);
+    console.log('this server : ', this.server.sockets);
     this.server
       .in(`gameroom-${roomId}`)
       .emit(

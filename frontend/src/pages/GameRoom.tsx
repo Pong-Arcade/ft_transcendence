@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
@@ -14,6 +14,7 @@ import GameRoomTemplate from "../components/templates/GameRoomTemplate";
 import useMenu from "../hooks/useMenu";
 import useModal from "../hooks/useModal";
 import gameRoomState from "../state/GameRoomState";
+import GameSocket from "../state/GameSocket";
 
 const GameBoard = styled(Board).attrs((props) => {
   return {
@@ -68,7 +69,14 @@ const GameRoom = () => {
   const [start, setStart] = useState(false);
   const gameState = useRecoilValue(gameRoomState);
   const userList = [...gameState.users];
-  console.log(userList);
+  const { socket } = useContext(GameSocket);
+
+  useEffect(() => {
+    socket.on("joinGameRoom", (data: any) => {
+      console.log(data);
+    });
+  }, []);
+
   return (
     <>
       <GameRoomTemplate>

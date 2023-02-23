@@ -40,3 +40,9 @@ export const createGameRoomAPI = async (
   });
   return response.data;
 };
+
+export const joinGameRoomAPI = async (roomId: string) => {
+  const response = await postRequest(`game-rooms/join/${roomId}`);
+  console.log("response : ", response);
+  return response;
+};

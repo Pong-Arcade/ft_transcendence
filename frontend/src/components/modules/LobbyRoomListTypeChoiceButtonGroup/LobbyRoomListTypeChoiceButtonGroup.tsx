@@ -35,7 +35,7 @@ const LobbyRoomListTypeChoiceButtonGroup = ({
         <ChoiceButton
           key={title}
           onClick={() => onClick(title)}
-          disabled={currentButton === title}
+          // disabled={currentButton === title}
         >
           {title}
         </ChoiceButton>
