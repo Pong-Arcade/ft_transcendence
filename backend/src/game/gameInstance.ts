@@ -1,23 +1,30 @@
 import { InGameRoomInfoDto } from 'src/dto/ingameinfo.dto';
-import { InGameKeyEvent } from 'src/enum/ingame.event.enum';
+import { InGameKeyEvent, InGamePlayer } from 'src/enum/ingame.event.enum';
 import { Coordinate, InGameUpdateDto } from '../dto/ingame.update.dto';
+import { Socket } from 'socket.io';
 
 export class GameInstance {
   info: InGameRoomInfoDto;
   state: InGameUpdateDto;
+
   ballVelocity: number;
   ballDx: number;
   ballDy: number;
+
   paddleDirection1: number;
   paddleDirection2: number;
+
   round: number;
   scored: boolean;
+
   intervalId: NodeJS.Timeout;
+
   frames: number;
   pause: number;
 
   constructor(info: InGameRoomInfoDto) {
     this.info = info;
+    this.intervalId = null;
     this.gameInit();
   }
 
@@ -49,6 +56,8 @@ export class GameInstance {
   private gameInit() {
     this.scored = false;
     this.round = 0;
+    this.info.redScore = 0;
+    this.info.blueScore = 0;
     this.setPauseTime();
     this.ballInit();
     this.paddleInit();
@@ -114,12 +123,12 @@ export class GameInstance {
     if (nextBallX < 0) {
       //player2 win
       this.scored = true;
-      this.info.player2.score++;
+      this.info.blueScore++;
       nextBallX = 0;
     } else if (nextBallX > this.info.gameScreen.width) {
       //player1 win
       this.scored = true;
-      this.info.player1.score++;
+      this.info.redScore++;
       nextBallX = this.info.gameScreen.width;
     } else if (nextBallY < 0) {
       //천장 충돌
@@ -172,8 +181,8 @@ export class GameInstance {
         this.paddleInit();
         //방인원에게 점수 이벤트 전달
         if (
-          this.info.player1.score >= this.info.winScore ||
-          this.info.player2.score >= this.info.winScore
+          this.info.redScore >= this.info.winScore ||
+          this.info.blueScore >= this.info.winScore
         ) {
           this.finishGame();
         }
@@ -189,6 +198,7 @@ export class GameInstance {
    */
   public finishGame() {
     clearInterval(this.intervalId);
+    this.intervalId = null;
     //방인원에게 게임 종료 이벤트 전달
   }
 
@@ -199,5 +209,24 @@ export class GameInstance {
       this.updateGame.bind(this),
       1000 / this.info.fps,
     );
+  }
+
+  public joinPlayer(player: InGamePlayer, socket: Socket) {
+    if (player === InGamePlayer.RED) {
+      this.info.redPlayer = socket;
+    } else if (player === InGamePlayer.BLUE) {
+      this.info.bluePlayer = socket;
+    }
+  }
+
+  public leavePlayerForceFinish(player: InGamePlayer) {
+    if (this.intervalId !== null) {
+      this.finishGame();
+    }
+    if (player === InGamePlayer.RED) {
+      this.info.redPlayer = null;
+    } else if (player === InGamePlayer.BLUE) {
+      this.info.bluePlayer = null;
+    }
   }
 }
