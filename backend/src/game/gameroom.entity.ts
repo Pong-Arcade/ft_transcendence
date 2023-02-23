@@ -1,22 +1,23 @@
+import { GameUserStatusDto } from 'src/dto/game.user.status.dto';
 import { GameRoomMode } from 'src/enum/gameroom.mode.enum';
 import { GameRoomStatus } from 'src/enum/gameroom.status.enum';
 import { MatchType } from 'src/enum/match.type.enum';
 
 export class GameRoom {
   roomId: number;
-  redUserId: number;
-  blueUserId: number;
-  maxSpectatorCount: number;
-  status: GameRoomStatus;
-  title: string;
+  redUser: GameUserStatusDto;
+  blueUser?: GameUserStatusDto;
   mode: GameRoomMode;
   type: MatchType;
   winScore: number;
+  title: string;
+  maxSpectatorCount: number;
   spectatorUsers: Array<number>;
+  status: GameRoomStatus;
   invitedUsers: Array<number>;
   constructor(
     roomId: number,
-    redUserId: number,
+    redUser: GameUserStatusDto,
     mode: GameRoomMode,
     type: MatchType,
     winScore: number,
@@ -24,7 +25,7 @@ export class GameRoom {
     maxSpectatorCount: number,
   ) {
     this.roomId = roomId;
-    this.redUserId = redUserId;
+    this.redUser = redUser;
     this.mode = mode;
     this.type = type;
     this.winScore = winScore;

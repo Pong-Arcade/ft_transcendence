@@ -1,5 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
 import { GameRoomListResponseDto } from 'src/dto/response/gameroom.list.response.dto';
 import { gameRooms } from './game.gateway';
 import { UserService } from 'src/user/user.service';
@@ -24,8 +23,12 @@ export class GameRoomService {
     for (const [roomId, room] of gameRooms.entries()) {
       rooms.gameRooms.push({
         roomId: roomId,
-        redUser: await this.userService.getUserInfo(room.redUserId),
-        blueUser: await this.userService.getUserInfo(room.redUserId),
+        redUser: room.redUser
+          ? await this.userService.getUserInfo(room.redUser.userId)
+          : null,
+        blueUser: room.blueUser
+          ? await this.userService.getUserInfo(room.blueUser.userId)
+          : null,
         maxSpectatorCount: room.maxSpectatorCount,
         curSpectatorCount: room.spectatorUsers.length,
         roomStatus: room.status,
@@ -47,8 +50,12 @@ export class GameRoomService {
     this.logger.log(`Called ${this.getGameRoomUsersInfo.name}`);
     const gameRoomUsersInfo: GameRoomUsersInfoResponseDto = {
       roomId: gameRoomInfo.roomId,
-      redUser: await this.userService.getUserInfo(gameRoomInfo.redUserId),
-      blueUser: await this.userService.getUserInfo(gameRoomInfo.blueUserId),
+      redUser: gameRoomInfo.redUser
+        ? await this.userService.getUserInfo(gameRoomInfo.redUser.userId)
+        : null,
+      blueUser: gameRoomInfo.blueUser
+        ? await this.userService.getUserInfo(gameRoomInfo.blueUser.userId)
+        : null,
       maxSpectatorCount: gameRoomInfo.maxSpectatorCount,
       curSpectatorCount: gameRoomInfo.spectatorUsers.length,
       title: gameRoomInfo.title,
@@ -79,9 +86,9 @@ export class GameRoomService {
     const room = gameRooms.get(roomId);
     if (room) {
       if (
-        room.redUserId === roomId ||
-        room.blueUserId === roomId ||
-        room.spectatorUsers.includes(roomId)
+        room.redUser.userId === userId ||
+        room.blueUser.userId === userId ||
+        room.spectatorUsers.includes(userId)
       ) {
         return true;
       }
@@ -99,8 +106,8 @@ export class GameRoomService {
     this.logger.log(`Called ${this.isOnGameRoom.name}`);
     for (const room of gameRooms.values()) {
       if (
-        room.redUserId === userId ||
-        room.blueUserId === userId ||
+        room.redUser.userId === userId ||
+        room.blueUser.userId === userId ||
         room.spectatorUsers.includes(userId)
       ) {
         return true;
@@ -120,9 +127,9 @@ export class GameRoomService {
   getGameRoomUserCount(roomId: number): number {
     const room = gameRooms.get(roomId);
     if (room) {
-      if (room.redUserId && room.blueUserId) {
+      if (room.redUser.userId && room.blueUser.userId) {
         return 2;
-      } else if (room.redUserId) {
+      } else if (room.redUser.userId) {
         return 1;
       }
     }
@@ -138,7 +145,7 @@ export class GameRoomService {
   getMyMasterGameRoomId(userId: number): number {
     this.logger.log(`Called ${this.getMyMasterGameRoomId.name}`);
     for (const room of gameRooms.values()) {
-      if (room.redUserId === userId) {
+      if (room.redUser.userId === userId) {
         return room.roomId;
       }
     }
