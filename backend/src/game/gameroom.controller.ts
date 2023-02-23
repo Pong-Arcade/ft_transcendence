@@ -114,7 +114,7 @@ export class GameRoomController {
     }
 
     // 5. 게임방 입장
-    this.eventEmitter.emit('gameroom:join', roomId, user.userId);
+    this.eventEmitter.emit('gameroom:join', roomId, user);
 
     // 6. 게임방에 입장한 유저 정보 반환
     return await this.gameRoomService.getGameRoomUsersInfo(gameroomInfo);
@@ -187,7 +187,7 @@ export class GameRoomController {
     // 2. 게임방 생성
     await this.eventEmitter.emitAsync(
       'gameroom:create',
-      user.userId,
+      user,
       gameRoomCreateRequestDto,
     );
 
@@ -236,7 +236,7 @@ export class GameRoomController {
     }
 
     // 2. 해당 게임방의 방장인지 확인
-    if (gameroomInfo.redUserId !== user.userId) {
+    if (gameroomInfo.redUser.userId !== user.userId) {
       throw new ForbiddenException('게임방 방장만 초대할 수 있습니다.');
     }
 
@@ -523,6 +523,6 @@ export class GameRoomController {
     }
 
     // 3. 게임 준비 취소 요청
-    this.eventEmitter.emit('gameroom:ready:cancel', roomId, user.userId);
+    this.eventEmitter.emit('gameroom:unready', roomId, user.userId);
   }
 }
