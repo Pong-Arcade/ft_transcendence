@@ -1,5 +1,6 @@
 import { AxiosError } from "axios";
 import { MouseEvent, useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { joinChatRoomAPI } from "../../../api/room";
 import Board from "../../atoms/Board";
@@ -32,6 +33,7 @@ const LobbyChatRoomList = ({ list }: Props) => {
   const [currentButton, setCurrentButton] = useState(EROOM_BUTTON.CHATROOM);
   const [error, setError] = useState(false);
   const [errorContent, setErrorContent] = useState("");
+  const navigate = useNavigate();
 
   const onChoiceButtonClick = (button: EROOM_BUTTON) => {
     setCurrentButton(button);
@@ -40,8 +42,12 @@ const LobbyChatRoomList = ({ list }: Props) => {
 
   const joinChatRoom = async (event: MouseEvent<HTMLButtonElement>) => {
     try {
-      await joinChatRoomAPI(event.currentTarget.id);
-      // 준표님 로직 추가하세요
+      const id = event.currentTarget.id;
+      const response = await joinChatRoomAPI(event.currentTarget.id);
+      console.log("response data: ", response.data);
+      await navigate("/chat-rooms/" + id, {
+        state: { users: response.data.users },
+      });
     } catch (e: any | AxiosError) {
       if (e instanceof AxiosError) {
         setError(true);

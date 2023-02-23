@@ -49,6 +49,7 @@ export interface IMessage {
   fromId: number;
   content: string;
   type: MessageType;
+  roomId?: number;
 }
 
 export enum EMessageType {
@@ -63,6 +64,7 @@ const ChatList = ({ ...rest }: Props) => {
   const socket = useContext(SocketContext);
   useEffect(() => {
     const newMessage = (newMsg: IMessage) => {
+      console.log(newMsg);
       for (const user of blockUsers) {
         if (user.userId == newMsg.fromId) return;
       }
