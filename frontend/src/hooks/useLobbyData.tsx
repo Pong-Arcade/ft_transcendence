@@ -14,6 +14,7 @@ import {
 } from "../components/modules/Pagination/Pagination";
 import blockUsersState from "../state/BlockUsersState";
 import friendUsersState from "../state/FriendUsersState";
+import GameSocket from "../state/GameSocket";
 import infoState from "../state/InfoState";
 import { SocketContext } from "../utils/ChatSocket";
 import { getDecodedCookie } from "../utils/cookie";
@@ -27,6 +28,8 @@ const useLobbyData = () => {
   const [gameRoomList, setGameRoomList] = useState<ILobbyGameRoom[]>([]);
   const [myInfo, setMyInfo] = useRecoilState(infoState);
   const socket = useContext(SocketContext);
+  const gameSocket = useContext(GameSocket);
+
   useEffect(() => {
     socket.socket.on("addChatRoom", (addRoom: ILobbyChatRoom) => {
       setChatRoomList((prev) => [...prev, addRoom]);
@@ -52,6 +55,8 @@ const useLobbyData = () => {
     setBlockUsers(await getBlockUsersAPI());
     setChatRoomList(await getChatRoomListAPI());
     setGameRoomList(await getGameRoomListAPI());
+    gameSocket.userId = info.userId;
+    gameSocket.userName = info.nickname;
   };
 
   const getLobbyData = () => {
@@ -61,6 +66,7 @@ const useLobbyData = () => {
       blockUsers,
       chatRoomList,
       gameRoomList,
+      setGameRoomList, //FIXME:
       myInfo,
     };
   };

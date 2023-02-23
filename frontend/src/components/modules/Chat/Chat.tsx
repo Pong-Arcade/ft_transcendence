@@ -40,8 +40,8 @@ const ChatBoard = styled(Board).attrs({
 })``;
 
 const Chat = ({ ...rest }: Props) => {
-  // const socket = useContext(SocketContext);
-  const socket = useRecoilValue(socketState);
+  const socket = useContext(SocketContext);
+  // const socket = useRecoilValue(socketState);
 
   return (
     // <SocketContext.Provider value={socket}>

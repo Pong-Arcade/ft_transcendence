@@ -1,10 +1,10 @@
 import { AxiosError } from "axios";
 import { MouseEvent, useState } from "react";
 import styled from "styled-components";
-import { joinChatRoomAPI } from "../../../api/room";
+import { joinGameRoomAPI } from "../../../api/room";
 import Board from "../../atoms/Board";
 import ErrorModal from "../ErrorModal";
-import LobbyChatRoomItem from "../LobbyChatRoomItem";
+import LobbyGameRoomItem from "../LobbyGameRoomItem";
 import LobbyGameRoomPagination from "../LobbyGameRoomPagination";
 import { ILobbyGameRoom } from "../Pagination/Pagination";
 
@@ -31,10 +31,9 @@ const LobbyChatRoomList = ({ list, page, onNextPage, onPrevPage }: Props) => {
   const [error, setError] = useState(false);
   const [errorContent, setErrorContent] = useState("");
 
-  const joinChatRoom = async (event: MouseEvent<HTMLButtonElement>) => {
+  const joinGameRoom = async (event: MouseEvent<HTMLButtonElement>) => {
     try {
-      await joinChatRoomAPI(event.currentTarget.id);
-      // 준표님 로직 추가하세요
+      await joinGameRoomAPI(event.currentTarget.id);
     } catch (e: any | AxiosError) {
       if (e instanceof AxiosError) {
         setError(true);
@@ -50,7 +49,8 @@ const LobbyChatRoomList = ({ list, page, onNextPage, onPrevPage }: Props) => {
         page={page}
         onNextPage={onNextPage}
         onPrevPage={onPrevPage}
-        PaginationItem={LobbyChatRoomItem}
+        PaginationItem={LobbyGameRoomItem}
+        onItemClick={joinGameRoom}
       />
       {error && (
         <ErrorModal
