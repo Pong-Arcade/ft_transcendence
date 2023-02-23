@@ -245,7 +245,7 @@ export class GameRoomController {
       'gameroom:invite',
       roomId,
       user.userId,
-      gameRoomInviteRequestDto,
+      gameRoomInviteRequestDto.users,
     );
   }
 

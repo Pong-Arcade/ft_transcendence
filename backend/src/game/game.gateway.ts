@@ -14,7 +14,7 @@ import {
 import { Namespace, Socket } from 'socket.io';
 import { AuthService } from 'src/auth/auth.service';
 import { GameRoom } from './gameroom.entity';
-import { OnEvent } from '@nestjs/event-emitter';
+import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { GameRoomCreateRequestDto } from 'src/dto/request/gameroom.create.request.dto';
 import { users } from 'src/status/status.module';
 import { UserService } from 'src/user/user.service';
@@ -22,6 +22,8 @@ import { UserDto } from 'src/dto/user.dto';
 import { GameUserStatusDto } from 'src/dto/game.user.status.dto';
 import { GameRoomUserStatus } from 'src/enum/gameroom.user.status.enum';
 import { GameRoomStatus } from 'src/enum/gameroom.status.enum';
+import { GameRoomMode } from 'src/enum/gameroom.mode.enum';
+import { MatchType } from 'src/enum/match.type.enum';
 
 export const gameRooms = new Map<number, GameRoom>();
 @WebSocketGateway({
@@ -38,6 +40,7 @@ export class GameGateway
     private readonly authService: AuthService,
     private readonly configService: ConfigService,
     private readonly userService: UserService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   afterInit(server: Namespace) {
@@ -167,29 +170,84 @@ export class GameGateway
         .socketsLeave(`gameroom-${room.roomId}`);
       // FIXME: chat gameway의 socket server에 접근하는 방법을 찾아야 함.
       // this.server.in(userSocketInfo.socketId).socketsJoin('lobby');
-      this.server.in(`gameroom-${room.roomId}`).emit('leaveChatRoom', userId);
+      this.server.in(`gameroom-${room.roomId}`).emit('leaveGameRoom', userId);
     }
   }
 
   @OnEvent('gameroom:invite')
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  async inviteGame(roomId: number, userId: number) {}
+  async inviteGame(roomId: number, userId: number, targetUserIds: number[]) {
+    this.logger.log(`Called ${this.inviteGame.name}`);
+    const room = gameRooms.get(roomId);
+    const userSocketInfo = users.get(userId);
+    for (const targetUserId of targetUserIds) {
+      room.invitedUsers.push(targetUserId);
+      const targetUserSocketInfo = users.get(targetUserId);
+      this.server
+        .in(targetUserSocketInfo.socketId)
+        .emit('inviteGameRoom', roomId);
+    }
+    // 채팅방을 생성 후, 그 방으로 입장
+    await this.eventEmitter.emitAsync(
+      'gameroom:create',
+      {
+        userId,
+        nickname: userSocketInfo.userName,
+      } as UserDto,
+      {
+        mode: GameRoomMode.NORMAL,
+        type: MatchType.NORMAL,
+        winScore: 10,
+        title: 'Quickplay Arena',
+        maxSpectatorCount: 5,
+      } as GameRoomCreateRequestDto,
+    );
+    this.eventEmitter.emit('gameroom:join', roomId, {
+      userId,
+      nickname: userSocketInfo.userName,
+    } as UserDto);
+  }
 
   @OnEvent('gameroom:invite:reject')
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  async rejectInviteGame(roomId: number, userId: number) {}
+  async rejectInviteGame(roomId: number, userId: number) {
+    this.logger.log(`Called ${this.rejectInviteGame.name}`);
+  }
 
   @OnEvent('gameroom:spectator:join')
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  async joinSpectator(roomId: number, userId: number) {}
+  async joinSpectator(roomId: number, userId: number) {
+    this.logger.log(`Called ${this.joinSpectator.name}`);
+    const userSocketInfo = users.get(userId);
+    // FIXME: chat gameway의 socket server에 접근하는 방법을 찾아야 함.
+    // this.server.in(userSocketInfo.socketId).socketsLeave('lobby');
+    this.server.in(userSocketInfo.socketId).socketsJoin(`gameroom-${roomId}`);
+    this.server
+      .in(`gameroom-${roomId}`)
+      .emit(
+        'joinGameRoom',
+        await this.userService.getUserInfo(userSocketInfo.userId),
+      );
+
+    this.server
+      .in(`gameroom-${roomId}`)
+      .emit('systemMsg', userSocketInfo.userName + '님이 입장하였습니다.');
+
+    const room = gameRooms.get(roomId);
+    room.spectatorUsers.push(userId);
+    room.invitedUsers = room.invitedUsers.filter((id) => id !== userId);
+  }
 
   @OnEvent('gameroom:spectator:leave')
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  async leaveSpectator(roomId: number, userId: number) {}
+  async leaveSpectator(roomId: number, userId: number) {
+    this.logger.log(`Called ${this.leaveSpectator.name}`);
+    const room = gameRooms.get(roomId);
+    room.spectatorUsers = room.spectatorUsers.filter((id) => id !== userId);
+    const userSocketInfo = users.get(userId);
+    this.server
+      .in(userSocketInfo.socketId)
+      .socketsLeave(`gameroom-${room.roomId}`);
+    // FIXME: chat gameway의 socket server에 접근하는 방법을 찾아야 함.
+    // this.server.in(userSocketInfo.socketId).socketsJoin('lobby');
+    this.server.in(`gameroom-${room.roomId}`).emit('leaveGameRoom', userId);
+  }
 
   /**
    * 게임방의 유저가 게임을 준비합니다.
