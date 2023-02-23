@@ -16,6 +16,7 @@ const ConfirmButton = styled(Button).attrs({
 })``;
 
 const ExitConfirmModal = ({ onClose, onYesConfirm, onNoConfirm }: Props) => {
+  
   return (
     <ConfirmModal title="나가기" onClose={onClose}>
       <Typography fontSize="2.8rem">정말 방을 나가시겠습니까?</Typography>

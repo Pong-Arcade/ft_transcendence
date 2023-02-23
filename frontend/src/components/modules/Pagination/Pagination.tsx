@@ -140,14 +140,16 @@ const Pagination = ({
   return (
     <PaginationStyled {...rest}>
       <Page itemGap={itemGap} gridTemplate={gridTemplate}>
-        {list?.map((item, idx) => (
-          <PaginationItem
-            onItemClick={onItemClick}
-            item={item}
-            key={idx}
-            subList={subList}
-          />
-        ))}
+        {list.length
+          ? list?.map((item, idx) => (
+              <PaginationItem
+                onItemClick={onItemClick}
+                item={item}
+                key={idx}
+                subList={subList}
+              />
+            ))
+          : undefined}
       </Page>
       <PaginationButtonGroup height={buttonGroupHeight} gap={buttonGap}>
         <PaginationButton
