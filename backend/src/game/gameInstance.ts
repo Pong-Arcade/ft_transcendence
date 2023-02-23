@@ -119,7 +119,7 @@ export class GameInstance {
     let tempBallDy = this.ballDy;
     const ballSize = this.info.ball.size;
 
-    //승점 처리, 충돌 처리
+    //승점 처리, 충돌 처리!
     if (nextBallX < 0) {
       //player2 win
       this.scored = true;
