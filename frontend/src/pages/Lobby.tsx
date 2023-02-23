@@ -73,7 +73,9 @@ const Lobby = () => {
 
   useEffect(() => {
     (async () => {
-      await setLobbyData().catch(() => setError(true));
+      await setLobbyData().catch((e) => {
+        setError(true);
+      });
       endLoading();
     })();
   }, []);

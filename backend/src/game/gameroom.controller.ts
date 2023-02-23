@@ -195,7 +195,7 @@ export class GameRoomController {
     const roomId = this.gameRoomService.getMyMasterGameRoomId(user.userId);
 
     // 4. 게임방에 입장
-    this.eventEmitter.emit('gameroom:join', roomId, user.userId);
+    this.eventEmitter.emit('gameroom:join', roomId, user);
 
     // 5. 게임방에 입장한 유저 정보 반환
     return await this.gameRoomService.getGameRoomUsersInfo(
