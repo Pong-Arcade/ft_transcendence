@@ -1,11 +1,12 @@
 import { MouseEvent, useContext, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { SocketContext } from "../../../utils/ChatSocket";
 import Pagination from "../Pagination";
 import { IItem, IPaginationItem, IUser } from "../Pagination/Pagination";
 
 interface Props {
   list: IItem[];
+  // setList: React.Dispatch<React.SetStateAction<IUser[] | undefined>>;
   PaginationItem: (arg: IPaginationItem) => JSX.Element;
   page: number;
   onItemClick?: (e: MouseEvent<HTMLButtonElement>) => void;
@@ -15,6 +16,7 @@ interface Props {
 
 const ChatRoomUserListPagination = ({
   list,
+  // setList,
   PaginationItem,
   onItemClick,
   page,
@@ -22,10 +24,13 @@ const ChatRoomUserListPagination = ({
   onPrevPage,
 }: Props) => {
   const pageLength = 5;
-
   return (
     <Pagination
-      list={list.slice(page * pageLength, (page + 1) * pageLength)}
+      list={
+        list.length
+          ? list.slice(page * pageLength, (page + 1) * pageLength)
+          : list
+      }
       PaginationItem={PaginationItem}
       nextPageDisabled={page === Math.floor(list.length / pageLength)}
       prevPageDisabled={page === 0}
