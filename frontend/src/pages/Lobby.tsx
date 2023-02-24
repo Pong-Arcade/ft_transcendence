@@ -19,6 +19,7 @@ import LobbyRoomListTypeChoiceButtonGroup from "../components/modules/LobbyRoomL
 import { EROOM_BUTTON } from "../components/modules/LobbyRoomListTypeChoiceButtonGroup/LobbyRoomListTypeChoiceButtonGroup";
 import LobbyGameRoomList from "../components/modules/LobbyGameRoomList";
 import { getGameRoomListAPI } from "../api/room";
+import GameSocket from "../state/GameSocket";
 
 const UserWrapper = styled(Board).attrs({
   width: "25%",
@@ -54,6 +55,7 @@ const Lobby = () => {
     initialLoading: true,
   });
   const socket = useContext(SocketContext);
+  const gameSocket = useContext(GameSocket);
 
   const {
     onlineUsers,
@@ -90,6 +92,10 @@ const Lobby = () => {
     socket.socket.emit("addUser", {
       userId: socket.userId,
       userName: socket.userName,
+    });
+    gameSocket.socket.emit("addUser", {
+      userId: myInfo.userId,
+      userName: myInfo.nickname,
     });
   }, [myInfo]);
 

@@ -105,6 +105,7 @@ export class GameGateway implements OnGatewayDisconnect {
     this.logger.log(`Called ${this.joinGame.name}`);
     const userSocketInfo = users.get(user.userId);
     // FIXME: chat gameway의 socket server에 접근하는 방법을 찾아야 함.
+    console.log(userSocketInfo);
     this.chatGateway.server.in(userSocketInfo.socketId).socketsLeave('lobby');
 
     this.server
