@@ -50,6 +50,8 @@ export class GameGateway implements OnGatewayDisconnect {
   @SubscribeMessage('addUser')
   async onAddUser(client, info) {
     this.logger.log(`Called ${this.onAddUser.name}`);
+
+    // 유저 객체 생성 및 gameSocketId 저장
     let user: User;
     if (users.has(info.userId)) {
       user = users.get(info.userId);
