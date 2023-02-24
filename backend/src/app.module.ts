@@ -14,6 +14,7 @@ import { StatModule } from './stat/stat.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { AdminUIModule } from './socketAdminUI/adminUI.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { join } from 'path';
     GameModule,
     RelationModule,
     StatModule,
+    AdminUIModule,
   ],
   controllers: [AppController],
   providers: [AppService],

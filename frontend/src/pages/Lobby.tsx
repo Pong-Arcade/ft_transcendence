@@ -18,7 +18,6 @@ import errorState from "../state/ErrorState";
 import LobbyRoomListTypeChoiceButtonGroup from "../components/modules/LobbyRoomListTypeChoiceButtonGroup";
 import { EROOM_BUTTON } from "../components/modules/LobbyRoomListTypeChoiceButtonGroup/LobbyRoomListTypeChoiceButtonGroup";
 import LobbyGameRoomList from "../components/modules/LobbyGameRoomList";
-
 import { getGameRoomListAPI } from "../api/room";
 
 const UserWrapper = styled(Board).attrs({
@@ -55,7 +54,7 @@ const Lobby = () => {
     initialLoading: true,
   });
   const socket = useContext(SocketContext);
-  // const [socket, setSocket] = useRecoilValue(socketState);
+
   const {
     onlineUsers,
     friendUsers,

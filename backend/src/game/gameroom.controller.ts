@@ -202,7 +202,7 @@ export class GameRoomController {
       this.gameRoomService.getGameRoomInfo(roomId),
     );
   }
-  //tes
+
   @ApiOperation({
     summary: '게임방에 초대',
     description: 'body에 담긴 유저들을 게임방에 초대합니다.',

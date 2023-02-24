@@ -1,3 +1,4 @@
+import { ILobbyGameRoom } from "../components/modules/Pagination/Pagination";
 import { ILobbyChatRoomFormValues } from "../hooks/useChatRoomForm";
 import { EGameType, IGameRoomFormValues } from "../hooks/useGameRoomForm";
 import { deleteRequest, getRequest, postRequest } from "./axios";
@@ -43,6 +44,5 @@ export const createGameRoomAPI = async (
 
 export const joinGameRoomAPI = async (roomId: string) => {
   const response = await postRequest(`game-rooms/join/${roomId}`);
-  console.log("response : ", response);
   return response;
 };

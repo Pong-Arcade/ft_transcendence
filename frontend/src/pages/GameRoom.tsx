@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 import styled from "styled-components";
 import Avatar from "../components/atoms/Avatar";
 import Board from "../components/atoms/Board";
@@ -10,6 +10,7 @@ import ButtonGroup from "../components/modules/ButtonGroup";
 import Chat from "../components/modules/Chat";
 import ExitConfirmModal from "../components/modules/ExitConfirmModal";
 import GeneralMenu from "../components/modules/GeneralMenu";
+import { IUser } from "../components/modules/Pagination/Pagination";
 import GameRoomTemplate from "../components/templates/GameRoomTemplate";
 import useMenu from "../hooks/useMenu";
 import useModal from "../hooks/useModal";
@@ -51,14 +52,21 @@ const UserProfile = styled(Button).attrs({
   boxShadow: true,
 })`
   background-color: ${(props) => props.theme.background.middle};
-  display: flex;
-  justify-content: space-evenly;
+  display: grid;
+  grid-template: 1fr / repeat(3, 1fr);
   align-items: center;
 `;
 
 const GameRoom = () => {
-  const { isOpenMenu, onOpenMenu, onCloseMenu, positionX, positionY } =
-    useMenu();
+  const {
+    isOpenMenu,
+    onOpenMenu,
+    onCloseMenu,
+    positionX,
+    positionY,
+    id,
+    name,
+  } = useMenu();
 
   const {
     isModalOpen: isConfirmOpen,
@@ -67,24 +75,39 @@ const GameRoom = () => {
   } = useModal({});
   const navigate = useNavigate();
   const [start, setStart] = useState(false);
-  const gameState = useRecoilValue(gameRoomState);
-  const userList = [...gameState.users];
+  const [gameState, setGameState] = useRecoilState(gameRoomState);
   const { socket } = useContext(GameSocket);
 
   useEffect(() => {
-    socket.on("joinGameRoom", (data: any) => {
-      console.log(data);
+    socket.on("joinGameRoom", (joinUser: IUser) => {
+      setGameState((prev) => {
+        return { roomId: prev.roomId, users: [...prev.users, joinUser] };
+      });
     });
-  }, []);
+    return () => {
+      socket.off("joinGameRoom");
+    };
+  }, [gameState]);
 
+  // 삭제
+  const testList = [
+    { userId: 1, nickname: "test1", avatarUrl: "test" },
+    // null,
+    { userId: 2, nickname: "test2", avatarUrl: "test" },
+  ];
   return (
     <>
       <GameRoomTemplate>
         <GameBoard></GameBoard>
         <Wrapper>
           <UserProfileGroup>
-            {userList.map((user, idx) => (
-              <UserProfile key={idx} onClick={onOpenMenu}>
+            {testList.map((user, idx) => (
+              <UserProfile
+                id={user?.userId.toString()}
+                key={idx}
+                onClick={onOpenMenu}
+                disabled={!user}
+              >
                 <Avatar width="8rem" height="8rem" src={user?.avatarUrl} />
                 <Typography fontSize="2rem">{user?.nickname}</Typography>
                 <Typography fontSize="1.2rem">
@@ -109,8 +132,8 @@ const GameRoom = () => {
         </Wrapper>
       </GameRoomTemplate>
       <GeneralMenu
-        userId={2} // TODO: 정보보기 제외 다른 기능 추가 시 리팩토링 필요
-        name="kangkim" // TODO: 임시값
+        userId={id} // TODO: 정보보기 제외 다른 기능 추가 시 리팩토링 필요
+        name={name}
         isOpenMenu={isOpenMenu}
         onClose={onCloseMenu}
         top={positionY}

@@ -42,10 +42,17 @@ const useLobbyData = () => {
         })
       );
     });
-    socket.socket.on("addGameRoom", (addRoom: ILobbyGameRoom) => {
-      console.log("addgame : ", addRoom);
+    gameSocket.socket.on("addGameRoom", (addRoom: ILobbyGameRoom) => {
+      setGameRoomList((prev) => [...prev, addRoom]);
     });
+
+    return () => {
+      socket.socket.off("addChatRoom");
+      socket.socket.off("deleteChatRoom");
+      gameSocket.socket.off("addGameRoom");
+    };
   }, []);
+
   const setLobbyData = async () => {
     const info = JSON.parse(getDecodedCookie());
 

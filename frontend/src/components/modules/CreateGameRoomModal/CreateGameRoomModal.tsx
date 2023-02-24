@@ -49,10 +49,10 @@ const CreateGameRoomModal = ({ title, onClose }: Props) => {
           data = await createGameRoomAPI(EGameType.NORMAL, values);
         else data = await createGameRoomAPI(EGameType.LADDER, values);
         onClose();
-        console.log(data);
+
         setGameRoomState({
           roomId: data.roomId,
-          users: [data.redUser, data.blueUser],
+          users: [data.redUser],
         });
         navigate(`/game-rooms/${data.roomId}`);
       },
