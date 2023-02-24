@@ -24,14 +24,13 @@ import { GameRoomUserStatus } from 'src/enum/gameroom.user.status.enum';
 import { GameRoomStatus } from 'src/enum/gameroom.status.enum';
 import { GameRoomMode } from 'src/enum/gameroom.mode.enum';
 import { MatchType } from 'src/enum/match.type.enum';
+import { User } from 'src/status/status.entity';
 
 export const gameRooms = new Map<number, GameRoom>();
 @WebSocketGateway({
   namespace: 'socket/game',
 })
-export class GameGateway
-  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
-{
+export class GameGateway implements OnGatewayDisconnect {
   @WebSocketServer() server: Namespace;
   private logger = new Logger(GameGateway.name);
 
@@ -43,43 +42,22 @@ export class GameGateway
     private readonly eventEmitter: EventEmitter2,
   ) {}
 
-  afterInit(server: Namespace) {
-    // this.server.adapter.on('delete-room', (room) => {
-    //   const deletedRoom = gameRooms.find((roomName) => roomName === room);
-    //   if (!deletedRoom) {
-    //     return;
-    //   }
-    //
-    //   this.server.emit('delete-room', deletedRoom);
-    //   gameRooms = gameRooms.filter((roomName) => roomName !== deletedRoom);
-    //   this.logger.log(`room ${room} deleted`);
-    // });
-    //
-    this.logger.log('Initialized');
-  }
-
-  async handleConnection(@ConnectedSocket() socket: Socket) {
-    /*
-    const token = socket.handshake.headers[
-      `${this.configService.get<string>('jwt.token')}`
-    ] as string;
-    try {
-      const payload = this.jwtService.verify(token);
-      const user = await this.authService.checkUserExists(payload.userId);
-      if (!user) {
-        throw new Error("User doesn't exist");
-      }
-    } catch (error) {
-      socket.disconnect();
-      return;
-    }
-    this.logger.log(`Client connected: ${socket.id}`);
-  */
-  }
-  //*/
-
   handleDisconnect(@ConnectedSocket() socket: Socket) {
+    this.logger.log(`Called ${this.handleDisconnect.name}`);
     this.logger.log(`Client disconnected: ${socket.id}`);
+  }
+
+  @SubscribeMessage('addUser')
+  async onAddUser(client, info) {
+    this.logger.log(`Called ${this.onAddUser.name}`);
+    let user: User;
+    if (users.has(info.userId)) {
+      user = users.get(info.userId);
+    } else {
+      user = new User(info.userId, info.userName);
+    }
+    user.gameSocketId = client.id;
+    users.set(info.userId, user);
   }
 
   /**
@@ -124,8 +102,11 @@ export class GameGateway
     const userSocketInfo = users.get(user.userId);
     // FIXME: chat gameway의 socket server에 접근하는 방법을 찾아야 함.
     // this.server.in(userSocketInfo.socketId).socketsLeave('lobby');
-    this.server.in(userSocketInfo.socketId).socketsJoin(`gameroom-${roomId}`);
-    console.log('this server : ', this.server.sockets);
+
+    this.server
+      .in(userSocketInfo.gameSocketId)
+      .socketsJoin(`gameroom-${roomId}`);
+
     this.server
       .in(`gameroom-${roomId}`)
       .emit(
@@ -167,7 +148,7 @@ export class GameGateway
       gameRooms.delete(roomId);
     } else {
       this.server
-        .in(userSocketInfo.socketId)
+        .in(userSocketInfo.gameSocketId)
         .socketsLeave(`gameroom-${room.roomId}`);
       // FIXME: chat gameway의 socket server에 접근하는 방법을 찾아야 함.
       // this.server.in(userSocketInfo.socketId).socketsJoin('lobby');
@@ -184,7 +165,7 @@ export class GameGateway
       room.invitedUsers.push(targetUserId);
       const targetUserSocketInfo = users.get(targetUserId);
       this.server
-        .in(targetUserSocketInfo.socketId)
+        .in(targetUserSocketInfo.gameSocketId)
         .emit('inviteGameRoom', roomId);
     }
     // 채팅방을 생성 후, 그 방으로 입장
@@ -219,7 +200,9 @@ export class GameGateway
     const userSocketInfo = users.get(userId);
     // FIXME: chat gameway의 socket server에 접근하는 방법을 찾아야 함.
     // this.server.in(userSocketInfo.socketId).socketsLeave('lobby');
-    this.server.in(userSocketInfo.socketId).socketsJoin(`gameroom-${roomId}`);
+    this.server
+      .in(userSocketInfo.gameSocketId)
+      .socketsJoin(`gameroom-${roomId}`);
     this.server
       .in(`gameroom-${roomId}`)
       .emit(
@@ -243,7 +226,7 @@ export class GameGateway
     room.spectatorUsers = room.spectatorUsers.filter((id) => id !== userId);
     const userSocketInfo = users.get(userId);
     this.server
-      .in(userSocketInfo.socketId)
+      .in(userSocketInfo.gameSocketId)
       .socketsLeave(`gameroom-${room.roomId}`);
     // FIXME: chat gameway의 socket server에 접근하는 방법을 찾아야 함.
     // this.server.in(userSocketInfo.socketId).socketsJoin('lobby');
