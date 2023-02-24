@@ -92,7 +92,6 @@ export class GameGateway implements OnGatewayDisconnect {
       gameRoomCreateRequestDto.maxSpectatorCount,
     );
     gameRooms.set(roomId, gameRoom);
-    // FIXME: chat gameway의 socket server에 접근하는 방법을 찾아야 함.
     this.chatGateway.server.in('lobby').emit('addGameRoom', gameRoom);
   }
 
@@ -104,8 +103,6 @@ export class GameGateway implements OnGatewayDisconnect {
   async joinGame(roomId: number, user: UserDto) {
     this.logger.log(`Called ${this.joinGame.name}`);
     const userSocketInfo = users.get(user.userId);
-    // FIXME: chat gameway의 socket server에 접근하는 방법을 찾아야 함.
-    console.log(userSocketInfo);
     this.chatGateway.server.in(userSocketInfo.socketId).socketsLeave('lobby');
 
     this.server
@@ -143,21 +140,18 @@ export class GameGateway implements OnGatewayDisconnect {
     const userSocketInfo = users.get(user.userId);
     if (user.userId === room.redUser.userId) {
       this.server.in(`gameroom-${room.roomId}`).emit('destructGameRoom');
-      // FIXME: chat gameway의 socket server에 접근하는 방법을 찾아야 함.
       this.chatGateway.server
         .in(`gameroom-${room.roomId}`)
         .socketsJoin('lobby');
       this.server
         .in(`gameroom-${room.roomId}`)
         .socketsLeave(`gameroom-${room.roomId}`);
-      // FIXME: chat gameway의 socket server에 접근하는 방법을 찾아야 함.
       this.chatGateway.server.in('lobby').emit('deleteGameRoom', roomId);
       gameRooms.delete(roomId);
     } else {
       this.server
         .in(userSocketInfo.gameSocketId)
         .socketsLeave(`gameroom-${room.roomId}`);
-      // FIXME: chat gameway의 socket server에 접근하는 방법을 찾아야 함.
       this.chatGateway.server.in(userSocketInfo.socketId).socketsJoin('lobby');
       this.server.in(`gameroom-${room.roomId}`).emit('leaveGameRoom', userId);
     }
@@ -205,21 +199,14 @@ export class GameGateway implements OnGatewayDisconnect {
   async joinSpectator(roomId: number, userId: number) {
     this.logger.log(`Called ${this.joinSpectator.name}`);
     const userSocketInfo = users.get(userId);
-    // FIXME: chat gameway의 socket server에 접근하는 방법을 찾아야 함.
     this.chatGateway.server.in(userSocketInfo.socketId).socketsLeave('lobby');
     this.server
       .in(userSocketInfo.gameSocketId)
       .socketsJoin(`gameroom-${roomId}`);
-    this.server
-      .in(`gameroom-${roomId}`)
-      .emit(
-        'joinGameRoom',
-        await this.userService.getUserInfo(userSocketInfo.userId),
-      );
 
     this.server
       .in(`gameroom-${roomId}`)
-      .emit('systemMsg', userSocketInfo.userName + '님이 입장하였습니다.');
+      .emit('systemMsg', userSocketInfo.userName + '님이 입장 하였습니다.');
 
     const room = gameRooms.get(roomId);
     room.spectatorUsers.push(userId);
@@ -235,9 +222,11 @@ export class GameGateway implements OnGatewayDisconnect {
     this.server
       .in(userSocketInfo.gameSocketId)
       .socketsLeave(`gameroom-${room.roomId}`);
-    // FIXME: chat gameway의 socket server에 접근하는 방법을 찾아야 함.
     this.chatGateway.server.in(userSocketInfo.socketId).socketsJoin('lobby');
-    this.server.in(`gameroom-${room.roomId}`).emit('leaveGameRoom', userId);
+
+    this.server
+      .in(`gameroom-${roomId}`)
+      .emit('systemMsg', userSocketInfo.userName + '님이 퇴장 하였습니다.');
   }
 
   /**
@@ -250,14 +239,21 @@ export class GameGateway implements OnGatewayDisconnect {
   async readyGame(roomId: number, userId: number) {
     this.logger.log(`Called ${this.readyGame.name}`);
     const room = gameRooms.get(roomId);
-    if (room.redUser.userId === userId) {
+    if (room.redUser?.userId === userId) {
       room.redUser.status = GameRoomUserStatus.READY;
-    } else {
+      this.server
+        .in(`gameroom-${roomId}`)
+        .emit('readyRedUser', room.redUser.userId);
+    }
+    if (room.blueUser?.userId === userId) {
       room.blueUser.status = GameRoomUserStatus.READY;
+      this.server
+        .in(`gameroom-${roomId}`)
+        .emit('readyBlueUser', room.blueUser.userId);
     }
     if (
-      room.redUser.status === GameRoomUserStatus.READY &&
-      room.blueUser.status === GameRoomUserStatus.READY
+      room.redUser?.status === GameRoomUserStatus.READY &&
+      room.blueUser?.status === GameRoomUserStatus.READY
     ) {
       room.status = GameRoomStatus.ON_GAME;
       this.server.in(`gameroom-${roomId}`).emit('startGame');
@@ -268,10 +264,17 @@ export class GameGateway implements OnGatewayDisconnect {
   async unreadyGame(roomId: number, userId: number) {
     this.logger.log(`Called ${this.unreadyGame.name}`);
     const room = gameRooms.get(roomId);
-    if (room.redUser.userId === userId) {
+    if (room.redUser?.userId === userId) {
       room.redUser.status = GameRoomUserStatus.UN_READY;
-    } else {
+      this.server
+        .in(`gameroom-${roomId}`)
+        .emit('unReadyRedUser', room.redUser.userId);
+    }
+    if (room.blueUser?.userId === userId) {
       room.blueUser.status = GameRoomUserStatus.UN_READY;
+      this.server
+        .in(`gameroom-${roomId}`)
+        .emit('unReadyBlueUser', room.blueUser.userId);
     }
   }
 }

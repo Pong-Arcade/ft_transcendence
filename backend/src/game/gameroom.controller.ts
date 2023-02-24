@@ -464,6 +464,7 @@ export class GameRoomController {
     description:
       '게임방에 입장하지 않은 유저가 게임 준비 요청 시도한 경우, 게임 준비 요청에 실패합니다.',
   })
+  // TODO: 관전자인 경우 게임 준비 요청에 실패합니다.
   @HttpCode(HttpStatus.OK)
   @Patch('/ready/:room_id')
   async readyGameRoom(
@@ -504,6 +505,7 @@ export class GameRoomController {
     description:
       '게임방에 입장하지 않은 유저가 게임 준비 취소 요청 시도한 경우, 게임 준비 취소 요청에 실패합니다.',
   })
+  // TODO: 관전자인 경우 게임 준비 취소 요청에 실패합니다.
   @HttpCode(HttpStatus.OK)
   @Patch('/unready/:room_id')
   async unReadyGameRoom(

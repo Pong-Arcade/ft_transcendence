@@ -89,7 +89,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       user = new User(info.userId, info.userName);
     }
     user.socketId = client.id;
+    console.log(user);
     users.set(info.userId, user);
+    console.log(users);
 
     // 로비 채팅방에 유저 추가
     client.join('lobby');
