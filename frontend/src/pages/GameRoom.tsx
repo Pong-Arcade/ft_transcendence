@@ -79,9 +79,7 @@ const GameRoom = () => {
   const { socket } = useContext(GameSocket);
 
   useEffect(() => {
-    console.log("socket : ", socket);
     socket.on("joinGameRoom", (joinUser: IUser) => {
-      console.log("joinGameRoom : ", joinUser);
       setGameState((prev) => {
         return { roomId: prev.roomId, users: [...prev.users, joinUser] };
       });

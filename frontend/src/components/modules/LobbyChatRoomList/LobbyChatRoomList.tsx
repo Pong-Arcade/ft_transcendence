@@ -26,7 +26,6 @@ interface Props {
   onPrevPage: () => void;
 }
 
-// TODO: game room list, 게임방 밖으로 빼기
 const LobbyChatRoomList = ({ list, page, onNextPage, onPrevPage }: Props) => {
   const [error, setError] = useState(false);
   const [errorContent, setErrorContent] = useState("");

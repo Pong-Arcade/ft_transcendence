@@ -73,7 +73,6 @@ const useLobbyData = () => {
       blockUsers,
       chatRoomList,
       gameRoomList,
-      setGameRoomList, //FIXME:
       myInfo,
     };
   };

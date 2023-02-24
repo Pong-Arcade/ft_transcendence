@@ -18,7 +18,6 @@ import errorState from "../state/ErrorState";
 import LobbyRoomListTypeChoiceButtonGroup from "../components/modules/LobbyRoomListTypeChoiceButtonGroup";
 import { EROOM_BUTTON } from "../components/modules/LobbyRoomListTypeChoiceButtonGroup/LobbyRoomListTypeChoiceButtonGroup";
 import LobbyGameRoomList from "../components/modules/LobbyGameRoomList";
-import { getGameRoomListAPI } from "../api/room";
 import GameSocket from "../state/GameSocket";
 
 const UserWrapper = styled(Board).attrs({
@@ -63,7 +62,6 @@ const Lobby = () => {
     blockUsers,
     chatRoomList,
     gameRoomList,
-    setGameRoomList, //FIXME: 임시로 여기에 둠
     myInfo,
   } = getLobbyData();
   const { isFirstLoginModal, FirstLoginModalClose } = useFirstLoginModal();
@@ -71,10 +69,7 @@ const Lobby = () => {
   const [currentButton, setCurrentButton] = useState(EROOM_BUTTON.CHATROOM);
   const [page, setPage] = useState(0);
 
-  const onChoiceButtonClick = async (button: EROOM_BUTTON) => {
-    if (button === EROOM_BUTTON.GAMEROOM) {
-      setGameRoomList(await getGameRoomListAPI()); //FIXME: 임시로 여기에 둠
-    }
+  const onChoiceButtonClick = (button: EROOM_BUTTON) => {
     setCurrentButton(button);
     setPage(0);
   };
