@@ -79,29 +79,26 @@ const GameRoom = () => {
   const { socket } = useContext(GameSocket);
 
   useEffect(() => {
+    console.log("socket : ", socket);
     socket.on("joinGameRoom", (joinUser: IUser) => {
+      console.log("joinGameRoom : ", joinUser);
       setGameState((prev) => {
         return { roomId: prev.roomId, users: [...prev.users, joinUser] };
       });
     });
-    return () => {
-      socket.off("joinGameRoom");
-    };
-  }, [gameState]);
 
-  // 삭제
-  const testList = [
-    { userId: 1, nickname: "test1", avatarUrl: "test" },
-    // null,
-    { userId: 2, nickname: "test2", avatarUrl: "test" },
-  ];
+    // return () => {
+    //   socket.off("joinGameRoom");
+    // };
+  }, [gameState]);
+  console.log(gameState);
   return (
     <>
       <GameRoomTemplate>
         <GameBoard></GameBoard>
         <Wrapper>
           <UserProfileGroup>
-            {testList.map((user, idx) => (
+            {gameState.users.map((user, idx) => (
               <UserProfile
                 id={user?.userId.toString()}
                 key={idx}
