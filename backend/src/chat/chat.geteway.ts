@@ -15,7 +15,7 @@ import { ChatroomCreateRequestDto } from 'src/dto/request/chatroom.create.reques
 import { ChatroomService } from './chat.service';
 import { UserService } from 'src/user/user.service';
 import { Socket } from 'dgram';
-import { Inject, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 export const rooms = new Map<number, Room>();
 let roomCount = 1;
 

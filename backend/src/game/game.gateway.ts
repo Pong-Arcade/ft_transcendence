@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { Inject, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import {
@@ -25,6 +25,7 @@ import { GameRoomStatus } from 'src/enum/gameroom.status.enum';
 import { GameRoomMode } from 'src/enum/gameroom.mode.enum';
 import { MatchType } from 'src/enum/match.type.enum';
 import { User } from 'src/status/status.entity';
+import { ChatGateway } from 'src/chat/chat.geteway';
 
 export const gameRooms = new Map<number, GameRoom>();
 @WebSocketGateway({
@@ -40,6 +41,7 @@ export class GameGateway implements OnGatewayDisconnect {
     private readonly configService: ConfigService,
     private readonly userService: UserService,
     private readonly eventEmitter: EventEmitter2,
+    @Inject(ChatGateway) private readonly chatGateway: ChatGateway,
   ) {}
 
   handleDisconnect(@ConnectedSocket() socket: Socket) {
@@ -91,7 +93,7 @@ export class GameGateway implements OnGatewayDisconnect {
     );
     gameRooms.set(roomId, gameRoom);
     // FIXME: chat gameway의 socket server에 접근하는 방법을 찾아야 함.
-    // this.server.in('lobby').emit('addGameRoom', gameRoom);
+    this.chatGateway.server.in('lobby').emit('addGameRoom', gameRoom);
   }
 
   /**
@@ -103,9 +105,11 @@ export class GameGateway implements OnGatewayDisconnect {
     this.logger.log(`Called ${this.joinGame.name}`);
     const userSocketInfo = users.get(user.userId);
     // FIXME: chat gameway의 socket server에 접근하는 방법을 찾아야 함.
-    // this.server.in(userSocketInfo.socketId).socketsLeave('lobby');
+    this.chatGateway.server.in(userSocketInfo.socketId).socketsLeave('lobby');
 
-    this.server.in(userSocketInfo.socketId).socketsJoin(`gameroom-${roomId}`);
+    this.server
+      .in(userSocketInfo.gameSocketId)
+      .socketsJoin(`gameroom-${roomId}`);
 
     this.server
       .in(`gameroom-${roomId}`)
@@ -139,19 +143,21 @@ export class GameGateway implements OnGatewayDisconnect {
     if (user.userId === room.redUser.userId) {
       this.server.in(`gameroom-${room.roomId}`).emit('destructGameRoom');
       // FIXME: chat gameway의 socket server에 접근하는 방법을 찾아야 함.
-      // this.server.in(`gameroom-${room.roomId}`).socketsJoin('lobby');
+      this.chatGateway.server
+        .in(`gameroom-${room.roomId}`)
+        .socketsJoin('lobby');
       this.server
         .in(`gameroom-${room.roomId}`)
         .socketsLeave(`gameroom-${room.roomId}`);
       // FIXME: chat gameway의 socket server에 접근하는 방법을 찾아야 함.
-      // this.server.in('lobby').emit('deleteGameRoom', roomId);
+      this.chatGateway.server.in('lobby').emit('deleteGameRoom', roomId);
       gameRooms.delete(roomId);
     } else {
       this.server
         .in(userSocketInfo.gameSocketId)
         .socketsLeave(`gameroom-${room.roomId}`);
       // FIXME: chat gameway의 socket server에 접근하는 방법을 찾아야 함.
-      // this.server.in(userSocketInfo.socketId).socketsJoin('lobby');
+      this.chatGateway.server.in(userSocketInfo.socketId).socketsJoin('lobby');
       this.server.in(`gameroom-${room.roomId}`).emit('leaveGameRoom', userId);
     }
   }
@@ -199,7 +205,7 @@ export class GameGateway implements OnGatewayDisconnect {
     this.logger.log(`Called ${this.joinSpectator.name}`);
     const userSocketInfo = users.get(userId);
     // FIXME: chat gameway의 socket server에 접근하는 방법을 찾아야 함.
-    // this.server.in(userSocketInfo.socketId).socketsLeave('lobby');
+    this.chatGateway.server.in(userSocketInfo.socketId).socketsLeave('lobby');
     this.server
       .in(userSocketInfo.gameSocketId)
       .socketsJoin(`gameroom-${roomId}`);
@@ -229,7 +235,7 @@ export class GameGateway implements OnGatewayDisconnect {
       .in(userSocketInfo.gameSocketId)
       .socketsLeave(`gameroom-${room.roomId}`);
     // FIXME: chat gameway의 socket server에 접근하는 방법을 찾아야 함.
-    // this.server.in(userSocketInfo.socketId).socketsJoin('lobby');
+    this.chatGateway.server.in(userSocketInfo.socketId).socketsJoin('lobby');
     this.server.in(`gameroom-${room.roomId}`).emit('leaveGameRoom', userId);
   }
 
