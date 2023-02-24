@@ -41,7 +41,7 @@ export const promoteAdminAPI = async (roomId: number, userId: number) => {
   console.log("response: ", response);
   return response;
 };
-promoteAdminAPI
+promoteAdminAPI;
 export const demoteAdminAPI = async (roomId: number, userId: number) => {
   const response = await patchRequest(
     `chat-rooms/demote-admin/${roomId}/${userId}`

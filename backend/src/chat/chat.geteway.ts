@@ -103,7 +103,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       this.server.to('lobby').emit('message', message);
     } else {
       this.server
-        .to(room.title)
+        .to(`chatroom${message.roomId}`)
         //.broadcast.emit('message', msg.msg);
         .emit('message', message);
     }
@@ -158,7 +158,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (room.masterUser === userId) {
       this.server.in(`chatroom${roomId}`).emit('destructChatRoom');
       this.server.in(`chatroom${roomId}`).socketsJoin('lobby');
-      this.server.in(`chatroom${roomId}`).socketsLeave(room.title);
+      this.server.in(`chatroom${roomId}`).socketsLeave(`chatroom${roomId}`);
       this.server.in('lobby').emit('deleteChatRoom', roomId);
       room.users.map((id) => {
         const user = users.get(id);
@@ -169,7 +169,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       const user = users.get(userId);
       user.location = 0;
       await this.server.in(`chatroom${roomId}`).emit('leaveChatRoom', userId);
-      this.server.in(user.socketId).socketsLeave(room.title);
+      this.server.in(user.socketId).socketsLeave(`chatroom${roomId}`);
       this.server.in(user.socketId).socketsJoin('lobby');
       room.users = room.users.filter((id) => id != userId);
     }
