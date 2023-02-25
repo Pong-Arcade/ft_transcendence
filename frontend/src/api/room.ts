@@ -51,7 +51,9 @@ export const demoteAdminAPI = async (roomId: number, userId: number) => {
 };
 
 export const muteChatRoomAPI = async (roomId: number, userId: number) => {
-  const response = await patchRequest(`chat-rooms/mute/${roomId}/${userId}`);
+  const response = await patchRequest(
+    `chat-rooms/mute/${roomId}/${userId}/100`
+  );
   console.log("response: ", response);
   return response;
 };

@@ -51,13 +51,9 @@ const ChatRoomUserList = () => {
   const location = useLocation();
   const navigate = useNavigate();
   useEffect(() => {
-    if (location.state) {
+    if (location.state && !userList) {
       const users: IUser[] = location.state.users;
-      console.log("users: ", users);
-      async () => {
-        if (users) await setUserList(users);
-        console.log(userList);
-      };
+      setUserList(users);
     }
     socket.socket.off("joinChatRoom");
     socket.socket.off("leaveChatRoom");
