@@ -462,9 +462,8 @@ export class GameRoomController {
   })
   @ApiConflictResponse({
     description:
-      '게임방에 입장하지 않은 유저가 게임 준비 요청 시도한 경우, 게임 준비 요청에 실패합니다.',
+      '게임방에 입장하지 않은 유저나 관전자가 게임 준비 요청 시도한 경우, 게임 준비 요청에 실패합니다.',
   })
-  // TODO: 관전자인 경우 게임 준비 요청에 실패합니다.
   @HttpCode(HttpStatus.OK)
   @Patch('/ready/:room_id')
   async readyGameRoom(
@@ -483,7 +482,12 @@ export class GameRoomController {
       throw new ConflictException('게임방에 입장하지 않았습니다.');
     }
 
-    // 3. 게임 준비 요청
+    // 3. 관전자가 아닌지 확인
+    if (gameroomInfo.spectatorUsers.includes(user.userId)) {
+      throw new ConflictException('관전자는 게임 준비 요청을 할 수 없습니다.');
+    }
+
+    // 4. 게임 준비 요청
     this.eventEmitter.emit('gameroom:ready', roomId, user.userId);
   }
 
@@ -503,9 +507,8 @@ export class GameRoomController {
   })
   @ApiConflictResponse({
     description:
-      '게임방에 입장하지 않은 유저가 게임 준비 취소 요청 시도한 경우, 게임 준비 취소 요청에 실패합니다.',
+      '게임방에 입장하지 않은 유저나 관전자가 게임 준비 취소 요청 시도한 경우, 게임 준비 취소 요청에 실패합니다.',
   })
-  // TODO: 관전자인 경우 게임 준비 취소 요청에 실패합니다.
   @HttpCode(HttpStatus.OK)
   @Patch('/unready/:room_id')
   async unReadyGameRoom(
@@ -524,7 +527,14 @@ export class GameRoomController {
       throw new ConflictException('게임방에 입장하지 않았습니다.');
     }
 
-    // 3. 게임 준비 취소 요청
+    // 3. 관전자가 아닌지 확인
+    if (gameroomInfo.spectatorUsers.includes(user.userId)) {
+      throw new ConflictException(
+        '관전자는 게임 준비 취소 요청을 할 수 없습니다.',
+      );
+    }
+
+    // 4. 게임 준비 취소 요청
     this.eventEmitter.emit('gameroom:unready', roomId, user.userId);
   }
 }
