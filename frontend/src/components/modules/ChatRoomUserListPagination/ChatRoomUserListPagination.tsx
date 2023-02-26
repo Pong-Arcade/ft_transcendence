@@ -6,7 +6,6 @@ import { IItem, IPaginationItem, IUser } from "../Pagination/Pagination";
 
 interface Props {
   list: IItem[];
-  // setList: React.Dispatch<React.SetStateAction<IUser[] | undefined>>;
   PaginationItem: (arg: IPaginationItem) => JSX.Element;
   page: number;
   onItemClick?: (e: MouseEvent<HTMLButtonElement>) => void;
@@ -16,7 +15,6 @@ interface Props {
 
 const ChatRoomUserListPagination = ({
   list,
-  // setList,
   PaginationItem,
   onItemClick,
   page,
