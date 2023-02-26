@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { GameRoomListResponseDto } from 'src/dto/response/gameroom.list.response.dto';
-import { gameRooms } from './game.gateway';
+import { gameRooms, invitations } from './game.gateway';
 import { UserService } from 'src/user/user.service';
 import { GameRoom } from './gameroom.entity';
 import { GameRoomUsersInfoResponseDto } from 'src/dto/response/gameroom.users.info.response.dto';
@@ -151,5 +151,39 @@ export class GameRoomService {
       }
     }
     return null;
+  }
+
+  /**
+   * 자신이 초대자인지 확인합니다.
+   * 초대자인 경우 true를 반환합니다.
+   * 초대자가 아닌 경우 false를 반환합니다.
+   * @param userId
+   * @returns
+   */
+  isInviter(userId: number): boolean {
+    this.logger.log(`Called ${this.isInviter.name}`);
+    invitations.forEach((invitation) => {
+      if (invitation.inviterId === userId) {
+        return true;
+      }
+    });
+    return false;
+  }
+
+  /**
+   * 자신이 초대받은 유저인지 확인합니다.
+   * 초대받은 유저인 경우 true를 반환합니다.
+   * 초대받은 유저가 아닌 경우 false를 반환합니다.
+   * @param userId
+   * @returns
+   */
+  isInvitee(userId: number): boolean {
+    this.logger.log(`Called ${this.isInvitee.name}`);
+    invitations.forEach((invitation) => {
+      if (invitation.inviteeId === userId) {
+        return true;
+      }
+    });
+    return false;
   }
 }

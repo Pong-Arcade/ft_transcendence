@@ -3,6 +3,13 @@ import { GameRoomMode } from 'src/enum/gameroom.mode.enum';
 import { GameRoomStatus } from 'src/enum/gameroom.status.enum';
 import { MatchType } from 'src/enum/match.type.enum';
 
+export class Invitation {
+  invitationId: number; // 초대의 고유 id
+  inviterId: number; // 초대자의 userId
+  inviteeId: number; // 초대받는 사람의 userId
+  expirationTime: Date; // 초대의 만료 시간
+}
+
 export class GameRoom {
   roomId: number;
   redUser: GameUserStatusDto;
