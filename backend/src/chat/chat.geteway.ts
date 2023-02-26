@@ -14,8 +14,9 @@ import { MockRepository } from 'src/mock/mock.repository';
 import { ChatroomCreateRequestDto } from 'src/dto/request/chatroom.create.request.dto';
 import { ChatroomService } from './chat.service';
 import { UserService } from 'src/user/user.service';
-import { Socket } from 'dgram';
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
+import { ChangeChatroomInfoRequestDto } from 'src/dto/request/chatroom.change.info.request.dto';
+import { UserChatMode } from 'src/enum/user.chat.mode.enum';
 export const rooms = new Map<number, Room>();
 let roomCount = 1;
 
@@ -24,6 +25,7 @@ interface IMessage {
   fromId: number;
   content: string;
   type: MessageType;
+  roomId?: number;
 }
 enum EMessageType {
   MESSAGE = 'message',
@@ -38,6 +40,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private logger = new Logger(ChatGateway.name);
   mock = new MockRepository();
   eventEmitter = new EventEmitter2();
+  muteUsers = new Array<number>();
 
   // private readonly userService: UserService;
   constructor(
@@ -58,6 +61,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             for (let i = 0; i < rooms.get(value.location).users.length; i++) {
               if (rooms.get(value.location).users[i] == value.userId) {
                 rooms.get(value.location).users.splice(i);
+                this.server
+                  .to(`chatroom${value.location}`)
+                  .emit('leaveChatRoom', value.userId);
                 break;
               }
             }
@@ -106,18 +112,24 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('message')
   async onMessage(client, msg) {
+    const room = rooms.get(users.get(msg.userId).location);
     const message: IMessage = {
       fromId: msg.userId,
       content: msg.msg,
       type: EMessageType.MESSAGE,
+      roomId: room.id,
     };
-    if (!msg.roomid) {
+    if (room.id === 0) {
       this.server.to('lobby').emit('message', message);
     } else {
+      if (this.muteUsers.find((value) => value == msg.userId)) {
+        console.log('muted');
+        return;
+      }
       this.server
-        .to(rooms.get(msg.roomid).title)
+        .to(`chatroom${message.roomId}`)
         //.broadcast.emit('message', msg.msg);
-        .emit('message', msg.msg);
+        .emit('message', message);
     }
   }
   @SubscribeMessage('whisper')
@@ -151,54 +163,74 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @OnEvent('chatroom:join')
   async joinChatRoom(roomId, userId) {
     const room = rooms.get(roomId);
-    console.log('joinUser: ', await this.userService.getUserInfo(userId));
     const user = users.get(userId);
-    // console.log('joinuser2: ', user);
-    this.server.in(user.socketId).socketsLeave('lobby');
-    this.server.in(user.socketId).socketsJoin(room.title);
+    user.location = roomId;
+    if (!user.mode) user.mode = UserChatMode.NORMAL;
+    this.server.to(user.socketId).socketsLeave('lobby');
+    this.server.to(user.socketId).socketsJoin(`chatroom${roomId}`);
+    const userInfo = await this.userService.getUserInfo(userId);
+    this.server.in(`chatroom${roomId}`).emit('joinChatRoom', {
+      userId: userId,
+      nickname: user.userName,
+      avatarUrl: userInfo.avatarUrl,
+      email: userInfo.email,
+      mode: user.mode,
+      firstLogin: userInfo.firstLogin,
+    });
     this.server
-      .in(room.title)
-      .emit('joinChatRoom', await this.userService.getUserInfo(userId));
-
-    this.server
-      .in(room.title)
+      .in(`chatroom${roomId}`)
       .emit('systemMsg', user.userName + '님이 입장하였습니다.');
     room.users.push(userId);
   }
   @OnEvent('chatroom:leave')
-  leaveChatRoom(roomId, userId) {
+  async leaveChatRoom(roomId, userId) {
     const room = rooms.get(roomId);
-    const user = users.get(userId);
     if (room.masterUser === userId) {
-      this.server.in(room.title).emit('destructChatRoom');
-      this.server.in(room.title).socketsJoin('lobby');
-      this.server.in(room.title).socketsLeave(room.title);
+      this.server.in(`chatroom${roomId}`).emit('destructChatRoom');
+      this.server.in(`chatroom${roomId}`).socketsJoin('lobby');
+      this.server.in(`chatroom${roomId}`).socketsLeave(`chatroom${roomId}`);
       this.server.in('lobby').emit('deleteChatRoom', roomId);
+      room.users.map((id) => {
+        const user = users.get(id);
+        if (user) {
+          user.location = 0;
+          user.mode = UserChatMode.NORMAL;
+        }
+      });
       rooms.delete(roomId);
     } else {
-      this.server.in(user.socketId).socketsLeave(room.title);
+      const user = users.get(userId);
+      user.location = 0;
+      user.mode = UserChatMode.NORMAL;
+      await this.server.in(`chatroom${roomId}`).emit('leaveChatRoom', userId);
+      this.server.in(user.socketId).socketsLeave(`chatroom${roomId}`);
       this.server.in(user.socketId).socketsJoin('lobby');
-      this.server.in(room.title).emit('leaveChatRoom', userId);
-      room.users.filter((id) => id !== userId);
+      room.users = room.users.filter((id) => id != userId);
     }
   }
 
   @OnEvent('chatroom:create')
   async addChatRoom(userId, roomInfo: ChatroomCreateRequestDto) {
     const roomId = roomCount++;
-    rooms.set(
+    const user = users.get(userId);
+    user.mode = UserChatMode.MASTER;
+    const room = new Room(
       roomId,
-      new Room(
-        roomId,
-        roomInfo.title,
-        roomInfo.mode,
-        roomInfo.password,
-        roomInfo.maxUserCount,
-        userId,
-      ),
+      roomInfo.title,
+      roomInfo.mode,
+      roomInfo.password,
+      roomInfo.maxUserCount,
+      userId,
     );
+    rooms.set(roomId, room);
     console.log('create', roomId);
-    this.server.in('lobby').emit('addChatRoom', rooms.get(roomId));
+    this.server.in('lobby').emit('addChatRoom', {
+      roomId: room.id,
+      title: room.title,
+      mode: room.mode,
+      maxUserCount: room.maxUser,
+      currentCount: room.users.length,
+    });
   }
 
   @OnEvent('chatroom:invite')
@@ -209,7 +241,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       to.push(users.get(id));
     }
     to.forEach((user) => {
-      this.server.in(user.socketId).emit('inviteChatRoom', roomId, fromId);
+      this.server.to(user.socketId).emit('inviteChatRoom', roomId, fromId);
       room.invitedUsers.push(user.userId);
     });
   }
@@ -217,7 +249,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async banChatRoom(roomId, userId) {
     const room = rooms.get(roomId);
     const user = users.get(userId);
-    this.server.in(user.socketId).emit('banChatRoom', roomId);
+    console.log('ban ', room, user);
+    this.server.to(user.socketId).emit('banChatRoom', roomId);
     room.bannedUsers.push(userId);
     this.leaveChatRoom(roomId, userId);
   }
@@ -226,20 +259,46 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const room = rooms.get(roomId);
     const user = users.get(userId);
     room.adminUsers.push(userId);
-    this.server.in(room.title).emit('addAdmin', userId);
+    user.mode = UserChatMode.ADMIN;
+    this.server.in(`chatroom${roomId}`).emit('addAdmin', userId);
   }
   @OnEvent('chatroom:demote-admin')
   async deleteAdmin(roomId, userId) {
     const room = rooms.get(roomId);
     const user = users.get(userId);
-    room.adminUsers.filter((id) => id !== userId);
-    this.server.in(room.title).emit('deleteAdmin', userId);
+    room.adminUsers = room.adminUsers.filter((id) => id !== userId);
+    user.mode = UserChatMode.NORMAL;
+    this.server.in(`chatroom${roomId}`).emit('deleteAdmin', userId);
   }
-  // @OnEvent('chatroom:mute-user')
-  // async muteUser(roomId, userId, duration) {}
+  @OnEvent('chatroom:mute-user')
+  async muteUser(roomId, userId, duration) {
+    this.muteUsers.push(userId);
+    setTimeout(() => {
+      this.muteUsers.splice(
+        this.muteUsers.find((id) => {
+          id == userId;
+        }),
+      );
+      for (const id of this.muteUsers) {
+        if (id == userId) this.muteUsers.splice(id);
+      }
+    }, 3 * 60 * 1000);
+  }
   // @OnEvent('chatroom:unmute-user')
   // async unmuteUser(roomId, userId, duration) {}
 
-  // @OnEvent('chatroom:change-info')
-  // async updateChatRoom(roomId, roomInfo) {}
+  @OnEvent('chatroom:change-info')
+  async updateChatRoom(roomId: number, roomInfo: ChangeChatroomInfoRequestDto) {
+    const room = rooms.get(roomId);
+    room.title = roomInfo.title;
+    room.mode = roomInfo.mode;
+    if (roomInfo.password) room.password = roomInfo.password;
+    this.server.in('lobby').emit('updateChatRoom', {
+      roomId: room.id,
+      title: room.title,
+      mode: room.mode,
+      maxUserCount: room.maxUser,
+      currentCount: room.users.length,
+    });
+  }
 }

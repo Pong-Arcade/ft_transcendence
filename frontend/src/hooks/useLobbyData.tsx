@@ -31,16 +31,18 @@ const useLobbyData = () => {
   const gameSocket = useContext(GameSocket);
 
   useEffect(() => {
-    socket.socket.on("addChatRoom", (addRoom: ILobbyChatRoom) => {
-      setChatRoomList((prev) => [...prev, addRoom]);
+    socket.socket.off("addChatRoom");
+    socket.socket.off("deleteChatRoom");
+    socket.socket.off("updateChatRoom");
+    socket.socket.on("addChatRoom", async (addRoom: ILobbyChatRoom) => {
+      await setChatRoomList((prev) => [...prev, addRoom]);
     });
-
-    socket.socket.on("deleteChatRoom", (roomId: number) => {
-      setChatRoomList(
-        chatRoomList.filter((room) => {
-          room.roomId !== roomId.toString();
-        })
-      );
+    socket.socket.on("deleteChatRoom", async (roomId: number) => {
+      const newList = new Array<ILobbyChatRoom>();
+      for (const room of chatRoomList) {
+        if (room.roomId != roomId.toString()) newList.push(room);
+      }
+      await setChatRoomList(newList);
     });
     gameSocket.socket.on("addGameRoom", (addRoom: ILobbyGameRoom) => {
       setGameRoomList((prev) => [...prev, addRoom]);
