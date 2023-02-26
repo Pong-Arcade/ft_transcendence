@@ -10,6 +10,7 @@ import {
   Logger,
   NotFoundException,
   Param,
+  ParseEnumPipe,
   ParseIntPipe,
   Patch,
   Post,
@@ -40,6 +41,7 @@ import { GameRoomService } from './gameroom.service';
 import { users } from 'src/status/status.module';
 import { UserService } from 'src/user/user.service';
 import { invitations } from './game.gateway';
+import { MatchType } from 'src/enum/match.type.enum';
 
 @ApiTags('Game')
 @ApiBearerAuth()
@@ -319,6 +321,75 @@ export class GameRoomController {
 
     // 3. 게임 신청 거절
     this.eventEmitter.emit('gameroom:invite:reject', user.userId);
+  }
+
+  @ApiOperation({
+    summary: '빠른 대전 신청',
+    description:
+      '빠른 대전을 큐에 입장 신청합니다. 노말과 래더를 선택할 수 있습니다.',
+  })
+  @ApiCreatedResponse({
+    description: '빠른 대전 신청에 성공합니다.',
+  })
+  @ApiBadRequestResponse({
+    description: '문법적인 오류가 있을 경우 빠른 대전 신청에 실패합니다.',
+  })
+  @ApiConflictResponse({
+    description:
+      '이미 빠른 대전 신청을 한 경우, 이미 게임방에 입장한 경우, 빠른 대전 신청에 실패합니다.',
+  })
+  @HttpCode(HttpStatus.CREATED)
+  @Post('/join/quick-match/:match_type')
+  async joinQuickMatchQueue(
+    @User() user: UserDto,
+    @Param('match_type', new ParseEnumPipe(MatchType)) matchType: MatchType,
+  ): Promise<void> {
+    this.logger.log(`Called ${this.joinQuickMatchQueue.name}`);
+    // 1. 빠른 대전 신청을 한 유저인지 확인
+    if (
+      this.gameRoomService.isInLadderQuickMatchQueue(user.userId) ||
+      this.gameRoomService.isInNormalQuickMatchQueue(user.userId)
+    ) {
+      throw new ConflictException('이미 빠른 대전 신청을 한 유저입니다.');
+    }
+
+    // 2. 게임방에 입장한 유저인지 확인
+    if (this.gameRoomService.isOnGameRoom(user.userId)) {
+      throw new ConflictException('이미 게임방에 입장한 유저입니다.');
+    }
+
+    // 3. 빠른 대전 신청 처리
+    this.eventEmitter.emit('gameroom:quick-match:join', user.userId, matchType);
+  }
+
+  @ApiOperation({
+    summary: '빠른 대전 신청 취소',
+    description: '빠른 대전 신청을 취소합니다.',
+  })
+  @ApiNoContentResponse({
+    description: '빠른 대전 신청 취소에 성공합니다.',
+  })
+  @ApiBadRequestResponse({
+    description: '문법적인 오류가 있을 경우 빠른 대전 신청 취소에 실패합니다.',
+  })
+  @ApiConflictResponse({
+    description:
+      '빠른 대전 신청을 하지 않은 경우, 빠른 대전 신청 취소에 실패합니다.',
+  })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Delete('/leave/quick-match')
+  async leaveQuickMatchQueue(@User() user: UserDto): Promise<void> {
+    this.logger.log(`Called ${this.leaveQuickMatchQueue.name}`);
+    // 1. 빠른 대전 신청을 한 유저인지 확인
+    if (
+      !this.gameRoomService.isInLadderQuickMatchQueue(user.userId) &&
+      !this.gameRoomService.isInNormalQuickMatchQueue(user.userId)
+    ) {
+      throw new ConflictException('빠른 대전 신청을 하지 않은 유저입니다.');
+    }
+
+    // 2. 빠른 대전 신청 취소 처리
+    this.eventEmitter.emit('gameroom:quick-match:leave', user.userId);
   }
 
   @ApiOperation({

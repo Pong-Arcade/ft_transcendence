@@ -29,6 +29,10 @@ import { ChatGateway } from 'src/chat/chat.geteway';
 
 export const gameRooms = new Map<number, GameRoom>();
 export let invitations: Invitation[] = [];
+
+export let normalQuickMatchQueue = new Array<number>();
+export let ladderQuickMatchQueue = new Array<number>();
+
 @WebSocketGateway({
   namespace: 'socket/game',
 })
@@ -336,5 +340,67 @@ export class GameGateway implements OnGatewayDisconnect {
         .in(`gameroom-${roomId}`)
         .emit('unReadyBlueUser', room.blueUser.userId);
     }
+  }
+
+  /**
+   * 매칭이 성사되었을 때 호출되는 이벤트입니다.
+   * 매칭이 성사되면 게임방을 생성하고, 매칭된 유저들을 게임방에 입장시킵니다.
+   * @param redUserId
+   * @param blueUserId
+   * @param matchType
+   * @returns
+   */
+  @OnEvent('game:matching')
+  async matchingGameRoom(
+    redUserId: number,
+    blueUserId: number,
+    matchType: MatchType,
+  ) {
+    this.logger.log(`Called ${this.matchingGameRoom.name}`);
+    const redUserSocketInfo = users.get(redUserId);
+    const blueUserSocketInfo = users.get(blueUserId);
+
+    // 빠른 대전 게임방을 생성, 레드 유저를 먼저 넣어줍니다.
+    const roomId = gameRooms.size + 1;
+    const redUser: GameUserStatusDto = {
+      userId: redUserSocketInfo.userId,
+      nickname: redUserSocketInfo.userName,
+      status: GameRoomUserStatus.UN_READY,
+    };
+    const gameRoom = new GameRoom(
+      roomId,
+      redUser,
+      GameRoomMode.NORMAL,
+      matchType,
+      10,
+      'Quickplay Arena',
+      5,
+    );
+    this.server
+      .in(redUserSocketInfo.gameSocketId)
+      .socketsJoin(`gameroom-${roomId}`);
+
+    // 블루 유저를 게임방에 넣어줍니다.
+    gameRoom.blueUser = {
+      userId: blueUserSocketInfo.userId,
+      nickname: blueUserSocketInfo.userName,
+      status: GameRoomUserStatus.UN_READY,
+    };
+    this.server
+      .in(blueUserSocketInfo.gameSocketId)
+      .socketsJoin(`gameroom-${roomId}`);
+
+    // 게임이 매칭되었다는 메시지를 보냅니다.
+    this.server.in(`gameroom-${roomId}`).emit('gameRoomMatched', gameRoom);
+
+    // 게임방에 입장한 유저들에게 입장 메시지를 보냅니다.
+    this.server
+      .in(`gameroom-${roomId}`)
+      .emit('systemMsg', '게임방에 입장하였습니다.');
+
+    gameRooms.set(roomId, gameRoom);
+
+    // 로비에 있는 유저들에게 게임방이 생성되었다는 메시지를 보냅니다.
+    this.chatGateway.server.in('lobby').emit('addGameRoom', gameRoom);
   }
 }
