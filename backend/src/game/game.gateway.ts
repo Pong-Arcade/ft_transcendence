@@ -154,6 +154,9 @@ export class GameGateway implements OnGatewayDisconnect {
         .socketsLeave(`gameroom-${room.roomId}`);
       this.chatGateway.server.in(userSocketInfo.socketId).socketsJoin('lobby');
       this.server.in(`gameroom-${room.roomId}`).emit('leaveGameRoom', userId);
+      this.server
+        .in(`gameroom-${roomId}`)
+        .emit('systemMsg', userSocketInfo.userName + '님이 퇴장하였습니다.');
     }
   }
 
@@ -218,12 +221,12 @@ export class GameGateway implements OnGatewayDisconnect {
     //   } as GameRoomCreateRequestDto,
     // );
 
-    // 초대한 사람으로 하여금 채팅방 생성 API를 호출하도록 요청
+    // 초대한 유저로 하여금 채팅방 생성 API를 호출하도록 요청
     this.server
       .in(inviterSocketInfo.gameSocketId)
       .emit('acceptInviteGameRoom:create', userId);
 
-    // 초대받은 사람으로 하여금 채팅방 입장 API를 호출하도록 5초 후 요청
+    // 초대받은 유저로 하여금 채팅방 입장 API를 호출하도록 5초 후 요청
     setTimeout(() => {
       this.server
         .in(inviteeSocketInfo.gameSocketId)
