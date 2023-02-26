@@ -129,7 +129,6 @@ export class GameGateway implements OnGatewayDisconnect {
         status: GameRoomUserStatus.UN_READY,
       };
     }
-    room.invitedUsers = room.invitedUsers.filter((id) => id !== user.userId);
   }
 
   @OnEvent('gameroom:leave')
@@ -269,7 +268,6 @@ export class GameGateway implements OnGatewayDisconnect {
 
     const room = gameRooms.get(roomId);
     room.spectatorUsers.push(userId);
-    room.invitedUsers = room.invitedUsers.filter((id) => id !== userId);
   }
 
   @OnEvent('gameroom:spectator:leave')

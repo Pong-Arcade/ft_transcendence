@@ -21,7 +21,6 @@ export class GameRoom {
   maxSpectatorCount: number;
   spectatorUsers: Array<number>;
   status: GameRoomStatus;
-  invitedUsers: Array<number>;
   constructor(
     roomId: number,
     redUser: GameUserStatusDto,
@@ -40,6 +39,5 @@ export class GameRoom {
     this.maxSpectatorCount = maxSpectatorCount;
     this.status = GameRoomStatus.ON_READY;
     this.spectatorUsers = new Array<number>();
-    this.invitedUsers = new Array<number>();
   }
 }
