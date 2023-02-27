@@ -399,8 +399,7 @@ export class GameGateway implements OnGatewayDisconnect {
     // 빠른 대전 게임방을 생성, 레드 유저를 먼저 넣어줍니다.
     const roomId = gameRooms.size + 1;
     const redUser: GameUserStatusDto = {
-      userId: redUserSocketInfo.userId,
-      nickname: redUserSocketInfo.userName,
+      ...(await this.userService.getUserInfo(redUserId)),
       status: GameRoomUserStatus.UN_READY,
     };
     const gameRoom = new GameRoom(
@@ -412,16 +411,21 @@ export class GameGateway implements OnGatewayDisconnect {
       'Quickplay Arena',
       5,
     );
+    this.chatGateway.server
+      .in(redUserSocketInfo.socketId)
+      .socketsLeave('lobby');
     this.server
       .in(redUserSocketInfo.gameSocketId)
       .socketsJoin(`gameroom-${roomId}`);
 
     // 블루 유저를 게임방에 넣어줍니다.
     gameRoom.blueUser = {
-      userId: blueUserSocketInfo.userId,
-      nickname: blueUserSocketInfo.userName,
+      ...(await this.userService.getUserInfo(blueUserId)),
       status: GameRoomUserStatus.UN_READY,
     };
+    this.chatGateway.server
+      .in(blueUserSocketInfo.socketId)
+      .socketsLeave('lobby');
     this.server
       .in(blueUserSocketInfo.gameSocketId)
       .socketsJoin(`gameroom-${roomId}`);

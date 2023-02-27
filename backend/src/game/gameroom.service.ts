@@ -271,10 +271,11 @@ export class GameRoomService {
    * @param userId
    * @param matchType
    */
-  leaveQuickMatchQueue(userId: number, matchType: MatchType) {
+  leaveQuickMatchQueue(userId: number) {
     this.logger.log(`Called ${this.leaveQuickMatchQueue.name}`);
     // matchType에 해당하는 매칭 대기열에서 userId를 제거
-    quickMatchQueues[matchType] = quickMatchQueues[matchType].filter(
+    const gameroom = gameRooms.get(userId);
+    quickMatchQueues[gameroom.type] = quickMatchQueues[gameroom.type].filter(
       (id) => id !== userId,
     );
   }
