@@ -1,16 +1,17 @@
 {
-	"game_canvas": {
-		"width": 1600,
-		"height": 1200
-	},
-	"paddle": {
-		"width": 50,
-		"velocity": 20,
-		"height": 240
-	},
-	"fps": 25,
-	"ball": {
-		"velocity": 10,
-		"size": 30
-	}
+  "gameCanvas": {
+    "width": 1600,
+    "height": 1200
+  },
+  "paddle": {
+    "buffer": 50,
+    "width": 50,
+    "velocity": 20,
+    "height": 240
+  },
+  "fps": 25,
+  "ball": {
+    "velocity": 10,
+    "size": 30
+  }
 }
