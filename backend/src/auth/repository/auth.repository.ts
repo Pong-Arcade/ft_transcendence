@@ -44,26 +44,33 @@ export class AuthRepository implements IAuthRepository {
         firstLogin: true,
         twoFactorAuth: {
           is2FA: true,
+          access: true,
         },
       },
     });
-    const userInfo = {
-      userId: find.userId,
-      nickname: find.nickname,
-      avatarUrl: find.avatarUrl,
-      email: find.email,
-      firstLogin: find.firstLogin,
-      is2FA: find.twoFactorAuth.is2FA,
-    } as UserAuthDto;
-    if (!find.firstLogin) {
-      return [userInfo, false];
+
+    if (find) {
+      return [
+        {
+          userId: find.userId,
+          nickname: find.nickname,
+          avatarUrl: find.avatarUrl,
+          email: find.email,
+          firstLogin: find.firstLogin,
+          is2FA: find.twoFactorAuth.is2FA,
+          access: find.twoFactorAuth.access,
+        },
+        false,
+      ];
     }
+
+    const firstLogin = new Date();
     await this.userRepository.insert({
       userId: user.userId,
       nickname: user.nickname,
       avatarUrl: user.avatarUrl,
       email: user.email,
-      firstLogin: new Date(),
+      firstLogin,
     });
 
     await this.twoFactorAuthRepository.insert({
@@ -84,7 +91,17 @@ export class AuthRepository implements IAuthRepository {
       winCount: 0,
       loseCount: 0,
     });
-    return [userInfo, true];
+    return [
+      {
+        userId: user.userId,
+        nickname: user.nickname,
+        avatarUrl: user.avatarUrl,
+        email: user.email,
+        firstLogin,
+        is2FA: false,
+      },
+      true,
+    ];
   }
 
   async checkUserExists(userId: number): Promise<boolean> {
@@ -132,6 +149,7 @@ export class AuthRepository implements IAuthRepository {
     if (!find) {
       throw new Error('User not found');
     }
+
     if (find.twoFactorAuth.access === access) {
       return {
         userId: find.userId,

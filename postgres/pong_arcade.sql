@@ -294,7 +294,7 @@ ALTER SEQUENCE public.relation_relation_id_seq OWNED BY public.relation.relation
 CREATE TABLE public.two_factor_auth (
     user_id integer NOT NULL,
     "2FA" boolean NOT NULL,
-    access character varying(256) DEFAULT NULL::character varying
+    access character varying(256)
 );
 
 
@@ -304,14 +304,7 @@ ALTER TABLE public.two_factor_auth OWNER TO arcade;
 -- Name: TABLE two_factor_auth; Type: COMMENT; Schema: public; Owner: arcade
 --
 
-COMMENT ON TABLE public.two_factor_auth IS '2차 인증 정보';
-
-
---
--- Name: COLUMN two_factor_auth.user_id; Type: COMMENT; Schema: public; Owner: arcade
---
-
-COMMENT ON COLUMN public.two_factor_auth.user_id IS '유저의 ID';
+COMMENT ON TABLE public.two_factor_auth IS '2차 인증';
 
 
 --
@@ -325,7 +318,7 @@ COMMENT ON COLUMN public.two_factor_auth."2FA" IS '2차 인증 여부';
 -- Name: COLUMN two_factor_auth.access; Type: COMMENT; Schema: public; Owner: arcade
 --
 
-COMMENT ON COLUMN public.two_factor_auth.access IS '인증값';
+COMMENT ON COLUMN public.two_factor_auth.access IS '인증 코드';
 
 
 --
@@ -446,6 +439,12 @@ COPY public.relation (relation_id, user_id, target_user_id, relation_type) FROM 
 --
 
 COPY public.two_factor_auth (user_id, "2FA", access) FROM stdin;
+1	f	\N
+2	f	\N
+3	f	\N
+4	f	\N
+5	f	\N
+6	f	\N
 \.
 
 
@@ -534,11 +533,11 @@ ALTER TABLE ONLY public.relation
 
 
 --
--- Name: two_factor_auth two_factor_auth_pkey; Type: CONSTRAINT; Schema: public; Owner: arcade
+-- Name: two_factor_auth two_factor_auth_pk; Type: CONSTRAINT; Schema: public; Owner: arcade
 --
 
 ALTER TABLE ONLY public.two_factor_auth
-    ADD CONSTRAINT two_factor_auth_pkey PRIMARY KEY (user_id);
+    ADD CONSTRAINT two_factor_auth_pk PRIMARY KEY (user_id);
 
 
 --
@@ -630,11 +629,11 @@ ALTER TABLE ONLY public.relation
 
 
 --
--- Name: two_factor_auth user_id___fk; Type: FK CONSTRAINT; Schema: public; Owner: arcade
+-- Name: two_factor_auth two_factor_auth_user_null_fk; Type: FK CONSTRAINT; Schema: public; Owner: arcade
 --
 
 ALTER TABLE ONLY public.two_factor_auth
-    ADD CONSTRAINT user_id___fk FOREIGN KEY (user_id) REFERENCES public."user"(user_id);
+    ADD CONSTRAINT two_factor_auth_user_null_fk FOREIGN KEY (user_id) REFERENCES public."user"(user_id);
 
 
 --

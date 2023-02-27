@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  HttpCode,
   Logger,
   Param,
   Patch,
@@ -17,6 +18,7 @@ import { ConfigService } from '@nestjs/config';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from './jwt/jwt.auth.guard';
 import { JwtService } from '@nestjs/jwt';
+import { EmailSender } from 'src/utils/email..sender.component';
 
 @ApiTags('Auth')
 @ApiBearerAuth()
@@ -27,6 +29,7 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
+    private readonly emailSender: EmailSender,
   ) {}
 
   @ApiOperation({ summary: '로그인', description: '42로그인 페이지로 이동' })
@@ -52,7 +55,7 @@ export class AuthController {
 
     // 2차 인증을 등록한 유저라면, 2차 인증 페이지로 redirect 한다.
     if (userInfo.is2FA) {
-      // TODO: 인증 이메일 발송
+      this.emailSender.send2FAEmail(userInfo.email, userInfo.access);
       return res.redirect(`${feHost}/2FA`);
     }
 
@@ -91,9 +94,10 @@ export class AuthController {
   async enroll2FA(@User() user: UserDto, @Res() res: Response) {
     this.logger.log(`Called ${this.enroll2FA.name}`);
     await this.authService.enroll2FA(user.userId);
-    res.clearCookie(
-      this.configService.get<string>('fe_host').replace('http://', ''),
-    );
+    res.clearCookie(this.configService.get<string>('jwt.token'), {
+      domain: this.configService.get<string>('fe_host').replace('http://', ''),
+    });
+    res.status(200).send();
   }
 
   @ApiOperation({
@@ -101,7 +105,8 @@ export class AuthController {
     description:
       '2차 인증을 수행합니다. param으로 받은 값과 DB에 저장된 값이 일치해야 합니다.',
   })
-  @Patch('verify/2FA')
+  @Patch('verify/2FA/:access')
+  @HttpCode(200)
   async verify2FA(@Param('access') access: string): Promise<{ token: string }> {
     this.logger.log(`Called ${this.verify2FA.name}`);
     const userInfo = await this.authService.verify2FA(access);
