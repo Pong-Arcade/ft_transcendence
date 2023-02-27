@@ -1,8 +1,11 @@
 import { InGameEvent, InGamePlayer } from 'src/enum/ingame.event.enum';
 import { Coordinate, InGameUpdateDto } from '../dto/ingame.update.dto';
-import { GameRoom } from './gameroom.entity';
 import { InGameRoomInfoDto } from '../dto/ingameinfo.dto';
 import * as gameConfig from './gameConfig.json';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { InGameResultDto } from 'src/dto/ingame.result.dto';
+import { GameRoomMode } from 'src/enum/gameroom.mode.enum';
+import { InGameConfigDto } from 'src/dto/ingame.config.dto';
 
 export class GameInstance {
   info: InGameRoomInfoDto;
@@ -23,25 +26,72 @@ export class GameInstance {
   frames: number;
   pause: number;
 
-  constructor(gameRoom: GameRoom, roomId: number, server) {
-    this.info = this.makeInfo(gameRoom, roomId, server);
+  constructor(
+    roomId: number,
+    winScore: number,
+    mode: GameRoomMode,
+    server,
+    eventEmitter: EventEmitter2,
+  ) {
+    this.info = this.makeInfo(roomId, winScore, mode, server, eventEmitter);
     this.intervalId = null;
     this.gameInit();
     this.startGame();
   }
 
-  private makeInfo(gameRoom: GameRoom, roomId, server): InGameRoomInfoDto {
+  static makeSetConfig(): InGameConfigDto {
+    return {
+      gameCanvas: {
+        width: gameConfig.gameCanvas.width,
+        height: gameConfig.gameCanvas.height,
+      },
+      paddle: {
+        width: gameConfig.paddle.width,
+        height: gameConfig.paddle.height,
+      },
+      ball: {
+        size: gameConfig.ball.size,
+        x: gameConfig.gameCanvas.width / 2,
+        y: gameConfig.gameCanvas.height / 2,
+      },
+      redPaddle: {
+        x:
+          gameConfig.gameCanvas.width -
+          gameConfig.paddle.buffer -
+          gameConfig.paddle.width,
+        y: gameConfig.gameCanvas.height / 2,
+      },
+      bluePaddle: {
+        x:
+          gameConfig.gameCanvas.width -
+          gameConfig.paddle.buffer -
+          gameConfig.paddle.width,
+        y: gameConfig.gameCanvas.height / 2,
+      },
+    };
+  }
+
+  private makeInfo(
+    roomId,
+    winScore: number,
+    mode: GameRoomMode,
+    server,
+    eventEmitter: EventEmitter2,
+  ): InGameRoomInfoDto {
     const info: InGameRoomInfoDto = {
       roomId: roomId,
       SocketServer: server,
-      gameScreen: gameConfig.game_canvas,
+      eventEmitter: eventEmitter,
+      gameScreen: gameConfig.gameCanvas,
       paddle: gameConfig.paddle,
       ball: gameConfig.ball,
-      winScore: gameRoom.winScore,
+      winScore: winScore,
       redScore: 0,
       blueScore: 0,
       beginDate: new Date(),
       fps: gameConfig.fps,
+      gameMode: mode,
+      gameConfig: GameInstance.makeSetConfig(),
     };
     return info;
   }
@@ -79,49 +129,23 @@ export class GameInstance {
     this.setPauseTime();
     this.ballInit();
     this.paddleInit();
-    this.info.SocketServer.in(`gameroom-${this.info.roomId}`).emit(
-      InGameEvent.CONFIG,
-      {
-        gameCanvas: {
-          width: this.info.gameScreen.width,
-          height: this.info.gameScreen.height,
-        },
-        paddle: {
-          width: this.info.paddle.width,
-          height: this.info.paddle.height,
-        },
-        ball: {
-          size: this.info.ball.size,
-          x: this.state.ball.x,
-          y: this.state.ball.y,
-        },
-        redPaddle: {
-          x: this.state.redPaddle.x,
-          y: this.state.redPaddle.y,
-        },
-        bluePaddle: {
-          x: this.state.bluePaddle.x,
-          y: this.state.bluePaddle.y,
-        },
-      },
-    );
   }
 
   private ballInit() {
-    this.state.ball.x = this.info.gameScreen.width / 2;
-    this.state.ball.y = this.info.gameScreen.height / 2;
+    this.state.ball.x = this.info.gameConfig.ball.x;
+    this.state.ball.y = this.info.gameConfig.ball.y;
+    this.ballVelocity =
+      this.info.gameMode === GameRoomMode.NORMAL
+        ? gameConfig.ball.velocity
+        : gameConfig.ball.velocity * 2;
     this.randomBallDirection();
   }
 
   private paddleInit() {
-    this.state.redPaddle.y =
-      (this.info.gameScreen.height - this.info.paddle.height) / 2;
-    this.state.bluePaddle.y =
-      (this.info.gameScreen.height - this.info.paddle.height) / 2;
-
-    //임시 값
-    this.state.redPaddle.x = 10;
-    this.state.bluePaddle.x = 10;
+    this.state.redPaddle.x = this.info.gameConfig.redPaddle.x;
+    this.state.redPaddle.y = this.info.gameConfig.redPaddle.y;
+    this.state.bluePaddle.x = this.info.gameConfig.bluePaddle.x;
+    this.state.bluePaddle.y = this.info.gameConfig.bluePaddle.y;
   }
 
   private randomBallDirection() {
@@ -236,7 +260,8 @@ export class GameInstance {
           this.info.redScore >= this.info.winScore ||
           this.info.blueScore >= this.info.winScore
         ) {
-          this.finishGame();
+          this.info.eventEmitter.emit('gameroom:finish', this.info.roomId);
+          return;
         }
       }
     }
@@ -251,13 +276,20 @@ export class GameInstance {
    * 정상 종료: 승점 달성
    * 비정상 종료: 플레이어 이탈
    */
-  public finishGame() {
+  public finishGame(): InGameResultDto {
     clearInterval(this.intervalId);
     this.intervalId = null;
     //방인원에게 게임 종료 이벤트 전달
     this.info.SocketServer.in(`gameroom-${this.info.roomId}`).emit(
       InGameEvent.FINISH,
     );
+    //게임 전적 반환 로직
+    return {
+      beginDate: this.info.beginDate,
+      endDate: new Date(),
+      redScore: this.info.redScore,
+      blueScore: this.info.blueScore,
+    };
   }
 
   public startGame() {
