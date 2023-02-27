@@ -9,7 +9,7 @@ import User from 'src/entity/user.entity';
 @Module({
   imports: [UserModule, TypeOrmModule.forFeature([User])], //forwardRef(() => UserModule)],
   providers: [ChatGateway, ChatroomService, UserService, repo],
-  exports: [ChatGateway],
+  exports: [ChatGateway, ChatroomService],
   controllers: [ChatroomController],
 })
 export class ChatModule {}

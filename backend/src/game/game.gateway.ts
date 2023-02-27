@@ -24,6 +24,7 @@ import { MatchType } from 'src/enum/match.type.enum';
 import { User } from 'src/status/status.entity';
 import { ChatGateway } from 'src/chat/chat.geteway';
 import { GameRoomService } from './gameroom.service';
+import { ChatroomService } from 'src/chat/chat.service';
 
 export const gameRooms = new Map<number, GameRoom>();
 export let invitations: Invitation[] = [];
@@ -45,6 +46,7 @@ export class GameGateway implements OnGatewayDisconnect {
     private readonly userService: UserService,
     private readonly eventEmitter: EventEmitter2,
     private readonly gameRoomService: GameRoomService,
+    private readonly chatroomService: ChatroomService,
     @Inject(ChatGateway) private readonly chatGateway: ChatGateway,
   ) {}
 
@@ -67,6 +69,7 @@ export class GameGateway implements OnGatewayDisconnect {
         );
       }
     });
+    // TODO: 초대장이 존재하면 삭제
   }
 
   @SubscribeMessage('addUser')
@@ -231,8 +234,7 @@ export class GameGateway implements OnGatewayDisconnect {
     // 초대 게임방을 생성, 레드 유저를 먼저 넣어줍니다.
     const roomId = gameRooms.size + 1;
     const redUser: GameUserStatusDto = {
-      userId: inviterId,
-      nickname: inviterSocketInfo.userName,
+      ...(await this.userService.getUserInfo(inviterId)),
       status: GameRoomUserStatus.UN_READY,
     };
     const gameRoom = new GameRoom(
@@ -244,16 +246,38 @@ export class GameGateway implements OnGatewayDisconnect {
       'Quickplay Arena',
       5,
     );
+
+    // 초대한 유저가 채팅방에 입장한 상태라면, 채팅방을 나간다.
+    this.chatGateway.server
+      .in(inviterSocketInfo.socketId)
+      .socketsLeave(
+        `chatroom${this.chatroomService.getMyChatroomInfo(inviterId)?.id}`,
+      );
+
+    // 초대보낸 유저가 게임방에 입장한다.
     this.server
       .in(inviterSocketInfo.gameSocketId)
       .socketsJoin(`gameroom-${roomId}`);
 
     // 블루 유저를 게임방에 넣어줍니다.
     gameRoom.blueUser = {
-      userId: inviteeSocketInfo.userId,
-      nickname: inviteeSocketInfo.userName,
+      ...(await this.userService.getUserInfo(inviterId)),
       status: GameRoomUserStatus.UN_READY,
     };
+
+    // 초대받은 유저가 채팅방에 입장한 상태라면, 채팅방을 나간다.
+    this.chatGateway.server
+      .in(inviteeSocketInfo.socketId)
+      .socketsLeave(
+        `chatroom${
+          this.chatroomService.getMyChatroomInfo(inviteeSocketInfo.userId)?.id
+        }`,
+      );
+
+    // 초대받은 유저가 게임방에 입장한다.
+    this.server
+      .in(inviteeSocketInfo.gameSocketId)
+      .socketsJoin(`gameroom-${roomId}`);
 
     // 게임이 매칭되었다는 메시지를 보냅니다.
     this.server.in(`gameroom-${roomId}`).emit('gameRoomMatched', gameRoom);
