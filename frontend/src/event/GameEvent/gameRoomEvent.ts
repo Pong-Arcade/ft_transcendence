@@ -21,7 +21,7 @@ const gameRoomEvent = () => {
       });
     });
 
-    socket.on("leaveGameRoom", (userId) => {
+    socket.on("leaveGameRoom", () => {
       // console.log(`userId : ${userId} 님이 방을 떠났습니다`); //TODO: 채팅 처리를 위한 것인지 확인
       setGameState((prev) => ({
         ...prev,

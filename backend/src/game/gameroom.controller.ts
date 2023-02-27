@@ -10,6 +10,7 @@ import {
   Logger,
   NotFoundException,
   Param,
+  ParseEnumPipe,
   ParseIntPipe,
   Patch,
   Post,
@@ -37,6 +38,10 @@ import { GameRoomCreateRequestDto } from 'src/dto/request/gameroom.create.reques
 import { GameRoomInviteRequestDto } from 'src/dto/request/gameroom.invite.request.dto';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.auth.guard';
 import { GameRoomService } from './gameroom.service';
+import { users } from 'src/status/status.module';
+import { UserService } from 'src/user/user.service';
+import { invitations } from './game.gateway';
+import { MatchType } from 'src/enum/match.type.enum';
 
 @ApiTags('Game')
 @ApiBearerAuth()
@@ -48,6 +53,7 @@ export class GameRoomController {
   constructor(
     private readonly eventEmitter: EventEmitter2,
     private readonly gameRoomService: GameRoomService,
+    private readonly userService: UserService,
   ) {}
 
   @ApiOperation({
@@ -204,151 +210,186 @@ export class GameRoomController {
   }
 
   @ApiOperation({
-    summary: '게임방에 초대',
-    description: 'body에 담긴 유저들을 게임방에 초대합니다.',
+    summary: '게임 신청',
+    description: '특정 유저에게 게임을 신청합니다.',
   })
   @ApiCreatedResponse({
     description:
-      '게임방에 초대에 성공합니다. 초대된 유저들에게 게임방에 초대되었다는 알림을 보냅니다.',
+      '게임 신청에 성공합니다. 신청을 받은 유저에게는 게임 신청을 받았다는 알림을 보냅니다.',
   })
   @ApiBadRequestResponse({
-    description: '문법적인 오류가 있을 경우 게임방 초대에 실패합니다.',
-  })
-  @ApiForbiddenResponse({
-    description: '게임방 방장이 아닌 경우, 게임방 초대에 실패합니다.',
+    description: '문법적인 오류가 있을 경우 게임 신청에 실패합니다.',
   })
   @ApiNotFoundResponse({
-    description: '존재하지 않는 게임방에 초대할 경우 게임방 초대에 실패합니다.',
-  })
-  @HttpCode(HttpStatus.CREATED)
-  @Post('/invite/:room_id')
-  async inviteGameRoom(
-    @User() user: UserDto,
-    @Param('room_id', ParseIntPipe) roomId: number,
-    @Body(new ValidationPipe())
-    gameRoomInviteRequestDto: GameRoomInviteRequestDto,
-  ): Promise<void> {
-    this.logger.log(`Called ${this.inviteGameRoom.name}`);
-    // 1. 해당 게임방 정보 확인
-    const gameroomInfo = this.gameRoomService.getGameRoomInfo(roomId);
-    if (!gameroomInfo) {
-      throw new NotFoundException('존재하지 않는 게임방입니다.');
-    }
-
-    // 2. 해당 게임방의 방장인지 확인
-    if (gameroomInfo.redUser.userId !== user.userId) {
-      throw new ForbiddenException('게임방 방장만 초대할 수 있습니다.');
-    }
-
-    // 3. 채팅방 초대
-    this.eventEmitter.emit(
-      'gameroom:invite',
-      roomId,
-      user.userId,
-      gameRoomInviteRequestDto.users,
-    );
-  }
-
-  @ApiOperation({
-    summary: '게임방 초대 수락',
-    description: '게임방 초대를 수락합니다.',
-  })
-  @ApiCreatedResponse({
-    description:
-      '게임방 초대 수락에 성공합니다. 게임방에 입장되며, 해당 게임방에 속한 유저 정보를 반환합니다.',
-    type: GameRoomUsersInfoResponseDto,
-  })
-  @ApiBadRequestResponse({
-    description: '문법적인 오류가 있을 경우 게임방 초대 수락에 실패합니다.',
-  })
-  @ApiForbiddenResponse({
-    description: '게임방 초대를 받지 않은 경우, 게임방 초대 수락에 실패합니다.',
-  })
-  @ApiNotFoundResponse({
-    description:
-      '존재하지 않는 게임방에 초대 수락할 경우 게임방 초대 수락에 실패합니다.',
+    description: '존재하지 않는 유저에게 신청한 경우, 게임 신청에 실패합니다.',
   })
   @ApiConflictResponse({
     description:
-      '이미 게임방에 입장한 경우, 참여중인 게임방이 있는 경우, 게임방 정원이 가득찬 경우 게임방 초대 수락에 실패합니다.',
+      '오프라인 유저에게 신청한 경우, 게임방에 이미 입장한 유저에게 신청한 경우, 자신이나 상대방이 이미 수락 대기중인 상태인 경우, 게임 신청에 실패합니다.',
   })
   @HttpCode(HttpStatus.CREATED)
-  @Post('/invite/accept/:room_id')
-  async acceptGameRoomInvite(
+  @Post('/invite/:target_user_id')
+  async inviteGame(
     @User() user: UserDto,
-    @Param('room_id', ParseIntPipe) roomId: number,
-  ): Promise<GameRoomUsersInfoResponseDto> {
-    this.logger.log(`Called ${this.acceptGameRoomInvite.name}`);
-    // 1. 해당 게임방 정보 확인
-    const gameroomInfo = this.gameRoomService.getGameRoomInfo(roomId);
-    if (!gameroomInfo) {
-      throw new NotFoundException('존재하지 않는 게임방입니다.');
+    @Param('target_user_id', ParseIntPipe) targetUserId: number,
+  ): Promise<void> {
+    this.logger.log(`Called ${this.inviteGame.name}`);
+
+    // 1. 해당 유저가 존재하는지 확인
+    const targetUser = await this.userService.getUserInfo(targetUserId);
+    if (!targetUser) {
+      throw new NotFoundException('존재하지 않는 유저입니다.');
     }
 
-    // 2. 해당 게임방에 초대를 받은 유저인지 확인
-    if (!gameroomInfo.invitedUsers.includes(user.userId)) {
-      throw new ForbiddenException('해당 게임방에 초대 받지 않았습니다.');
+    // 2. 오프라인 유저에게 신청한 경우
+    if (!users.has(targetUserId)) {
+      throw new ConflictException('오프라인 유저에게는 신청할 수 없습니다.');
     }
 
-    // 3. 이미 해당 게임방에 입장한 유저인지 확인
-    if (this.gameRoomService.isOnThatGameRoom(roomId, user.userId)) {
-      throw new ConflictException('이미 해당 게임방에 입장했습니다.');
+    // 3. 게임방에 이미 입장한 유저에게 신청한 경우
+    if (this.gameRoomService.isOnGameRoom(targetUserId)) {
+      throw new ConflictException(
+        '게임방에 이미 입장한 유저에게는 신청할 수 없습니다.',
+      );
     }
 
-    // 4. 참여중인 게임방이 있는지 확인
-    if (this.gameRoomService.isOnGameRoom(user.userId)) {
-      throw new ConflictException('참여중인 게임방이 있습니다.');
+    // 4. 자신이나 상대방이 수락 대기중인 상태인 경우
+    if (
+      this.gameRoomService.isInviter(user.userId) ||
+      this.gameRoomService.isInvitee(targetUserId)
+    ) {
+      throw new ConflictException(
+        '이미 신청 수락 대기중인 상태에서는 신청할 수 없습니다.',
+      );
     }
 
-    // 5. 게임방 정원이 가득찼는지 확인
-    if (this.gameRoomService.getGameRoomUserCount(roomId) == 2) {
-      throw new ConflictException('게임방 정원이 가득찼습니다.');
-    }
-
-    // 6. 게임방에 입장
-    this.eventEmitter.emit('gameroom:join', roomId, user.userId);
-
-    // 8. 게임방에 입장한 유저 정보 반환
-    return await this.gameRoomService.getGameRoomUsersInfo(gameroomInfo);
+    // 5. 게임 신청 요청 처리
+    this.eventEmitter.emit('gameroom:invite', user.userId, targetUserId);
   }
 
   @ApiOperation({
-    summary: '게임방 초대 거절',
-    description: '게임방 초대를 거절합니다.',
+    summary: '게임 신청 수락',
+    description: '게임 신청을 수락합니다. 초대받은 유저만 수락할 수 있습니다.',
   })
-  @ApiNoContentResponse({
-    description: '게임방 초대 거절에 성공합니다.',
+  @ApiCreatedResponse({
+    description:
+      '게임 신청 수락에 성공합니다. 게임방에 입장되며, 해당 게임방에 속한 유저 정보를 반환합니다.',
+    type: GameRoomUsersInfoResponseDto,
   })
   @ApiBadRequestResponse({
-    description: '문법적인 오류가 있을 경우 게임방 초대 거절에 실패합니다.',
+    description: '문법적인 오류가 있을 경우 게임 신청 수락에 실패합니다.',
   })
   @ApiForbiddenResponse({
-    description: '게임방 초대를 받지 않은 경우, 게임방 초대 거절에 실패합니다.',
+    description: '게임 신청을 받지 않은 경우, 게임 신청 수락에 실패합니다.',
   })
-  @ApiNotFoundResponse({
+  @HttpCode(HttpStatus.CREATED)
+  @Post('/invite/accept')
+  async acceptGameRoomInvite(@User() user: UserDto): Promise<void> {
+    this.logger.log(`Called ${this.acceptGameRoomInvite.name}`);
+    // 1. 게임 신청을 받은 유저인지 확인
+    if (!this.gameRoomService.isInvitee(user.userId)) {
+      throw new ForbiddenException('게임 신청을 받지 않았습니다.');
+    }
+
+    // 2. 게임 신청 수락 처리
+    this.eventEmitter.emit('gameroom:invite:accept', user.userId);
+  }
+
+  @ApiOperation({
+    summary: '게임 신청 거절',
     description:
-      '존재하지 않는 게임방에 초대 거절할 경우, 게임방 초대 거절에 실패합니다.',
+      '게임 신청을 거절합니다. 신청을 받은 유저만 게임 신청 거절을 할 수 있습니다.',
+  })
+  @ApiNoContentResponse({
+    description: '게임 신청 거절에 성공합니다.',
+  })
+  @ApiBadRequestResponse({
+    description: '문법적인 오류가 있을 경우 게임 신청 거절에 실패합니다.',
+  })
+  @ApiForbiddenResponse({
+    description: '게임 신청 받지 않은 경우, 게임 신청 거절에 실패합니다.',
   })
   @HttpCode(HttpStatus.NO_CONTENT)
-  @Delete('/invite/reject/:room_id')
-  async rejectGameRoomInvite(
-    @User() user: UserDto,
-    @Param('room_id', ParseIntPipe) roomId: number,
-  ): Promise<void> {
+  @Delete('/invite/reject')
+  async rejectGameRoomInvite(@User() user: UserDto): Promise<void> {
     this.logger.log(`Called ${this.rejectGameRoomInvite.name}`);
-    // 1. 해당 게임방 정보 확인
-    const gameroomInfo = this.gameRoomService.getGameRoomInfo(roomId);
-    if (!gameroomInfo) {
-      throw new NotFoundException('존재하지 않는 게임방입니다.');
+
+    // 2. 게임 신청을 받은 유저인지 확인
+    if (!this.gameRoomService.isInvitee(user.userId)) {
+      throw new ForbiddenException('게임 신청을 받지 않았습니다.');
     }
 
-    // 2. 해당 게임방에 초대를 받은 유저인지 확인
-    if (!gameroomInfo.invitedUsers.includes(user.userId)) {
-      throw new ForbiddenException('해당 게임방에 초대 받지 않았습니다.');
+    // 3. 게임 신청 거절
+    this.eventEmitter.emit('gameroom:invite:reject', user.userId);
+  }
+
+  @ApiOperation({
+    summary: '빠른 대전 신청',
+    description:
+      '빠른 대전을 큐에 입장 신청합니다. 노말과 래더를 선택할 수 있습니다.',
+  })
+  @ApiCreatedResponse({
+    description: '빠른 대전 신청에 성공합니다.',
+  })
+  @ApiBadRequestResponse({
+    description: '문법적인 오류가 있을 경우 빠른 대전 신청에 실패합니다.',
+  })
+  @ApiConflictResponse({
+    description:
+      '이미 빠른 대전 신청을 한 경우, 이미 게임방에 입장한 경우, 빠른 대전 신청에 실패합니다.',
+  })
+  @HttpCode(HttpStatus.CREATED)
+  @Post('/join/quick-match/:match_type')
+  async joinQuickMatchQueue(
+    @User() user: UserDto,
+    @Param('match_type', new ParseEnumPipe(MatchType)) matchType: MatchType,
+  ): Promise<void> {
+    this.logger.log(`Called ${this.joinQuickMatchQueue.name}`);
+    // 1. 빠른 대전 신청을 한 유저인지 확인
+    if (
+      this.gameRoomService.isInLadderQuickMatchQueue(user.userId) ||
+      this.gameRoomService.isInNormalQuickMatchQueue(user.userId)
+    ) {
+      throw new ConflictException('이미 빠른 대전 신청을 한 유저입니다.');
     }
 
-    // 3. 게임방 초대 거절
-    this.eventEmitter.emit('gameroom:invite:reject', roomId, user.userId);
+    // 2. 게임방에 입장한 유저인지 확인
+    if (this.gameRoomService.isOnGameRoom(user.userId)) {
+      throw new ConflictException('이미 게임방에 입장한 유저입니다.');
+    }
+
+    // 3. 빠른 대전 신청 처리
+    this.eventEmitter.emit('gameroom:quick-match:join', user.userId, matchType);
+  }
+
+  @ApiOperation({
+    summary: '빠른 대전 신청 취소',
+    description: '빠른 대전 신청을 취소합니다.',
+  })
+  @ApiNoContentResponse({
+    description: '빠른 대전 신청 취소에 성공합니다.',
+  })
+  @ApiBadRequestResponse({
+    description: '문법적인 오류가 있을 경우 빠른 대전 신청 취소에 실패합니다.',
+  })
+  @ApiConflictResponse({
+    description:
+      '빠른 대전 신청을 하지 않은 경우, 빠른 대전 신청 취소에 실패합니다.',
+  })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Delete('/leave/quick-match')
+  async leaveQuickMatchQueue(@User() user: UserDto): Promise<void> {
+    this.logger.log(`Called ${this.leaveQuickMatchQueue.name}`);
+    // 1. 빠른 대전 신청을 한 유저인지 확인
+    if (
+      !this.gameRoomService.isInLadderQuickMatchQueue(user.userId) &&
+      !this.gameRoomService.isInNormalQuickMatchQueue(user.userId)
+    ) {
+      throw new ConflictException('빠른 대전 신청을 하지 않은 유저입니다.');
+    }
+
+    // 2. 빠른 대전 신청 취소 처리
+    this.eventEmitter.emit('gameroom:quick-match:leave', user.userId);
   }
 
   @ApiOperation({
@@ -462,9 +503,8 @@ export class GameRoomController {
   })
   @ApiConflictResponse({
     description:
-      '게임방에 입장하지 않은 유저가 게임 준비 요청 시도한 경우, 게임 준비 요청에 실패합니다.',
+      '게임방에 입장하지 않은 유저나 관전자가 게임 준비 요청 시도한 경우, 게임 준비 요청에 실패합니다.',
   })
-  // TODO: 관전자인 경우 게임 준비 요청에 실패합니다.
   @HttpCode(HttpStatus.OK)
   @Patch('/ready/:room_id')
   async readyGameRoom(
@@ -483,7 +523,12 @@ export class GameRoomController {
       throw new ConflictException('게임방에 입장하지 않았습니다.');
     }
 
-    // 3. 게임 준비 요청
+    // 3. 관전자가 아닌지 확인
+    if (gameroomInfo.spectatorUsers.includes(user.userId)) {
+      throw new ConflictException('관전자는 게임 준비 요청을 할 수 없습니다.');
+    }
+
+    // 4. 게임 준비 요청
     this.eventEmitter.emit('gameroom:ready', roomId, user.userId);
   }
 
@@ -503,9 +548,8 @@ export class GameRoomController {
   })
   @ApiConflictResponse({
     description:
-      '게임방에 입장하지 않은 유저가 게임 준비 취소 요청 시도한 경우, 게임 준비 취소 요청에 실패합니다.',
+      '게임방에 입장하지 않은 유저나 관전자가 게임 준비 취소 요청 시도한 경우, 게임 준비 취소 요청에 실패합니다.',
   })
-  // TODO: 관전자인 경우 게임 준비 취소 요청에 실패합니다.
   @HttpCode(HttpStatus.OK)
   @Patch('/unready/:room_id')
   async unReadyGameRoom(
@@ -524,7 +568,14 @@ export class GameRoomController {
       throw new ConflictException('게임방에 입장하지 않았습니다.');
     }
 
-    // 3. 게임 준비 취소 요청
+    // 3. 관전자가 아닌지 확인
+    if (gameroomInfo.spectatorUsers.includes(user.userId)) {
+      throw new ConflictException(
+        '관전자는 게임 준비 취소 요청을 할 수 없습니다.',
+      );
+    }
+
+    // 4. 게임 준비 취소 요청
     this.eventEmitter.emit('gameroom:unready', roomId, user.userId);
   }
 }

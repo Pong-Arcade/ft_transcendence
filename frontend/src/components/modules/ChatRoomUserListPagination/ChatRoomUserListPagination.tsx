@@ -1,12 +1,9 @@
-import { MouseEvent, useContext, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { SocketContext } from "../../../utils/ChatSocket";
+import { MouseEvent } from "react";
 import Pagination from "../Pagination";
-import { IItem, IPaginationItem, IUser } from "../Pagination/Pagination";
+import { IItem, IPaginationItem } from "../Pagination/Pagination";
 
 interface Props {
   list: IItem[];
-  // setList: React.Dispatch<React.SetStateAction<IUser[] | undefined>>;
   PaginationItem: (arg: IPaginationItem) => JSX.Element;
   page: number;
   onItemClick?: (e: MouseEvent<HTMLButtonElement>) => void;
@@ -16,7 +13,6 @@ interface Props {
 
 const ChatRoomUserListPagination = ({
   list,
-  // setList,
   PaginationItem,
   onItemClick,
   page,

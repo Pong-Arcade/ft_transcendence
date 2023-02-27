@@ -51,9 +51,9 @@ const ChatRoomUserList = () => {
   const location = useLocation();
   const navigate = useNavigate();
   useEffect(() => {
-    if (location.state) {
+    if (location.state && !userList) {
       const users: IUser[] = location.state.users;
-      if (users) setUserList(users);
+      setUserList(users);
     }
     socket.socket.off("joinChatRoom");
     socket.socket.off("leaveChatRoom");
@@ -103,34 +103,6 @@ const ChatRoomUserList = () => {
       <ChatRoomUserListStyled>
         <ChatRoomUserListPagination
           list={userList ? userList : new Array<IUser>()}
-          // setList={setUserList}
-          // list={[
-          //   {
-          //     userId: 1,
-          //     nickname: "test",
-          //     avatarUrl: "example.com",
-          //   },
-          //   {
-          //     userId: 2,
-          //     nickname: "test",
-          //     avatarUrl: "example.com",
-          //   },
-          //   {
-          //     userId: 3,
-          //     nickname: "test",
-          //     avatarUrl: "example.com",
-          //   },
-          //   {
-          //     userId: 1,
-          //     nickname: "test",
-          //     avatarUrl: "example.com",
-          //   },
-          //   {
-          //     userId: 1,
-          //     nickname: "test",
-          //     avatarUrl: "example.com",
-          //   },
-          // ]}
           page={page}
           onNextPage={() => setPage(page + 1)}
           onPrevPage={() => setPage(page - 1)}
@@ -140,6 +112,7 @@ const ChatRoomUserList = () => {
         <Chat width="100%" height="55%" />
       </ChatRoomUserListStyled>
       <ChatRoomMenu
+        list={userList ? userList : new Array<IUser>()}
         top={positionY}
         left={positionX}
         isOpenMenu={isOpenMenu}

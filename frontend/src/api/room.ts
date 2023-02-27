@@ -15,12 +15,39 @@ export const createChatRoomAPI = async (values: ILobbyChatRoomFormValues) => {
   return response;
 };
 
+export const joinChatRoomAPI = async (roomId: number) => {
+  const response = await postRequest(`chat-rooms/join/${roomId}`);
+  return response;
+};
+
 export const leaveChatRoomAPI = async (roomId: number) => {
   const response = await deleteRequest(`chat-rooms/leave/${roomId}`);
   return response;
 };
-export const joinChatRoomAPI = async (roomId: number) => {
-  const response = await postRequest(`chat-rooms/join/${roomId}`);
+
+export const banChatRoomAPI = async (roomId: number, userId: number) => {
+  const response = await deleteRequest(`chat-rooms/ban/${roomId}/${userId}`);
+  return response;
+};
+
+export const promoteAdminAPI = async (roomId: number, userId: number) => {
+  const response = await patchRequest(
+    `chat-rooms/promote-admin/${roomId}/${userId}`
+  );
+  return response;
+};
+promoteAdminAPI;
+export const demoteAdminAPI = async (roomId: number, userId: number) => {
+  const response = await patchRequest(
+    `chat-rooms/demote-admin/${roomId}/${userId}`
+  );
+  return response;
+};
+
+export const muteChatRoomAPI = async (roomId: number, userId: number) => {
+  const response = await patchRequest(
+    `chat-rooms/mute/${roomId}/${userId}/100`
+  );
   return response;
 };
 

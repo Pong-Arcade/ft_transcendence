@@ -13,7 +13,7 @@ import {
 } from '@nestjs/websockets';
 import { Namespace, Socket } from 'socket.io';
 import { AuthService } from 'src/auth/auth.service';
-import { GameRoom } from './gameroom.entity';
+import { GameRoom, Invitation } from './gameroom.entity';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { GameRoomCreateRequestDto } from 'src/dto/request/gameroom.create.request.dto';
 import { users } from 'src/status/status.module';
@@ -28,6 +28,11 @@ import { User } from 'src/status/status.entity';
 import { ChatGateway } from 'src/chat/chat.geteway';
 
 export const gameRooms = new Map<number, GameRoom>();
+export let invitations: Invitation[] = [];
+
+export let normalQuickMatchQueue = new Array<number>();
+export let ladderQuickMatchQueue = new Array<number>();
+
 @WebSocketGateway({
   namespace: 'socket/game',
 })
@@ -128,7 +133,6 @@ export class GameGateway implements OnGatewayDisconnect {
         .in('lobby')
         .emit('joinGameRoom', { joinUser, roomId }); // kangkim: 로비에서 실시간으로 게임방 변경 정보를 알기 위해서
     }
-    room.invitedUsers = room.invitedUsers.filter((id) => id !== user.userId);
   }
   //
   @OnEvent('gameroom:leave')
@@ -155,6 +159,10 @@ export class GameGateway implements OnGatewayDisconnect {
       this.chatGateway.server.in(userSocketInfo.socketId).socketsJoin('lobby');
       const userInfo = await this.userService.getUserInfo(userId);
       this.server.in(`gameroom-${room.roomId}`).emit('leaveGameRoom', userId);
+      this.server
+        .in(`gameroom-${roomId}`)
+        .emit('systemMsg', userSocketInfo.userName + '님이 퇴장하였습니다.');
+
       this.chatGateway.server
         .in('lobby')
         .emit('leaveGameRoom', { userInfo, roomId }); // kangkim: 로비에서 실시간으로 게임방 변경 정보를 알기 위해서
@@ -162,41 +170,99 @@ export class GameGateway implements OnGatewayDisconnect {
   }
 
   @OnEvent('gameroom:invite')
-  async inviteGame(roomId: number, userId: number, targetUserIds: number[]) {
+  async inviteGame(userId: number, targetUserId: number) {
     this.logger.log(`Called ${this.inviteGame.name}`);
-    const room = gameRooms.get(roomId);
     const userSocketInfo = users.get(userId);
-    for (const targetUserId of targetUserIds) {
-      room.invitedUsers.push(targetUserId);
-      const targetUserSocketInfo = users.get(targetUserId);
-      this.server
-        .in(targetUserSocketInfo.gameSocketId)
-        .emit('inviteGameRoom', roomId);
-    }
-    // 채팅방을 생성 후, 그 방으로 입장
-    await this.eventEmitter.emitAsync(
-      'gameroom:create',
-      {
-        userId,
-        nickname: userSocketInfo.userName,
-      } as UserDto,
-      {
-        mode: GameRoomMode.NORMAL,
-        type: MatchType.NORMAL,
-        winScore: 10,
-        title: 'Quickplay Arena',
-        maxSpectatorCount: 5,
-      } as GameRoomCreateRequestDto,
+
+    // 초대장을 생성
+    invitations.push({
+      invitationId: invitations.length + 1,
+      inviterId: userId,
+      inviteeId: targetUserId,
+      expirationTime: new Date(new Date().getTime() + 1000 * 60),
+    });
+
+    // 초대장을 받은 유저에게 초대장을 전달
+    const inviteeSocketInfo = users.get(targetUserId);
+    this.server
+      .in(inviteeSocketInfo.gameSocketId)
+      .emit('inviteGameRoom', await this.userService.getUserInfo(userId));
+
+    // 1분 후 초대장이 남아있다면 초대장을 삭제
+    setTimeout(() => {
+      invitations = invitations.filter(
+        (invitation) => invitation.invitationId !== invitations.length,
+      );
+    }, 1000 * 60);
+  }
+
+  @OnEvent('gameroom:invite:accept')
+  async acceptInviteGame(userId: number) {
+    this.logger.log(`Called ${this.acceptInviteGame.name}`);
+    // 초대받은 사람의 socket 정보
+    const inviteeSocketInfo = users.get(userId);
+
+    const inviterId = invitations.find(
+      (invitation) => invitation.inviteeId === userId,
+    ).inviterId;
+    // 초대한 사람의 socket 정보
+    const inviterSocketInfo = users.get(inviterId);
+
+    // 초대장을 삭제
+    invitations = invitations.filter(
+      (invitation) => invitation.inviteeId !== userId,
     );
-    this.eventEmitter.emit('gameroom:join', roomId, {
-      userId,
-      nickname: userSocketInfo.userName,
-    } as UserDto);
+
+    // FIXME: 프론트쪽에서 직접 해당 유저가 게임방 생성 API를 호출하도록 수정해야 함.
+    // // 초대한 사람의 게임방을 생성
+    // await this.eventEmitter.emitAsync(
+    //   'gameroom:create',
+    //   {
+    //     userId,
+    //     nickname: inviterSocketInfo.userName,
+    //   } as UserDto,
+    //   {
+    //     mode: GameRoomMode.NORMAL,
+    //     type: MatchType.NORMAL,
+    //     winScore: 10,
+    //     title: 'Quickplay Arena',
+    //     maxSpectatorCount: 5,
+    //   } as GameRoomCreateRequestDto,
+    // );
+
+    // 초대한 유저로 하여금 채팅방 생성 API를 호출하도록 요청
+    this.server
+      .in(inviterSocketInfo.gameSocketId)
+      .emit('acceptInviteGameRoom:create', userId);
+
+    // 초대받은 유저로 하여금 채팅방 입장 API를 호출하도록 5초 후 요청
+    setTimeout(() => {
+      this.server
+        .in(inviteeSocketInfo.gameSocketId)
+        .emit('acceptInviteGameRoom:join', inviterId);
+    }, 5000);
   }
 
   @OnEvent('gameroom:invite:reject')
-  async rejectInviteGame(roomId: number, userId: number) {
+  async rejectInviteGame(userId: number) {
     this.logger.log(`Called ${this.rejectInviteGame.name}`);
+
+    // 초대받은 사람의 socket 정보
+    const inviteeSocketInfo = users.get(userId);
+
+    const inviterId = invitations.find(
+      (invitation) => invitation.inviteeId === userId,
+    ).inviterId;
+    // 초대한 사람의 socket 정보
+    const inviterSocketInfo = users.get(inviterId);
+
+    // inviteeId가 userId인 초대장을 삭제
+    invitations = invitations.filter(
+      (invitation) => invitation.inviteeId !== userId,
+    );
+
+    // 초대한 사람에게 초대 거절을 알림
+    this.server.in(inviterSocketInfo.gameSocketId).emit('rejectInviteGameRoom');
   }
 
   @OnEvent('gameroom:spectator:join')
@@ -214,7 +280,6 @@ export class GameGateway implements OnGatewayDisconnect {
 
     const room = gameRooms.get(roomId);
     room.spectatorUsers.push(userId);
-    room.invitedUsers = room.invitedUsers.filter((id) => id !== userId);
   }
 
   @OnEvent('gameroom:spectator:leave')
@@ -280,6 +345,68 @@ export class GameGateway implements OnGatewayDisconnect {
         .in(`gameroom-${roomId}`)
         .emit('unReadyBlueUser', room.blueUser.userId);
     }
+  }
+
+  /**
+   * 매칭이 성사되었을 때 호출되는 이벤트입니다.
+   * 매칭이 성사되면 게임방을 생성하고, 매칭된 유저들을 게임방에 입장시킵니다.
+   * @param redUserId
+   * @param blueUserId
+   * @param matchType
+   * @returns
+   */
+  @OnEvent('game:matching')
+  async matchingGameRoom(
+    redUserId: number,
+    blueUserId: number,
+    matchType: MatchType,
+  ) {
+    this.logger.log(`Called ${this.matchingGameRoom.name}`);
+    const redUserSocketInfo = users.get(redUserId);
+    const blueUserSocketInfo = users.get(blueUserId);
+
+    // 빠른 대전 게임방을 생성, 레드 유저를 먼저 넣어줍니다.
+    const roomId = gameRooms.size + 1;
+    const redUser: GameUserStatusDto = {
+      userId: redUserSocketInfo.userId,
+      nickname: redUserSocketInfo.userName,
+      status: GameRoomUserStatus.UN_READY,
+    };
+    const gameRoom = new GameRoom(
+      roomId,
+      redUser,
+      GameRoomMode.NORMAL,
+      matchType,
+      10,
+      'Quickplay Arena',
+      5,
+    );
+    this.server
+      .in(redUserSocketInfo.gameSocketId)
+      .socketsJoin(`gameroom-${roomId}`);
+
+    // 블루 유저를 게임방에 넣어줍니다.
+    gameRoom.blueUser = {
+      userId: blueUserSocketInfo.userId,
+      nickname: blueUserSocketInfo.userName,
+      status: GameRoomUserStatus.UN_READY,
+    };
+    this.server
+      .in(blueUserSocketInfo.gameSocketId)
+      .socketsJoin(`gameroom-${roomId}`);
+
+    // 게임이 매칭되었다는 메시지를 보냅니다.
+    this.server.in(`gameroom-${roomId}`).emit('gameRoomMatched', gameRoom);
+
+    // 게임방에 입장한 유저들에게 입장 메시지를 보냅니다.
+    this.server
+      .in(`gameroom-${roomId}`)
+      .emit('systemMsg', '게임방에 입장하였습니다.');
+
+    gameRooms.set(roomId, gameRoom);
+
+    // 로비에 있는 유저들에게 게임방이 생성되었다는 메시지를 보냅니다.
+    this.chatGateway.server.in('lobby').emit('addGameRoom', gameRoom);
   }
 }
 //
