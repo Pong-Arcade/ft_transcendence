@@ -36,7 +36,7 @@ const RankingItem = ({ item, onItemClick }: IPaginationItem) => {
   } = item as IRanking;
 
   return (
-    <LobbyUserItemStyled id={userId.toString()} onClick={onItemClick}>
+    <LobbyUserItemStyled id={userId?.toString()} onClick={onItemClick}>
       <Field>{ranking}</Field>
       <Field>{nickname}</Field>
       <Field>{ladderScore}</Field>

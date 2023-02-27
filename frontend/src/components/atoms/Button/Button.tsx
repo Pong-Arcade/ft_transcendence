@@ -49,6 +49,7 @@ const ButtonStyled = styled.button.attrs((props) => {
   ${(props) =>
     props.disabled &&
     css`
+      cursor: auto;
       background-color: ${(props) => props.theme.background.back};
     `}
 `;

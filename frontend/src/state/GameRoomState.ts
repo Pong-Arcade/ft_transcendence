@@ -5,7 +5,8 @@ const gameRoomState = atom<IGameRoom>({
   key: "gameRoomState",
   default: {
     roomId: -1,
-    users: [],
+    redUser: {},
+    blueUser: {},
   },
 });
 

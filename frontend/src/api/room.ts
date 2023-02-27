@@ -1,4 +1,3 @@
-import { ILobbyGameRoom } from "../components/modules/Pagination/Pagination";
 import { ILobbyChatRoomFormValues } from "../hooks/useChatRoomForm";
 import { EGameType, IGameRoomFormValues } from "../hooks/useGameRoomForm";
 import { deleteRequest, getRequest, patchRequest, postRequest } from "./axios";
@@ -16,22 +15,18 @@ export const createChatRoomAPI = async (values: ILobbyChatRoomFormValues) => {
   return response;
 };
 
-export const joinChatRoomAPI = async (roomId: string) => {
-  console.log(`chat-rooms/join/${roomId}`);
+export const joinChatRoomAPI = async (roomId: number) => {
   const response = await postRequest(`chat-rooms/join/${roomId}`);
-  console.log("response:", response);
   return response;
 };
 
 export const leaveChatRoomAPI = async (roomId: number) => {
   const response = await deleteRequest(`chat-rooms/leave/${roomId}`);
-  console.log("response: ", response);
   return response;
 };
 
 export const banChatRoomAPI = async (roomId: number, userId: number) => {
   const response = await deleteRequest(`chat-rooms/ban/${roomId}/${userId}`);
-  console.log("response: ", response);
   return response;
 };
 
@@ -39,7 +34,6 @@ export const promoteAdminAPI = async (roomId: number, userId: number) => {
   const response = await patchRequest(
     `chat-rooms/promote-admin/${roomId}/${userId}`
   );
-  console.log("response: ", response);
   return response;
 };
 promoteAdminAPI;
@@ -47,7 +41,6 @@ export const demoteAdminAPI = async (roomId: number, userId: number) => {
   const response = await patchRequest(
     `chat-rooms/demote-admin/${roomId}/${userId}`
   );
-  console.log("response: ", response);
   return response;
 };
 
@@ -55,7 +48,6 @@ export const muteChatRoomAPI = async (roomId: number, userId: number) => {
   const response = await patchRequest(
     `chat-rooms/mute/${roomId}/${userId}/100`
   );
-  console.log("response: ", response);
   return response;
 };
 
@@ -65,19 +57,39 @@ export const getGameRoomListAPI = async () => {
 };
 
 export const createGameRoomAPI = async (
-  mode: EGameType,
+  type: EGameType,
   values: IGameRoomFormValues
 ) => {
   const response = await postRequest("game-rooms/create", {
     ...values,
     maxSpectatorCount: +values.maxSpectatorCount,
     winScore: +values.winScore,
-    type: mode,
+    type: type,
   });
   return response.data;
 };
 
-export const joinGameRoomAPI = async (roomId: string) => {
+export const joinGamePlayerAPI = async (roomId: number) => {
   const response = await postRequest(`game-rooms/join/${roomId}`);
+  return response;
+};
+
+export const joinGameSpectatorAPI = async (roomId: number) => {
+  const response = await postRequest(`game-rooms/spectator/join/${roomId}`);
+  return response;
+};
+
+export const leaveGameRoomAPI = async (roomId: number) => {
+  const response = await deleteRequest(`game-rooms/leave/${roomId}`);
+  return response;
+};
+
+export const readyGameRoomAPI = async (roomId: number) => {
+  const response = await patchRequest(`game-rooms/ready/${roomId}`);
+  return response;
+};
+
+export const unReadyGameRoomAPI = async (roomId: number) => {
+  const response = await patchRequest(`game-rooms/unready/${roomId}`);
   return response;
 };

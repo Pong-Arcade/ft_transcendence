@@ -36,7 +36,7 @@ export const ladderQuickMatchQueue = new Array<number>();
 export class GameGateway implements OnGatewayDisconnect {
   @WebSocketServer() server: Namespace;
   private logger = new Logger(GameGateway.name);
-
+  //
   constructor(
     private readonly jwtService: JwtService,
     private readonly authService: AuthService,
@@ -82,6 +82,7 @@ export class GameGateway implements OnGatewayDisconnect {
     const redUser: GameUserStatusDto = {
       userId: user.userId,
       nickname: user.nickname,
+      avatarUrl: user.avatarUrl, // kangkim : 로비 게임방 유저 사진 보이게 하기 위함(현재 user 에 avatarUrl 없음)
       status: GameRoomUserStatus.UN_READY,
     };
     const gameRoom = new GameRoom(
@@ -96,7 +97,7 @@ export class GameGateway implements OnGatewayDisconnect {
     gameRooms.set(roomId, gameRoom);
     this.chatGateway.server.in('lobby').emit('addGameRoom', gameRoom);
   }
-
+  //
   /**
    * 게임방에 입장합니다.
    * 게임방에 입장한 유저의 정보를 게임방에 있는 유저들에게 전달하고, 입장 메시지를 전달합니다.
@@ -111,12 +112,8 @@ export class GameGateway implements OnGatewayDisconnect {
       .in(userSocketInfo.gameSocketId)
       .socketsJoin(`gameroom-${roomId}`);
 
-    this.server
-      .in(`gameroom-${roomId}`)
-      .emit(
-        'joinGameRoom',
-        await this.userService.getUserInfo(userSocketInfo.userId),
-      );
+    const joinUser = await this.userService.getUserInfo(userSocketInfo.userId);
+    this.server.in(`gameroom-${roomId}`).emit('joinGameRoom', joinUser);
 
     this.server
       .in(`gameroom-${roomId}`)
@@ -129,9 +126,12 @@ export class GameGateway implements OnGatewayDisconnect {
         nickname: user.nickname,
         status: GameRoomUserStatus.UN_READY,
       };
+      this.chatGateway.server
+        .in('lobby')
+        .emit('joinGameRoom', { joinUser, roomId }); // kangkim: 로비에서 실시간으로 게임방 변경 정보를 알기 위해서
     }
   }
-
+  //
   @OnEvent('gameroom:leave')
   async leaveGame(roomId: number, userId: number) {
     this.logger.log(`Called ${this.leaveGame.name}`);
@@ -154,10 +154,15 @@ export class GameGateway implements OnGatewayDisconnect {
         .in(userSocketInfo.gameSocketId)
         .socketsLeave(`gameroom-${room.roomId}`);
       this.chatGateway.server.in(userSocketInfo.socketId).socketsJoin('lobby');
+      const userInfo = await this.userService.getUserInfo(userId);
       this.server.in(`gameroom-${room.roomId}`).emit('leaveGameRoom', userId);
       this.server
         .in(`gameroom-${roomId}`)
         .emit('systemMsg', userSocketInfo.userName + '님이 퇴장하였습니다.');
+
+      this.chatGateway.server
+        .in('lobby')
+        .emit('leaveGameRoom', { userInfo, roomId }); // kangkim: 로비에서 실시간으로 게임방 변경 정보를 알기 위해서
     }
   }
 
@@ -336,7 +341,7 @@ export class GameGateway implements OnGatewayDisconnect {
       this.server.in(`gameroom-${roomId}`).emit('startGame');
     }
   }
-
+  //
   @OnEvent('gameroom:unready')
   async unreadyGame(roomId: number, userId: number) {
     this.logger.log(`Called ${this.unreadyGame.name}`);
@@ -417,3 +422,4 @@ export class GameGateway implements OnGatewayDisconnect {
     this.chatGateway.server.in('lobby').emit('addGameRoom', gameRoom);
   }
 }
+//

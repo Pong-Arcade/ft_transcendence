@@ -16,6 +16,7 @@ import GameTypeCheckBoxGroup from "../GameTypeCheckBoxGroup/GameTypeCheckBoxGrou
 import LabledInput from "../LabledInput";
 import ModalInputListWrapper from "../ModalInputListWrapper";
 import ModalTitle from "../ModalTitle";
+import { EGameUserStatus } from "../Pagination/Pagination";
 
 interface Props {
   title?: string;
@@ -52,7 +53,8 @@ const CreateGameRoomModal = ({ title, onClose }: Props) => {
 
         setGameRoomState({
           roomId: data.roomId,
-          users: [data.redUser],
+          redUser: { ...data.redUser, status: EGameUserStatus.UN_READY },
+          blueUser: {},
         });
         navigate(`/game-rooms/${data.roomId}`);
       },

@@ -1,4 +1,4 @@
-import { useEffect, useContext, useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import Board from "../components/atoms/Board";
 import Chat from "../components/modules/Chat";
@@ -8,7 +8,6 @@ import LobbyUserList from "../components/modules/LobbyUserList";
 import LobbyUserProfile from "../components/modules/LobbyUserProfile";
 import UserInfoSettingModal from "../components/modules/UserInfoSettingModal";
 import LobbyTemplate from "../components/templates/LobbyTemplate";
-import { SocketContext } from "../utils/ChatSocket";
 import useFirstLoginModal from "../hooks/useFirstLoginModal";
 import useLoading from "../hooks/useLoading";
 import FullSpinner from "../components/atoms/FullSpinner";
@@ -18,8 +17,6 @@ import errorState from "../state/ErrorState";
 import LobbyRoomListTypeChoiceButtonGroup from "../components/modules/LobbyRoomListTypeChoiceButtonGroup";
 import { EROOM_BUTTON } from "../components/modules/LobbyRoomListTypeChoiceButtonGroup/LobbyRoomListTypeChoiceButtonGroup";
 import LobbyGameRoomList from "../components/modules/LobbyGameRoomList";
-import { getGameRoomListAPI } from "../api/room";
-import GameSocket from "../state/GameSocket";
 
 const UserWrapper = styled(Board).attrs({
   width: "25%",
@@ -54,8 +51,6 @@ const Lobby = () => {
   const { isLoading, endLoading } = useLoading({
     initialLoading: true,
   });
-  const socket = useContext(SocketContext);
-  const gameSocket = useContext(GameSocket);
 
   const {
     onlineUsers,
@@ -63,7 +58,6 @@ const Lobby = () => {
     blockUsers,
     chatRoomList,
     gameRoomList,
-    setGameRoomList, //FIXME: 임시로 여기에 둠
     myInfo,
   } = getLobbyData();
   const { isFirstLoginModal, FirstLoginModalClose } = useFirstLoginModal();
@@ -71,10 +65,7 @@ const Lobby = () => {
   const [currentButton, setCurrentButton] = useState(EROOM_BUTTON.CHATROOM);
   const [page, setPage] = useState(0);
 
-  const onChoiceButtonClick = async (button: EROOM_BUTTON) => {
-    if (button === EROOM_BUTTON.GAMEROOM) {
-      setGameRoomList(await getGameRoomListAPI()); //FIXME: 임시로 여기에 둠
-    }
+  const onChoiceButtonClick = (button: EROOM_BUTTON) => {
     setCurrentButton(button);
     setPage(0);
   };
@@ -87,17 +78,6 @@ const Lobby = () => {
       endLoading();
     })();
   }, []);
-  useEffect(() => {
-    socket.setUser(myInfo.userId, myInfo.nickname);
-    socket.socket.emit("addUser", {
-      userId: socket.userId,
-      userName: socket.userName,
-    });
-    gameSocket.socket.emit("addUser", {
-      userId: myInfo.userId,
-      userName: myInfo.nickname,
-    });
-  }, [myInfo]);
 
   const onNextPage = () => {
     setPage(page + 1);

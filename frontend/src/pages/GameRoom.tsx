@@ -1,7 +1,12 @@
-import { useContext, useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import styled from "styled-components";
+import {
+  leaveGameRoomAPI,
+  readyGameRoomAPI,
+  unReadyGameRoomAPI,
+} from "../api/room";
 import Avatar from "../components/atoms/Avatar";
 import Board from "../components/atoms/Board";
 import Button from "../components/atoms/Button";
@@ -9,13 +14,16 @@ import Typography from "../components/atoms/Typography";
 import ButtonGroup from "../components/modules/ButtonGroup";
 import Chat from "../components/modules/Chat";
 import ExitConfirmModal from "../components/modules/ExitConfirmModal";
+import GameStart from "../components/modules/GameStart";
 import GeneralMenu from "../components/modules/GeneralMenu";
-import { IUser } from "../components/modules/Pagination/Pagination";
+import { EGameUserStatus } from "../components/modules/Pagination/Pagination";
 import GameRoomTemplate from "../components/templates/GameRoomTemplate";
+import gameRoomEvent from "../event/GameEvent/gameRoomEvent";
+import gameStartEvent from "../event/GameEvent/gameStartEvent";
 import useMenu from "../hooks/useMenu";
 import useModal from "../hooks/useModal";
 import gameRoomState from "../state/GameRoomState";
-import GameSocket from "../state/GameSocket";
+import infoState from "../state/InfoState";
 
 const GameBoard = styled(Board).attrs((props) => {
   return {
@@ -46,12 +54,14 @@ const UserProfileGroup = styled(Board).attrs({
   flexDirection: "column",
   justifyContent: "space-between",
 })``;
+
 const UserProfile = styled(Button).attrs({
   width: "98%",
   height: "49%",
   boxShadow: true,
-})`
-  background-color: ${(props) => props.theme.background.middle};
+})<{ isReady?: boolean }>`
+  background-color: ${(props) =>
+    props.isReady ? "orange" : props.theme.background.middle};
   display: grid;
   grid-template: 1fr / repeat(3, 1fr);
   align-items: center;
@@ -73,45 +83,58 @@ const GameRoom = () => {
     onModalOpen: onConfirmOpen,
     onModalClose: onConfirmClose,
   } = useModal({});
+
   const navigate = useNavigate();
-  const [start, setStart] = useState(false);
-  const [gameState, setGameState] = useRecoilState(gameRoomState);
-  const { socket } = useContext(GameSocket);
+  const [{ roomId, redUser, blueUser }, setGameState] =
+    useRecoilState(gameRoomState);
+  const myInfo = useRecoilValue(infoState);
 
-  useEffect(() => {
-    console.log("socket : ", socket);
-    socket.on("joinGameRoom", (joinUser: IUser) => {
-      console.log("joinGameRoom : ", joinUser);
-      setGameState((prev) => {
-        return { roomId: prev.roomId, users: [...prev.users, joinUser] };
-      });
+  const onLeaveGameRoom = async () => {
+    await leaveGameRoomAPI(roomId);
+    setGameState({
+      roomId: -1,
+      redUser: {},
+      blueUser: {},
     });
+    navigate("/lobby");
+  };
 
-    // return () => {
-    //   socket.off("joinGameRoom");
-    // };
-  }, [gameState]);
-  console.log(gameState);
+  gameRoomEvent();
+  const isGameStart = gameStartEvent();
+
+  const [isReady, setReady] = useState(false);
+
+  const onReady = async () => {
+    if (!isReady) await readyGameRoomAPI(roomId);
+    else await unReadyGameRoomAPI(roomId);
+    setReady((prev) => !prev);
+  };
+
   return (
     <>
       <GameRoomTemplate>
         <GameBoard></GameBoard>
         <Wrapper>
           <UserProfileGroup>
-            {gameState.users.map((user, idx) => (
-              <UserProfile
-                id={user?.userId.toString()}
-                key={idx}
-                onClick={onOpenMenu}
-                disabled={!user}
-              >
-                <Avatar width="8rem" height="8rem" src={user?.avatarUrl} />
-                <Typography fontSize="2rem">{user?.nickname}</Typography>
-                <Typography fontSize="1.2rem">
-                  {idx === 0 ? "(RED)" : "(BLUE)"}
-                </Typography>
-              </UserProfile>
-            ))}
+            <UserProfile
+              id={redUser.userId?.toString()}
+              onClick={onOpenMenu}
+              isReady={redUser.status === EGameUserStatus.READY}
+            >
+              <Avatar width="8rem" height="8rem" src={redUser.avatarUrl} />
+              <Typography fontSize="2rem">{redUser.nickname}</Typography>
+              <Typography fontSize="1.2rem">(RED)</Typography>
+            </UserProfile>
+            <UserProfile
+              id={blueUser?.userId?.toString()}
+              onClick={onOpenMenu}
+              disabled={!blueUser?.userId}
+              isReady={blueUser?.status === EGameUserStatus.READY}
+            >
+              <Avatar width="8rem" height="8rem" src={blueUser?.avatarUrl} />
+              <Typography fontSize="2rem">{blueUser?.nickname}</Typography>
+              <Typography fontSize="1.2rem">(BLUE)</Typography>
+            </UserProfile>
           </UserProfileGroup>
           <Chat width="98%" height="54%" />
           <ButtonGroup
@@ -121,15 +144,18 @@ const GameRoom = () => {
             backgroundColor="secondary"
             gap="0.3vh"
           >
-            <GameRoomButton onClick={() => setStart((prev) => !prev)}>
-              {start ? "준비" : "대기"}
-            </GameRoomButton>
+            {(myInfo.userId === redUser.userId ||
+              myInfo.userId === blueUser?.userId) && (
+              <GameRoomButton onClick={onReady}>
+                {isReady ? "대기" : "준비"}
+              </GameRoomButton>
+            )}
             <GameRoomButton onClick={onConfirmOpen}>나가기</GameRoomButton>
           </ButtonGroup>
         </Wrapper>
       </GameRoomTemplate>
       <GeneralMenu
-        userId={id} // TODO: 정보보기 제외 다른 기능 추가 시 리팩토링 필요
+        userId={id}
         name={name}
         isOpenMenu={isOpenMenu}
         onClose={onCloseMenu}
@@ -139,10 +165,11 @@ const GameRoom = () => {
       {isConfirmOpen && (
         <ExitConfirmModal
           onClose={onConfirmClose}
-          onYesConfirm={() => navigate("/lobby")}
+          onYesConfirm={onLeaveGameRoom}
           onNoConfirm={() => onConfirmClose()}
         />
       )}
+      {isGameStart && <GameStart />}
     </>
   );
 };

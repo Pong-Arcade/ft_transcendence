@@ -187,7 +187,7 @@ export class GameRoomController {
     if (this.gameRoomService.isOnGameRoom(user.userId)) {
       throw new ConflictException('참여중인 게임방이 있습니다.');
     }
-
+    //
     // 2. 게임방 생성
     await this.eventEmitter.emitAsync(
       'gameroom:create',
