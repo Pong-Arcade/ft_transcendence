@@ -23,6 +23,7 @@ import { GameRoomMode } from 'src/enum/gameroom.mode.enum';
 import { MatchType } from 'src/enum/match.type.enum';
 import { User } from 'src/status/status.entity';
 import { ChatGateway } from 'src/chat/chat.geteway';
+import { GameRoomService } from './gameroom.service';
 
 export const gameRooms = new Map<number, GameRoom>();
 export let invitations: Invitation[] = [];
@@ -43,12 +44,29 @@ export class GameGateway implements OnGatewayDisconnect {
     private readonly configService: ConfigService,
     private readonly userService: UserService,
     private readonly eventEmitter: EventEmitter2,
+    private readonly gameRoomService: GameRoomService,
     @Inject(ChatGateway) private readonly chatGateway: ChatGateway,
   ) {}
 
-  handleDisconnect(@ConnectedSocket() socket: Socket) {
+  handleConnection(socket) {
+    this.logger.log(`Called ${this.handleConnection.name}`);
+  }
+
+  handleDisconnect(socket) {
     this.logger.log(`Called ${this.handleDisconnect.name}`);
-    this.logger.log(`Client disconnected: ${socket.id}`);
+    // 끊긴 소켓 삭제
+    const userSocketInfo = users.get(socket.id);
+    gameRooms.forEach((_, roomId) => {
+      if (
+        this.gameRoomService.isOnThatGameRoom(roomId + 1, userSocketInfo.userId)
+      ) {
+        this.eventEmitter.emit(
+          'gameroom:leave',
+          roomId + 1,
+          userSocketInfo.userId,
+        );
+      }
+    });
   }
 
   @SubscribeMessage('addUser')
@@ -159,6 +177,8 @@ export class GameGateway implements OnGatewayDisconnect {
       this.server
         .in(`gameroom-${roomId}`)
         .emit('systemMsg', userSocketInfo.userName + '님이 퇴장하였습니다.');
+
+      room.blueUser = null;
 
       this.chatGateway.server
         .in('lobby')

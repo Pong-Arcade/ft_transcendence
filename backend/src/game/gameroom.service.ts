@@ -97,7 +97,7 @@ export class GameRoomService {
    * @param userId
    * @returns
    */
-  isOnThatGameRoom(roomId: number, userId): boolean {
+  isOnThatGameRoom(roomId: number, userId: number): boolean {
     this.logger.log(`Called ${this.isOnThatGameRoom.name}`);
     const room = gameRooms.get(roomId);
     if (room) {
