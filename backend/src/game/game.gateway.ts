@@ -3,10 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import {
   ConnectedSocket,
-  MessageBody,
-  OnGatewayConnection,
   OnGatewayDisconnect,
-  OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
@@ -30,8 +27,8 @@ import { ChatGateway } from 'src/chat/chat.geteway';
 export const gameRooms = new Map<number, GameRoom>();
 export let invitations: Invitation[] = [];
 
-export let normalQuickMatchQueue = new Array<number>();
-export let ladderQuickMatchQueue = new Array<number>();
+export const normalQuickMatchQueue = new Array<number>();
+export const ladderQuickMatchQueue = new Array<number>();
 
 @WebSocketGateway({
   namespace: 'socket/game',

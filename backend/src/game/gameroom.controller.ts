@@ -35,12 +35,10 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { GameRoomUsersInfoResponseDto } from 'src/dto/response/gameroom.users.info.response.dto';
 import { User } from 'src/decorator/user.decorator';
 import { GameRoomCreateRequestDto } from 'src/dto/request/gameroom.create.request.dto';
-import { GameRoomInviteRequestDto } from 'src/dto/request/gameroom.invite.request.dto';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.auth.guard';
 import { GameRoomService } from './gameroom.service';
 import { users } from 'src/status/status.module';
 import { UserService } from 'src/user/user.service';
-import { invitations } from './game.gateway';
 import { MatchType } from 'src/enum/match.type.enum';
 
 @ApiTags('Game')

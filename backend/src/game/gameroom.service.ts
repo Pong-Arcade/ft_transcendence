@@ -234,7 +234,7 @@ export class GameRoomService {
   joinQuickMatchQueue(userId: number, matchType: MatchType): void {
     this.logger.log(`Called ${this.joinQuickMatchQueue.name}`);
     // matchType에 해당하는 매칭 대기열에 userId를 추가
-    let queue = quickMatchQueues[matchType];
+    const queue = quickMatchQueues[matchType];
     queue.push(userId);
 
     // 매칭 대기열에 2명 이상이 모이면 매칭을 시작
