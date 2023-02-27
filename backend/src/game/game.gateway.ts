@@ -58,18 +58,28 @@ export class GameGateway implements OnGatewayDisconnect {
     this.logger.log(`Called ${this.handleDisconnect.name}`);
     // 끊긴 소켓 삭제
     const userSocketInfo = users.get(socket.id);
-    gameRooms.forEach((_, roomId) => {
-      if (
-        this.gameRoomService.isOnThatGameRoom(roomId + 1, userSocketInfo.userId)
-      ) {
-        this.eventEmitter.emit(
-          'gameroom:leave',
-          roomId + 1,
-          userSocketInfo.userId,
-        );
-      }
-    });
-    // TODO: 초대장이 존재하면 삭제
+    if (userSocketInfo) {
+      gameRooms.forEach((_, roomId) => {
+        if (
+          this.gameRoomService.isOnThatGameRoom(
+            roomId + 1,
+            userSocketInfo.userId,
+          )
+        ) {
+          this.eventEmitter.emit(
+            'gameroom:leave',
+            roomId + 1,
+            userSocketInfo.userId,
+          );
+        }
+      });
+      // 초대장을 가지고 있다면 삭제
+      invitations = invitations.filter(
+        (invitation) =>
+          invitation.inviteeId !== userSocketInfo.userId &&
+          invitation.inviterId !== userSocketInfo.userId,
+      );
+    }
   }
 
   @SubscribeMessage('addUser')
@@ -147,7 +157,7 @@ export class GameGateway implements OnGatewayDisconnect {
       };
       this.chatGateway.server
         .in('lobby')
-        .emit('joinGameRoom', { joinUser, roomId }); // kangkim: 로비에서 실시간으로 게임방 변경 정보를 알기 위해서
+        .emit('joinGameRoom', { joinUser, roomId });
     }
   }
   //
@@ -183,7 +193,7 @@ export class GameGateway implements OnGatewayDisconnect {
 
       this.chatGateway.server
         .in('lobby')
-        .emit('leaveGameRoom', { userInfo, roomId }); // kangkim: 로비에서 실시간으로 게임방 변경 정보를 알기 위해서
+        .emit('leaveGameRoom', { userInfo, roomId });
     }
   }
 
@@ -380,10 +390,20 @@ export class GameGateway implements OnGatewayDisconnect {
       room.blueUser?.status === GameRoomUserStatus.READY
     ) {
       room.status = GameRoomStatus.ON_GAME;
-      this.server.in(`gameroom-${roomId}`).emit('startGame');
+      // 1초 간격으로 총 3번 이벤트를 발생시킵니다.
+      let timeLimit = 3;
+      const interval = setInterval(() => {
+        this.server.in(`gameroom-${roomId}`).emit('readyTick', timeLimit);
+        --timeLimit;
+        if (timeLimit === 0) {
+          clearInterval(interval);
+          this.server.in(`gameroom-${roomId}`).emit('startGame');
+          this.eventEmitter.emit('gameroom:start', roomId);
+        }
+      }, 1000);
     }
   }
-  //
+
   @OnEvent('gameroom:unready')
   async unreadyGame(roomId: number, userId: number) {
     this.logger.log(`Called ${this.unreadyGame.name}`);
