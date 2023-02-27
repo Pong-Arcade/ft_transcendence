@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import blockUsersState from "../../../state/BlockUsersState";
@@ -78,8 +78,14 @@ const ChatList = ({ ...rest }: Props) => {
       socket.socket.on("systemMsg", newMessage);
     }
   }, [blockUsers]);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (scrollRef.current)
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+  });
+
   return (
-    <ChatListStyled {...rest}>
+    <ChatListStyled {...rest} ref={scrollRef}>
       {list.map((item, index) =>
         item.type === EMessageType.MESSAGE ? (
           <ChatListItem key={index}>{item.content}</ChatListItem>

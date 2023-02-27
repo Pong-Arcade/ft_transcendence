@@ -116,6 +116,20 @@ export class ChatroomService {
     return null;
   }
 
+  /**
+   * 유저가 속한 채팅방 정보를 조회합니다.
+   * @param userId 유저 ID
+   */
+  getMyChatroomInfo(userId: number): Room {
+    this.logger.log(`Called ${this.getMyChatroomInfo.name}`);
+    for (const room of rooms.values()) {
+      if (room.users.includes(userId)) {
+        return room;
+      }
+    }
+    return null;
+  }
+
   // TODO: chat gateway에서 처리하도록 변경
   // /**
   //  * 채팅방 생성

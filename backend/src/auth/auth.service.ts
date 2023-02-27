@@ -20,6 +20,7 @@ export class AuthService {
   }
 
   async checkUserExists(userId: number): Promise<boolean> {
+    this.logger.debug(`Called ${this.checkUserExists.name}`);
     const exist = await this.cacheManager.get<boolean>(`auth-${userId}`);
     if (exist === undefined) {
       const result = await this.authRepository.checkUserExists(userId);

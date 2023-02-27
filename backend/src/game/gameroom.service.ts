@@ -64,14 +64,23 @@ export class GameRoomService {
     gameRoomInfo: GameRoom,
   ): Promise<GameRoomUsersInfoResponseDto> {
     this.logger.log(`Called ${this.getGameRoomUsersInfo.name}`);
+    const redUser = gameRoomInfo.redUser
+      ? {
+          ...(await this.userService.getUserInfo(gameRoomInfo.redUser.userId)),
+          status: gameRoomInfo.redUser.status,
+        }
+      : null;
+    const blueUser = gameRoomInfo.blueUser
+      ? {
+          ...(await this.userService.getUserInfo(gameRoomInfo.blueUser.userId)),
+          status: gameRoomInfo.blueUser.status,
+        }
+      : null;
+
     const gameRoomUsersInfo: GameRoomUsersInfoResponseDto = {
       roomId: gameRoomInfo.roomId,
-      redUser: gameRoomInfo.redUser
-        ? await this.userService.getUserInfo(gameRoomInfo.redUser.userId)
-        : null,
-      blueUser: gameRoomInfo.blueUser
-        ? await this.userService.getUserInfo(gameRoomInfo.blueUser.userId)
-        : null,
+      redUser: redUser,
+      blueUser: blueUser,
       maxSpectatorCount: gameRoomInfo.maxSpectatorCount,
       curSpectatorCount: gameRoomInfo.spectatorUsers.length,
       title: gameRoomInfo.title,
@@ -97,7 +106,7 @@ export class GameRoomService {
    * @param userId
    * @returns
    */
-  isOnThatGameRoom(roomId: number, userId): boolean {
+  isOnThatGameRoom(roomId: number, userId: number): boolean {
     this.logger.log(`Called ${this.isOnThatGameRoom.name}`);
     const room = gameRooms.get(roomId);
     if (room) {
@@ -262,10 +271,11 @@ export class GameRoomService {
    * @param userId
    * @param matchType
    */
-  leaveQuickMatchQueue(userId: number, matchType: MatchType) {
+  leaveQuickMatchQueue(userId: number) {
     this.logger.log(`Called ${this.leaveQuickMatchQueue.name}`);
     // matchType에 해당하는 매칭 대기열에서 userId를 제거
-    quickMatchQueues[matchType] = quickMatchQueues[matchType].filter(
+    const gameroom = gameRooms.get(userId);
+    quickMatchQueues[gameroom.type] = quickMatchQueues[gameroom.type].filter(
       (id) => id !== userId,
     );
   }

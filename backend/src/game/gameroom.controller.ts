@@ -363,7 +363,7 @@ export class GameRoomController {
     }
 
     // 3. 빠른 대전 신청 처리
-    this.eventEmitter.emit('gameroom:quick-match:join', user.userId, matchType);
+    this.gameRoomService.joinQuickMatchQueue(user.userId, matchType);
   }
 
   @ApiOperation({
@@ -393,7 +393,7 @@ export class GameRoomController {
     }
 
     // 2. 빠른 대전 신청 취소 처리
-    this.eventEmitter.emit('gameroom:quick-match:leave', user.userId);
+    this.gameRoomService.leaveQuickMatchQueue(user.userId);
   }
 
   @ApiOperation({

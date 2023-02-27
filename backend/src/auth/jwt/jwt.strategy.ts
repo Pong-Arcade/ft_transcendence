@@ -27,7 +27,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
    * 유저가 DB에 존재하지 않는다면 인증을 거부합니다.
    */
   async validate(payload: any) {
-    const exist = await this.authService.checkUserExists(payload.user_id);
+    const exist = await this.authService.checkUserExists(payload.userId);
     if (!exist) {
       return false;
     }
