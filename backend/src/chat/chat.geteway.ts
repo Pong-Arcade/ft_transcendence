@@ -291,6 +291,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @OnEvent('chatroom:change-info')
   async updateChatRoom(roomId: number, roomInfo: ChangeChatroomInfoRequestDto) {
     const room = rooms.get(roomId);
+    console.log('update', roomInfo);
     room.title = roomInfo.title;
     room.mode = roomInfo.mode;
     if (roomInfo.password || room.mode != ChatRoomMode.PUBLIC)

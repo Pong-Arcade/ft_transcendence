@@ -31,6 +31,20 @@ export const leaveChatRoomAPI = async (roomId: number) => {
   return response;
 };
 
+export const updateChatRoomAPI = async (
+  roomId: number,
+  title: string,
+  mode: string,
+  password?: string
+) => {
+  const response = await patchRequest(`chat-rooms/change-info/${roomId}`, {
+    title: title,
+    mode: mode,
+    password: password,
+  });
+  return response;
+};
+
 export const banChatRoomAPI = async (roomId: number, userId: number) => {
   const response = await deleteRequest(`chat-rooms/ban/${roomId}/${userId}`);
   console.log("response: ", response);

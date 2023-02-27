@@ -34,7 +34,7 @@ const useModifyChatRoomForm = ({ onSubmit }: IUseChatRoomForm) => {
   const onSubmitForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setErrors(ChatRoomFormValidator({ ...values }));
-    if (errors && Object.keys(errors).length === 0) {
+    if (!errors || Object.keys(errors).length === 0) {
       onSubmit(values);
     }
   };

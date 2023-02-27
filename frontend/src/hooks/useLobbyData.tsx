@@ -62,23 +62,18 @@ const useLobbyData = () => {
       await setChatRoomList(
         chatRoomList.filter((room) => room.roomId != roomId.toString())
       );
-      // const newList = new Array<ILobbyChatRoom>();
-      // for (const room of chatRoomList) {
-      //   if (room.roomId != roomId.toString()) newList.push(room);
-      // }
-      // await setChatRoomList(newList);
     });
-    socket.socket.on(
-      "updateChatRoom",
-      async (roomId: number, updateRoom: ILobbyChatRoom) => {
-        const newList = new Array<ILobbyChatRoom>();
-        for (const room of chatRoomList) {
-          if (room.roomId != roomId.toString()) newList.push(room);
-          else newList.push(updateRoom);
-        }
-        await setChatRoomList(newList);
+    socket.socket.on("updateChatRoom", async (updateRoom: ILobbyChatRoom) => {
+      console.log("updateChatRoom", updateRoom);
+      const newList = new Array<ILobbyChatRoom>();
+      for (const room of chatRoomList) {
+        console.log(room.roomId, updateRoom.roomId);
+        if (room.roomId != updateRoom.roomId) newList.push(room);
+        else newList.push(updateRoom);
       }
-    );
+      console.log(newList);
+      await setChatRoomList(newList);
+    });
   }, [chatRoomList]);
   const setLobbyData = async () => {
     const info = JSON.parse(getDecodedCookie());
