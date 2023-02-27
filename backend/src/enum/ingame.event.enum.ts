@@ -1,6 +1,6 @@
 export enum InGameKeyEvent {
-  KEY_UP = -1,
-  KEY_DOWN = 1,
+  ARROW_UP = -1,
+  ARROW_DOWN = 1,
   STOP = 0,
 }
 
