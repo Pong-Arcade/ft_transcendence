@@ -16,4 +16,10 @@ export interface IAuthRepository {
    * @param userId
    */
   checkUserExists(userId: number): Promise<boolean>;
+
+  /**
+   * 2FA를 등록합니다.
+   * @param userId
+   */
+  enroll2FA(userId: number): Promise<void>;
 }

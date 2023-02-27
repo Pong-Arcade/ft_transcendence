@@ -70,4 +70,18 @@ export class AuthRepository implements IAuthRepository {
     });
     return find ? true : false;
   }
+
+  async enroll2FA(userId: number): Promise<void> {
+    this.logger.debug(`Called ${this.enroll2FA.name}`);
+    const find = await this.twoFactorAuthRepository.findOne({
+      where: { userId },
+    });
+    if (!find) {
+      throw new Error('User not found');
+    }
+    await this.twoFactorAuthRepository.update(userId, {
+      is2FA: true,
+      access: null,
+    });
+  }
 }

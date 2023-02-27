@@ -1,4 +1,4 @@
-import { Controller, Get, Logger, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Logger, Patch, Res, UseGuards } from '@nestjs/common';
 import { FtGuard } from './42/ft.guard';
 import { User } from 'src/decorator/user.decorator';
 import { Response } from 'express';
@@ -7,6 +7,7 @@ import { AuthService } from './auth.service';
 import { ConfigService } from '@nestjs/config';
 import { JWTSignGuard } from './jwt/jwt.sign.guard';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from './jwt/jwt.auth.guard';
 
 @ApiTags('Auth')
 @ApiBearerAuth()
@@ -42,5 +43,20 @@ export class AuthController {
       return res.redirect(`${feHost}/lobby/?isFirstLogin=true`);
     }
     return res.redirect(`${feHost}/lobby`);
+  }
+
+  @ApiOperation({
+    summary: '2차 인증 등록 요청',
+    description:
+      '2차 인증 등록을 요청합니다. 가지고 있는 토큰이 삭제되며, 다시 로그인해야 합니다.',
+  })
+  @Patch('enroll/2FA')
+  @UseGuards(JwtAuthGuard)
+  async enroll2FA(@User() user: UserDto, @Res() res: Response) {
+    this.logger.log(`Called ${this.enroll2FA.name}`);
+    await this.authService.enroll2FA(user.userId);
+    res.clearCookie(
+      this.configService.get<string>('fe_host').replace('http://', ''),
+    );
   }
 }

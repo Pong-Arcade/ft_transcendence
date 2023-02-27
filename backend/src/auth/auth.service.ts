@@ -28,4 +28,9 @@ export class AuthService {
     }
     return exist;
   }
+
+  async enroll2FA(userId: number) {
+    this.logger.debug(`Called ${this.enroll2FA.name}`);
+    await this.authRepository.enroll2FA(userId);
+  }
 }
