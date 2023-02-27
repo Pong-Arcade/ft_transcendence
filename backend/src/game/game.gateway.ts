@@ -23,6 +23,7 @@ import { GameRoomMode } from 'src/enum/gameroom.mode.enum';
 import { MatchType } from 'src/enum/match.type.enum';
 import { User } from 'src/status/status.entity';
 import { ChatGateway } from 'src/chat/chat.geteway';
+import { GameInstance } from './gameInstance';
 
 export const gameRooms = new Map<number, GameRoom>();
 export let invitations: Invitation[] = [];
@@ -97,7 +98,6 @@ export class GameGateway implements OnGatewayDisconnect {
     gameRooms.set(roomId, gameRoom);
     this.chatGateway.server.in('lobby').emit('addGameRoom', gameRoom);
   }
-  //
   /**
    * 게임방에 입장합니다.
    * 게임방에 입장한 유저의 정보를 게임방에 있는 유저들에게 전달하고, 입장 메시지를 전달합니다.
@@ -420,6 +420,13 @@ export class GameGateway implements OnGatewayDisconnect {
 
     // 로비에 있는 유저들에게 게임방이 생성되었다는 메시지를 보냅니다.
     this.chatGateway.server.in('lobby').emit('addGameRoom', gameRoom);
+  }
+
+  @OnEvent('gameroom:start')
+  async startGame(roomId: number) {
+    const room = gameRooms.get(roomId);
+    //gameInstance는 생성과 동시에 게임이 시작합니다.
+    room.gameInstance = new GameInstance(room, roomId, this.server);
   }
 }
 //
