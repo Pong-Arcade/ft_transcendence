@@ -6,6 +6,7 @@ import { AuthModule } from 'src/auth/auth.module';
 import { GameRoomController } from './gameroom.controller';
 import { GameRoomService } from './gameroom.service';
 import { UserModule } from 'src/user/user.module';
+import { ChatModule } from 'src/chat/chat.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { UserModule } from 'src/user/user.module';
     }),
     AuthModule,
     forwardRef(() => UserModule),
+    ChatModule,
   ],
   providers: [GameGateway, GameRoomService],
   exports: [GameGateway],

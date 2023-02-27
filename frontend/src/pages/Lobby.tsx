@@ -1,4 +1,4 @@
-import { useEffect, useContext } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import Board from "../components/atoms/Board";
 import Chat from "../components/modules/Chat";
@@ -8,15 +8,15 @@ import LobbyUserList from "../components/modules/LobbyUserList";
 import LobbyUserProfile from "../components/modules/LobbyUserProfile";
 import UserInfoSettingModal from "../components/modules/UserInfoSettingModal";
 import LobbyTemplate from "../components/templates/LobbyTemplate";
-import { SocketContext } from "../utils/ChatSocket";
 import useFirstLoginModal from "../hooks/useFirstLoginModal";
 import useLoading from "../hooks/useLoading";
 import FullSpinner from "../components/atoms/FullSpinner";
 import useLobbyData from "../hooks/useLobbyData";
-import socketState from "../state/SocketState";
-import { useRecoilValue } from "recoil";
 import { useSetRecoilState } from "recoil";
 import errorState from "../state/ErrorState";
+import LobbyRoomListTypeChoiceButtonGroup from "../components/modules/LobbyRoomListTypeChoiceButtonGroup";
+import { EROOM_BUTTON } from "../components/modules/LobbyRoomListTypeChoiceButtonGroup/LobbyRoomListTypeChoiceButtonGroup";
+import LobbyGameRoomList from "../components/modules/LobbyGameRoomList";
 
 const UserWrapper = styled(Board).attrs({
   width: "25%",
@@ -51,32 +51,40 @@ const Lobby = () => {
   const { isLoading, endLoading } = useLoading({
     initialLoading: true,
   });
-  const socket = useContext(SocketContext);
-  // const [socket, setSocket] = useRecoilValue(socketState);
+
   const {
     onlineUsers,
-    setOnlineUsers,
     friendUsers,
     blockUsers,
     chatRoomList,
+    gameRoomList,
     myInfo,
   } = getLobbyData();
   const { isFirstLoginModal, FirstLoginModalClose } = useFirstLoginModal();
   const setError = useSetRecoilState(errorState);
+  const [currentButton, setCurrentButton] = useState(EROOM_BUTTON.CHATROOM);
+  const [page, setPage] = useState(0);
+
+  const onChoiceButtonClick = (button: EROOM_BUTTON) => {
+    setCurrentButton(button);
+    setPage(0);
+  };
 
   useEffect(() => {
     (async () => {
-      await setLobbyData().catch(() => setError(true));
+      await setLobbyData().catch(() => {
+        setError(true);
+      });
       endLoading();
     })();
   }, []);
-  useEffect(() => {
-    socket.setUser(myInfo.userId, myInfo.nickname);
-    socket.socket.emit("addUser", {
-      userId: socket.userId,
-      userName: socket.userName,
-    });
-  }, [myInfo]);
+
+  const onNextPage = () => {
+    setPage(page + 1);
+  };
+  const onPrevPage = () => {
+    setPage(page - 1);
+  };
 
   return (
     <>
@@ -92,8 +100,25 @@ const Lobby = () => {
         <RoomListChatWrapper>
           <LobbyCreateRoomButtonGroup />
           <RoomListChat>
-            <LobbyChatRoomList list={chatRoomList} />
-            {/* <LobbyGameRoomList /> */}
+            <LobbyRoomListTypeChoiceButtonGroup
+              onClick={onChoiceButtonClick}
+              currentButton={currentButton}
+            />
+            {currentButton === EROOM_BUTTON.CHATROOM ? (
+              <LobbyChatRoomList
+                list={chatRoomList}
+                page={page}
+                onPrevPage={onPrevPage}
+                onNextPage={onNextPage}
+              />
+            ) : (
+              <LobbyGameRoomList
+                list={gameRoomList}
+                page={page}
+                onPrevPage={onPrevPage}
+                onNextPage={onNextPage}
+              />
+            )}
             <Chat width="98%" height="40%" boxShadow />
           </RoomListChat>
         </RoomListChatWrapper>

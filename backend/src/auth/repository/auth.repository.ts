@@ -105,6 +105,9 @@ export class AuthRepository implements IAuthRepository {
   }
 
   async checkUserExists(userId: number): Promise<boolean> {
+    if (!userId) {
+      return false;
+    }
     const find = await this.userRepository.findOne({
       where: { userId },
     });

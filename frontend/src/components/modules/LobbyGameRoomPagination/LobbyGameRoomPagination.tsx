@@ -19,7 +19,7 @@ const LobbyGameRoomPagination = ({
   onNextPage,
   onPrevPage,
 }: Props) => {
-  const pageLength = 4;
+  const pageLength = 2;
 
   return (
     <Pagination
@@ -32,9 +32,9 @@ const LobbyGameRoomPagination = ({
       buttonWidth="15%"
       buttonGap="2vw"
       width="90%"
-      height="85%"
+      height="95%"
       itemGap="0.3vh"
-      gridTemplate="repeat(2, 1fr) / repeat(2, 1fr)"
+      gridTemplate="1fr / repeat(2, 1fr)"
       onNextPage={onNextPage}
       onPrevPage={onPrevPage}
       onItemClick={onItemClick}

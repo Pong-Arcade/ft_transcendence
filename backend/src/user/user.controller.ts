@@ -63,7 +63,7 @@ export class UserController {
   @Get()
   async getAllUsers(): Promise<OnlineUsersResponseDto> {
     this.logger.log(`Called ${this.getAllUsers.name}`);
-    let response = new OnlineUsersResponseDto();
+    const response = new OnlineUsersResponseDto();
     response.onlineUsers = await this.userService.getAllUsers();
     return response;
   }

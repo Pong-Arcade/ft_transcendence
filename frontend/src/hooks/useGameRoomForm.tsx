@@ -19,10 +19,10 @@ export enum EGameType {
 
 export enum EGameRoomMode {
   NORMAL = "NORMAL",
-  POWER_UP = "POWER UP",
+  POWER_UP = "POWER_UP",
 }
 export interface IGameRoomFormValues {
-  mode: string;
+  mode: string | EGameRoomMode;
   title: string;
   winScore: string;
   maxSpectatorCount: string;

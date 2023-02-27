@@ -1,56 +1,30 @@
-import { useContext, useEffect, useState } from "react";
+import { useState } from "react";
 import { useRecoilState } from "recoil";
-import { getChatRoomListAPI } from "../api/room";
+import { getChatRoomListAPI, getGameRoomListAPI } from "../api/room";
 import {
   getBlockUsersAPI,
   getFriendUsersAPI,
   getOnlineUsersAPI,
   getUserInfoAPI,
 } from "../api/users";
-import {
-  ILobbyChatRoom,
-  IUser,
-} from "../components/modules/Pagination/Pagination";
+import { IUser } from "../components/modules/Pagination/Pagination";
+import lobbyChatEvent from "../event/ChatEvent/lobbyChatEvent";
+import lobbyGameEvent from "../event/GameEvent/lobbyGameEvent";
 import blockUsersState from "../state/BlockUsersState";
+import chatRoomListState from "../state/ChatRoomListState";
 import friendUsersState from "../state/FriendUsersState";
+import gameRoomListState from "../state/GameRoomListState";
 import infoState from "../state/InfoState";
-import { SocketContext } from "../utils/ChatSocket";
 import { getDecodedCookie } from "../utils/cookie";
 
 const useLobbyData = () => {
   const [onlineUsers, setOnlineUsers] = useState<IUser[]>([]);
-  const [friendUsers, setFriendUsers] =
-    useRecoilState<IUser[]>(friendUsersState);
-  const [blockUsers, setBlockUsers] = useRecoilState<IUser[]>(blockUsersState);
-  const [chatRoomList, setChatRoomList] = useState<ILobbyChatRoom[]>([]);
+  const [friendUsers, setFriendUsers] = useRecoilState(friendUsersState);
+  const [blockUsers, setBlockUsers] = useRecoilState(blockUsersState);
+  const [chatRoomList, setChatRoomList] = useRecoilState(chatRoomListState);
+  const [gameRoomList, setGameRoomList] = useRecoilState(gameRoomListState);
   const [myInfo, setMyInfo] = useRecoilState(infoState);
-  const socket = useContext(SocketContext);
-  useEffect(() => {
-    socket.socket.off("addChatRoom");
-    socket.socket.off("deleteChatRoom");
-    socket.socket.off("updateChatRoom");
-    socket.socket.on("addChatRoom", async (addRoom: ILobbyChatRoom) => {
-      await setChatRoomList((prev) => [...prev, addRoom]);
-    });
-    socket.socket.on("deleteChatRoom", async (roomId: number) => {
-      const newList = new Array<ILobbyChatRoom>();
-      for (const room of chatRoomList) {
-        if (room.roomId != roomId.toString()) newList.push(room);
-      }
-      await setChatRoomList(newList);
-    });
-    socket.socket.on(
-      "updateChatRoom",
-      async (roomId: number, updateRoom: ILobbyChatRoom) => {
-        const newList = new Array<ILobbyChatRoom>();
-        for (const room of chatRoomList) {
-          if (room.roomId != roomId.toString()) newList.push(room);
-          else newList.push(updateRoom);
-        }
-        await setChatRoomList(newList);
-      }
-    );
-  }, [chatRoomList]);
+
   const setLobbyData = async () => {
     const info = JSON.parse(getDecodedCookie());
 
@@ -59,18 +33,21 @@ const useLobbyData = () => {
     setFriendUsers(await getFriendUsersAPI());
     setBlockUsers(await getBlockUsersAPI());
     setChatRoomList(await getChatRoomListAPI());
+    setGameRoomList(await getGameRoomListAPI());
   };
 
   const getLobbyData = () => {
     return {
       onlineUsers,
-      setOnlineUsers,
       friendUsers,
       blockUsers,
       chatRoomList,
+      gameRoomList,
       myInfo,
     };
   };
+  lobbyChatEvent();
+  lobbyGameEvent();
 
   return { setLobbyData, getLobbyData };
 };

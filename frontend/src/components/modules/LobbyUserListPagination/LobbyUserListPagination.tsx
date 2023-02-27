@@ -1,6 +1,4 @@
-import { MouseEvent, useContext, useEffect } from "react";
-import { useSetRecoilState } from "recoil";
-import { SocketContext } from "../../../utils/ChatSocket";
+import { MouseEvent } from "react";
 import Pagination from "../Pagination";
 import { IItem, IPaginationItem } from "../Pagination/Pagination";
 
