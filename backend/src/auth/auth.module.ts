@@ -10,6 +10,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './jwt/jwt.strategy';
 import NormalStat from 'src/entity/normal.stat.entity';
 import LadderStat from 'src/entity/ladder.stat.entity';
+import { TwoFactorAuth } from 'src/entity/two.factor.auth.entity';
 
 const repo = {
   provide: 'IAuthRepository',
@@ -27,7 +28,7 @@ const repo = {
       }),
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([User, NormalStat, LadderStat]),
+    TypeOrmModule.forFeature([User, TwoFactorAuth, NormalStat, LadderStat]),
   ],
   providers: [FtStrategy, JwtStrategy, AuthService, repo],
   controllers: [AuthController],

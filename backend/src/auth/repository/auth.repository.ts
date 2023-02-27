@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { UserDto } from 'src/dto/user.dto';
 import NormalStat from 'src/entity/normal.stat.entity';
 import LadderStat from 'src/entity/ladder.stat.entity';
+import { TwoFactorAuth } from 'src/entity/two.factor.auth.entity';
 
 export class AuthRepository implements IAuthRepository {
   private logger = new Logger(AuthRepository.name);
@@ -16,6 +17,8 @@ export class AuthRepository implements IAuthRepository {
     private readonly normalStatRepository: Repository<NormalStat>,
     @InjectRepository(LadderStat)
     private readonly ladderStatRepository: Repository<LadderStat>,
+    @InjectRepository(TwoFactorAuth)
+    private readonly twoFactorAuthRepository: Repository<TwoFactorAuth>,
   ) {}
 
   /**
@@ -38,6 +41,12 @@ export class AuthRepository implements IAuthRepository {
       avatarUrl: user.avatarUrl,
       email: user.email,
       firstLogin: new Date(),
+    });
+
+    await this.twoFactorAuthRepository.insert({
+      userId: user.userId,
+      is2FA: false,
+      access: null,
     });
 
     await this.normalStatRepository.insert({

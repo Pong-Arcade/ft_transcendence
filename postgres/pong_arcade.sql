@@ -288,6 +288,47 @@ ALTER SEQUENCE public.relation_relation_id_seq OWNED BY public.relation.relation
 
 
 --
+-- Name: two_factor_auth; Type: TABLE; Schema: public; Owner: arcade
+--
+
+CREATE TABLE public.two_factor_auth (
+    user_id integer NOT NULL,
+    "2FA" boolean NOT NULL,
+    access character varying(256) DEFAULT NULL::character varying
+);
+
+
+ALTER TABLE public.two_factor_auth OWNER TO arcade;
+
+--
+-- Name: TABLE two_factor_auth; Type: COMMENT; Schema: public; Owner: arcade
+--
+
+COMMENT ON TABLE public.two_factor_auth IS '2차 인증 정보';
+
+
+--
+-- Name: COLUMN two_factor_auth.user_id; Type: COMMENT; Schema: public; Owner: arcade
+--
+
+COMMENT ON COLUMN public.two_factor_auth.user_id IS '유저의 ID';
+
+
+--
+-- Name: COLUMN two_factor_auth."2FA"; Type: COMMENT; Schema: public; Owner: arcade
+--
+
+COMMENT ON COLUMN public.two_factor_auth."2FA" IS '2차 인증 여부';
+
+
+--
+-- Name: COLUMN two_factor_auth.access; Type: COMMENT; Schema: public; Owner: arcade
+--
+
+COMMENT ON COLUMN public.two_factor_auth.access IS '인증값';
+
+
+--
 -- Name: user; Type: TABLE; Schema: public; Owner: arcade
 --
 
@@ -401,6 +442,14 @@ COPY public.relation (relation_id, user_id, target_user_id, relation_type) FROM 
 
 
 --
+-- Data for Name: two_factor_auth; Type: TABLE DATA; Schema: public; Owner: arcade
+--
+
+COPY public.two_factor_auth (user_id, "2FA", access) FROM stdin;
+\.
+
+
+--
 -- Data for Name: user; Type: TABLE DATA; Schema: public; Owner: arcade
 --
 
@@ -485,6 +534,22 @@ ALTER TABLE ONLY public.relation
 
 
 --
+-- Name: two_factor_auth two_factor_auth_pkey; Type: CONSTRAINT; Schema: public; Owner: arcade
+--
+
+ALTER TABLE ONLY public.two_factor_auth
+    ADD CONSTRAINT two_factor_auth_pkey PRIMARY KEY (user_id);
+
+
+--
+-- Name: two_factor_auth two_factor_auth_user_id_key; Type: CONSTRAINT; Schema: public; Owner: arcade
+--
+
+ALTER TABLE ONLY public.two_factor_auth
+    ADD CONSTRAINT two_factor_auth_user_id_key UNIQUE (user_id);
+
+
+--
 -- Name: user user_email_key; Type: CONSTRAINT; Schema: public; Owner: arcade
 --
 
@@ -562,6 +627,14 @@ ALTER TABLE ONLY public.relation
 
 ALTER TABLE ONLY public.relation
     ADD CONSTRAINT relation_user_fk2 FOREIGN KEY (target_user_id) REFERENCES public."user"(user_id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: two_factor_auth user_id___fk; Type: FK CONSTRAINT; Schema: public; Owner: arcade
+--
+
+ALTER TABLE ONLY public.two_factor_auth
+    ADD CONSTRAINT user_id___fk FOREIGN KEY (user_id) REFERENCES public."user"(user_id);
 
 
 --
