@@ -64,14 +64,23 @@ export class GameRoomService {
     gameRoomInfo: GameRoom,
   ): Promise<GameRoomUsersInfoResponseDto> {
     this.logger.log(`Called ${this.getGameRoomUsersInfo.name}`);
+    const redUser = gameRoomInfo.redUser
+      ? {
+          ...(await this.userService.getUserInfo(gameRoomInfo.redUser.userId)),
+          status: gameRoomInfo.redUser.status,
+        }
+      : null;
+    const blueUser = gameRoomInfo.blueUser
+      ? {
+          ...(await this.userService.getUserInfo(gameRoomInfo.blueUser.userId)),
+          status: gameRoomInfo.blueUser.status,
+        }
+      : null;
+
     const gameRoomUsersInfo: GameRoomUsersInfoResponseDto = {
       roomId: gameRoomInfo.roomId,
-      redUser: gameRoomInfo.redUser
-        ? await this.userService.getUserInfo(gameRoomInfo.redUser.userId)
-        : null,
-      blueUser: gameRoomInfo.blueUser
-        ? await this.userService.getUserInfo(gameRoomInfo.blueUser.userId)
-        : null,
+      redUser: redUser,
+      blueUser: blueUser,
       maxSpectatorCount: gameRoomInfo.maxSpectatorCount,
       curSpectatorCount: gameRoomInfo.spectatorUsers.length,
       title: gameRoomInfo.title,

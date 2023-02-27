@@ -98,9 +98,7 @@ export class GameGateway implements OnGatewayDisconnect {
     this.logger.log(`Called ${this.addGameRoom.name}`);
     const roomId = gameRooms.size + 1;
     const redUser: GameUserStatusDto = {
-      userId: user.userId,
-      nickname: user.nickname,
-      avatarUrl: user.avatarUrl, // kangkim : 로비 게임방 유저 사진 보이게 하기 위함(현재 user 에 avatarUrl 없음)
+      ...(await this.userService.getUserInfo(user.userId)),
       status: GameRoomUserStatus.UN_READY,
     };
     const gameRoom = new GameRoom(
