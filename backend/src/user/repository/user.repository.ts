@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { ConflictException, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserDto } from 'src/dto/user.dto';
 import User from 'src/entity/user.entity';
@@ -50,7 +50,14 @@ export class UserRepository implements IUserRepository {
       where: { userId },
     });
     if (!user) {
-      return null;
+      throw new NotFoundException('존재하지 않는 유저입니다.');
+    }
+
+    if (
+      (await this.userRepository.find({ where: { nickname: newNickname } })) &&
+      !(user.nickname === newNickname)
+    ) {
+      throw new ConflictException('이미 존재하는 닉네임입니다.');
     }
     if (newNickname) {
       user.nickname = newNickname;
