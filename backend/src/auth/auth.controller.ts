@@ -17,7 +17,7 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly configService: ConfigService,
   ) {}
-
+  ////
   @ApiOperation({ summary: '로그인', description: '42로그인 페이지로 이동' })
   @Get('login')
   @UseGuards(FtGuard)

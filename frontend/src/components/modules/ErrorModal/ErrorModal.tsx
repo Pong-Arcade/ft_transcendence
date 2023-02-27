@@ -12,7 +12,8 @@ import ModalTitle from "../ModalTitle";
 type ErrorType = ILobbyChatRoomErrors | IGameRoomErrors;
 interface Props {
   onClose: () => void;
-  errors: ErrorType;
+  title: string;
+  errors: ErrorType | string;
 }
 const Wrapper = styled(Board).attrs((props) => {
   return {
@@ -36,17 +37,21 @@ const ModalButton = styled(Button).attrs({
   height: "20%",
 })``;
 
-const ErrorModal = ({ onClose, errors }: Props) => {
+const ErrorModal = ({ onClose, errors, title }: Props) => {
   return (
     <ModalWrapper>
       <Modal width="30%" height="30%">
         <ModalTitle onClose={onClose} height="25%" fontSize="2rem">
-          방만들기 실패
+          {title}
         </ModalTitle>
         <Wrapper>
-          {Object.values(errors).map((value, index) => (
-            <ErrorMessage key={index}>{value as ReactNode}</ErrorMessage>
-          ))}
+          {typeof errors === "string" ? (
+            <ErrorMessage>{errors}</ErrorMessage>
+          ) : (
+            Object.values(errors).map((value, index) => (
+              <ErrorMessage key={index}>{value as ReactNode}</ErrorMessage>
+            ))
+          )}
         </Wrapper>
         <ModalButton onClick={onClose}>확인</ModalButton>
       </Modal>

@@ -10,7 +10,7 @@ import { StatusModule } from '../status/status.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 
-const repo = {
+export const repo = {
   provide: 'IUserRepository',
   useClass: UserRepository,
 };
@@ -27,8 +27,8 @@ const repo = {
       inject: [ConfigService],
     }),
     TypeOrmModule.forFeature([User]),
-    forwardRef(() => ChatModule),
-    forwardRef(() => GameModule),
+    //forwardRef(() => ChatModule),
+    //forwardRef(() => GameModule),
     StatusModule,
   ],
   controllers: [UserController],

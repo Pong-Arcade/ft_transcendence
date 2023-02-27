@@ -51,7 +51,8 @@ interface IUserInfo {
 }
 
 const UserInfoSettingModal = ({ onClose, info }: Props) => {
-  if (info.userId === -1 || info.avatarUrl === undefined) return null;
+  if (info.userId === -1 || !info.nickname || info.avatarUrl === undefined)
+    return null;
 
   const [userInfo, setUserInfo] = useState<IUserInfo>({
     nickname: info.nickname,
@@ -70,13 +71,13 @@ const UserInfoSettingModal = ({ onClose, info }: Props) => {
           options
         );
         await updateUserInfoAPI(userInfo.nickname, compressedFile);
-      } catch (e) {
-        console.log(e);
+      } catch (e: any) {
+        throw new Error(e);
       }
     } else {
       await updateUserInfoAPI(userInfo.nickname);
     }
-    setMyInfo(await getUserInfoAPI(info.userId));
+    setMyInfo(await getUserInfoAPI(info.userId as number));
     onClose();
   };
 

@@ -20,10 +20,13 @@ const ChatRoomUserListPagination = ({
   onPrevPage,
 }: Props) => {
   const pageLength = 5;
-
   return (
     <Pagination
-      list={list.slice(page * pageLength, (page + 1) * pageLength)}
+      list={
+        list.length
+          ? list.slice(page * pageLength, (page + 1) * pageLength)
+          : list
+      }
       PaginationItem={PaginationItem}
       nextPageDisabled={page === Math.floor(list.length / pageLength)}
       prevPageDisabled={page === 0}

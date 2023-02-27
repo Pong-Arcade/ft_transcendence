@@ -109,7 +109,11 @@ const CreateChatRoomModal = ({ title, onClose }: Props) => {
         </CreateRoomForm>
       </Modal>
       {Object.keys(errors).length && (
-        <ErrorModal onClose={onErrorModalClose} errors={errors} />
+        <ErrorModal
+          onClose={onErrorModalClose}
+          errors={errors}
+          title="방만들기 실패"
+        />
       )}
     </ModalWrapper>
   );

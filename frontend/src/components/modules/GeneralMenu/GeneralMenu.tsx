@@ -9,6 +9,7 @@ import RelationConfirmModal from "../RelationConfirmModal";
 import { useRecoilValue } from "recoil";
 import friendUsersState from "../../../state/FriendUsersState";
 import blockUsersState from "../../../state/BlockUsersState";
+import infoState from "../../../state/InfoState";
 
 interface Props {
   top: number;
@@ -126,6 +127,9 @@ const GeneralMenu = ({
         break;
     }
   };
+
+  const myInfo = useRecoilValue(infoState);
+  if (myInfo.userId === userId) return <></>;
 
   return (
     <>

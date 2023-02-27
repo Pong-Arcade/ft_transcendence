@@ -1,4 +1,4 @@
-import { MouseEvent, useState } from "react";
+import { MouseEvent, useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import useModal from "../../../hooks/useModal";
 import Button from "../../atoms/Button";
@@ -9,8 +9,18 @@ import RelationConfirmModal from "../RelationConfirmModal";
 import { useRecoilValue } from "recoil";
 import friendUsersState from "../../../state/FriendUsersState";
 import blockUsersState from "../../../state/BlockUsersState";
+import { useParams } from "react-router-dom";
+import {
+  banChatRoomAPI,
+  demoteAdminAPI,
+  muteChatRoomAPI,
+  promoteAdminAPI,
+} from "../../../api/room";
+import { IUser, userMode } from "../Pagination/Pagination";
+import { SocketContext } from "../../../utils/ChatSocket";
 
 interface Props {
+  list: IUser[];
   top: number;
   left: number;
   isOpenMenu: boolean;
@@ -67,6 +77,7 @@ const MenuButton = styled(Button).attrs({
 })``;
 
 const GeneralMenu = ({
+  list,
   onClose,
   isOpenMenu,
   userId,
@@ -97,7 +108,14 @@ const GeneralMenu = ({
   const blockUsers = useRecoilValue(blockUsersState);
   const [currentOn, setCurrentOn] = useState<EChatCurrentOn>();
   const [isMute, setIsMute] = useState(false);
-  const [isPromote, setIsPromote] = useState(false);
+  // const [isPromote, setIsPromote] = useState(false);
+  // const [isMaster, setIsMaster] = useState(false);
+  const params = useParams();
+  const socket = useContext(SocketContext);
+  const [myInfo, setMyInfo] = useState<IUser>();
+  useEffect(() => {
+    setMyInfo(list.find((value) => value.userId == socket.userId));
+  }, [list]);
 
   const isFriend = friendUsers.find((user) => user.userId === userId);
   const isBlock = blockUsers.find((user) => user.userId === userId);
@@ -113,6 +131,7 @@ const GeneralMenu = ({
 
   const onClick = (e: MouseEvent<HTMLButtonElement>) => {
     const { innerText } = e.currentTarget;
+
     switch (innerText) {
       case EChatRoom.INFO:
         onUserInfoOpen();
@@ -137,9 +156,11 @@ const GeneralMenu = ({
         onConfirmOpen();
         break;
       case EChatRoom.BAN:
+        banChatRoomAPI(Number(params.chatId), userId);
         onConfirmOpen();
         break;
       case EChatRoom.MUTE:
+        muteChatRoomAPI(Number(params.chatId), userId);
         setCurrentOn(EChatCurrentOn.MUTE);
         setIsMute(true);
         onConfirmOpen();
@@ -150,13 +171,13 @@ const GeneralMenu = ({
         onConfirmOpen();
         break;
       case EChatRoom.PROMOTE:
+        promoteAdminAPI(Number(params.chatId), userId);
         setCurrentOn(EChatCurrentOn.PROMOTE);
-        setIsPromote(true);
         onConfirmOpen();
         break;
       case EChatRoom.DEMOTE:
+        demoteAdminAPI(Number(params.chatId), userId);
         setCurrentOn(EChatCurrentOn.DEMOTE);
-        setIsPromote(false);
         onConfirmOpen();
         break;
     }
@@ -179,17 +200,30 @@ const GeneralMenu = ({
               <MenuButton onClick={onClick}>{EChatRoom.ADD_BLOCK}</MenuButton>
             )}
             <MenuButton onClick={onClick}>{EChatRoom.APPLY_GAME}</MenuButton>
-            <MenuButton onClick={onClick}>{EChatRoom.BAN}</MenuButton>
-            {isMute ? (
-              <MenuButton onClick={onClick}>{EChatRoom.UNMUTE}</MenuButton>
-            ) : (
-              <MenuButton onClick={onClick}>{EChatRoom.MUTE}</MenuButton>
-            )}
-            {isPromote ? (
-              <MenuButton onClick={onClick}>{EChatRoom.DEMOTE}</MenuButton>
-            ) : (
-              <MenuButton onClick={onClick}>{EChatRoom.PROMOTE}</MenuButton>
-            )}
+            {myInfo &&
+            myInfo.mode &&
+            (myInfo.mode == userMode.ADMIN ||
+              myInfo.mode == userMode.MASTER) ? (
+              <MenuButton onClick={onClick}>{EChatRoom.BAN}</MenuButton>
+            ) : null}
+            {myInfo &&
+            myInfo.mode &&
+            (myInfo.mode == userMode.ADMIN ||
+              myInfo.mode == userMode.MASTER) ? (
+              isMute ? (
+                <MenuButton onClick={onClick}>{EChatRoom.UNMUTE}</MenuButton>
+              ) : (
+                <MenuButton onClick={onClick}>{EChatRoom.MUTE}</MenuButton>
+              )
+            ) : null}
+            {myInfo && myInfo.mode && myInfo.mode == userMode.MASTER ? (
+              list.find((value) => value.userId == userId)?.mode ==
+              userMode.ADMIN ? (
+                <MenuButton onClick={onClick}>{EChatRoom.DEMOTE}</MenuButton>
+              ) : (
+                <MenuButton onClick={onClick}>{EChatRoom.PROMOTE}</MenuButton>
+              )
+            ) : null}
           </MenuStyled>
         </ModalWrapper>
       )}

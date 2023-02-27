@@ -9,11 +9,20 @@ const axiosClient = axios.create({
   },
 });
 
+// axiosClient.interceptors.response.use(
+//   (response) => {
+//     return response;
+//   },
+//   (error) => {
+//     return Promise.reject(error);
+//   }
+// );
+
 export function getRequest(URL: string) {
   return axiosClient.get(`/api/${URL}`).then((response) => response);
 }
 
-export function postRequest(URL: string, payload: object, options?: object) {
+export function postRequest(URL: string, payload?: object, options?: object) {
   return axiosClient
     .post(`/api/${URL}`, payload, options)
     .then((response) => response);

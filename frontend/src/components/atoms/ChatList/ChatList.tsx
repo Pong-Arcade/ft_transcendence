@@ -49,6 +49,7 @@ export interface IMessage {
   fromId: number;
   content: string;
   type: MessageType;
+  roomId?: number;
 }
 
 export enum EMessageType {

@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import { createGameRoomAPI } from "../../../api/room";
 import { ERoomCreateButtonName } from "../../../hooks/useCreateRoom";
@@ -6,6 +7,7 @@ import useGameRoomForm, {
   EGameRoomFormValues,
   EGameType,
 } from "../../../hooks/useGameRoomForm";
+import gameRoomState from "../../../state/GameRoomState";
 import Button from "../../atoms/Button";
 import Modal from "../../atoms/Modal";
 import ModalInputWrapper from "../../atoms/ModalInputWrapper";
@@ -14,6 +16,7 @@ import GameTypeCheckBoxGroup from "../GameTypeCheckBoxGroup/GameTypeCheckBoxGrou
 import LabledInput from "../LabledInput";
 import ModalInputListWrapper from "../ModalInputListWrapper";
 import ModalTitle from "../ModalTitle";
+import { EGameUserStatus } from "../Pagination/Pagination";
 
 interface Props {
   title?: string;
@@ -38,14 +41,22 @@ const SubmitButton = styled(Button).attrs({
 
 const CreateGameRoomModal = ({ title, onClose }: Props) => {
   const navigate = useNavigate();
+  const setGameRoomState = useSetRecoilState(gameRoomState);
   const { values, errors, onErrorModalClose, onChangeForm, onSubmitForm } =
     useGameRoomForm({
       onSubmit: async () => {
+        let data;
         if (title === ERoomCreateButtonName.LADDERGAME)
-          await createGameRoomAPI(EGameType.NORMAL, values);
-        else await createGameRoomAPI(EGameType.LADDER, values);
+          data = await createGameRoomAPI(EGameType.NORMAL, values);
+        else data = await createGameRoomAPI(EGameType.LADDER, values);
         onClose();
-        navigate("/game-rooms/123");
+
+        setGameRoomState({
+          roomId: data.roomId,
+          redUser: { ...data.redUser, status: EGameUserStatus.UN_READY },
+          blueUser: {},
+        });
+        navigate(`/game-rooms/${data.roomId}`);
       },
     });
 
@@ -98,7 +109,11 @@ const CreateGameRoomModal = ({ title, onClose }: Props) => {
         </CreateRoomForm>
       </Modal>
       {Object.keys(errors).length && (
-        <ErrorModal onClose={onErrorModalClose} errors={errors} />
+        <ErrorModal
+          onClose={onErrorModalClose}
+          errors={errors}
+          title="방만들기 실패"
+        />
       )}
     </>
   );

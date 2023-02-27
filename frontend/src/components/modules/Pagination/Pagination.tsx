@@ -4,12 +4,24 @@ import Board from "../../atoms/Board";
 import Button from "../../atoms/Button";
 import ButtonGroup from "../ButtonGroup";
 
+export enum userMode {
+  MASTER = "MASTER",
+  ADMIN = "ADMIN",
+  NORMAL = "NORMAL",
+}
+
+export enum EGameUserStatus {
+  READY = "READY",
+  UN_READY = "UN_READY",
+}
 export interface IUser {
-  userId: number;
-  nickname: string;
+  userId?: number;
+  nickname?: string;
   avatarUrl?: string;
   email?: string;
+  mode?: userMode;
   firstLogin?: string;
+  status?: EGameUserStatus;
 }
 
 export interface IRanking {
@@ -22,11 +34,28 @@ export interface IRanking {
 }
 
 export interface ILobbyChatRoom {
-  roomId: string;
+  roomId: number;
   title: string;
   mode: string;
   maxUserCount: string;
   currentCount: string;
+}
+
+export enum EGameRoomStatus {
+  ON_GAME = "ON_GAME",
+  ON_READY = "ON_READY",
+}
+type GameMode = "NORMAL" | "POWER_UP";
+
+export interface ILobbyGameRoom {
+  roomId: number;
+  redUser: IUser;
+  blueUser: IUser;
+  maxSpectatorCount: number;
+  curSpectatorCount: number;
+  roomStatus: EGameRoomStatus;
+  title: string;
+  mode: GameMode;
 }
 
 export interface IChatRoom {
@@ -35,7 +64,18 @@ export interface IChatRoom {
   users: IUser[];
 }
 
-export type IItem = IUser | IRanking | ILobbyChatRoom | IChatRoom;
+export interface IGameRoom {
+  roomId: number;
+  redUser: IUser;
+  blueUser: IUser;
+}
+
+export type IItem =
+  | IUser
+  | IRanking
+  | ILobbyChatRoom
+  | IChatRoom
+  | ILobbyGameRoom;
 
 export interface IPaginationItem {
   item: IItem;
@@ -133,14 +173,16 @@ const Pagination = ({
   return (
     <PaginationStyled {...rest}>
       <Page itemGap={itemGap} gridTemplate={gridTemplate}>
-        {list.map((item, idx) => (
-          <PaginationItem
-            onItemClick={onItemClick}
-            item={item}
-            key={idx}
-            subList={subList}
-          />
-        ))}
+        {list.length
+          ? list?.map((item, idx) => (
+              <PaginationItem
+                onItemClick={onItemClick}
+                item={item}
+                key={idx}
+                subList={subList}
+              />
+            ))
+          : undefined}
       </Page>
       <PaginationButtonGroup height={buttonGroupHeight} gap={buttonGap}>
         <PaginationButton

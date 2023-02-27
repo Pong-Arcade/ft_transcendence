@@ -1,9 +1,9 @@
 import { MouseEvent } from "react";
 import Pagination from "../Pagination";
-import { IItem, IPaginationItem } from "../Pagination/Pagination";
-
+import { IPaginationItem } from "../Pagination/Pagination";
+import { ILobbyChatRoom } from "../Pagination/Pagination";
 interface Props {
-  list: IItem[];
+  list: ILobbyChatRoom[];
   PaginationItem: (arg: IPaginationItem) => JSX.Element;
   page: number;
   onItemClick?: (e: MouseEvent<HTMLButtonElement>) => void;
@@ -20,7 +20,6 @@ const LobbyChatRoomPagination = ({
   onPrevPage,
 }: Props) => {
   const pageLength = 4;
-
   return (
     <Pagination
       list={list.slice(page * pageLength, (page + 1) * pageLength)}
@@ -31,7 +30,7 @@ const LobbyChatRoomPagination = ({
       buttonHeight="70%"
       buttonWidth="15%"
       buttonGap="2vw"
-      height="85%"
+      height="95%"
       width="90%"
       itemGap="0.3vh"
       gridTemplate="repeat(2, 1fr) / repeat(2, 1fr)"

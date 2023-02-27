@@ -1,13 +1,6 @@
-import React, { useContext } from "react";
 import styled from "styled-components";
 import Board from "../../atoms/Board";
 import ChatList from "../../atoms/ChatList";
-// import Input from "../../atoms/Input";
-import { SocketContext } from "../../../utils/ChatSocket";
-// import { IMessage } from "../../atoms/ChatList/ChatList";
-// import { useRecoilValue } from "recoil";
-// import blockUsersState from "../../../state/BlockUsersState";
-// import { IUser } from "../Pagination/Pagination";
 import ChatInput from "../ChatInput";
 
 interface Props {
@@ -38,17 +31,13 @@ const ChatBoard = styled(Board).attrs({
 })``;
 
 const Chat = ({ ...rest }: Props) => {
-  const socket = useContext(SocketContext);
-
   return (
-    <SocketContext.Provider value={socket}>
-      <ChatStyled {...rest}>
-        <ChatBoard>
-          <ChatList height="87%" width="100%" />
-          <ChatInput />
-        </ChatBoard>
-      </ChatStyled>
-    </SocketContext.Provider>
+    <ChatStyled {...rest}>
+      <ChatBoard>
+        <ChatList height="87%" width="100%" />
+        <ChatInput />
+      </ChatBoard>
+    </ChatStyled>
   );
 };
 

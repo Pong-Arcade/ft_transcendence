@@ -23,9 +23,9 @@ const LobbyUserListPagination = ({
 
   return (
     <Pagination
-      list={list.slice(page * pageLength, (page + 1) * pageLength)}
+      list={list?.slice(page * pageLength, (page + 1) * pageLength)}
       PaginationItem={PaginationItem}
-      nextPageDisabled={page === Math.floor(list.length / pageLength)}
+      nextPageDisabled={page === Math.floor(list?.length / pageLength)}
       prevPageDisabled={page === 0}
       buttonGroupHeight="15%"
       buttonHeight="60%"
