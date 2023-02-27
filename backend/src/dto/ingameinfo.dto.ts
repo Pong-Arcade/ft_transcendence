@@ -1,9 +1,8 @@
 import { Ball, Canvas, Paddle } from '../game/game.interface';
-import { Socket } from 'socket.io';
 
 export class InGameRoomInfoDto {
-  redPlayer: Socket;
-  bluePlayer: Socket;
+  roomId: number;
+  SocketServer;
   gameScreen: Canvas;
   paddle: Paddle;
   ball: Ball;
@@ -11,5 +10,5 @@ export class InGameRoomInfoDto {
   redScore: number;
   blueScore: number;
   beginDate: Date;
-  fps: 25;
+  fps: number;
 }
