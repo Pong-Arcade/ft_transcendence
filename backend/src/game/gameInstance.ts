@@ -1,7 +1,8 @@
-import { InGameRoomInfoDto } from 'src/dto/ingameinfo.dto';
-import { InGameKeyEvent, InGamePlayer } from 'src/enum/ingame.event.enum';
+import { InGameEvent, InGamePlayer } from 'src/enum/ingame.event.enum';
 import { Coordinate, InGameUpdateDto } from '../dto/ingame.update.dto';
-import { Socket } from 'socket.io';
+import { GameRoom } from './gameroom.entity';
+import { InGameRoomInfoDto } from '../dto/ingameinfo.dto';
+import * as gameConfig from './gameConfig.json';
 
 export class GameInstance {
   info: InGameRoomInfoDto;
@@ -22,10 +23,27 @@ export class GameInstance {
   frames: number;
   pause: number;
 
-  constructor(info: InGameRoomInfoDto) {
-    this.info = info;
+  constructor(gameRoom: GameRoom, roomId: number, server) {
+    this.info = this.makeInfo(gameRoom, roomId, server);
     this.intervalId = null;
     this.gameInit();
+    this.startGame();
+  }
+
+  private makeInfo(gameRoom: GameRoom, roomId, server): InGameRoomInfoDto {
+    const info: InGameRoomInfoDto = {
+      roomId: roomId,
+      SocketServer: server,
+      gameScreen: gameConfig.game_canvas,
+      paddle: gameConfig.paddle,
+      ball: gameConfig.ball,
+      winScore: gameRoom.winScore,
+      redScore: 0,
+      blueScore: 0,
+      beginDate: new Date(),
+      fps: gameConfig.fps,
+    };
+    return info;
   }
 
   private setPauseTime(t = -1) {
@@ -61,6 +79,32 @@ export class GameInstance {
     this.setPauseTime();
     this.ballInit();
     this.paddleInit();
+    this.info.SocketServer.in(`gameroom-${this.info.roomId}`).emit(
+      InGameEvent.CONFIG,
+      {
+        gameCanvas: {
+          width: this.info.gameScreen.width,
+          height: this.info.gameScreen.height,
+        },
+        paddle: {
+          width: this.info.paddle.width,
+          height: this.info.paddle.height,
+        },
+        ball: {
+          size: this.info.ball.size,
+          x: this.state.ball.x,
+          y: this.state.ball.y,
+        },
+        redPaddle: {
+          x: this.state.redPaddle.x,
+          y: this.state.redPaddle.y,
+        },
+        bluePaddle: {
+          x: this.state.bluePaddle.x,
+          y: this.state.bluePaddle.y,
+        },
+      },
+    );
   }
 
   private ballInit() {
@@ -70,14 +114,14 @@ export class GameInstance {
   }
 
   private paddleInit() {
-    this.state.paddle1.y =
+    this.state.redPaddle.y =
       (this.info.gameScreen.height - this.info.paddle.height) / 2;
-    this.state.paddle2.y =
+    this.state.bluePaddle.y =
       (this.info.gameScreen.height - this.info.paddle.height) / 2;
 
     //임시 값
-    this.state.paddle1.x = 10;
-    this.state.paddle2.x = 10;
+    this.state.redPaddle.x = 10;
+    this.state.bluePaddle.x = 10;
   }
 
   private randomBallDirection() {
@@ -88,11 +132,11 @@ export class GameInstance {
     this.ballDy /= vectorLeng;
   }
 
-  public setPaddleDirection(playerNumber: number, keyEvent: InGameKeyEvent) {
-    if (playerNumber === 0) {
-      this.paddleDirection1 = keyEvent as number;
+  public setPaddleDirection(player, keyEvent: number) {
+    if (player === InGamePlayer.RED) {
+      this.paddleDirection1 = keyEvent;
     } else {
-      this.paddleDirection2 = keyEvent as number;
+      this.paddleDirection2 = keyEvent;
     }
   }
 
@@ -140,7 +184,8 @@ export class GameInstance {
       tempBallDy *= -1;
     } else {
       //패들 충돌
-      const paddle = tempBallDx >= 0 ? this.state.paddle2 : this.state.paddle1;
+      const paddle =
+        tempBallDx >= 0 ? this.state.bluePaddle : this.state.redPaddle;
       if (
         this.isIntersection(
           nextBallX,
@@ -169,8 +214,8 @@ export class GameInstance {
 
   public updateGame() {
     this.incrementFrames();
-    this.updatePaddle(this.state.paddle1);
-    this.updatePaddle(this.state.paddle2);
+    this.updatePaddle(this.state.redPaddle);
+    this.updatePaddle(this.state.bluePaddle);
     if (this.isPause() === false) {
       this.calcNextBall();
       if (this.scored === true) {
@@ -180,6 +225,13 @@ export class GameInstance {
         this.ballInit();
         this.paddleInit();
         //방인원에게 점수 이벤트 전달
+        this.info.SocketServer.in(`gameroom-${this.info.roomId}`).emit(
+          InGameEvent.SCORE,
+          {
+            redScore: this.info.redScore,
+            blueScore: this.info.blueScore,
+          },
+        );
         if (
           this.info.redScore >= this.info.winScore ||
           this.info.blueScore >= this.info.winScore
@@ -189,10 +241,13 @@ export class GameInstance {
       }
     }
     //방인원에게 게임 업데이트 이벤트 전달
+    this.info.SocketServer.in(`gameroom-${this.info.roomId}`).emit(
+      InGameEvent.UPDATE,
+      this.state,
+    );
   }
 
   /**
-   * 그 어떤 경우에도 종료될때 해당함수를 거처야함
    * 정상 종료: 승점 달성
    * 비정상 종료: 플레이어 이탈
    */
@@ -200,33 +255,15 @@ export class GameInstance {
     clearInterval(this.intervalId);
     this.intervalId = null;
     //방인원에게 게임 종료 이벤트 전달
+    this.info.SocketServer.in(`gameroom-${this.info.roomId}`).emit(
+      InGameEvent.FINISH,
+    );
   }
 
   public startGame() {
-    this.gameInit();
-    //방인원들에게 게임 시작 이벤트 전달
     this.intervalId = setInterval(
       this.updateGame.bind(this),
       1000 / this.info.fps,
     );
-  }
-
-  public joinPlayer(player: InGamePlayer, socket: Socket) {
-    if (player === InGamePlayer.RED) {
-      this.info.redPlayer = socket;
-    } else if (player === InGamePlayer.BLUE) {
-      this.info.bluePlayer = socket;
-    }
-  }
-
-  public leavePlayerForceFinish(player: InGamePlayer) {
-    if (this.intervalId !== null) {
-      this.finishGame();
-    }
-    if (player === InGamePlayer.RED) {
-      this.info.redPlayer = null;
-    } else if (player === InGamePlayer.BLUE) {
-      this.info.bluePlayer = null;
-    }
   }
 }
