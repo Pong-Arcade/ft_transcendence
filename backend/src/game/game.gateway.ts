@@ -24,6 +24,7 @@ import { MatchType } from 'src/enum/match.type.enum';
 import { User } from 'src/status/status.entity';
 import { ChatGateway } from 'src/chat/chat.geteway';
 import { GameInstance } from './gameInstance';
+import { InGameKeyEvent, InGamePlayer } from 'src/enum/ingame.event.enum';
 
 export const gameRooms = new Map<number, GameRoom>();
 export let invitations: Invitation[] = [];
@@ -427,6 +428,32 @@ export class GameGateway implements OnGatewayDisconnect {
     const room = gameRooms.get(roomId);
     //gameInstance는 생성과 동시에 게임이 시작합니다.
     room.gameInstance = new GameInstance(room, roomId, this.server);
+  }
+
+  @SubscribeMessage('keyDown')
+  setKeyDownEvent(client, roomId, userId, keyCode) {
+    const room = gameRooms.get(roomId);
+    if (room.status !== GameRoomStatus.ON_GAME) {
+      return;
+    }
+    const user =
+      room.redUser.userId === userId ? InGamePlayer.RED : InGamePlayer.BLUE;
+    if (keyCode === 38) {
+      room.gameInstance.setPaddleDirection(user, InGameKeyEvent.ARROW_UP);
+    } else if (keyCode === 40) {
+      room.gameInstance.setPaddleDirection(user, InGameKeyEvent.ARROW_DOWN);
+    }
+  }
+
+  @SubscribeMessage('keyUp')
+  setKeyUpEvent(client, roomId, userId, keyCode) {
+    const room = gameRooms.get(roomId);
+    if (room.status !== GameRoomStatus.ON_GAME) {
+      return;
+    }
+    const user =
+      room.redUser.userId === userId ? InGamePlayer.RED : InGamePlayer.BLUE;
+    room.gameInstance.setPaddleDirection(user, InGameKeyEvent.STOP);
   }
 }
 //
