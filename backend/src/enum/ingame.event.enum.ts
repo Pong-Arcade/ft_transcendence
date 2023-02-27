@@ -10,7 +10,7 @@ export enum InGamePlayer {
 }
 
 export enum InGameEvent {
-  CONFIG = 'setConfig',
+  CONFIG = 'config',
   UPDATE = 'update',
   SCORE = 'score',
   FINISH = 'finish',
