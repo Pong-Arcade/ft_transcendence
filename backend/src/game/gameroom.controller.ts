@@ -228,10 +228,11 @@ export class GameRoomController {
       '오프라인 유저에게 신청한 경우, 게임방에 이미 입장한 유저에게 신청한 경우, 자신이나 상대방이 이미 수락 대기중인 상태인 경우, 게임 신청에 실패합니다.',
   })
   @HttpCode(HttpStatus.CREATED)
-  @Post('/invite/:target_user_id')
+  @Post('/invite/:target_user_id/:match_type')
   async inviteGame(
     @User() user: UserDto,
     @Param('target_user_id', ParseIntPipe) targetUserId: number,
+    @Param('match_type', new ParseEnumPipe(MatchType)) matchType: MatchType,
   ): Promise<void> {
     this.logger.log(`Called ${this.inviteGame.name}`);
 
@@ -264,7 +265,12 @@ export class GameRoomController {
     }
 
     // 5. 게임 신청 요청 처리
-    this.eventEmitter.emit('gameroom:invite', user.userId, targetUserId);
+    this.eventEmitter.emit(
+      'gameroom:invite',
+      user.userId,
+      targetUserId,
+      matchType,
+    );
   }
 
   @ApiOperation({

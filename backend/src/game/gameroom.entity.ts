@@ -7,6 +7,7 @@ export class Invitation {
   invitationId: number; // 초대의 고유 id
   inviterId: number; // 초대자의 userId
   inviteeId: number; // 초대받는 사람의 userId
+  matchType: MatchType; // 대전 유형
   expirationTime: Date; // 초대의 만료 시간
 }
 
