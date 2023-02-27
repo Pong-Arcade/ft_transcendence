@@ -10,6 +10,12 @@ export enum userMode {
   NORMAL = "NORMAL",
 }
 
+export enum userStatus {
+  ONLINE = "ONLINE",
+  OFFLINE = "OFFLINE",
+  GAME = "GAME",
+}
+
 export interface IUser {
   userId: number;
   nickname: string;
@@ -17,6 +23,7 @@ export interface IUser {
   email?: string;
   mode?: userMode;
   firstLogin?: string;
+  location?: number;
 }
 
 export interface IRanking {

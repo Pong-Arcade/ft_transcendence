@@ -1,6 +1,9 @@
 import { useState } from "react";
+import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
+import { getFriendUsersAPI } from "../../../api/users";
 import useMenu from "../../../hooks/useMenu";
+import friendUsersState from "../../../state/FriendUsersState";
 import Board from "../../atoms/Board";
 import GeneralMenu from "../GeneralMenu";
 import LobbyUserItem from "../LobbyUserItem";
@@ -38,8 +41,15 @@ const LobbyUserList = ({ onlineUsers, friendUsers, blockUsers }: Props) => {
   } = useMenu();
 
   const [currentButton, setCurrentButton] = useState(EUSER_BUTTON.ONLINE_USERS);
+  const setFriendUsers = useSetRecoilState(friendUsersState);
   const [page, setPage] = useState(0);
+  const onGetFriendUsers = async () => {
+    setFriendUsers(await getFriendUsersAPI());
+  };
   const onChoiceButtonClick = (button: EUSER_BUTTON) => {
+    if (button == "친구목록") {
+      onGetFriendUsers();
+    }
     setCurrentButton(button);
     setPage(0);
   };

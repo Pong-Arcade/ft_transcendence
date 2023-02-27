@@ -47,7 +47,6 @@ const CreateChatRoomModal = ({ title, onClose }: Props) => {
   const { values, errors, onErrorModalClose, onChangeForm, onSubmitForm } =
     useModifyChatRoomForm({
       onSubmit: () => {
-        console.log("submit");
         onClose();
         updateChatRoomAPI(
           Number(params.chatId),

@@ -64,7 +64,6 @@ const useLobbyData = () => {
       );
     });
     socket.socket.on("updateChatRoom", async (updateRoom: ILobbyChatRoom) => {
-      console.log("updateChatRoom", updateRoom);
       const newList = new Array<ILobbyChatRoom>();
       for (const room of chatRoomList) {
         console.log(room.roomId, updateRoom.roomId);
