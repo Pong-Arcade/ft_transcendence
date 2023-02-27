@@ -39,7 +39,6 @@ const MenuStyled = styled(Modal).attrs((props) => {
 
 export enum EMenu {
   INFO = "정보보기",
-  WHISPHER = "귓속말",
   ADD_FRIEND = "친구추가",
   DEL_FRIEND = "친구삭제",
   ADD_BLOCK = "차단하기",
@@ -55,7 +54,7 @@ export enum EGeneralCurrentOn {
 const MenuButton = styled(Button).attrs({
   width: "100%",
   border: "none",
-  height: "25%",
+  height: "33.3%",
 })``;
 
 const GeneralMenu = ({
@@ -107,8 +106,6 @@ const GeneralMenu = ({
       case EMenu.INFO:
         onUserInfoOpen();
         break;
-      case EMenu.WHISPHER:
-        break;
       case EMenu.ADD_FRIEND:
         setCurrentOn(EGeneralCurrentOn.ADD_FRIEND);
         onConfirmOpen();
@@ -137,7 +134,6 @@ const GeneralMenu = ({
         <ModalWrapper onClose={onClose} backgroundColor="none">
           <MenuStyled top={checkedTop} left={checkedLeft} {...rest}>
             <MenuButton onClick={onClick}>{EMenu.INFO}</MenuButton>
-            <MenuButton onClick={onClick}>{EMenu.WHISPHER}</MenuButton>
             {isFriend ? (
               <MenuButton onClick={onClick}>{EMenu.DEL_FRIEND}</MenuButton>
             ) : (
