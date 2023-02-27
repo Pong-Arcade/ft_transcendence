@@ -15,6 +15,8 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { AdminUIModule } from './socketAdminUI/adminUI.module';
+import { StatService } from './stat/stat.service';
+import { UserService } from './user/user.service';
 
 @Module({
   imports: [

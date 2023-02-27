@@ -37,6 +37,7 @@ import { diskStorage } from 'multer';
 import { existsSync, mkdirSync } from 'fs';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.auth.guard';
 import { v4 as uuid } from 'uuid';
+import { UserDetailResponseDto } from '../dto/response/user.detail.response.dto';
 
 @ApiTags('Users')
 @ApiBearerAuth()
@@ -91,7 +92,7 @@ export class UserController {
     @Param('user_id', ParseIntPipe) userId,
   ) {
     this.logger.log(`Called ${this.getUserDetail.name}`);
-    return await this.userService.getUserInfo(userId);
+    return await this.userService.getUserDetail(userId);
   }
 
   @ApiOperation({

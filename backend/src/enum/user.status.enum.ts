@@ -7,4 +7,7 @@
 export enum UserStatus {
   ONLINE = 'ONLINE',
   OFFLINE = 'OFFLINE',
+  LOBBY = 'LOBBY',
+  GAME = 'GAME',
+  CHAT = 'CHAT',
 }

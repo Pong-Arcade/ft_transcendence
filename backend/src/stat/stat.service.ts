@@ -1,4 +1,10 @@
-import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { IStatRepository } from './repository/stat.repository.interface';
 import { UserRecentMatchHistoryResponseDto } from 'src/dto/response/user.recent.match.history.response.dto';
 import { UserService } from 'src/user/user.service';
@@ -13,6 +19,7 @@ export class StatService {
   constructor(
     @Inject('IStatRepository')
     private readonly statRepository: IStatRepository,
+    @Inject(forwardRef(() => StatService))
     private readonly userService: UserService,
   ) {}
 
