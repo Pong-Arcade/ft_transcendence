@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { leaveChatRoomAPI } from "../../../api/room";
+import { getOnlineUsersAPI } from "../../../api/users";
 import useModal from "../../../hooks/useModal";
 import Button from "../../atoms/Button";
 import ButtonGroup from "../ButtonGroup";
@@ -36,7 +37,9 @@ const ChatRoomButtonGroup = () => {
         <ChatRoomButton onClick={onInviteOpen}>초대하기</ChatRoomButton>
         <ChatRoomButton onClick={onConfirmOpen}>나가기</ChatRoomButton>
       </ButtonGroup>
-      {isInviteOpen && <InviteModal onClose={onInviteClose} />}
+      {isInviteOpen && (
+        <InviteModal list={getOnlineUsersAPI()} onClose={onInviteClose} />
+      )}
       {isConfirmOpen && (
         <ExitConfirmModal
           onClose={onConfirmClose}

@@ -65,12 +65,13 @@ const ChatRoomUserList = () => {
       setUserList((prev) => (prev ? [...prev, user] : new Array<IUser>(user)));
     });
     socket.socket.on("leaveChatRoom", (userId: number) => {
-      const newList = new Array<IUser>();
+      // const newList = new Array<IUser>();
       if (userList) {
-        for (const user of userList) {
-          if (user.userId !== userId) newList.push(user);
-        }
-        setUserList(newList);
+        setUserList(userList.filter((user) => user.userId !== userId));
+        // for (const user of userList) {
+        //   if (user.userId !== userId) newList.push(user);
+        // }
+        // setUserList(newList);
       }
     });
     socket.socket.on("destructChatRoom", () => {

@@ -263,6 +263,7 @@ export class ChatroomController {
     chatroomInviteRequestDto: ChatroomInviteRequestDto,
   ): Promise<void> {
     this.logger.log(`Called ${this.inviteChatroom.name}`);
+    console.log(chatroomInviteRequestDto);
     // 1. 해당 채팅방 정보 확인
     const chatroomInfo = this.chatroomService.getChatroomInfo(roomId);
     if (!chatroomInfo) {

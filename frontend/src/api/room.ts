@@ -1,4 +1,7 @@
-import { ILobbyChatRoomFormValues } from "../hooks/useChatRoomForm";
+import {
+  IChatRoomInviteForm,
+  ILobbyChatRoomFormValues,
+} from "../hooks/useChatRoomForm";
 import { EGameType, IGameRoomFormValues } from "../hooks/useGameRoomForm";
 import { deleteRequest, getRequest, patchRequest, postRequest } from "./axios";
 
@@ -41,7 +44,7 @@ export const promoteAdminAPI = async (roomId: number, userId: number) => {
   console.log("response: ", response);
   return response;
 };
-promoteAdminAPI;
+
 export const demoteAdminAPI = async (roomId: number, userId: number) => {
   const response = await patchRequest(
     `chat-rooms/demote-admin/${roomId}/${userId}`
@@ -55,6 +58,24 @@ export const muteChatRoomAPI = async (roomId: number, userId: number) => {
     `chat-rooms/mute/${roomId}/${userId}/100`
   );
   console.log("response: ", response);
+  return response;
+};
+
+export const inviteChatRoomAPI = async (roomId: number, userId: string[]) => {
+  const userForm = { users: new Array<number>() };
+  for (const id of userId) userForm.users.push(Number(id));
+  const response = await postRequest(`chat-rooms/invite/${roomId}`, userForm);
+  console.log("response: ", response);
+  return response;
+};
+
+export const acceptInviteChatRoomAPI = async (roomId: number) => {
+  const response = await postRequest(`chat-rooms/invite/${roomId}`);
+  return response;
+};
+
+export const rejectInviteChatRoomAPI = async (roomId: number) => {
+  const response = await deleteRequest(`chat-rooms/reject/${roomId}`);
   return response;
 };
 

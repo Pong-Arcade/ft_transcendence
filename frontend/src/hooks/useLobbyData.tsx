@@ -25,19 +25,48 @@ const useLobbyData = () => {
   const [chatRoomList, setChatRoomList] = useState<ILobbyChatRoom[]>([]);
   const [myInfo, setMyInfo] = useRecoilState(infoState);
   const socket = useContext(SocketContext);
+  const addOnlineUser = (user: IUser) => {
+    console.log("add");
+    setOnlineUsers((prev) => [...prev, user]);
+  };
+  const deleteOnlineUser = (userId: number) => {
+    console.log("delete");
+    setOnlineUsers((prev) => {
+      let users = new Array<IUser>();
+      prev.forEach((user) => {
+        if (user.userId != userId) users.push(user);
+      });
+      return users;
+    });
+  };
+  useEffect(() => {
+    socket.socket.on("addOnlineUser", (user) => addOnlineUser(user));
+    socket.socket.on("deleteOnlineUser", (userId) => deleteOnlineUser(userId));
+  }, [onlineUsers]);
+  useEffect(() => {
+    socket.socket.on("inviteChatRoom", (roomid, fromid) => {
+      console.log("inviteChatRoom", roomid, fromid);
+    });
+  }, []);
   useEffect(() => {
     socket.socket.off("addChatRoom");
     socket.socket.off("deleteChatRoom");
     socket.socket.off("updateChatRoom");
+    socket.socket.off("addOnlineUser");
+    socket.socket.off("deleteOnlineUser");
+
     socket.socket.on("addChatRoom", async (addRoom: ILobbyChatRoom) => {
       await setChatRoomList((prev) => [...prev, addRoom]);
     });
     socket.socket.on("deleteChatRoom", async (roomId: number) => {
-      const newList = new Array<ILobbyChatRoom>();
-      for (const room of chatRoomList) {
-        if (room.roomId != roomId.toString()) newList.push(room);
-      }
-      await setChatRoomList(newList);
+      await setChatRoomList(
+        chatRoomList.filter((room) => room.roomId != roomId.toString())
+      );
+      // const newList = new Array<ILobbyChatRoom>();
+      // for (const room of chatRoomList) {
+      //   if (room.roomId != roomId.toString()) newList.push(room);
+      // }
+      // await setChatRoomList(newList);
     });
     socket.socket.on(
       "updateChatRoom",

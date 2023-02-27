@@ -1,4 +1,6 @@
+import { useParams } from "react-router-dom";
 import styled from "styled-components";
+import { inviteChatRoomAPI } from "../../../api/room";
 import Button from "../../atoms/Button";
 import Typography from "../../atoms/Typography";
 import ButtonGroup from "../ButtonGroup";
@@ -8,7 +10,7 @@ interface Props {
   onClose: () => void;
   onYesConfirm?: () => void;
   onNoConfirm?: () => void;
-  count: number;
+  list: string[];
 }
 
 const ConfirmButton = styled(Button).attrs({
@@ -16,15 +18,22 @@ const ConfirmButton = styled(Button).attrs({
   height: "100%",
 })``;
 
-const InviteConfirmModal = ({ onClose, onYesConfirm, count }: Props) => {
+const InviteConfirmModal = ({ onClose, onYesConfirm, list }: Props) => {
+  const params = useParams();
+  console.log("list: ", list);
+  if (list.length !== 0) {
+    inviteChatRoomAPI(Number(params.chatId), list);
+  }
   return (
     <ConfirmModal title="초대하기" onClose={onClose}>
-      {count === 0 ? (
+      {list.length === 0 ? (
         <Typography fontColor="yellow" fontSize="2.8rem">
           1명 이상 선택해주세요.
         </Typography>
       ) : (
-        <Typography fontSize="2.8rem">{count} 명을 초대했습니다.</Typography>
+        <Typography fontSize="2.8rem">
+          {list.length} 명을 초대했습니다.
+        </Typography>
       )}
       <ButtonGroup width="100%" height="30%">
         <ConfirmButton onClick={onYesConfirm}>닫기</ConfirmButton>
