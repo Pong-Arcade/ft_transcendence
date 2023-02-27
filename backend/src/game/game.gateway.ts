@@ -24,7 +24,11 @@ import { MatchType } from 'src/enum/match.type.enum';
 import { User } from 'src/status/status.entity';
 import { ChatGateway } from 'src/chat/chat.geteway';
 import { GameInstance } from './gameInstance';
-import { InGameKeyEvent, InGamePlayer } from 'src/enum/ingame.event.enum';
+import {
+  InGameEvent,
+  InGameKeyEvent,
+  InGamePlayer,
+} from 'src/enum/ingame.event.enum';
 import { GameRoomService } from './gameroom.service';
 import { ChatroomService } from 'src/chat/chat.service';
 
@@ -54,6 +58,8 @@ export class GameGateway implements OnGatewayDisconnect {
 
   handleConnection(socket) {
     this.logger.log(`Called ${this.handleConnection.name}`);
+    //게임방 소켓 연결 직후 게임 스크린 정보 전달
+    this.eventEmitter.emit('gameroom:config', socket);
   }
 
   handleDisconnect(socket) {
@@ -169,6 +175,8 @@ export class GameGateway implements OnGatewayDisconnect {
     const room = gameRooms.get(roomId);
     const user = room.redUser.userId === userId ? room.redUser : room.blueUser;
     const userSocketInfo = users.get(user.userId);
+    //gameInstance 종료 이벤트
+    this.eventEmitter.emit('gameroom:finish', roomId);
     if (user.userId === room.redUser.userId) {
       this.server.in(`gameroom-${room.roomId}`).emit('destructGameRoom');
       this.chatGateway.server
@@ -490,15 +498,48 @@ export class GameGateway implements OnGatewayDisconnect {
   }
 
   @OnEvent('gameroom:start')
-  async startGame(roomId) {
+  async startGame(roomId: number) {
     const room = gameRooms.get(roomId);
+    if (room.status === GameRoomStatus.ON_GAME) {
+      return;
+    }
     //gameInstance는 생성과 동시에 게임이 시작합니다.
-    room.gameInstance = new GameInstance(room, roomId, this.server);
+    room.gameInstance = new GameInstance(
+      roomId,
+      room.winScore,
+      room.mode,
+      this.server,
+      this.eventEmitter,
+    );
+  }
+
+  @OnEvent('gameroom:finish')
+  async finishGame(roomId: number) {
+    const room = gameRooms.get(roomId);
+    if (room.status !== GameRoomStatus.ON_GAME) {
+      return;
+    }
+    //전적 처리를 위한 게임 결과 정보 반환
+    const gameResult = room.gameInstance.finishGame();
+    room.gameInstance = null;
+    room.status = GameRoomStatus.ON_READY;
+    //게임 전적 처리
+  }
+
+  @OnEvent('gameroom:config')
+  pushConfig(client) {
+    client.emit(InGameEvent.CONFIG, GameInstance.makeSetConfig());
   }
 
   @SubscribeMessage('keyDown')
   setKeyDownEvent(client, roomId, userId, keyCode) {
     const room = gameRooms.get(roomId);
+    if (
+      room === undefined &&
+      !(room.redUser.userId === userId || room.blueUser.userId === userId)
+    ) {
+      return;
+    }
     if (room.status !== GameRoomStatus.ON_GAME) {
       return;
     }
@@ -512,8 +553,14 @@ export class GameGateway implements OnGatewayDisconnect {
   }
 
   @SubscribeMessage('keyUp')
-  setKeyUpEvent(client, roomId, userId, keyCode) {
+  setKeyUpEvent(client, roomId, userId) {
     const room = gameRooms.get(roomId);
+    if (
+      room === undefined &&
+      !(room.redUser.userId === userId || room.blueUser.userId === userId)
+    ) {
+      return;
+    }
     if (room.status !== GameRoomStatus.ON_GAME) {
       return;
     }
