@@ -1,12 +1,15 @@
 import { AxiosError, AxiosResponse } from "axios";
-import { MouseEvent, useState } from "react";
+import { MouseEvent, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
-import { joinGameRoomAPI } from "../../../api/room";
+import { joinGamePlayerAPI, joinGameSpectatorAPI } from "../../../api/room";
+import useModal from "../../../hooks/useModal";
 import gameRoomState from "../../../state/GameRoomState";
 import Board from "../../atoms/Board";
 import ErrorModal from "../ErrorModal";
+import GameRoomJoinModal from "../GameRoomJoinModal";
+import { EGameRoomJoin } from "../GameRoomJoinModal/GameRoomJoinModal";
 import LobbyGameRoomItem from "../LobbyGameRoomItem";
 import LobbyGameRoomPagination from "../LobbyGameRoomPagination";
 import { ILobbyGameRoom } from "../Pagination/Pagination";
@@ -31,17 +34,31 @@ interface Props {
 
 const LobbyGameRoomList = ({ list, page, onNextPage, onPrevPage }: Props) => {
   const [error, setError] = useState(false);
-  const navigate = useNavigate();
   const [errorContent, setErrorContent] = useState("");
+  const navigate = useNavigate();
   const setGameState = useSetRecoilState(gameRoomState);
+  const roomId = useRef("");
+  const {
+    isModalOpen: isGameJoinModalOpen,
+    onModalOpen: onGameJoinModalOpen,
+    onModalClose: onGameJoinModalClose,
+  } = useModal({
+    beforeOpen: (e) => {
+      if (e) roomId.current = e.currentTarget.id.toString();
+    },
+  });
 
-  const joinGameRoom = async (event: MouseEvent<HTMLButtonElement>) => {
+  const onJoinGameRoom = async (e: MouseEvent<HTMLButtonElement>) => {
     try {
       const { data }: AxiosResponse<ILobbyGameRoom, any> =
-        await joinGameRoomAPI(event.currentTarget.id);
+        e.currentTarget.innerText === EGameRoomJoin.PLAYER
+          ? await joinGamePlayerAPI(+roomId.current)
+          : await joinGameSpectatorAPI(+roomId.current);
+
       setGameState({
         roomId: data.roomId,
-        users: [data.redUser, data.blueUser],
+        redUser: data.redUser,
+        blueUser: data.blueUser,
       });
       navigate(`/game-rooms/${data.roomId}`);
     } catch (e: any | AxiosError) {
@@ -53,23 +70,31 @@ const LobbyGameRoomList = ({ list, page, onNextPage, onPrevPage }: Props) => {
   };
 
   return (
-    <LobbyGameRoomListStyled>
-      <LobbyGameRoomPagination
-        list={list}
-        page={page}
-        onNextPage={onNextPage}
-        onPrevPage={onPrevPage}
-        PaginationItem={LobbyGameRoomItem}
-        onItemClick={joinGameRoom}
-      />
-      {error && (
-        <ErrorModal
-          onClose={() => setError(false)}
-          errors={errorContent}
-          title="방입장 실패"
+    <>
+      <LobbyGameRoomListStyled>
+        <LobbyGameRoomPagination
+          list={list}
+          page={page}
+          onNextPage={onNextPage}
+          onPrevPage={onPrevPage}
+          PaginationItem={LobbyGameRoomItem}
+          onItemClick={onGameJoinModalOpen}
+        />
+        {error && (
+          <ErrorModal
+            onClose={() => setError(false)}
+            errors={errorContent}
+            title="방입장 실패"
+          />
+        )}
+      </LobbyGameRoomListStyled>
+      {isGameJoinModalOpen && (
+        <GameRoomJoinModal
+          onClose={onGameJoinModalClose}
+          onJoinGameRoom={onJoinGameRoom}
         />
       )}
-    </LobbyGameRoomListStyled>
+    </>
   );
 };
 

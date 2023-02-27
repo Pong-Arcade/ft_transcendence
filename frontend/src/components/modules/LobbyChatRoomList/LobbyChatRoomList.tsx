@@ -1,6 +1,6 @@
 import { AxiosError } from "axios";
 import { MouseEvent, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { joinChatRoomAPI } from "../../../api/room";
 import Board from "../../atoms/Board";
@@ -12,7 +12,7 @@ import { ILobbyChatRoom } from "../Pagination/Pagination";
 const LobbyChatRoomListStyled = styled(Board).attrs((props) => {
   return {
     width: "100%",
-    height: "49%",
+    height: "59%",
     backgroundColor: props.theme.background.middle,
     flexDirection: "column",
     justifyContent: "space-around",
@@ -35,8 +35,8 @@ const LobbyChatRoomList = ({ list, page, onNextPage, onPrevPage }: Props) => {
   const joinChatRoom = async (event: MouseEvent<HTMLButtonElement>) => {
     try {
       const id = event.currentTarget.id;
-      const response = await joinChatRoomAPI(event.currentTarget.id);
-      console.log("response data: ", response.data);
+      const response = await joinChatRoomAPI(+event.currentTarget.id);
+
       await navigate("/chat-rooms/" + id, {
         state: { users: response.data.users },
       });

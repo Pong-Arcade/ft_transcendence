@@ -10,13 +10,18 @@ export enum userMode {
   NORMAL = "NORMAL",
 }
 
+export enum EGameUserStatus {
+  READY = "READY",
+  UN_READY = "UN_READY",
+}
 export interface IUser {
-  userId: number;
-  nickname: string;
+  userId?: number;
+  nickname?: string;
   avatarUrl?: string;
   email?: string;
   mode?: userMode;
   firstLogin?: string;
+  status?: EGameUserStatus;
 }
 
 export interface IRanking {
@@ -29,14 +34,17 @@ export interface IRanking {
 }
 
 export interface ILobbyChatRoom {
-  roomId: string; // FIXME: number 로 바꾸기
+  roomId: number;
   title: string;
   mode: string;
   maxUserCount: string;
   currentCount: string;
 }
 
-type IGameStatus = "READY" | "UN_READY";
+export enum EGameRoomStatus {
+  ON_GAME = "ON_GAME",
+  ON_READY = "ON_READY",
+}
 type GameMode = "NORMAL" | "POWER_UP";
 
 export interface ILobbyGameRoom {
@@ -45,7 +53,7 @@ export interface ILobbyGameRoom {
   blueUser: IUser;
   maxSpectatorCount: number;
   curSpectatorCount: number;
-  roomStatus: IGameStatus;
+  roomStatus: EGameRoomStatus;
   title: string;
   mode: GameMode;
 }
@@ -58,7 +66,8 @@ export interface IChatRoom {
 
 export interface IGameRoom {
   roomId: number;
-  users: IUser[];
+  redUser: IUser;
+  blueUser: IUser;
 }
 
 export type IItem =

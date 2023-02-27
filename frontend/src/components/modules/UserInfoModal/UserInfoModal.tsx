@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { getUserInfoAPI } from "../../../api/users";
 import useFriendUsers from "../../../hooks/useFriendUsers";
 import useModal from "../../../hooks/useModal";
+import friendUsersState from "../../../state/FriendUsersState";
 import infoState from "../../../state/InfoState";
 import Avatar from "../../atoms/Avatar";
 import Board from "../../atoms/Board";
@@ -14,6 +16,7 @@ import Typography from "../../atoms/Typography";
 import ButtonGroup from "../ButtonGroup";
 import ModalTitle from "../ModalTitle";
 import { IUser } from "../Pagination/Pagination";
+import StatConfirmModal from "../StatConfirmModal";
 import UserInfoSettingModal from "../UserInfoSettingModal";
 
 interface Props {
@@ -118,10 +121,9 @@ const CurrentLocationContent = styled(Board).attrs({
 // TODO: 버튼 이상한 랜더링 해결
 const UserInfoModal = ({ onClose, userId }: Props) => {
   const myInfo = useRecoilValue(infoState);
-  const [userInfo, setUserInfo] = useState<IUser>({
-    userId: -1,
-    nickname: "",
-  });
+  const [userInfo, setUserInfo] = useState<IUser>({});
+  const navigate = useNavigate();
+
   useEffect(() => {
     (async () => {
       const data = await getUserInfoAPI(userId);
@@ -147,21 +149,26 @@ const UserInfoModal = ({ onClose, userId }: Props) => {
     "5",
     "66.7%",
   ];
+  const { isModalOpen: isInfoSettingOpen, onModalOpen: onInfoSettingOpen } =
+    useModal({});
   const {
-    isModalOpen: isInfoSettingOpen,
-    onModalOpen: onInfoSettingOpen,
-    onModalClose: InfoSettingClose,
+    isModalOpen: isConfirmOpen,
+    onModalOpen: onConfirmOpen,
+    onModalClose: onConfirmClose,
   } = useModal({});
-  const { onAddFriend } = useFriendUsers(userId);
+
+  const { onAddFriend, onDelFriend } = useFriendUsers(userId);
+  const friendUsers = useRecoilValue(friendUsersState);
+  const isFriend = friendUsers.find((user) => user.userId === userId);
 
   return (
     <ModalWrapper>
-      <Modal width={"60%"} height={"95%"}>
+      <Modal width={"60%"} height={"95%"} animation>
         <ModalTitle onClose={onClose} fontSize="3rem" height="10%">
           {userInfo.nickname}
         </ModalTitle>
         <GridWrapper>
-          <MyAvatar key={userInfo.avatarUrl} src={userInfo.avatarUrl} />
+          <MyAvatar src={userInfo.avatarUrl} />
           {infoTitleList.map((title, index) => (
             <InfoWrapper key={index} row={index}>
               <InfoTitle>{title}</InfoTitle>
@@ -190,21 +197,29 @@ const UserInfoModal = ({ onClose, userId }: Props) => {
             <UserInfoModalButton onClick={onInfoSettingOpen}>
               프로필설정
             </UserInfoModalButton>
+          ) : isFriend ? (
+            <UserInfoModalButton onClick={async () => await onDelFriend()}>
+              친구삭제
+            </UserInfoModalButton>
           ) : (
-            <>
-              <UserInfoModalButton onClick={async () => await onAddFriend()}>
-                친구추가
-              </UserInfoModalButton>
-              <UserInfoModalButton>관전하기</UserInfoModalButton>
-            </>
+            <UserInfoModalButton onClick={async () => await onAddFriend()}>
+              친구추가
+            </UserInfoModalButton>
           )}
-          <UserInfoModalButton to={`/stat/${userId}`}>
+          <UserInfoModalButton onClick={onConfirmOpen}>
             최근전적
           </UserInfoModalButton>
         </ButtonGroup>
       </Modal>
       {isInfoSettingOpen && (
-        <UserInfoSettingModal onClose={InfoSettingClose} info={userInfo} />
+        <UserInfoSettingModal onClose={onClose} info={userInfo} />
+      )}
+      {isConfirmOpen && (
+        <StatConfirmModal
+          onClose={onConfirmClose}
+          onYesConfirm={() => navigate(`/stat/${userId}`)}
+          onNoConfirm={onConfirmClose}
+        />
       )}
     </ModalWrapper>
   );

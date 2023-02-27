@@ -64,7 +64,6 @@ const ChatList = ({ ...rest }: Props) => {
   const socket = useContext(SocketContext);
   useEffect(() => {
     const newMessage = (newMsg: IMessage) => {
-      console.log(newMsg);
       for (const user of blockUsers) {
         if (user.userId == newMsg.fromId) return;
       }

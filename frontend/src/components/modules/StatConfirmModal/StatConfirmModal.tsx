@@ -15,10 +15,13 @@ const ConfirmButton = styled(Button).attrs({
   height: "100%",
 })``;
 
-const ExitConfirmModal = ({ onClose, onYesConfirm, onNoConfirm }: Props) => {
+const StatConfirmModal = ({ onClose, onYesConfirm, onNoConfirm }: Props) => {
   return (
-    <ConfirmModal title="나가기" onClose={onClose}>
-      <Typography fontSize="2.8rem">정말 방을 나가시겠습니까?</Typography>
+    <ConfirmModal title="최근전적" onClose={onClose} width="45%" height="35%">
+      <Typography fontSize="2.8rem">
+        이동 시 현재 페이지를 벗어나게 됩니다.
+      </Typography>
+      <Typography fontSize="2.8rem">정말 이동하시겠습니까?</Typography>
       <ButtonGroup width="100%" height="30%">
         <ConfirmButton onClick={onYesConfirm}>예</ConfirmButton>
         <ConfirmButton onClick={onNoConfirm}>아니오</ConfirmButton>
@@ -27,4 +30,4 @@ const ExitConfirmModal = ({ onClose, onYesConfirm, onNoConfirm }: Props) => {
   );
 };
 
-export default ExitConfirmModal;
+export default StatConfirmModal;

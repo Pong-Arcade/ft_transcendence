@@ -7,37 +7,45 @@ import Typography from "../../atoms/Typography";
 
 const LobbyChatRoomItemStyled = styled(Button).attrs((props) => {
   return {
-    width: "100%",
-    height: "100%",
     backgroundColor: props.theme.background.front,
   };
 })`
   display: grid;
-  grid-template: repeat(2, 50%) / repeat(5, 20%);
+  grid-template: repeat(3, 33.3%) / repeat(5, 20%);
 `;
 
 const ChatLogo = styled(Logo)`
   width: 10vw;
   height: 15vh;
-  grid-row: 1 / span 2;
+  grid-row: 1 / -1;
   grid-column: 1 / span 2;
   margin: auto;
 `;
 
-const ChatRoomTitle = styled(Board).attrs({
-  width: "100%",
-  height: "100%",
+const ChatRoomTitle = styled(Board).attrs((props) => {
+  return {
+    backgroundColor: props.theme.colors.spiroDiscoBall,
+    borderRadius: true,
+  };
 })`
   grid-column: 3 / span 3;
   font-size: 2rem;
 `;
 
-const ChatRoomContent = styled(Board).attrs({
-  width: "100%",
-  height: "100%",
-  justifyContent: "space-around",
+const ChatRoomType = styled(Typography).attrs({
+  fontSize: "1.5rem",
 })`
+  grid-row: 2 / span 1;
   grid-column: 3 / -1;
+  align-self: center;
+`;
+
+const ChatRoomUserCount = styled(Typography).attrs({
+  fontSize: "1.5rem",
+})`
+  grid-row: 3 / span 1;
+  grid-column: 3 / -1;
+  align-self: center;
 `;
 
 const LobbyChatRoomItem = ({ item, onItemClick }: IPaginationItem) => {
@@ -45,15 +53,13 @@ const LobbyChatRoomItem = ({ item, onItemClick }: IPaginationItem) => {
     item as ILobbyChatRoom;
 
   return (
-    <LobbyChatRoomItemStyled id={roomId} onClick={onItemClick}>
+    <LobbyChatRoomItemStyled id={roomId.toString()} onClick={onItemClick}>
       <ChatRoomTitle>{title}</ChatRoomTitle>
       <ChatLogo />
-      <ChatRoomContent>
-        <Typography fontSize="1.5rem">{mode}</Typography>
-        <Typography fontSize="1.5rem">
-          {currentCount} / {maxUserCount}
-        </Typography>
-      </ChatRoomContent>
+      <ChatRoomType>타입 : {mode}</ChatRoomType>
+      <ChatRoomUserCount>
+        인원 : {currentCount} / {maxUserCount}
+      </ChatRoomUserCount>
     </LobbyChatRoomItemStyled>
   );
 };
