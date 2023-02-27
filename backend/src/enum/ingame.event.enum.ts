@@ -9,4 +9,9 @@ export enum InGamePlayer {
   BLUE = 'BLUE',
 }
 
-export enum InGameEvent {}
+export enum InGameEvent {
+  CONFIG = 'setConfig',
+  UPDATE = 'update',
+  SCORE = 'score',
+  FINISH = 'finish',
+}
