@@ -23,7 +23,7 @@ export class GameRoom {
   maxSpectatorCount: number;
   spectatorUsers: Array<number>;
   status: GameRoomStatus;
-  gameInstance: GameInstance;
+  gameInstance?: GameInstance;
   constructor(
     roomId: number,
     redUser: GameUserStatusDto,
