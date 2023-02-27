@@ -38,7 +38,6 @@ export class UserService {
     let userInfo = await this.cacheManager.get<UserDto>(`user-${userId}`);
     if (!userInfo) {
       userInfo = await this.userRepository.getUserInfo(userId);
-      console.log('service userinfo:', userInfo);
       await this.cacheManager.set(`user-${userId}`, userInfo, 60 * 10);
     }
     return userInfo;

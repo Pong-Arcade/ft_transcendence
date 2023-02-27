@@ -10,13 +10,18 @@ export enum userMode {
   NORMAL = "NORMAL",
 }
 
+export enum EGameUserStatus {
+  READY = "READY",
+  UN_READY = "UN_READY",
+}
 export interface IUser {
-  userId: number;
-  nickname: string;
+  userId?: number;
+  nickname?: string;
   avatarUrl?: string;
   email?: string;
   mode?: userMode;
   firstLogin?: string;
+  status?: EGameUserStatus;
 }
 
 export interface IRanking {
@@ -29,11 +34,28 @@ export interface IRanking {
 }
 
 export interface ILobbyChatRoom {
-  roomId: string;
+  roomId: number;
   title: string;
   mode: string;
   maxUserCount: string;
   currentCount: string;
+}
+
+export enum EGameRoomStatus {
+  ON_GAME = "ON_GAME",
+  ON_READY = "ON_READY",
+}
+type GameMode = "NORMAL" | "POWER_UP";
+
+export interface ILobbyGameRoom {
+  roomId: number;
+  redUser: IUser;
+  blueUser: IUser;
+  maxSpectatorCount: number;
+  curSpectatorCount: number;
+  roomStatus: EGameRoomStatus;
+  title: string;
+  mode: GameMode;
 }
 
 export interface IChatRoom {
@@ -42,7 +64,18 @@ export interface IChatRoom {
   users: IUser[];
 }
 
-export type IItem = IUser | IRanking | ILobbyChatRoom | IChatRoom;
+export interface IGameRoom {
+  roomId: number;
+  redUser: IUser;
+  blueUser: IUser;
+}
+
+export type IItem =
+  | IUser
+  | IRanking
+  | ILobbyChatRoom
+  | IChatRoom
+  | ILobbyGameRoom;
 
 export interface IPaginationItem {
   item: IItem;

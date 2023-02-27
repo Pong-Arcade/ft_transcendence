@@ -19,7 +19,7 @@ const ChatRoomInviteUserItem = ({
   return (
     <ChatRoomInviteUserItemStyled
       onClick={onItemClick}
-      checked={subList?.includes(nickname)}
+      checked={subList?.includes(nickname as string)}
     >
       {nickname}
     </ChatRoomInviteUserItemStyled>

@@ -1,8 +1,6 @@
-import { MouseEvent, useContext, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { SocketContext } from "../../../utils/ChatSocket";
+import { MouseEvent } from "react";
 import Pagination from "../Pagination";
-import { IItem, IPaginationItem, IUser } from "../Pagination/Pagination";
+import { IItem, IPaginationItem } from "../Pagination/Pagination";
 
 interface Props {
   list: IItem[];

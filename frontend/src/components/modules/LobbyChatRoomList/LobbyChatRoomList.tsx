@@ -1,15 +1,12 @@
 import { AxiosError } from "axios";
 import { MouseEvent, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { joinChatRoomAPI } from "../../../api/room";
 import Board from "../../atoms/Board";
 import ErrorModal from "../ErrorModal";
 import LobbyChatRoomItem from "../LobbyChatRoomItem";
 import LobbyChatRoomPagination from "../LobbyChatRoomPagination";
-import LobbyGameRoomPagination from "../LobbyGameRoomPagination";
-import LobbyRoomListTypeChoiceButtonGroup from "../LobbyRoomListTypeChoiceButtonGroup";
-import { EROOM_BUTTON } from "../LobbyRoomListTypeChoiceButtonGroup/LobbyRoomListTypeChoiceButtonGroup";
 import { ILobbyChatRoom } from "../Pagination/Pagination";
 
 const LobbyChatRoomListStyled = styled(Board).attrs((props) => {
@@ -25,26 +22,21 @@ const LobbyChatRoomListStyled = styled(Board).attrs((props) => {
 
 interface Props {
   list: ILobbyChatRoom[];
+  page: number;
+  onNextPage: () => void;
+  onPrevPage: () => void;
 }
 
-// TODO: game room list, 게임방 밖으로 빼기
-const LobbyChatRoomList = ({ list }: Props) => {
-  const [page, setPage] = useState(0);
-  const [currentButton, setCurrentButton] = useState(EROOM_BUTTON.CHATROOM);
+const LobbyChatRoomList = ({ list, page, onNextPage, onPrevPage }: Props) => {
   const [error, setError] = useState(false);
   const [errorContent, setErrorContent] = useState("");
   const navigate = useNavigate();
 
-  const onChoiceButtonClick = (button: EROOM_BUTTON) => {
-    setCurrentButton(button);
-    setPage(0);
-  };
-
   const joinChatRoom = async (event: MouseEvent<HTMLButtonElement>) => {
     try {
       const id = event.currentTarget.id;
-      const response = await joinChatRoomAPI(event.currentTarget.id);
-      console.log("response data: ", response.data);
+      const response = await joinChatRoomAPI(+event.currentTarget.id);
+
       await navigate("/chat-rooms/" + id, {
         state: { users: response.data.users },
       });
@@ -58,28 +50,14 @@ const LobbyChatRoomList = ({ list }: Props) => {
 
   return (
     <LobbyChatRoomListStyled>
-      <LobbyRoomListTypeChoiceButtonGroup
-        onClick={onChoiceButtonClick}
-        currentButton={currentButton}
+      <LobbyChatRoomPagination
+        list={list}
+        page={page}
+        onNextPage={onNextPage}
+        onPrevPage={onPrevPage}
+        PaginationItem={LobbyChatRoomItem}
+        onItemClick={joinChatRoom}
       />
-      {currentButton === EROOM_BUTTON.CHATROOM ? (
-        <LobbyChatRoomPagination
-          list={list}
-          page={page}
-          onNextPage={() => setPage(page + 1)}
-          onPrevPage={() => setPage(page - 1)}
-          PaginationItem={LobbyChatRoomItem}
-          onItemClick={joinChatRoom}
-        />
-      ) : (
-        <LobbyGameRoomPagination
-          list={list}
-          page={page}
-          onNextPage={() => setPage(page + 1)}
-          onPrevPage={() => setPage(page - 1)}
-          PaginationItem={LobbyChatRoomItem} //TODO: LobbyGameRoomItem
-        />
-      )}
       {error && (
         <ErrorModal
           onClose={() => setError(false)}

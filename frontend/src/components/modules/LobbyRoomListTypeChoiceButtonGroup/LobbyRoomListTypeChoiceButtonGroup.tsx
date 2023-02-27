@@ -15,7 +15,7 @@ export const BUTTON_LIST = [EROOM_BUTTON.CHATROOM, EROOM_BUTTON.GAMEROOM];
 
 const ChoiceButton = styled(Button).attrs({
   width: "31%",
-  height: "70%",
+  height: "80%",
   boxShadow: true,
 })``;
 
@@ -26,7 +26,7 @@ const LobbyRoomListTypeChoiceButtonGroup = ({
   return (
     <ButtonGroup
       width="100%"
-      height="20%"
+      height="10%"
       justifyContent="center"
       alignItems="center"
       gap="11vw"

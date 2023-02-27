@@ -17,7 +17,7 @@ const AvatarStyled = styled.div<Props>`
   background-size: cover;
   background-position: center;
   border-radius: 50%;
-  border: 2.5px solid ${(props) => props.theme.background.front};
+  background-color: ${(props) => props.theme.background.front};
 `;
 
 interface AvatarLabelProps {
@@ -34,8 +34,6 @@ const AvatarLabel = styled.label<AvatarLabelProps>`
   background-image: url(${(props) => props.src});
   background-size: cover;
   background-position: center;
-
-  border: 2.5px solid ${(props) => props.theme.background.front};
 
   &:hover {
     box-shadow: 0px 5px 5px -2px rgba(0, 0, 0, 0.25);
