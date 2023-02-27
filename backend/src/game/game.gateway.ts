@@ -424,7 +424,7 @@ export class GameGateway implements OnGatewayDisconnect {
   }
 
   @OnEvent('gameroom:start')
-  async startGame(roomId: number) {
+  async startGame(roomId) {
     const room = gameRooms.get(roomId);
     //gameInstance는 생성과 동시에 게임이 시작합니다.
     room.gameInstance = new GameInstance(room, roomId, this.server);
@@ -451,7 +451,7 @@ export class GameGateway implements OnGatewayDisconnect {
     if (room.status !== GameRoomStatus.ON_GAME) {
       return;
     }
-    const user =
+    const user: InGamePlayer =
       room.redUser.userId === userId ? InGamePlayer.RED : InGamePlayer.BLUE;
     room.gameInstance.setPaddleDirection(user, InGameKeyEvent.STOP);
   }
