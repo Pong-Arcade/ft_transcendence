@@ -1,12 +1,8 @@
 import axios from "axios";
-import { getCookie } from "../utils/cookie";
 
-const axiosClient = axios.create({
+export const axiosClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   withCredentials: true,
-  headers: {
-    Authorization: `Bearer ${getCookie()}`,
-  },
 });
 
 axiosClient.interceptors.response.use(

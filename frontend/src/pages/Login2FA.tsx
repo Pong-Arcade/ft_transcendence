@@ -41,7 +41,7 @@ const Login2FA = () => {
     onModalOpen: onSuccessOpen,
     onModalClose: onSuccessClose,
   } = useModal({
-    beforeClose: async () => {
+    afterClose: () => {
       navigate("/lobby");
     },
   });
