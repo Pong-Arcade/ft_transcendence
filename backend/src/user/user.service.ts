@@ -25,7 +25,8 @@ export class UserService {
     @Inject('IUserRepository')
     private readonly userRepository: IUserRepository,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
-    @Inject(forwardRef(() => StatService)) private statService: StatService,
+    @Inject(forwardRef(() => StatService))
+    private statService: StatService,
   ) {}
 
   /**

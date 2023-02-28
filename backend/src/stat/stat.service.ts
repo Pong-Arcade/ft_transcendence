@@ -19,7 +19,7 @@ export class StatService {
   constructor(
     @Inject('IStatRepository')
     private readonly statRepository: IStatRepository,
-    @Inject(forwardRef(() => StatService))
+    @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
   ) {}
 

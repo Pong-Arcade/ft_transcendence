@@ -29,7 +29,7 @@ export const repo = {
     forwardRef(() => StatModule),
   ],
   controllers: [UserController],
-  providers: [UserService, StatService, repo],
-  exports: [UserService], //  TODO: 순환참조
+  providers: [UserService, repo],
+  exports: [UserService],
 })
 export class UserModule {}
