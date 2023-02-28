@@ -62,10 +62,11 @@ const Login2FA = () => {
       return;
     }
     try {
-      const response = await verify2FAAPI(inputRef.current.value);
+      const value = inputRef.current.value.trim();
+      const response = await verify2FAAPI(value);
       setJWT(response.data.token);
       onSuccessOpen();
-    } catch (e) {
+    } catch {
       onFailOpen();
     }
   };
