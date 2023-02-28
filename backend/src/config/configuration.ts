@@ -22,4 +22,16 @@ export default () => ({
     username: process.env.DATABASE_USERNAME,
     password: process.env.DATABASE_PASSWORD,
   },
+  email: {
+    service: process.env.MAIL_SERVICE,
+    host: process.env.MAIL_HOST,
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASS,
+    from: process.env.MAIL_FROM,
+    tls: {
+      maxVersion: process.env.MAIL_TLS_MAXVERSION,
+      minVersion: process.env.MAIL_TLS_MINVERSION,
+      ciphers: process.env.MAIL_TLS_CIPHERS,
+    },
+  },
 });

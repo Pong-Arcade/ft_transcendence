@@ -1,5 +1,6 @@
-import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
+import { Column, Entity, OneToMany, OneToOne, PrimaryColumn } from 'typeorm';
 import Relation from './relation.entity';
+import { TwoFactorAuth } from './two.factor.auth.entity';
 
 @Entity('user')
 export default class User {
@@ -41,4 +42,7 @@ export default class User {
 
   @OneToMany(() => Relation, (relation) => relation.user)
   relations: Relation[];
+
+  @OneToOne(() => TwoFactorAuth, (twoFactorAuth) => twoFactorAuth.user)
+  twoFactorAuth: TwoFactorAuth;
 }
