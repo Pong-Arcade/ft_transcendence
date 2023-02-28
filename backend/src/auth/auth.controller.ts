@@ -79,8 +79,7 @@ export class AuthController {
       return res.redirect(`${feHost}/lobby/?isFirstLogin=true`);
     }
 
-    // 그 외의 경우, 2차 인증키 값을 갱신하고, lobby 페이지로 redirect 한다.
-    await this.authService.enroll2FA(user.userId);
+    // 그 외의 경우, lobby 페이지로 redirect 한다.
     return res.redirect(`${feHost}/lobby`);
   }
 
@@ -118,6 +117,7 @@ export class AuthController {
       userId: userInfo.userId,
       nickname: userInfo.nickname,
     });
+    await this.authService.enroll2FA(userInfo.userId);
     return { token };
   }
 }
