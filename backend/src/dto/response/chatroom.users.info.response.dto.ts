@@ -14,6 +14,12 @@ export class ChatroomUsersInfoResponseDto {
   mastUserId: number;
 
   @ApiProperty({
+    description: '채팅방의 제목',
+    example: '채팅방 제목',
+  })
+  title: string;
+
+  @ApiProperty({
     description: '관리자들의 유저 ID',
     example: [2, 3],
   })
