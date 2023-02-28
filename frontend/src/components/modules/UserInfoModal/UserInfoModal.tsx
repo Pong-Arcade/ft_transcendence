@@ -19,6 +19,7 @@ import ButtonGroup from "../ButtonGroup";
 import Confirm2FAModal from "../Confirm2FAModal";
 import ModalTitle from "../ModalTitle";
 import { IUser } from "../Pagination/Pagination";
+import StatModal from "../StatModal";
 import UserInfoSettingModal from "../UserInfoSettingModal";
 
 interface Props {
@@ -120,11 +121,9 @@ const CurrentLocationContent = styled(Board).attrs({
   background-color: ${(props) => props.theme.background.middle};
 `;
 
-// TODO: 버튼 이상한 랜더링 해결
 const UserInfoModal = ({ onClose, userId }: Props) => {
   const myInfo = useRecoilValue(infoState);
   const [userInfo, setUserInfo] = useState<IUser>({});
-  const navigate = useNavigate();
 
   useEffect(() => {
     (async () => {
@@ -154,14 +153,20 @@ const UserInfoModal = ({ onClose, userId }: Props) => {
   const { isModalOpen: isInfoSettingOpen, onModalOpen: onInfoSettingOpen } =
     useModal({});
   const {
-    isModalOpen: isConfirmOpen,
-    onModalOpen: onConfirmOpen,
-    onModalClose: onConfirmClose,
+    isModalOpen: isStatModalOpen,
+    onModalOpen: onStatModalOpen,
+    onModalClose: onStatModalClose,
+  } = useModal({});
+  const {
+    isModalOpen: isConfirmModalOpen,
+    onModalOpen: onConfirmModalOpen,
+    onModalClose: onConfirmModalClose,
   } = useModal({});
 
   const { onAddFriend, onDelFriend } = useFriendUsers(userId);
   const friendUsers = useRecoilValue(friendUsersState);
   const isFriend = friendUsers.find((user) => user.userId === userId);
+  const navigate = useNavigate();
 
   const onEnroll2FA = async () => {
     await enroll2FAAPI();
@@ -203,7 +208,7 @@ const UserInfoModal = ({ onClose, userId }: Props) => {
         <ButtonGroup width="100%" height="8%" backgroundColor="secondary">
           {userInfo.userId === myInfo.userId ? (
             <>
-              <UserInfoModalButton onClick={onConfirmOpen}>
+              <UserInfoModalButton onClick={onConfirmModalOpen}>
                 2차인증 등록
               </UserInfoModalButton>
               <UserInfoModalButton onClick={onInfoSettingOpen}>
@@ -219,7 +224,7 @@ const UserInfoModal = ({ onClose, userId }: Props) => {
               친구추가
             </UserInfoModalButton>
           )}
-          <UserInfoModalButton onClick={onConfirmOpen}>
+          <UserInfoModalButton onClick={onStatModalOpen}>
             최근전적
           </UserInfoModalButton>
         </ButtonGroup>
@@ -227,11 +232,18 @@ const UserInfoModal = ({ onClose, userId }: Props) => {
       {isInfoSettingOpen && (
         <UserInfoSettingModal onClose={onClose} info={userInfo} />
       )}
-      {isConfirmOpen && (
+      {isConfirmModalOpen && (
         <Confirm2FAModal
-          onClose={onConfirmClose}
+          onClose={onConfirmModalClose}
           onYesConfirm={onEnroll2FA}
-          onNoConfirm={onConfirmClose}
+          onNoConfirm={onConfirmModalClose}
+        />
+      )}
+      {isStatModalOpen && (
+        <StatModal
+          onClose={onStatModalClose}
+          userId={userId}
+          nickname={userInfo.nickname as string}
         />
       )}
     </ModalWrapper>
