@@ -16,6 +16,8 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { UtilsModule } from './utils/utils.module';
 import { AdminUIModule } from './socketAdminUI/adminUI.module';
+import { StatService } from './stat/stat.service';
+import { UserService } from './user/user.service';
 
 @Module({
   imports: [
