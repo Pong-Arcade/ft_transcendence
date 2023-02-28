@@ -15,19 +15,18 @@ const ConfirmButton = styled(Button).attrs({
   height: "100%",
 })``;
 
-const StatConfirmModal = ({ onClose, onYesConfirm, onNoConfirm }: Props) => {
+const Confirm2FAModal = ({ onClose, onYesConfirm, onNoConfirm }: Props) => {
   return (
-    <ConfirmModal title="최근전적" onClose={onClose} width="45%" height="35%">
+    <ConfirmModal title="나가기" onClose={onClose}>
       <Typography fontSize="2.8rem">
-        이동 시 현재 페이지를 벗어나게 됩니다.
+        2차인증 등록 시 재로그인이 필요합니다
       </Typography>
-      <Typography fontSize="2.8rem">정말 이동하시겠습니까?</Typography>
       <ButtonGroup width="100%" height="30%">
-        <ConfirmButton onClick={onYesConfirm}>예</ConfirmButton>
-        <ConfirmButton onClick={onNoConfirm}>아니오</ConfirmButton>
+        <ConfirmButton onClick={onYesConfirm}>등록</ConfirmButton>
+        <ConfirmButton onClick={onNoConfirm}>닫기</ConfirmButton>
       </ButtonGroup>
     </ConfirmModal>
   );
 };
 
-export default StatConfirmModal;
+export default Confirm2FAModal;

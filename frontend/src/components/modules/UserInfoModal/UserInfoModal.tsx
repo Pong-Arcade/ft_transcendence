@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
+import { enroll2FAAPI } from "../../../api/auth";
 import { getUserInfoAPI } from "../../../api/users";
 import useFriendUsers from "../../../hooks/useFriendUsers";
 import useModal from "../../../hooks/useModal";
 import friendUsersState from "../../../state/FriendUsersState";
 import infoState from "../../../state/InfoState";
+import { removeJWT } from "../../../utils/token";
 import Avatar from "../../atoms/Avatar";
 import Board from "../../atoms/Board";
 import Button from "../../atoms/Button";
@@ -13,6 +16,7 @@ import Modal from "../../atoms/Modal";
 import ModalWrapper from "../../atoms/ModalWrapper";
 import Typography from "../../atoms/Typography";
 import ButtonGroup from "../ButtonGroup";
+import Confirm2FAModal from "../Confirm2FAModal";
 import ModalTitle from "../ModalTitle";
 import { IUser } from "../Pagination/Pagination";
 import StatModal from "../StatModal";
@@ -153,10 +157,22 @@ const UserInfoModal = ({ onClose, userId }: Props) => {
     onModalOpen: onStatModalOpen,
     onModalClose: onStatModalClose,
   } = useModal({});
+  const {
+    isModalOpen: isConfirmModalOpen,
+    onModalOpen: onConfirmModalOpen,
+    onModalClose: onConfirmModalClose,
+  } = useModal({});
 
   const { onAddFriend, onDelFriend } = useFriendUsers(userId);
   const friendUsers = useRecoilValue(friendUsersState);
   const isFriend = friendUsers.find((user) => user.userId === userId);
+  const navigate = useNavigate();
+
+  const onEnroll2FA = async () => {
+    await enroll2FAAPI();
+    removeJWT();
+    navigate("/");
+  };
 
   return (
     <ModalWrapper>
@@ -191,9 +207,14 @@ const UserInfoModal = ({ onClose, userId }: Props) => {
         </GridWrapper>
         <ButtonGroup width="100%" height="8%" backgroundColor="secondary">
           {userInfo.userId === myInfo.userId ? (
-            <UserInfoModalButton onClick={onInfoSettingOpen}>
-              프로필설정
-            </UserInfoModalButton>
+            <>
+              <UserInfoModalButton onClick={onConfirmModalOpen}>
+                2차인증 등록
+              </UserInfoModalButton>
+              <UserInfoModalButton onClick={onInfoSettingOpen}>
+                프로필설정
+              </UserInfoModalButton>
+            </>
           ) : isFriend ? (
             <UserInfoModalButton onClick={async () => await onDelFriend()}>
               친구삭제
@@ -210,6 +231,13 @@ const UserInfoModal = ({ onClose, userId }: Props) => {
       </Modal>
       {isInfoSettingOpen && (
         <UserInfoSettingModal onClose={onClose} info={userInfo} />
+      )}
+      {isConfirmModalOpen && (
+        <Confirm2FAModal
+          onClose={onConfirmModalClose}
+          onYesConfirm={onEnroll2FA}
+          onNoConfirm={onConfirmModalClose}
+        />
       )}
       {isStatModalOpen && (
         <StatModal

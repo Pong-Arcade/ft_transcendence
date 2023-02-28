@@ -150,7 +150,7 @@ export class AuthRepository implements IAuthRepository {
       },
     });
     if (!find) {
-      throw new Error('User not found');
+      return null;
     }
 
     if (find.twoFactorAuth.access === access) {
