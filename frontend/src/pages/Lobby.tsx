@@ -17,6 +17,8 @@ import errorState from "../state/ErrorState";
 import LobbyRoomListTypeChoiceButtonGroup from "../components/modules/LobbyRoomListTypeChoiceButtonGroup";
 import { EROOM_BUTTON } from "../components/modules/LobbyRoomListTypeChoiceButtonGroup/LobbyRoomListTypeChoiceButtonGroup";
 import LobbyGameRoomList from "../components/modules/LobbyGameRoomList";
+import useModal from "../hooks/useModal";
+import ChatInviteModal from "../components/modules/ChatInviteModal";
 
 const UserWrapper = styled(Board).attrs({
   width: "25%",
@@ -86,6 +88,13 @@ const Lobby = () => {
     setPage(page - 1);
   };
 
+  // 채팅 초대 모달
+  const {
+    isModalOpen: isChatInviteModalOpen,
+    onModalOpen: onChatInviteModalOpen, // 초대 이벤트 발생 시 오픈
+    onModalClose: onChatInviteModalClose,
+  } = useModal({});
+
   return (
     <>
       <LobbyTemplate>
@@ -127,6 +136,13 @@ const Lobby = () => {
         <UserInfoSettingModal onClose={FirstLoginModalClose} info={myInfo} />
       )}
       {isLoading && <FullSpinner />}
+      {isChatInviteModalOpen && (
+        <ChatInviteModal
+          onClose={onChatInviteModalClose} // 초대 거절
+          onNoConfirm={onChatInviteModalClose} // 초대 거절
+          onYesConfirm={onChatInviteModalClose} // 초대 승락
+        />
+      )}
     </>
   );
 };
