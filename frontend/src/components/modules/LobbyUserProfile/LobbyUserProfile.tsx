@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import useModal from "../../../hooks/useModal";
 import { IInfoState } from "../../../state/InfoState";
-import removeJWT from "../../../utils/removeJWT";
+import { removeJWT } from "../../../utils/token";
 import Avatar from "../../atoms/Avatar";
 import Board from "../../atoms/Board";
 import Button from "../../atoms/Button";

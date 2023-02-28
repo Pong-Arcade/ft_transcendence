@@ -1,4 +1,4 @@
-import React from "react";
+import React, { forwardRef } from "react";
 import styled, { css } from "styled-components";
 
 interface Props {
@@ -48,15 +48,18 @@ const InputStyled = styled.input.attrs((props) => {
     `}
 `;
 
-const Input = ({ onKeyPress, onChange, defaultValue, ...rest }: Props) => {
-  return (
-    <InputStyled
-      {...rest}
-      defaultValue={defaultValue}
-      onKeyPress={onKeyPress}
-      onChange={onChange}
-    />
-  );
-};
+const Input = forwardRef<HTMLInputElement, Props>(
+  ({ onKeyPress, onChange, defaultValue, ...rest }, ref) => {
+    return (
+      <InputStyled
+        ref={ref}
+        {...rest}
+        defaultValue={defaultValue}
+        onKeyPress={onKeyPress}
+        onChange={onChange}
+      />
+    );
+  }
+);
 
 export default Input;
