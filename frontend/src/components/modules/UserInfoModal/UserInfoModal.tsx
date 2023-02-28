@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { getUserInfoAPI } from "../../../api/users";
@@ -16,7 +15,7 @@ import Typography from "../../atoms/Typography";
 import ButtonGroup from "../ButtonGroup";
 import ModalTitle from "../ModalTitle";
 import { IUser } from "../Pagination/Pagination";
-import StatConfirmModal from "../StatConfirmModal";
+import StatModal from "../StatModal";
 import UserInfoSettingModal from "../UserInfoSettingModal";
 
 interface Props {
@@ -118,11 +117,9 @@ const CurrentLocationContent = styled(Board).attrs({
   background-color: ${(props) => props.theme.background.middle};
 `;
 
-// TODO: 버튼 이상한 랜더링 해결
 const UserInfoModal = ({ onClose, userId }: Props) => {
   const myInfo = useRecoilValue(infoState);
   const [userInfo, setUserInfo] = useState<IUser>({});
-  const navigate = useNavigate();
 
   useEffect(() => {
     (async () => {
@@ -152,9 +149,9 @@ const UserInfoModal = ({ onClose, userId }: Props) => {
   const { isModalOpen: isInfoSettingOpen, onModalOpen: onInfoSettingOpen } =
     useModal({});
   const {
-    isModalOpen: isConfirmOpen,
-    onModalOpen: onConfirmOpen,
-    onModalClose: onConfirmClose,
+    isModalOpen: isStatModalOpen,
+    onModalOpen: onStatModalOpen,
+    onModalClose: onStatModalClose,
   } = useModal({});
 
   const { onAddFriend, onDelFriend } = useFriendUsers(userId);
@@ -206,7 +203,7 @@ const UserInfoModal = ({ onClose, userId }: Props) => {
               친구추가
             </UserInfoModalButton>
           )}
-          <UserInfoModalButton onClick={onConfirmOpen}>
+          <UserInfoModalButton onClick={onStatModalOpen}>
             최근전적
           </UserInfoModalButton>
         </ButtonGroup>
@@ -214,11 +211,11 @@ const UserInfoModal = ({ onClose, userId }: Props) => {
       {isInfoSettingOpen && (
         <UserInfoSettingModal onClose={onClose} info={userInfo} />
       )}
-      {isConfirmOpen && (
-        <StatConfirmModal
-          onClose={onConfirmClose}
-          onYesConfirm={() => navigate(`/stat/${userId}`)}
-          onNoConfirm={onConfirmClose}
+      {isStatModalOpen && (
+        <StatModal
+          onClose={onStatModalClose}
+          userId={userId}
+          nickname={userInfo.nickname as string}
         />
       )}
     </ModalWrapper>
