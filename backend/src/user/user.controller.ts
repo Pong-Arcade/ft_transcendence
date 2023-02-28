@@ -75,8 +75,8 @@ export class UserController {
   })
   @ApiResponse({
     status: 200,
-    description: '전체 유저 목록 정보(접속중인 유저)',
-    type: OnlineUsersResponseDto,
+    description: '특정 유저 정보',
+    type: UserDetailResponseDto,
   })
   @ApiResponse({
     status: 400,
@@ -89,7 +89,7 @@ export class UserController {
   @Get(':user_id')
   async getUserDetail(
     @User() user: UserDto,
-    @Param('user_id', ParseIntPipe) userId,
+    @Param('user_id', ParseIntPipe) userId: number,
   ) {
     this.logger.log(`Called ${this.getUserDetail.name}`);
     return await this.userService.getUserDetail(userId);
