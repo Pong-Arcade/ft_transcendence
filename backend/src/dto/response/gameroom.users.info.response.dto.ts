@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { UserDto } from '../user.dto';
 import { GameRoomMode } from 'src/enum/gameroom.mode.enum';
+import { GameUserStatusDto } from '../game.user.status.dto';
+import { GameRoomUserStatus } from 'src/enum/gameroom.user.status.enum';
 
 /**
  * 게임방에 참여한 유저들의 정보를 반환하는 dto입니다.
@@ -20,9 +21,10 @@ export class GameRoomUsersInfoResponseDto {
       userId: 1,
       nickname: 'redUser',
       avatarUrl: 'http://example.com',
-    } as UserDto,
+      status: GameRoomUserStatus.UN_READY,
+    } as GameUserStatusDto,
   })
-  redUser: UserDto;
+  redUser: GameUserStatusDto;
 
   @ApiProperty({
     description: '블루팀 유저 정보',
@@ -30,9 +32,10 @@ export class GameRoomUsersInfoResponseDto {
       userId: 2,
       nickname: 'blueUser',
       avatarUrl: 'http://example.com',
-    } as UserDto,
+      status: GameRoomUserStatus.UN_READY,
+    } as GameUserStatusDto,
   })
-  blueUser: UserDto;
+  blueUser: GameUserStatusDto;
 
   @ApiProperty({
     description: '최대 관전자 수',

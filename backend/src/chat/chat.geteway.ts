@@ -14,8 +14,7 @@ import { MockRepository } from 'src/mock/mock.repository';
 import { ChatroomCreateRequestDto } from 'src/dto/request/chatroom.create.request.dto';
 import { ChatroomService } from './chat.service';
 import { UserService } from 'src/user/user.service';
-import { Socket } from 'dgram';
-import { Inject } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { ChangeChatroomInfoRequestDto } from 'src/dto/request/chatroom.change.info.request.dto';
 import { UserChatMode } from 'src/enum/user.chat.mode.enum';
 import { UserChatDto } from 'src/dto/user.chat.dto';
@@ -40,6 +39,7 @@ enum EMessageType {
   cors: { origin: process.env.FE_HOST },
 })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
+  private logger = new Logger(ChatGateway.name);
   mock = new MockRepository();
   eventEmitter = new EventEmitter2();
   muteUsers = new Array<number>();
@@ -53,6 +53,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @WebSocketServer() server: Namespace;
   async handleConnection(socket) {
+    this.logger.log(`Called ${this.handleConnection.name}`);
     // 연결 끊김 핸들러
     socket.on('disconnect', () => {
       // 끊긴 소켓 삭제
@@ -83,16 +84,30 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('addUser')
   async onAddUser(client, info) {
+    this.logger.log(`Called ${this.onAddUser.name}`);
+
+    // 로비 채팅방 객체 생성
     if (rooms.size == 0) rooms.set(0, new Room(0, 'lobby'));
-    users.set(info.userId, new User(info.userId, info.userName, client.id));
+
+    // 유저 객체 생성 및 socketId 저장
+    let user: User;
+    if (users.has(info.userId)) {
+      user = users.get(info.userId);
+    } else {
+      user = new User(info.userId, info.userName);
+    }
+    user.socketId = client.id;
+    console.log(user);
+    users.set(info.userId, user);
+    console.log(users);
+
+    // 로비 채팅방에 유저 추가
     client.join('lobby');
     this.mock.patchOnlineUser(info.userId);
     this.server.to('lobby').emit('addOnlineUser', {
       userId: info.userId,
       nickname: info.userName,
     });
-    console.log('addOnlineUser');
-    console.log(users);
   }
 
   @SubscribeMessage('message')

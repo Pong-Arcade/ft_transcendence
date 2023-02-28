@@ -1,5 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsNumber, IsString, MaxLength } from 'class-validator';
+import {
+  IsEnum,
+  IsInt,
+  IsNumber,
+  IsString,
+  Max,
+  MaxLength,
+  Min,
+} from 'class-validator';
 import { ChatRoomMode } from 'src/enum/chatroom.mode.enum';
 
 /**
@@ -40,5 +48,8 @@ export class ChatroomCreateRequestDto {
     example: 10,
   })
   @IsNumber()
+  @IsInt()
+  @Min(2)
+  @Max(10)
   maxUserCount: number;
 }

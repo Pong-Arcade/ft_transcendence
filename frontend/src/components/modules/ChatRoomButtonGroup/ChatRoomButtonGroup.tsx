@@ -48,7 +48,6 @@ const ChatRoomButtonGroup = () => {
               await leaveChatRoomAPI(Number(params.chatId));
               navigate("/lobby");
             } catch (e: any | AxiosError) {
-              console.log("error: ", e);
               if (e instanceof AxiosError) {
                 setError(true);
                 setErrorContent(e.response?.data.message);

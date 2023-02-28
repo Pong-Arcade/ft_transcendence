@@ -1,3 +1,4 @@
+import { UserAuthDto } from 'src/dto/user.auth.dto';
 import { UserDto } from 'src/dto/user.dto';
 
 export interface IAuthRepository {
@@ -7,7 +8,7 @@ export interface IAuthRepository {
    * 신규로 유저가 추가되었다면 false를 반환합니다.
    * @param user
    */
-  addUserIfNotExists(user: UserDto): Promise<boolean>;
+  addUserIfNotExists(user: UserDto): Promise<[UserAuthDto, boolean]>;
 
   /**
    * 유저가 존재하는지 확인합니다.
@@ -16,4 +17,16 @@ export interface IAuthRepository {
    * @param userId
    */
   checkUserExists(userId: number): Promise<boolean>;
+
+  /**
+   * 2FA를 등록합니다.
+   * @param userId
+   */
+  enroll2FA(userId: number): Promise<void>;
+
+  /**
+   * 2FA를 수행합니다.
+   * @param access
+   */
+  verify2FA(token): Promise<UserDto>;
 }

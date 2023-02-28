@@ -1,5 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsNumber, IsString, MaxLength } from 'class-validator';
+import {
+  IsEnum,
+  IsInt,
+  IsNumber,
+  IsString,
+  Max,
+  MaxLength,
+  Min,
+} from 'class-validator';
 import { GameRoomMode } from 'src/enum/gameroom.mode.enum';
 import { MatchType } from 'src/enum/match.type.enum';
 
@@ -33,6 +41,9 @@ export class GameRoomCreateRequestDto {
     example: 10,
   })
   @IsNumber()
+  @IsInt()
+  @Min(1)
+  @Max(10)
   winScore: number;
 
   @ApiProperty({
@@ -43,10 +54,13 @@ export class GameRoomCreateRequestDto {
   @MaxLength(32)
   title: string;
 
-  @IsNumber()
   @ApiProperty({
     description: '최대 관전자 수',
     example: 10,
   })
+  @IsNumber()
+  @IsInt()
+  @Min(0)
+  @Max(5)
   maxSpectatorCount: number;
 }
