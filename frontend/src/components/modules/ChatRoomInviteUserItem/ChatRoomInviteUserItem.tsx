@@ -18,7 +18,7 @@ const ChatRoomInviteUserItem = ({
   const { userId, nickname } = item as IUser;
   return (
     <ChatRoomInviteUserItemStyled
-      id={userId.toString()}
+      id={userId?.toString()}
       onClick={onItemClick}
       checked={subList?.includes(nickname as string)}
     >

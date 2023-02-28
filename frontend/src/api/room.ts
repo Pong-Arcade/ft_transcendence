@@ -77,7 +77,7 @@ export const inviteChatRoomAPI = async (roomId: number, userId: string[]) => {
 };
 
 export const acceptInviteChatRoomAPI = async (roomId: number) => {
-  const response = await postRequest(`chat-rooms/invite/${roomId}`);
+  const response = await postRequest(`chat-rooms/invite/accept/${roomId}`);
   return response;
 };
 

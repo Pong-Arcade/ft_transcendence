@@ -230,7 +230,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       title: room.title,
       mode: room.mode,
       maxUserCount: room.maxUser,
-      currentCount: room.users.length,
+      currentCount: 1,
     });
   }
 
@@ -238,12 +238,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async inviteChatRoom(roomId, fromId, toUsers) {
     console.log('invite: ', toUsers);
     const room = rooms.get(roomId);
+    const userName = users.get(fromId).userName;
     const to = new Array<User>();
     for (const id of toUsers) {
       to.push(users.get(id));
     }
     to.forEach((user) => {
-      this.server.to(user.socketId).emit('inviteChatRoom', roomId, fromId);
+      this.server.to(user.socketId).emit('inviteChatRoom', roomId, userName);
       room.invitedUsers.push(user.userId);
     });
   }

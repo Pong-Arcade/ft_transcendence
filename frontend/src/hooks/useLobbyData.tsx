@@ -48,9 +48,9 @@ const useLobbyData = () => {
     socket.socket.on("deleteOnlineUser", (userId) => deleteOnlineUser(userId));
   }, [onlineUsers]);
   useEffect(() => {
-    socket.socket.on("inviteChatRoom", (roomid, fromid) => {
-      console.log("inviteChatRoom", roomid, fromid);
-    });
+    // socket.socket.on("inviteChatRoom", (roomid, fromid) => {
+    //   console.log("inviteChatRoom", roomid, fromid);
+    // });
   }, []);
   useEffect(() => {
     socket.socket.off("addChatRoom");
