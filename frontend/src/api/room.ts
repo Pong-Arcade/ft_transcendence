@@ -93,3 +93,15 @@ export const unReadyGameRoomAPI = async (roomId: number) => {
   const response = await patchRequest(`game-rooms/unready/${roomId}`);
   return response;
 };
+
+export const joinQuickMatchAPI = async (matcheType: EGameType) => {
+  const response = await postRequest(
+    `game-rooms/join/quick-match/${matcheType}`
+  );
+  return response;
+};
+
+export const leaveQuickMatchAPI = async () => {
+  const response = await deleteRequest("game-rooms/leave/quick-match");
+  return response;
+};

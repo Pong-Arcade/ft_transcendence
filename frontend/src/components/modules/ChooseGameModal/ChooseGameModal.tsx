@@ -1,4 +1,6 @@
 import styled from "styled-components";
+import { joinQuickMatchAPI, leaveQuickMatchAPI } from "../../../api/room";
+import { EGameType } from "../../../hooks/useGameRoomForm";
 import useModal from "../../../hooks/useModal";
 import Button from "../../atoms/Button";
 import Modal from "../../atoms/Modal";
@@ -22,8 +24,18 @@ const ChooseGameButton = styled(Button).attrs({
 const ChooseGameModal = ({ title, onClose }: Props) => {
   const { isModalOpen: isCreateGameOpen, onModalOpen: onCreateGameOpen } =
     useModal({});
-  const { isModalOpen: isQuickGameOpen, onModalOpen: onQuickGameOpen } =
-    useModal({});
+  const { isModalOpen: isQuickMatchOpen, onModalOpen: onQuickMatchOpen } =
+    useModal({
+      beforeOpen: async () => {
+        if (title === "레더게임") await joinQuickMatchAPI(EGameType.LADDER);
+        else await joinQuickMatchAPI(EGameType.NORMAL);
+      },
+    });
+
+  const leaveQuickMatch = async () => {
+    await leaveQuickMatchAPI();
+    onClose();
+  };
 
   return (
     <ModalWrapper>
@@ -45,7 +57,7 @@ const ChooseGameModal = ({ title, onClose }: Props) => {
           <ChooseGameButton onClick={onCreateGameOpen}>
             방만들기
           </ChooseGameButton>
-          <ChooseGameButton onClick={onQuickGameOpen}>
+          <ChooseGameButton onClick={onQuickMatchOpen}>
             빠른시작
           </ChooseGameButton>
         </ButtonGroup>
@@ -53,7 +65,9 @@ const ChooseGameModal = ({ title, onClose }: Props) => {
       {isCreateGameOpen && (
         <CreateGameRoomModal title={title} onClose={onClose} />
       )}
-      {isQuickGameOpen && <QuickGameModal onClose={onClose} title={title} />}
+      {isQuickMatchOpen && (
+        <QuickGameModal onClose={leaveQuickMatch} title={title} />
+      )}
     </ModalWrapper>
   );
 };

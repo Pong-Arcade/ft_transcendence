@@ -8,8 +8,6 @@ import {
   getUserInfoAPI,
 } from "../api/users";
 import { IUser } from "../components/modules/Pagination/Pagination";
-import lobbyChatEvent from "../event/ChatEvent/lobbyChatEvent";
-import lobbyGameEvent from "../event/GameEvent/lobbyGameEvent";
 import blockUsersState from "../state/BlockUsersState";
 import chatRoomListState from "../state/ChatRoomListState";
 import friendUsersState from "../state/FriendUsersState";
@@ -46,8 +44,6 @@ const useLobbyData = () => {
       myInfo,
     };
   };
-  lobbyChatEvent();
-  lobbyGameEvent();
 
   return { setLobbyData, getLobbyData };
 };

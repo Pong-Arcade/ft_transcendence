@@ -1,16 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { GameRoomListResponseDto } from 'src/dto/response/gameroom.list.response.dto';
-import {
-  gameRooms,
-  invitations,
-  ladderQuickMatchQueue,
-  normalQuickMatchQueue,
-} from './game.gateway';
+import { gameRooms, invitations } from './game.gateway';
 import { UserService } from 'src/user/user.service';
 import { GameRoom } from './gameroom.entity';
 import { GameRoomUsersInfoResponseDto } from 'src/dto/response/gameroom.users.info.response.dto';
 import { MatchType } from 'src/enum/match.type.enum';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+
+export const normalQuickMatchQueue = new Array<number>();
+export const ladderQuickMatchQueue = new Array<number>();
 
 const quickMatchQueues = {
   [MatchType.NORMAL]: normalQuickMatchQueue,
@@ -274,9 +272,8 @@ export class GameRoomService {
   leaveQuickMatchQueue(userId: number) {
     this.logger.log(`Called ${this.leaveQuickMatchQueue.name}`);
     // matchType에 해당하는 매칭 대기열에서 userId를 제거
-    const gameroom = gameRooms.get(userId);
-    quickMatchQueues[gameroom.type] = quickMatchQueues[gameroom.type].filter(
-      (id) => id !== userId,
-    );
+    for (const queue of Object.values(quickMatchQueues)) {
+      queue.splice(queue.indexOf(userId), 1);
+    }
   }
 }
