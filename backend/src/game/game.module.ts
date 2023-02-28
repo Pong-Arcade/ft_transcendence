@@ -20,7 +20,7 @@ import { ChatModule } from 'src/chat/chat.module';
       inject: [ConfigService],
     }),
     AuthModule,
-    forwardRef(() => UserModule),
+    UserModule,
     ChatModule,
   ],
   providers: [GameGateway, GameRoomService],
