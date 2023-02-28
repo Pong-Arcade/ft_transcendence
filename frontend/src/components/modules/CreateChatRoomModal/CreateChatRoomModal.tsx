@@ -50,6 +50,7 @@ const CreateChatRoomModal = ({ title, onClose }: Props) => {
       onSubmit: () => {
         (async () => {
           const response = await createChatRoomAPI(values);
+
           setChatRoomState(response.data);
           onClose();
           navigate(`/chat-rooms/${response.data.roomId}`);

@@ -101,7 +101,7 @@ export class ChatroomController {
   async joinChatroom(
     @User() user: UserDto,
     @Param('room_id', ParseIntPipe) roomId: number,
-    @Body() password?: string,
+    @Body('password') password?: string,
   ): Promise<ChatroomUsersInfoResponseDto> {
     this.logger.log(`Called ${this.joinChatroom.name}`);
     // 1. 해당 채팅방 정보 확인
@@ -135,6 +135,7 @@ export class ChatroomController {
     // 6. 비밀번호 채팅방인 경우, 비밀번호가 일치하는지 확인
     if (chatroomInfo.mode === ChatRoomMode.PROTECTED) {
       // FIXME: bcrypt로 암호화된 비밀번호와 비교
+      console.log(chatroomInfo.password, password);
       if (chatroomInfo.password !== password) {
         throw new ForbiddenException('비밀번호가 일치하지 않습니다.');
       }
@@ -217,24 +218,20 @@ export class ChatroomController {
     }
 
     // 2. 채팅방 생성
-    await this.eventEmitter.emit(
+    this.eventEmitter.emit(
       'chatroom:create',
       user.userId,
       chatroomCreateRequestDto,
     );
 
     // 3. 자신이 생성한 채팅방의 roomId를 가져온다.
-    const roomId = await this.chatroomService.getMyMasterChatroomId(
-      user.userId,
-    );
-    console.log(roomId);
+    const roomId = this.chatroomService.getMyMasterChatroomId(user.userId);
 
     // 4. 채팅방에 입장
-    await this.eventEmitter.emit('chatroom:join', roomId, user.userId);
+    this.eventEmitter.emit('chatroom:join', roomId, user.userId);
 
     // 5. 채팅방에 입장한 유저 정보 반환(roomId 포함)
     return await this.chatroomService.getChatroomCreateUsersInfo(roomId);
-    // return this.mock.createChatRoom(user, chatroomCreateRequestDto);
   }
 
   @ApiOperation({

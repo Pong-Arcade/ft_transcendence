@@ -30,6 +30,7 @@ const ChatRoomTitle = styled(Board).attrs((props) => {
 })`
   grid-column: 3 / span 3;
   font-size: 2rem;
+  overflow: hidden;
 `;
 
 const ChatRoomType = styled(Typography).attrs({
@@ -53,7 +54,11 @@ const LobbyChatRoomItem = ({ item, onItemClick }: IPaginationItem) => {
     item as ILobbyChatRoom;
 
   return (
-    <LobbyChatRoomItemStyled id={roomId.toString()} onClick={onItemClick}>
+    <LobbyChatRoomItemStyled
+      id={roomId.toString()}
+      onClick={onItemClick}
+      data-mode={mode}
+    >
       <ChatRoomTitle>{title}</ChatRoomTitle>
       <ChatLogo />
       <ChatRoomType>타입 : {mode}</ChatRoomType>

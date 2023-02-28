@@ -26,19 +26,11 @@ const Nickname = styled(Board).attrs((props) => {
   };
 })``;
 
-const TempAvatar = styled(Avatar).attrs({
-  width: "10vw",
-  height: "10vw",
-})`
-  background-color: gray;
-`;
-
 const ChatRoomItem = ({ item, onItemClick }: IPaginationItem) => {
-  // TODO: avatarUrl 사용
-  const { nickname, userId } = item as IUser;
+  const { nickname, userId, avatarUrl } = item as IUser;
   return (
     <ChatRoomItemStyled id={userId?.toString()} onClick={onItemClick}>
-      <TempAvatar />
+      <Avatar width="10vw" height="10vw" src={avatarUrl} />
       <Nickname>{nickname}</Nickname>
     </ChatRoomItemStyled>
   );
