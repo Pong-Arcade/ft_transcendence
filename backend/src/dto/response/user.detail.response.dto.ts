@@ -7,17 +7,35 @@ import { RankDto } from '../rank.dto';
  */
 export class UserDetailResponseDto {
   @ApiProperty({
-    description: '유저 id',
+    description: '유저의 ID',
     example: 1,
   })
   userId: number;
 
   @ApiProperty({
-    description: '유저 intraId',
-    example: 'sichoi',
+    description: '유저의 닉네임',
+    example: 'user1',
   })
-  intraId: string;
+  nickname: string;
 
+  @ApiProperty({
+    description: '유저의 아바타 이미지 url',
+    example: 'http://example.com',
+  })
+  avatarUrl?: string;
+
+  @ApiProperty({
+    description: '유저의 이메일',
+    example: 'http://example.email.com',
+  })
+  email?: string; // 유저의 이메일
+
+  @ApiProperty({
+    description: '유저의 첫 로그인 시간',
+    example: '2023-02-15T00:00:00.000Z',
+    type: Date,
+  })
+  firstLogin?: Date; // 유저의 첫 로그인 시간
   @ApiProperty({
     description: '유저 래더 정보',
     example: {

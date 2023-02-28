@@ -76,7 +76,7 @@ export class UserController {
   @ApiResponse({
     status: 200,
     description: '전체 유저 목록 정보(접속중인 유저)',
-    type: OnlineUsersResponseDto,
+    type: UserDetailResponseDto,
   })
   @ApiResponse({
     status: 400,

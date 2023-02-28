@@ -67,7 +67,10 @@ export class UserService {
     );
     return {
       userId: userId,
-      intraId: userDto.nickname,
+      nickname: userDto.nickname,
+      avatarUrl: userDto.avatarUrl,
+      firstLogin: userDto.firstLogin,
+      email: userDto.email,
       ladderInfo: {
         ladderScore: rank.ladderScore,
         ranking: rank.ranking,

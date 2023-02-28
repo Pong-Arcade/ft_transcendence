@@ -30,13 +30,24 @@ export const banChatRoomAPI = async (roomId: number, userId: number) => {
   return response;
 };
 
+export const changeChatRoomInfoAPI = async (
+  roomId: number,
+  values: ILobbyChatRoomFormValues
+) => {
+  const response = await patchRequest(
+    `chat-rooms/change-info/${roomId}`,
+    values
+  );
+  return response;
+};
+
 export const promoteAdminAPI = async (roomId: number, userId: number) => {
   const response = await patchRequest(
     `chat-rooms/promote-admin/${roomId}/${userId}`
   );
   return response;
 };
-promoteAdminAPI;
+
 export const demoteAdminAPI = async (roomId: number, userId: number) => {
   const response = await patchRequest(
     `chat-rooms/demote-admin/${roomId}/${userId}`

@@ -63,6 +63,7 @@ export interface IChatRoom {
   mastUserId: number;
   users: IUser[];
   title?: string;
+  maxUserCount?: string;
 }
 
 export interface IGameRoom {
