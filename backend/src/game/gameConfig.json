@@ -1,7 +1,7 @@
 {
   "gameCanvas": {
-    "width": 1600,
-    "height": 1200
+    "width": 800,
+    "height": 600
   },
   "paddle": {
     "buffer": 50,
@@ -11,7 +11,7 @@
   },
   "fps": 25,
   "ball": {
-    "velocity": 10,
+    "velocity": 30,
     "size": 30
   }
 }
