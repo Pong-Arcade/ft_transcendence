@@ -19,6 +19,8 @@ import { EROOM_BUTTON } from "../components/modules/LobbyRoomListTypeChoiceButto
 import LobbyGameRoomList from "../components/modules/LobbyGameRoomList";
 import useModal from "../hooks/useModal";
 import ChatInviteModal from "../components/modules/ChatInviteModal";
+import lobbyChatEvent from "../event/ChatEvent/lobbyChatEvent";
+import lobbyGameEvent from "../event/GameEvent/lobbyGameEvent";
 import { SocketContext } from "../utils/ChatSocket";
 import ErrorModal from "../components/modules/ErrorModal";
 
@@ -51,6 +53,9 @@ const RoomListChat = styled(Board).attrs((props) => {
 })``;
 
 const Lobby = () => {
+  lobbyChatEvent();
+  lobbyGameEvent();
+
   const { setLobbyData, getLobbyData } = useLobbyData();
   const { isLoading, endLoading } = useLoading({
     initialLoading: true,

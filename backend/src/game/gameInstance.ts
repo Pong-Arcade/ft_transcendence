@@ -254,7 +254,7 @@ export class GameInstance {
     return ax < bx + bw && ay < by + bh && bx < ax + aw && by < ay + ah;
   }
 
-  public updateGame() {
+  public async updateGame() {
     this.incrementFrames();
     this.updatePaddle();
     if (this.isPause() === false) {
@@ -277,7 +277,10 @@ export class GameInstance {
           this.info.redScore >= this.info.winScore ||
           this.info.blueScore >= this.info.winScore
         ) {
-          this.info.eventEmitter.emit('gameroom:finish', this.info.roomId);
+          await this.info.eventEmitter.emitAsync(
+            'gameroom:finish',
+            this.info.roomId,
+          );
           return;
         }
       }

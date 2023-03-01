@@ -1,5 +1,6 @@
 import { MouseEvent } from "react";
 import styled from "styled-components";
+import { EGameType } from "../../../hooks/useGameRoomForm";
 import Board from "../../atoms/Board";
 import Button from "../../atoms/Button";
 import ButtonGroup from "../ButtonGroup";
@@ -10,16 +11,24 @@ export enum userMode {
   NORMAL = "NORMAL",
 }
 
-export enum userStatus {
-  ONLINE = "ONLINE",
-  OFFLINE = "OFFLINE",
-  GAME = "GAME",
-}
-
 export enum EGameUserStatus {
   READY = "READY",
   UN_READY = "UN_READY",
 }
+interface IGameStatInfo {
+  matchType: EGameType;
+  winCount: number;
+  loseCount: number;
+  winRate: number;
+}
+export enum EUserStatus {
+  ONLINE = "ONLINE",
+  OFFLINE = "OFFLINE",
+  LOBBY = "LOBBY",
+  GAME = "GAME",
+  CHAT = "CHAT",
+}
+
 export interface IUser {
   userId?: number;
   nickname?: string;
@@ -27,8 +36,10 @@ export interface IUser {
   email?: string;
   mode?: userMode;
   firstLogin?: string;
-  location?: number;
-  status?: EGameUserStatus;
+  gameUserStatus?: EGameUserStatus;
+  status?: EUserStatus;
+  normalInfo?: IGameStatInfo;
+  ladderInfo?: IGameStatInfo;
 }
 
 export interface IRanking {
@@ -58,11 +69,11 @@ export interface ILobbyGameRoom {
   roomId: number;
   redUser: IUser;
   blueUser: IUser;
+  mode: GameMode;
   maxSpectatorCount: number;
   curSpectatorCount: number;
   roomStatus: EGameRoomStatus;
   title: string;
-  mode: GameMode;
 }
 
 export interface IChatRoom {
