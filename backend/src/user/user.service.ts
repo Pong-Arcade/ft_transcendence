@@ -10,12 +10,8 @@ import { IUserRepository } from './repository/user.repository.interface';
 import { Cache } from 'cache-manager';
 import { UserDetailResponseDto } from '../dto/response/user.detail.response.dto';
 import { StatService } from '../stat/stat.service';
-import { RankListResponseDto } from '../dto/response/rank.list.response.dto';
-import { SortDirection } from '../enum/sort.direction.enum';
-import { RankingFilter } from '../enum/ranking.filter.enum';
-import { RankDto } from '../dto/rank.dto';
-import { users } from '../status/status.module';
-import { UserStatus } from '../enum/user.status.enum';
+import { users } from 'src/status/status.module';
+import { UserStatus } from 'src/enum/user.status.enum';
 
 @Injectable()
 export class UserService {
@@ -57,34 +53,27 @@ export class UserService {
   async getUserDetail(userId: number): Promise<UserDetailResponseDto> {
     this.logger.log(`Called ${this.getUserDetail.name}`);
     const userDto: UserDto = await this.getUserInfo(userId);
-    const rankList: RankListResponseDto = await this.statService.getRanking(
-      RankingFilter.LADDER_SCORE,
-      SortDirection.ASC,
+    const [ladderInfo, normalInfo] = await this.statService.getUserGameStat(
+      userId,
     );
 
-    const rank: RankDto = rankList.rankList.find(
-      (user) => user.userInfo.userId === userId,
-    );
+    const userSocketInfo = users.get(userId);
+    let userStatus = UserStatus.OFFLINE;
+    if (!userSocketInfo)
+      return { ...userDto, status: userStatus } as UserDetailResponseDto;
+    if (userSocketInfo.location === 0) {
+      userStatus = UserStatus.LOBBY;
+    } else if (userSocketInfo.location < 0) {
+      userStatus = UserStatus.GAME;
+    } else if (userSocketInfo.location > 0) {
+      userStatus = UserStatus.CHAT;
+    }
+
     return {
-      userId: userId,
-      nickname: userDto.nickname,
-      avatarUrl: userDto.avatarUrl,
-      firstLogin: userDto.firstLogin,
-      email: userDto.email,
-      ladderInfo: {
-        ladderScore: rank.ladderScore,
-        ranking: rank.ranking,
-        winCount: rank.winCount,
-        loseCount: rank.loseCount,
-        winRate: rank.winRate,
-      },
-      userStatus: (() => {
-        const user = users.get(userId);
-        if (user === undefined) return UserStatus.OFFLINE;
-        else if (user.location === 0) return UserStatus.LOBBY;
-        else if (user.location < 0) return UserStatus.GAME;
-        else return UserStatus.CHAT;
-      })(),
+      ...userDto,
+      status: userStatus,
+      ladderInfo,
+      normalInfo,
     } as UserDetailResponseDto;
   }
 

@@ -1,57 +1,33 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { UserStatus } from '../../enum/user.status.enum';
-import { RankDto } from '../rank.dto';
+import { GameStatDto } from '../game.stat.dto';
+import { MatchType } from 'src/enum/match.type.enum';
+import { UserStatusDto } from '../user.status.dto';
 
 /**
  * 유저 상세 정보를 반환하는 dto입니다.
  */
-export class UserDetailResponseDto {
+export class UserDetailResponseDto extends UserStatusDto {
   @ApiProperty({
-    description: '유저의 ID',
-    example: 1,
-  })
-  userId: number;
-
-  @ApiProperty({
-    description: '유저의 닉네임',
-    example: 'user1',
-  })
-  nickname: string;
-
-  @ApiProperty({
-    description: '유저의 아바타 이미지 url',
-    example: 'http://example.com',
-  })
-  avatarUrl?: string;
-
-  @ApiProperty({
-    description: '유저의 이메일',
-    example: 'http://example.email.com',
-  })
-  email?: string; // 유저의 이메일
-
-  @ApiProperty({
-    description: '유저의 첫 로그인 시간',
-    example: '2023-02-15T00:00:00.000Z',
-    type: Date,
-  })
-  firstLogin?: Date; // 유저의 첫 로그인 시간
-  @ApiProperty({
-    description: '유저 래더 정보',
+    description: '유저 래더 전적 정보',
     example: {
-      ladderScore: 1020,
-      rank: 13,
-      winCount: 3,
-      loseCount: 2,
-      winRate: 60,
-    },
-    type: RankDto,
+      matchType: MatchType.LADDER,
+      winCount: 9,
+      loseCount: 1,
+      winRate: 90,
+    } as GameStatDto,
+    type: GameStatDto,
   })
-  ladderInfo;
+  ladderInfo: GameStatDto;
 
   @ApiProperty({
-    description: '유저 상태',
-    example: UserStatus.ONLINE,
+    description: '유저 노말 전적 정보',
+    example: {
+      matchType: MatchType.NORMAL,
+      winCount: 10,
+      loseCount: 0,
+      winRate: 100,
+    } as GameStatDto,
+    type: GameStatDto,
   })
-  userStatus: UserStatus;
+  normalInfo: GameStatDto;
 }

@@ -2,6 +2,7 @@ import { GameUserStatusDto } from 'src/dto/game.user.status.dto';
 import { GameRoomMode } from 'src/enum/gameroom.mode.enum';
 import { GameRoomStatus } from 'src/enum/gameroom.status.enum';
 import { MatchType } from 'src/enum/match.type.enum';
+import { GameInstance } from './gameInstance';
 
 export class Invitation {
   invitationId: number; // 초대의 고유 id
@@ -22,6 +23,7 @@ export class GameRoom {
   maxSpectatorCount: number;
   spectatorUsers: Array<number>;
   status: GameRoomStatus;
+  gameInstance?: GameInstance;
   constructor(
     roomId: number,
     redUser: GameUserStatusDto,

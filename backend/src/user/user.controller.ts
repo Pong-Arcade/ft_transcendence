@@ -88,9 +88,8 @@ export class UserController {
   })
   @Get(':user_id')
   async getUserDetail(
-    @User() user: UserDto,
-    @Param('user_id', ParseIntPipe) userId,
-  ) {
+    @Param('user_id', ParseIntPipe) userId: number,
+  ): Promise<UserDetailResponseDto> {
     this.logger.log(`Called ${this.getUserDetail.name}`);
     return await this.userService.getUserDetail(userId);
   }

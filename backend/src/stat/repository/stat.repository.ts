@@ -9,6 +9,9 @@ import { RankDto } from 'src/dto/rank.dto';
 import LadderStat from 'src/entity/ladder.stat.entity';
 import { RankingFilter } from 'src/enum/ranking.filter.enum';
 import { SortDirection } from 'src/enum/sort.direction.enum';
+import { GameStatDto } from 'src/dto/game.stat.dto';
+import { MatchType } from 'src/enum/match.type.enum';
+import NormalStat from 'src/entity/normal.stat.entity';
 
 export class StatRepository implements IStatRepository {
   private logger = new Logger(StatRepository.name);
@@ -18,6 +21,9 @@ export class StatRepository implements IStatRepository {
 
     @InjectRepository(LadderStat)
     private readonly ladderStatRepository: Repository<LadderStat>,
+
+    @InjectRepository(NormalStat)
+    private readonly normalStatRepository: Repository<NormalStat>,
   ) {}
 
   async getRanking(
@@ -139,5 +145,50 @@ export class StatRepository implements IStatRepository {
       return matchHistory;
     });
     return matchHistories;
+  }
+
+  async getUserLadderStat(userId: number): Promise<GameStatDto> {
+    this.logger.log(`Called ${this.getUserLadderStat.name}`);
+    // userId로 ladder_stat을 가져온다.
+    const result = await this.ladderStatRepository
+      .createQueryBuilder('ladder_stat')
+      .select([
+        'ladder_stat.ladderScore as ladderScore',
+        'ladder_stat.winCount as winCount',
+        'ladder_stat.loseCount as loseCount',
+        // winCount + loseCount가 0이면 0으로 나누는 에러가 발생하므로
+        // winCount + loseCount가 0이면 0으로 설정한다.
+        'CASE WHEN ladder_stat.winCount + ladder_stat.loseCount = 0 THEN 0 ELSE ladder_stat.winCount * 100 / (ladder_stat.winCount + ladder_stat.loseCount) END AS winRate',
+      ])
+      .where('ladder_stat.userId = :userId', { userId })
+      .getRawOne();
+    return {
+      matchType: MatchType.LADDER,
+      winCount: result.wincount,
+      loseCount: result.losecount,
+      winRate: result.winrate,
+    };
+  }
+
+  async getUserNormalStat(userId: number): Promise<GameStatDto> {
+    this.logger.log(`Called ${this.getUserNormalStat.name}`);
+    // userId로 normal_stat을 가져온다.
+    const result = await this.normalStatRepository
+      .createQueryBuilder('normal_stat')
+      .select([
+        'normal_stat.winCount as winCount',
+        'normal_stat.loseCount as loseCount',
+        // winCount + loseCount가 0이면 0으로 나누는 에러가 발생하므로
+        // winCount + loseCount가 0이면 0으로 설정한다.
+        'CASE WHEN normal_stat.winCount + normal_stat.loseCount = 0 THEN 0 ELSE normal_stat.winCount * 100 / (normal_stat.winCount + normal_stat.loseCount) END AS winRate',
+      ])
+      .where('normal_stat.userId = :userId', { userId })
+      .getRawOne();
+    return {
+      matchType: MatchType.NORMAL,
+      winCount: result.wincount,
+      loseCount: result.losecount,
+      winRate: result.winrate,
+    };
   }
 }
