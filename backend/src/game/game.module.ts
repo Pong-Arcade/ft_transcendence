@@ -7,6 +7,7 @@ import { GameRoomController } from './gameroom.controller';
 import { GameRoomService } from './gameroom.service';
 import { UserModule } from 'src/user/user.module';
 import { ChatModule } from 'src/chat/chat.module';
+import { StatModule } from 'src/stat/stat.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ChatModule } from 'src/chat/chat.module';
     AuthModule,
     UserModule,
     ChatModule,
+    StatModule,
   ],
   providers: [GameGateway, GameRoomService],
   exports: [GameGateway],

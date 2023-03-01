@@ -1,7 +1,12 @@
 import { useContext, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import { ILobbyGameRoom } from "../../components/modules/Pagination/Pagination";
+import {
+  IGameRoom,
+  ILobbyGameRoom,
+} from "../../components/modules/Pagination/Pagination";
 import gameRoomListState from "../../state/GameRoomListState";
+import gameRoomState from "../../state/GameRoomState";
 import GameSocket from "../../state/GameSocket";
 import infoState from "../../state/InfoState";
 import { SocketContext } from "../../utils/ChatSocket";
@@ -11,6 +16,8 @@ const lobbyGameEvent = () => {
   const chatSocket = useContext(SocketContext);
   const myInfo = useRecoilValue(infoState);
   const setGameRoomList = useSetRecoilState(gameRoomListState);
+  const setGameRoomState = useSetRecoilState(gameRoomState);
+  const navigate = useNavigate();
 
   useEffect(() => {
     chatSocket.socket.on("addGameRoom", (addRoom: ILobbyGameRoom) => {
@@ -40,11 +47,16 @@ const lobbyGameEvent = () => {
         return newGameRoomList;
       });
     });
+    gameSocket.socket.on("gameRoomMatched", (gameRoom: IGameRoom) => {
+      setGameRoomState(gameRoom);
+      navigate(`/game-rooms/${gameRoom.roomId}}`);
+    });
 
     return () => {
       chatSocket.socket.off("addGameRoom");
       chatSocket.socket.off("deleteGameRoom");
       chatSocket.socket.off("joinGameRoom");
+      gameSocket.socket.off("gameRoomMatched");
     };
   }, []);
 

@@ -3,7 +3,6 @@ import { IStatRepository } from './stat.repository.interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import MatchHistory from 'src/entity/match.history.entity';
 import { Repository } from 'typeorm';
-import { MatchHistoryDto } from 'src/dto/match.history.dto';
 import { MatchResult } from 'src/enum/match.result.enum';
 import { RankDto } from 'src/dto/rank.dto';
 import LadderStat from 'src/entity/ladder.stat.entity';
@@ -12,6 +11,8 @@ import { SortDirection } from 'src/enum/sort.direction.enum';
 import { GameStatDto } from 'src/dto/game.stat.dto';
 import { MatchType } from 'src/enum/match.type.enum';
 import NormalStat from 'src/entity/normal.stat.entity';
+import { MyMatchHistoryDto } from 'src/dto/my.match.history.dto';
+import { MatchHistoryDto } from 'src/dto/match.history.dto';
 
 export class StatRepository implements IStatRepository {
   private logger = new Logger(StatRepository.name);
@@ -70,7 +71,7 @@ export class StatRepository implements IStatRepository {
     }) as RankDto[];
   }
 
-  async getRecentRecord(userId: number): Promise<MatchHistoryDto[]> {
+  async getRecentRecord(userId: number): Promise<MyMatchHistoryDto[]> {
     this.logger.log(`Called ${this.getRecentRecord.name}`);
     // userId로 최근 10개의 매치 기록을 가져온다.
     const results = await this.matchHistoryRepository.find({
@@ -119,9 +120,9 @@ export class StatRepository implements IStatRepository {
     if (results.length === 0) {
       return [];
     }
-    // results를 MatchHistoryDto[]로 변환한다.
-    const matchHistories: MatchHistoryDto[] = results.map((result) => {
-      const matchHistory = new MatchHistoryDto();
+    // results를 MyMatchHistoryDto[]로 변환한다.
+    const matchHistories: MyMatchHistoryDto[] = results.map((result) => {
+      const matchHistory = new MyMatchHistoryDto();
       matchHistory.matchId = result.matchId;
 
       // userId가 redUser인지 blueUser인지 확인한다.
@@ -190,5 +191,11 @@ export class StatRepository implements IStatRepository {
       loseCount: result.losecount,
       winRate: result.winrate,
     };
+  }
+
+  async createMatchHistory(matchHistory: MatchHistoryDto): Promise<void> {
+    this.logger.log(`Called ${this.createMatchHistory.name}`);
+    // matchHistory를 저장한다.
+    await this.matchHistoryRepository.save(matchHistory);
   }
 }
