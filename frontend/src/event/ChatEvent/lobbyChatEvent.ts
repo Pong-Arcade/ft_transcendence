@@ -11,29 +11,29 @@ const lobbyChatEvent = () => {
   const [chatRoomList, setChatRoomList] = useRecoilState(chatRoomListState);
 
   useEffect(() => {
-    socket.socket.off("addChatRoom");
-    socket.socket.off("deleteChatRoom");
-    socket.socket.off("updateChatRoom");
-
     socket.socket.on("addChatRoom", async (addRoom: ILobbyChatRoom) => {
-      setChatRoomList((prev) => [...prev, addRoom]);
+      await setChatRoomList((prev) => [...prev, addRoom]);
     });
-
     socket.socket.on("deleteChatRoom", async (roomId: number) => {
-      setChatRoomList(chatRoomList.filter((room) => room.roomId != roomId));
+      await setChatRoomList(
+        chatRoomList.filter((room) => room.roomId != roomId)
+      );
+    });
+    socket.socket.on("updateChatRoom", async (updateRoom: ILobbyChatRoom) => {
+      const newList = new Array<ILobbyChatRoom>();
+      for (const room of chatRoomList) {
+        console.log(room.roomId, updateRoom.roomId);
+        if (room.roomId != updateRoom.roomId) newList.push(room);
+        else newList.push(updateRoom);
+      }
+      await setChatRoomList(newList);
     });
     return () => {
       socket.socket.off("addChatRoom");
       socket.socket.off("deleteChatRoom");
+      socket.socket.off("updateChatRoom");
     };
-  }, []);
-  useEffect(() => {
-    socket.setUser(myInfo.userId, myInfo.nickname);
-    socket.socket.emit("addUser", {
-      userId: socket.userId,
-      userName: socket.userName,
-    });
-  }, [myInfo]);
+  }, [chatRoomList]);
 };
 
 export default lobbyChatEvent;

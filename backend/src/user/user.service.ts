@@ -28,15 +28,17 @@ export class UserService {
   /**
    * 모든 유저 정보를 가져옵니다.
    */
-  async getAllOnlineUsers(): Promise<UserDto[]> {
+  getAllOnlineUsers(): UserDto[] {
     this.logger.log(`Called ${this.getAllOnlineUsers.name}`);
     const results: UserDto[] = [];
-    for (const [userId, userSocketInfo] of users) {
-      const userInfo = await this.getUserInfo(userId);
-      if (userInfo) {
-        results.push(userInfo);
-      }
-    }
+    users.forEach((value, key) => {
+      if (value.userId >= 0)
+        results.push({
+          userId: value.userId,
+          nickname: value.userName,
+          location: value.location,
+        });
+    });
     return results;
   }
 

@@ -126,6 +126,20 @@ export const unReadyGameRoomAPI = async (roomId: number) => {
   return response;
 };
 
+export const inviteGameAPI = async (userId: number) => {
+  const response = await postRequest(`game-rooms/invite/${userId}`);
+  return response;
+};
+
+export const acceptGameAPI = async () => {
+  const response = await postRequest(`game-rooms/invite/accept`);
+  return response;
+};
+
+export const rejectGameAPI = async () => {
+  const response = await deleteRequest(`game-rooms/invite/reject`);
+  return response;
+};
 export const joinQuickMatchAPI = async (matcheType: EGameType) => {
   const response = await postRequest(
     `game-rooms/join/quick-match/${matcheType}`

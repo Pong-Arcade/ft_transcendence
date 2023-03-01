@@ -88,7 +88,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     // 로비 채팅방 객체 생성
     if (rooms.size == 0) rooms.set(0, new Room(0, 'lobby'));
-
+    if (info.userId < 0) return;
     // 유저 객체 생성 및 socketId 저장
     let user: User;
     if (users.has(info.userId)) {
@@ -319,5 +319,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       maxUserCount: room.maxUser,
       currentCount: room.users.length,
     });
+    this.server.in('chatroom' + roomId).emit('updateChatRoom', room.title);
   }
 }

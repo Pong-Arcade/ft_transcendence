@@ -30,6 +30,7 @@ const useModal = ({
     afterClose?.(e);
   };
   const onSubmit = (e?: MouseEvent<HTMLButtonElement>) => {
+    console.log(e);
     beforeSubmit?.(e);
     setIsModalOpen(false);
     afterSubmit?.(e);
