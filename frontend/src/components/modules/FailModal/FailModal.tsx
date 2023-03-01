@@ -8,6 +8,8 @@ import ModalTitle from "../ModalTitle";
 
 interface Props {
   onClose: () => void;
+  title: string;
+  content: string;
 }
 
 const ModalButton = styled(Button).attrs({
@@ -26,15 +28,15 @@ const Wrapper = styled(Board).attrs((props) => {
   };
 })``;
 
-const FailModal = ({ onClose }: Props) => {
+const FailModal = ({ onClose, title, content }: Props) => {
   return (
     <ModalWrapper>
       <Modal width="30%" height="30%">
         <ModalTitle onClose={onClose} height="25%" fontSize="2rem">
-          인증 실패
+          {title}
         </ModalTitle>
         <Wrapper>
-          <Typography fontSize="2rem">인증에 실패했습니다</Typography>
+          <Typography fontSize="2rem">{content}</Typography>
         </Wrapper>
         <ModalButton onClick={onClose}>확인</ModalButton>
       </Modal>

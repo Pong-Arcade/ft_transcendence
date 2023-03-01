@@ -135,7 +135,6 @@ export class ChatroomController {
     // 6. 비밀번호 채팅방인 경우, 비밀번호가 일치하는지 확인
     if (chatroomInfo.mode === ChatRoomMode.PROTECTED) {
       // FIXME: bcrypt로 암호화된 비밀번호와 비교
-      console.log(chatroomInfo.password, password);
       if (chatroomInfo.password !== password) {
         throw new ForbiddenException('비밀번호가 일치하지 않습니다.');
       }
@@ -260,6 +259,7 @@ export class ChatroomController {
     chatroomInviteRequestDto: ChatroomInviteRequestDto,
   ): Promise<void> {
     this.logger.log(`Called ${this.inviteChatroom.name}`);
+    console.log(chatroomInviteRequestDto);
     // 1. 해당 채팅방 정보 확인
     const chatroomInfo = this.chatroomService.getChatroomInfo(roomId);
     if (!chatroomInfo) {

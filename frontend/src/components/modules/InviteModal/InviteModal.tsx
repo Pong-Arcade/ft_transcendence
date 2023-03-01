@@ -1,4 +1,6 @@
-import { MouseEvent, useState } from "react";
+import { MouseEvent, useEffect, useState } from "react";
+import { useRecoilValue } from "recoil";
+import { getOnlineUsersAPI } from "../../../api/users";
 import useModal from "../../../hooks/useModal";
 import Button from "../../atoms/Button";
 import Modal from "../../atoms/Modal";
@@ -7,21 +9,28 @@ import ChatRoomInvitePagination from "../ChatRoomInvitePagination";
 import ChatRoomInviteUserItem from "../ChatRoomInviteUserItem";
 import InviteConfirmModal from "../InviteConfirmModal";
 import ModalTitle from "../ModalTitle";
+import { IItem, IUser } from "../Pagination/Pagination";
 
 interface Props {
+  list: IUser[] | Promise<IUser[]>;
   onClose: () => void;
 }
 
-const InviteModal = ({ onClose }: Props) => {
+const InviteModal = ({ list, onClose }: Props) => {
   const [inviteList, setInviteList] = useState<string[]>([]);
-
-  const onClick = (e: MouseEvent<HTMLButtonElement>) => {
-    if (inviteList.includes(e.currentTarget.innerText)) {
-      setInviteList(
-        inviteList.filter((id) => id !== e.currentTarget.innerText)
-      );
+  const [onlineUsers, setOnlineUsers] = useState<IUser[]>([]);
+  const getOnlineUsers = async () => {
+    setOnlineUsers(await getOnlineUsersAPI());
+  };
+  useEffect(() => {
+    getOnlineUsers();
+  }, []);
+  const onClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    console.log("event: ", e.currentTarget.id);
+    if (inviteList.includes(e.currentTarget.id)) {
+      setInviteList(inviteList.filter((id) => id !== e.currentTarget.id));
     } else {
-      setInviteList([...inviteList, e.currentTarget.innerText]);
+      setInviteList([...inviteList, e.currentTarget.id]);
     }
   };
 
@@ -41,7 +50,7 @@ const InviteModal = ({ onClose }: Props) => {
           초대하기
         </ModalTitle>
         <ChatRoomInvitePagination
-          list={[]}
+          list={onlineUsers}
           subList={inviteList}
           onItemClick={onClick}
           page={page}
@@ -55,7 +64,7 @@ const InviteModal = ({ onClose }: Props) => {
       </Modal>
       {isConfirmOpen && (
         <InviteConfirmModal
-          count={inviteList.length}
+          list={inviteList}
           onClose={onClose}
           onYesConfirm={() => onClose()}
         />

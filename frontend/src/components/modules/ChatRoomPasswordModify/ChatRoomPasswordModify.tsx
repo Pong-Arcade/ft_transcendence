@@ -14,7 +14,7 @@ const ChatRoomPasswordModifyStyled = styled(Board).attrs((props) => {
 })`
   position: absolute;
   top: 0.5%;
-  right: 12%;
+  right: 0.5%;
   gap: 1rem;
 `;
 

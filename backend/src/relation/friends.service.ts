@@ -12,6 +12,7 @@ import Relation from 'src/entity/relation.entity';
 import { Repository } from 'typeorm';
 import { UserRelationType } from 'src/enum/user.relation.enum';
 import { UserService } from 'src/user/user.service';
+import { users } from '../status/status.module';
 
 @Injectable()
 export class FriendsService {
@@ -46,13 +47,20 @@ export class FriendsService {
         },
       },
     });
-    const friends = results.map((result) => {
-      return {
-        userId: result.targetUser.userId,
-        nickname: result.targetUser.nickname,
-        avatarUrl: result.targetUser.avatarUrl,
-      };
+    const friends: UserFriendListResponseDto['friendUsers'] = results.map(
+      (result) => {
+        return {
+          userId: result.targetUser.userId,
+          nickname: result.targetUser.nickname,
+          avatarUrl: result.targetUser.avatarUrl,
+        };
+      },
+    );
+    friends.forEach((friend) => {
+      const user = users.get(friend.userId);
+      if (user) friend.location = users.get(friend.userId).location;
     });
+    console.log(friends);
     return {
       friendUsers: friends,
     };

@@ -25,6 +25,20 @@ export const leaveChatRoomAPI = async (roomId: number) => {
   return response;
 };
 
+export const updateChatRoomAPI = async (
+  roomId: number,
+  title: string,
+  mode: string,
+  password?: string
+) => {
+  const response = await patchRequest(`chat-rooms/change-info/${roomId}`, {
+    title: title,
+    mode: mode,
+    password: password,
+  });
+  return response;
+};
+
 export const banChatRoomAPI = async (roomId: number, userId: number) => {
   const response = await deleteRequest(`chat-rooms/ban/${roomId}/${userId}`);
   return response;
@@ -36,7 +50,7 @@ export const promoteAdminAPI = async (roomId: number, userId: number) => {
   );
   return response;
 };
-promoteAdminAPI;
+
 export const demoteAdminAPI = async (roomId: number, userId: number) => {
   const response = await patchRequest(
     `chat-rooms/demote-admin/${roomId}/${userId}`
@@ -48,6 +62,24 @@ export const muteChatRoomAPI = async (roomId: number, userId: number) => {
   const response = await patchRequest(
     `chat-rooms/mute/${roomId}/${userId}/100`
   );
+  return response;
+};
+
+export const inviteChatRoomAPI = async (roomId: number, userId: string[]) => {
+  const userForm = { users: new Array<number>() };
+  for (const id of userId) userForm.users.push(Number(id));
+  const response = await postRequest(`chat-rooms/invite/${roomId}`, userForm);
+  console.log("response: ", response);
+  return response;
+};
+
+export const acceptInviteChatRoomAPI = async (roomId: number) => {
+  const response = await postRequest(`chat-rooms/invite/accept/${roomId}`);
+  return response;
+};
+
+export const rejectInviteChatRoomAPI = async (roomId: number) => {
+  const response = await deleteRequest(`chat-rooms/reject/${roomId}`);
   return response;
 };
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import Board from "../components/atoms/Board";
 import Chat from "../components/modules/Chat";
@@ -21,6 +21,8 @@ import useModal from "../hooks/useModal";
 import ChatInviteModal from "../components/modules/ChatInviteModal";
 import lobbyChatEvent from "../event/ChatEvent/lobbyChatEvent";
 import lobbyGameEvent from "../event/GameEvent/lobbyGameEvent";
+import { SocketContext } from "../utils/ChatSocket";
+import ErrorModal from "../components/modules/ErrorModal";
 
 const UserWrapper = styled(Board).attrs({
   width: "25%",
@@ -71,26 +73,15 @@ const Lobby = () => {
   const setError = useSetRecoilState(errorState);
   const [currentButton, setCurrentButton] = useState(EROOM_BUTTON.CHATROOM);
   const [page, setPage] = useState(0);
+  const socket = useContext(SocketContext);
+  const [inviteRoomId, setInviteRoomId] = useState(0);
+  const [inviteUserName, setInviteUserName] = useState("");
+  const [roomError, setRoomError] = useState(false);
+  const [errorContent, setErrorContent] = useState("");
 
   const onChoiceButtonClick = (button: EROOM_BUTTON) => {
     setCurrentButton(button);
     setPage(0);
-  };
-
-  useEffect(() => {
-    (async () => {
-      await setLobbyData().catch(() => {
-        setError(true);
-      });
-      endLoading();
-    })();
-  }, []);
-
-  const onNextPage = () => {
-    setPage(page + 1);
-  };
-  const onPrevPage = () => {
-    setPage(page - 1);
   };
 
   // 채팅 초대 모달
@@ -99,6 +90,29 @@ const Lobby = () => {
     onModalOpen: onChatInviteModalOpen, // 초대 이벤트 발생 시 오픈
     onModalClose: onChatInviteModalClose,
   } = useModal({});
+
+  useEffect(() => {
+    (async () => {
+      await setLobbyData().catch(() => {
+        setError(true);
+      });
+      endLoading();
+    })();
+    // socket.socket.off("inviteChatRoom");
+
+    socket.socket.on("inviteChatRoom", (roomId: number, userName: string) => {
+      setInviteRoomId(roomId);
+      setInviteUserName(userName);
+      onChatInviteModalOpen();
+    });
+  }, []);
+
+  const onNextPage = () => {
+    setPage(page + 1);
+  };
+  const onPrevPage = () => {
+    setPage(page - 1);
+  };
 
   return (
     <>
@@ -143,9 +157,18 @@ const Lobby = () => {
       {isLoading && <FullSpinner />}
       {isChatInviteModalOpen && (
         <ChatInviteModal
+          roomId={inviteRoomId}
+          userName={inviteUserName}
           onClose={onChatInviteModalClose} // 초대 거절
-          onNoConfirm={onChatInviteModalClose} // 초대 거절
-          onYesConfirm={onChatInviteModalClose} // 초대 승락
+          setError={setRoomError}
+          setErrorContent={setErrorContent}
+        />
+      )}
+      {roomError && (
+        <ErrorModal
+          onClose={() => setRoomError(false)}
+          errors={errorContent}
+          title="방입장 실패"
         />
       )}
     </>
