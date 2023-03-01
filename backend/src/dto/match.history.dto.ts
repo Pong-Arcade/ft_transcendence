@@ -1,63 +1,45 @@
-import { MatchResult } from 'src/enum/match.result.enum';
-import { UserDto } from './user.dto';
-import { MatchType } from 'src/enum/match.type.enum';
 import { ApiProperty } from '@nestjs/swagger';
+import { MatchType } from 'src/enum/match.type.enum';
 
-/**
- * 대전 기록을 저장하는 dto입니다.
- */
 export class MatchHistoryDto {
   @ApiProperty({
-    description: '대전의 고유 아이디',
+    description: '레드팀 유저 ID',
     example: 1,
   })
-  matchId: number;
+  redUserId: number;
 
   @ApiProperty({
-    description: '대전의 결과',
-    example: MatchResult.WIN,
-    enum: MatchResult,
+    description: '블루 유저 ID',
+    example: 1,
   })
-  matchResult: MatchResult;
+  blueUserId: number;
 
   @ApiProperty({
-    description: '대전 상대 유저 정보',
-    example: {
-      userId: 2,
-      nickname: 'opponentUser',
-      avatarUrl: 'http://example.com',
-    } as UserDto,
-    type: UserDto,
-  })
-  opponent: UserDto;
-
-  @ApiProperty({
-    description: '내 점수',
+    description: '레드팀 점수',
     example: 10,
   })
-  myScore: number;
+  redScore: number;
 
   @ApiProperty({
-    description: '상대 점수',
-    example: 5,
+    description: '블루팀 점수',
+    example: 9,
   })
-  opponentScore: number;
+  blueScore: number;
 
   @ApiProperty({
-    description: '대전 시작 시간',
-    example: '2023-02-15T00:00:00.000Z',
-    type: Date,
+    description: '게임 시작 시간',
+    example: '2021-08-01 00:00:00',
   })
   beginDate: Date;
 
   @ApiProperty({
-    description: '대전 시간(ms)',
-    example: 1000,
+    description: '게임 종료 시간',
+    example: '2021-08-01 00:00:00',
   })
-  matchTime: number;
+  endDate: Date;
 
   @ApiProperty({
-    description: '대전 유형(래더/일반)',
+    description: '대전 유형',
     example: MatchType.LADDER,
     enum: MatchType,
   })

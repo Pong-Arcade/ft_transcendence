@@ -21,7 +21,7 @@ export class GameRoomUsersInfoResponseDto {
       userId: 1,
       nickname: 'redUser',
       avatarUrl: 'http://example.com',
-      status: GameRoomUserStatus.UN_READY,
+      gameUserStatus: GameRoomUserStatus.UN_READY,
     } as GameUserStatusDto,
   })
   redUser: GameUserStatusDto;
@@ -32,7 +32,7 @@ export class GameRoomUsersInfoResponseDto {
       userId: 2,
       nickname: 'blueUser',
       avatarUrl: 'http://example.com',
-      status: GameRoomUserStatus.UN_READY,
+      gameUserStatus: GameRoomUserStatus.UN_READY,
     } as GameUserStatusDto,
   })
   blueUser: GameUserStatusDto;

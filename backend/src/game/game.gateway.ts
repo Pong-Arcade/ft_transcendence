@@ -31,6 +31,9 @@ import {
 } from 'src/enum/ingame.event.enum';
 import { GameRoomService } from './gameroom.service';
 import { ChatroomService } from 'src/chat/chat.service';
+import MatchHistory from 'src/entity/match.history.entity';
+import { MatchHistoryDto } from 'src/dto/match.history.dto';
+import { StatService } from 'src/stat/stat.service';
 
 export const gameRooms = new Map<number, GameRoom>();
 export let invitations: Invitation[] = [];
@@ -53,6 +56,7 @@ export class GameGateway implements OnGatewayDisconnect {
     private readonly eventEmitter: EventEmitter2,
     private readonly gameRoomService: GameRoomService,
     private readonly chatroomService: ChatroomService,
+    private readonly statService: StatService,
     @Inject(ChatGateway) private readonly chatGateway: ChatGateway,
   ) {}
 
@@ -120,7 +124,7 @@ export class GameGateway implements OnGatewayDisconnect {
     const roomId = gameRooms.size + 1;
     const redUser: GameUserStatusDto = {
       ...(await this.userService.getUserInfo(user.userId)),
-      status: GameRoomUserStatus.UN_READY,
+      gameUserStatus: GameRoomUserStatus.UN_READY,
     };
     const gameRoom = new GameRoom(
       roomId,
@@ -160,7 +164,7 @@ export class GameGateway implements OnGatewayDisconnect {
       room.blueUser = {
         userId: user.userId,
         nickname: user.nickname,
-        status: GameRoomUserStatus.UN_READY,
+        gameUserStatus: GameRoomUserStatus.UN_READY,
       };
       this.chatGateway.server
         .in('lobby')
@@ -176,7 +180,7 @@ export class GameGateway implements OnGatewayDisconnect {
     const user = room.redUser.userId === userId ? room.redUser : room.blueUser;
     const userSocketInfo = users.get(user.userId);
     //gameInstance 종료 이벤트
-    this.eventEmitter.emit('gameroom:finish', roomId);
+    await this.eventEmitter.emitAsync('gameroom:finish', roomId);
     if (user.userId === room.redUser.userId) {
       this.server.in(`gameroom-${room.roomId}`).emit('destructGameRoom');
       this.chatGateway.server
@@ -254,7 +258,7 @@ export class GameGateway implements OnGatewayDisconnect {
     const roomId = gameRooms.size + 1;
     const redUser: GameUserStatusDto = {
       ...(await this.userService.getUserInfo(inviterId)),
-      status: GameRoomUserStatus.UN_READY,
+      gameUserStatus: GameRoomUserStatus.UN_READY,
     };
     const gameRoom = new GameRoom(
       roomId,
@@ -281,7 +285,7 @@ export class GameGateway implements OnGatewayDisconnect {
     // 블루 유저를 게임방에 넣어줍니다.
     gameRoom.blueUser = {
       ...(await this.userService.getUserInfo(inviterId)),
-      status: GameRoomUserStatus.UN_READY,
+      gameUserStatus: GameRoomUserStatus.UN_READY,
     };
 
     // 초대받은 유저가 채팅방에 입장한 상태라면, 채팅방을 나간다.
@@ -383,20 +387,20 @@ export class GameGateway implements OnGatewayDisconnect {
     this.logger.log(`Called ${this.readyGame.name}`);
     const room = gameRooms.get(roomId);
     if (room.redUser?.userId === userId) {
-      room.redUser.status = GameRoomUserStatus.READY;
+      room.redUser.gameUserStatus = GameRoomUserStatus.READY;
       this.server
         .in(`gameroom-${roomId}`)
         .emit('readyRedUser', room.redUser.userId);
     }
     if (room.blueUser?.userId === userId) {
-      room.blueUser.status = GameRoomUserStatus.READY;
+      room.blueUser.gameUserStatus = GameRoomUserStatus.READY;
       this.server
         .in(`gameroom-${roomId}`)
         .emit('readyBlueUser', room.blueUser.userId);
     }
     if (
-      room.redUser?.status === GameRoomUserStatus.READY &&
-      room.blueUser?.status === GameRoomUserStatus.READY
+      room.redUser?.gameUserStatus === GameRoomUserStatus.READY &&
+      room.blueUser?.gameUserStatus === GameRoomUserStatus.READY
     ) {
       room.status = GameRoomStatus.ON_GAME;
       // 1초 간격으로 총 3번 이벤트를 발생시킵니다.
@@ -418,13 +422,13 @@ export class GameGateway implements OnGatewayDisconnect {
     this.logger.log(`Called ${this.unreadyGame.name}`);
     const room = gameRooms.get(roomId);
     if (room.redUser?.userId === userId) {
-      room.redUser.status = GameRoomUserStatus.UN_READY;
+      room.redUser.gameUserStatus = GameRoomUserStatus.UN_READY;
       this.server
         .in(`gameroom-${roomId}`)
         .emit('unReadyRedUser', room.redUser.userId);
     }
     if (room.blueUser?.userId === userId) {
-      room.blueUser.status = GameRoomUserStatus.UN_READY;
+      room.blueUser.gameUserStatus = GameRoomUserStatus.UN_READY;
       this.server
         .in(`gameroom-${roomId}`)
         .emit('unReadyBlueUser', room.blueUser.userId);
@@ -453,7 +457,7 @@ export class GameGateway implements OnGatewayDisconnect {
     const roomId = gameRooms.size + 1;
     const redUser: GameUserStatusDto = {
       ...(await this.userService.getUserInfo(redUserId)),
-      status: GameRoomUserStatus.UN_READY,
+      gameUserStatus: GameRoomUserStatus.UN_READY,
     };
     const gameRoom = new GameRoom(
       roomId,
@@ -474,7 +478,7 @@ export class GameGateway implements OnGatewayDisconnect {
     // 블루 유저를 게임방에 넣어줍니다.
     gameRoom.blueUser = {
       ...(await this.userService.getUserInfo(blueUserId)),
-      status: GameRoomUserStatus.UN_READY,
+      gameUserStatus: GameRoomUserStatus.UN_READY,
     };
     this.chatGateway.server
       .in(blueUserSocketInfo.socketId)
@@ -514,7 +518,8 @@ export class GameGateway implements OnGatewayDisconnect {
   }
 
   @OnEvent('gameroom:finish')
-  async finishGame(roomId: number) {
+  async onGameFinish(roomId: number) {
+    this.logger.log(`Called ${this.onGameFinish.name}`);
     const room = gameRooms.get(roomId);
     if (room.status !== GameRoomStatus.ON_GAME) {
       return;
@@ -524,6 +529,16 @@ export class GameGateway implements OnGatewayDisconnect {
     room.gameInstance = null;
     room.status = GameRoomStatus.ON_READY;
     //게임 전적 처리
+    const matchHistory: MatchHistoryDto = {
+      redUserId: room.redUser.userId,
+      blueUserId: room.blueUser.userId,
+      redScore: gameResult.redScore,
+      blueScore: gameResult.blueScore,
+      beginDate: gameResult.beginDate,
+      endDate: gameResult.endDate,
+      matchType: room.type,
+    };
+    await this.statService.createMatchHistory(matchHistory);
   }
 
   @OnEvent('gameroom:config')

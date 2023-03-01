@@ -18,7 +18,7 @@ import Typography from "../../atoms/Typography";
 import ButtonGroup from "../ButtonGroup";
 import Confirm2FAModal from "../Confirm2FAModal";
 import ModalTitle from "../ModalTitle";
-import { IUser } from "../Pagination/Pagination";
+import { EUserStatus, IUser } from "../Pagination/Pagination";
 import StatModal from "../StatModal";
 import UserInfoSettingModal from "../UserInfoSettingModal";
 
@@ -142,13 +142,13 @@ const UserInfoModal = ({ onClose, userId }: Props) => {
   const gameStatTitleList = ["게임종류", "승리", "패배", "승률"];
   const gameStatContentList = [
     "레더게임",
-    "10",
-    "5",
-    "66.7%",
+    userInfo.ladderInfo?.winCount,
+    userInfo.ladderInfo?.loseCount,
+    `${userInfo.ladderInfo?.winRate}%`,
     "일반게임",
-    "10",
-    "5",
-    "66.7%",
+    userInfo.normalInfo?.winCount,
+    userInfo.normalInfo?.loseCount,
+    `${userInfo.normalInfo?.winRate}%`,
   ];
   const { isModalOpen: isInfoSettingOpen, onModalOpen: onInfoSettingOpen } =
     useModal({});
@@ -203,7 +203,12 @@ const UserInfoModal = ({ onClose, userId }: Props) => {
             ))}
           </GameStatContent>
           <CurrentLocationTitle>현재 상태</CurrentLocationTitle>
-          <CurrentLocationContent>로비에 있습니다</CurrentLocationContent>
+          <CurrentLocationContent>
+            {userInfo.status === EUserStatus.OFFLINE && "오프라인 상태입니다"}
+            {userInfo.status === EUserStatus.LOBBY && "로비에 있습니다"}
+            {userInfo.status === EUserStatus.GAME && "게임방에 있습니다"}
+            {userInfo.status === EUserStatus.CHAT && "채팅방에 있습니다"}
+          </CurrentLocationContent>
         </GridWrapper>
         <ButtonGroup width="100%" height="8%" backgroundColor="secondary">
           {userInfo.userId === myInfo.userId ? (

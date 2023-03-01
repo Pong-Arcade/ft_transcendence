@@ -12,6 +12,7 @@ import { RankListResponseDto } from 'src/dto/response/rank.list.response.dto';
 import { RankingFilter } from 'src/enum/ranking.filter.enum';
 import { SortDirection } from 'src/enum/sort.direction.enum';
 import { GameStatDto } from 'src/dto/game.stat.dto';
+import { MatchHistoryDto } from 'src/dto/match.history.dto';
 
 @Injectable()
 export class StatService {
@@ -56,5 +57,11 @@ export class StatService {
       await this.statRepository.getUserLadderStat(userId),
       await this.statRepository.getUserNormalStat(userId),
     ];
+  }
+
+  async createMatchHistory(matchHistory: MatchHistoryDto): Promise<void> {
+    this.logger.log(`Called ${this.createMatchHistory.name}`);
+    await this.statRepository.createMatchHistory(matchHistory);
+    // FIXME: ladder, normal 테이블 업데이트
   }
 }

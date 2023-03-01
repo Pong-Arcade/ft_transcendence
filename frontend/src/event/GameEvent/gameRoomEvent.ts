@@ -36,25 +36,28 @@ const gameRoomEvent = () => {
     socket.on("readyRedUser", () => {
       setGameState((prev) => ({
         ...prev,
-        redUser: { ...prev.redUser, status: EGameUserStatus.READY },
+        redUser: { ...prev.redUser, gameUserStatus: EGameUserStatus.READY },
       }));
     });
     socket.on("unReadyRedUser", () => {
       setGameState((prev) => ({
         ...prev,
-        redUser: { ...prev.redUser, status: EGameUserStatus.UN_READY },
+        redUser: { ...prev.redUser, gameUserStatus: EGameUserStatus.UN_READY },
       }));
     });
     socket.on("readyBlueUser", () => {
       setGameState((prev) => ({
         ...prev,
-        blueUser: { ...prev.blueUser, status: EGameUserStatus.READY },
+        blueUser: { ...prev.blueUser, gameUserStatus: EGameUserStatus.READY },
       }));
     });
     socket.on("unReadyBlueUser", () => {
       setGameState((prev) => ({
         ...prev,
-        blueUser: { ...prev.blueUser, status: EGameUserStatus.UN_READY },
+        blueUser: {
+          ...prev.blueUser,
+          gameUserStatus: EGameUserStatus.UN_READY,
+        },
       }));
     });
     return () => {
