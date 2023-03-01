@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { MatchHistoryDto } from '../match.history.dto';
 import { UserDto } from '../user.dto';
 import { MatchResult } from 'src/enum/match.result.enum';
 import { MatchType } from 'src/enum/match.type.enum';
+import { MyMatchHistoryDto } from '../my.match.history.dto';
 
 /**
  * 유저의 최근 전적 기록을 반환하는 dto입니다.
@@ -52,9 +52,9 @@ export class UserRecentMatchHistoryResponseDto {
         matchTime: 272000,
         matchType: MatchType.LADDER,
       },
-    ] as MatchHistoryDto[],
-    type: MatchHistoryDto,
+    ] as MyMatchHistoryDto[],
+    type: MyMatchHistoryDto,
     isArray: true,
   })
-  matchHistories: MatchHistoryDto[];
+  matchHistories: MyMatchHistoryDto[];
 }
