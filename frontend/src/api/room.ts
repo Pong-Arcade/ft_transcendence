@@ -1,7 +1,4 @@
-import {
-  IChatRoomInviteForm,
-  ILobbyChatRoomFormValues,
-} from "../hooks/useChatRoomForm";
+import { ILobbyChatRoomFormValues } from "../hooks/useChatRoomForm";
 import { EGameType, IGameRoomFormValues } from "../hooks/useGameRoomForm";
 import { deleteRequest, getRequest, patchRequest, postRequest } from "./axios";
 
