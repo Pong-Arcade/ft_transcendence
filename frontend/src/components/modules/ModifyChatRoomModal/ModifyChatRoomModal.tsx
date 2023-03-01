@@ -1,4 +1,6 @@
+import { useParams } from "react-router-dom";
 import styled from "styled-components";
+import { updateChatRoomAPI } from "../../../api/room";
 import {
   EChatRoomFormValues,
   EChatRoomMode,
@@ -41,10 +43,17 @@ const SubmitButton = styled(Button).attrs({
 
 // TODO: 초기값으로 세팅해놓기(비밀번호 제외)
 const CreateChatRoomModal = ({ title, onClose }: Props) => {
+  const params = useParams();
   const { values, errors, onErrorModalClose, onChangeForm, onSubmitForm } =
     useModifyChatRoomForm({
       onSubmit: () => {
         onClose();
+        updateChatRoomAPI(
+          Number(params.chatId),
+          values.title,
+          values.mode,
+          values.password
+        );
       },
     });
 

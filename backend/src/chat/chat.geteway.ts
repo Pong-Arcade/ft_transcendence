@@ -17,6 +17,8 @@ import { UserService } from 'src/user/user.service';
 import { Logger } from '@nestjs/common';
 import { ChangeChatroomInfoRequestDto } from 'src/dto/request/chatroom.change.info.request.dto';
 import { UserChatMode } from 'src/enum/user.chat.mode.enum';
+import { UserChatDto } from 'src/dto/user.chat.dto';
+import { ChatRoomMode } from 'src/enum/chatroom.mode.enum';
 export const rooms = new Map<number, Room>();
 let roomCount = 1;
 
@@ -105,8 +107,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.to('lobby').emit('addOnlineUser', {
       userId: info.userId,
       nickname: info.userName,
-      avatarUrl: 'asdfd',
-      email: 'sfds',
     });
   }
 
@@ -207,6 +207,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       this.server.in(user.socketId).socketsJoin('lobby');
       room.users = room.users.filter((id) => id != userId);
     }
+    if (room.users.length == 0) rooms.delete(roomId);
   }
 
   @OnEvent('chatroom:create')
@@ -229,21 +230,37 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       title: room.title,
       mode: room.mode,
       maxUserCount: room.maxUser,
-      currentCount: room.users.length,
+      currentCount: 1,
     });
   }
 
   @OnEvent('chatroom:invite')
   async inviteChatRoom(roomId, fromId, toUsers) {
+    console.log('invite: ', toUsers);
     const room = rooms.get(roomId);
+    const userName = users.get(fromId).userName;
     const to = new Array<User>();
     for (const id of toUsers) {
       to.push(users.get(id));
     }
     to.forEach((user) => {
-      this.server.to(user.socketId).emit('inviteChatRoom', roomId, fromId);
+      this.server.to(user.socketId).emit('inviteChatRoom', roomId, userName);
       room.invitedUsers.push(user.userId);
     });
+  }
+  @OnEvent('chatroom:invite:accept')
+  async acceptInviteChatRoom(roomId, userId) {
+    const room = rooms.get(roomId);
+    const user = users.get(userId);
+    room.invitedUsers.push(userId);
+    this.joinChatRoom(roomId, userId);
+  }
+
+  @OnEvent('chatroom:invite:reject')
+  async rejectInviteChatRoom(roomId, userId) {
+    const room = rooms.get(roomId);
+    const user = users.get(userId);
+    room.invitedUsers = room.invitedUsers.filter((id) => id != userId);
   }
   @OnEvent('chatroom:ban')
   async banChatRoom(roomId, userId) {
@@ -290,9 +307,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @OnEvent('chatroom:change-info')
   async updateChatRoom(roomId: number, roomInfo: ChangeChatroomInfoRequestDto) {
     const room = rooms.get(roomId);
+    console.log('update', roomInfo);
     room.title = roomInfo.title;
     room.mode = roomInfo.mode;
-    if (roomInfo.password) room.password = roomInfo.password;
+    if (roomInfo.password || room.mode != ChatRoomMode.PUBLIC)
+      room.password = roomInfo.password;
     this.server.in('lobby').emit('updateChatRoom', {
       roomId: room.id,
       title: room.title,

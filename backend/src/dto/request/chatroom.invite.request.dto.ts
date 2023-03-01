@@ -10,10 +10,10 @@ export class ChatroomInviteRequestDto {
     description: '초대할 유저들의 ID',
     example: [1, 2, 3],
   })
-  @IsArray({
-    message: 'users는 배열이어야 합니다.',
-    each: true,
-  })
+  // @IsArray({
+  //   message: 'users는 배열이어야 합니다.',
+  //   each: true,
+  // })
   @IsNumber(
     {},
     {
