@@ -62,13 +62,13 @@ export class GameRoomService {
     const redUser = gameRoomInfo.redUser
       ? {
           ...(await this.userService.getUserInfo(gameRoomInfo.redUser.userId)),
-          status: gameRoomInfo.redUser.status,
+          gameUserStatus: gameRoomInfo.redUser.gameUserStatus,
         }
       : null;
     const blueUser = gameRoomInfo.blueUser
       ? {
           ...(await this.userService.getUserInfo(gameRoomInfo.blueUser.userId)),
-          status: gameRoomInfo.blueUser.status,
+          gameUserStatus: gameRoomInfo.blueUser.gameUserStatus,
         }
       : null;
 

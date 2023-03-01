@@ -32,13 +32,13 @@ const UserInfo = styled(Board).attrs((props) => {
   };
 })``;
 
-const Wrapper = styled.div`
-  display: grid;
-  grid-template: repeat(3, 1fr) / 1fr;
+const NicknameWrapper = styled.div`
   width: 100%;
-  height: 50%;
+  height: 40%;
   background-color: ${(props) => props.theme.background.middle};
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 interface Props {
@@ -46,8 +46,8 @@ interface Props {
 }
 
 const ProfileButton = styled(Button).attrs({
-  width: "6vw",
-  height: "5vh",
+  width: "80%",
+  height: "45%",
   boxShadow: true,
   fontSize: "1.5rem",
 })``;
@@ -76,12 +76,15 @@ const LobbyUserProfile = ({ info }: Props) => {
         <LogoutButton onClick={onConfirmOpen} />
         <Avatar width={"10rem"} height={"10rem"} src={info.avatarUrl} />
         <UserInfo>
-          <Wrapper>
-            <Typography fontSize="1.5rem">{info.nickname}</Typography>
-            <Typography fontSize="1.5rem">2승 2패 (50%)</Typography>
-            <Typography fontSize="1.5rem">1020 점</Typography>
-          </Wrapper>
-          <ButtonGroup height="30%" width="100%" justifyContent="space-between">
+          <NicknameWrapper>
+            <Typography fontSize="3rem">{info.nickname}</Typography>
+          </NicknameWrapper>
+          <ButtonGroup
+            height="60%"
+            width="100%"
+            justifyContent="space-around"
+            flexDirection="column"
+          >
             <ProfileButton onClick={onUserInfoOpen}>내정보</ProfileButton>
             <ProfileButton to="/ranking">랭킹</ProfileButton>
           </ButtonGroup>

@@ -1,5 +1,4 @@
 import { AxiosError } from "axios";
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import {
@@ -10,7 +9,6 @@ import Button from "../../atoms/Button";
 import Typography from "../../atoms/Typography";
 import ButtonGroup from "../ButtonGroup";
 import ConfirmModal from "../ConfirmModal";
-import ErrorModal from "../ErrorModal";
 
 interface Props {
   userName: string;
@@ -66,10 +64,3 @@ const ChatInviteModal = ({
 };
 
 export default ChatInviteModal;
-function setError(arg0: boolean) {
-  throw new Error("Function not implemented.");
-}
-
-function setErrorContent(message: any) {
-  throw new Error("Function not implemented.");
-}
