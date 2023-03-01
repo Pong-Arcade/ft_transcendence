@@ -17,7 +17,7 @@ const TitleTypography = styled(Typography).attrs({
 })`
   background-color: ${(props) => props.theme.background.front};
   height: 90%;
-  width: 65%;
+  width: 66%;
   display: flex;
   align-items: center;
   padding: 1rem;
