@@ -181,11 +181,11 @@ export class GameRoomService {
    */
   isInviter(userId: number): boolean {
     this.logger.log(`Called ${this.isInviter.name}`);
-    invitations.forEach((invitation) => {
+    for (const invitation of invitations) {
       if (invitation.inviterId === userId) {
         return true;
       }
-    });
+    }
     return false;
   }
 
@@ -198,11 +198,11 @@ export class GameRoomService {
    */
   isInvitee(userId: number): boolean {
     this.logger.log(`Called ${this.isInvitee.name}`);
-    invitations.forEach((invitation) => {
+    for (const invitation of invitations) {
       if (invitation.inviteeId === userId) {
         return true;
       }
-    });
+    }
     return false;
   }
 
