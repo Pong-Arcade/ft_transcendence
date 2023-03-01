@@ -11,9 +11,9 @@ import ChatRoom from "./pages/ChatRoom";
 import GameRoom from "./pages/GameRoom";
 import Lobby from "./pages/Lobby";
 import Login from "./pages/Login";
+import Login2FA from "./pages/Login2FA";
 import Ranking from "./pages/Ranking";
 import Root from "./pages/Root";
-import Stat from "./pages/Stat";
 import GlobalStyle from "./styles/GlobalStyle";
 import theme from "./styles/theme";
 
@@ -26,6 +26,10 @@ const router = createBrowserRouter([
       {
         path: "",
         element: <Login />,
+      },
+      {
+        path: "2FA",
+        element: <Login2FA />,
       },
       {
         path: "lobby",
@@ -44,10 +48,6 @@ const router = createBrowserRouter([
         element: <Ranking />,
       },
       {
-        path: "stat/:userId",
-        element: <Stat />,
-      },
-      {
         path: "*",
         element: <Navigate to={"/"} />,
       },
@@ -59,12 +59,12 @@ const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 root.render(
-  // <React.StrictMode>
-  <ThemeProvider theme={theme}>
-    <GlobalStyle />
-    <RecoilRoot>
-      <RouterProvider router={router} />
-    </RecoilRoot>
-  </ThemeProvider>
-  // </React.StrictMode>
+  <React.StrictMode>
+    <ThemeProvider theme={theme}>
+      <GlobalStyle />
+      <RecoilRoot>
+        <RouterProvider router={router} />
+      </RecoilRoot>
+    </ThemeProvider>
+  </React.StrictMode>
 );

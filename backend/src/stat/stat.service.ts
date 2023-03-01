@@ -1,10 +1,17 @@
-import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { IStatRepository } from './repository/stat.repository.interface';
 import { UserRecentMatchHistoryResponseDto } from 'src/dto/response/user.recent.match.history.response.dto';
 import { UserService } from 'src/user/user.service';
 import { RankListResponseDto } from 'src/dto/response/rank.list.response.dto';
 import { RankingFilter } from 'src/enum/ranking.filter.enum';
 import { SortDirection } from 'src/enum/sort.direction.enum';
+import { GameStatDto } from 'src/dto/game.stat.dto';
 
 @Injectable()
 export class StatService {
@@ -13,6 +20,7 @@ export class StatService {
   constructor(
     @Inject('IStatRepository')
     private readonly statRepository: IStatRepository,
+    @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
   ) {}
 
@@ -40,5 +48,13 @@ export class StatService {
       userInfo,
       matchHistories,
     } as UserRecentMatchHistoryResponseDto;
+  }
+
+  async getUserGameStat(userId: number): Promise<[GameStatDto, GameStatDto]> {
+    this.logger.log(`Called ${this.getUserGameStat.name}`);
+    return [
+      await this.statRepository.getUserLadderStat(userId),
+      await this.statRepository.getUserNormalStat(userId),
+    ];
   }
 }

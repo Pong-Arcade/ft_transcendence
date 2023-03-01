@@ -7,8 +7,8 @@ import { UserService } from 'src/user/user.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import User from 'src/entity/user.entity';
 @Module({
-  imports: [UserModule, TypeOrmModule.forFeature([User])], //forwardRef(() => UserModule)],
-  providers: [ChatGateway, ChatroomService, UserService, repo],
+  imports: [UserModule, TypeOrmModule.forFeature([User])],
+  providers: [ChatGateway, ChatroomService, repo],
   exports: [ChatGateway, ChatroomService],
   controllers: [ChatroomController],
 })

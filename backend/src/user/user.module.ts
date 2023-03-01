@@ -1,14 +1,13 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { UserController } from './user.controller';
-import { ChatModule } from '../chat/chat.module';
-import { GameModule } from '../game/game.module';
 import { UserRepository } from './repository/user.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import User from 'src/entity/user.entity';
 import { UserService } from './user.service';
-import { StatusModule } from '../status/status.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { StatModule } from '../stat/stat.module';
+import { StatService } from '../stat/stat.service';
 
 export const repo = {
   provide: 'IUserRepository',
@@ -27,9 +26,7 @@ export const repo = {
       inject: [ConfigService],
     }),
     TypeOrmModule.forFeature([User]),
-    //forwardRef(() => ChatModule),
-    //forwardRef(() => GameModule),
-    StatusModule,
+    forwardRef(() => StatModule),
   ],
   controllers: [UserController],
   providers: [UserService, repo],

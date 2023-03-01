@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
+import { enroll2FAAPI } from "../../../api/auth";
 import { getUserInfoAPI } from "../../../api/users";
 import useFriendUsers from "../../../hooks/useFriendUsers";
 import useModal from "../../../hooks/useModal";
 import friendUsersState from "../../../state/FriendUsersState";
 import infoState from "../../../state/InfoState";
+import { removeJWT } from "../../../utils/token";
 import Avatar from "../../atoms/Avatar";
 import Board from "../../atoms/Board";
 import Button from "../../atoms/Button";
@@ -14,9 +16,10 @@ import Modal from "../../atoms/Modal";
 import ModalWrapper from "../../atoms/ModalWrapper";
 import Typography from "../../atoms/Typography";
 import ButtonGroup from "../ButtonGroup";
+import Confirm2FAModal from "../Confirm2FAModal";
 import ModalTitle from "../ModalTitle";
 import { IUser } from "../Pagination/Pagination";
-import StatConfirmModal from "../StatConfirmModal";
+import StatModal from "../StatModal";
 import UserInfoSettingModal from "../UserInfoSettingModal";
 
 interface Props {
@@ -118,11 +121,9 @@ const CurrentLocationContent = styled(Board).attrs({
   background-color: ${(props) => props.theme.background.middle};
 `;
 
-// TODO: 버튼 이상한 랜더링 해결
 const UserInfoModal = ({ onClose, userId }: Props) => {
   const myInfo = useRecoilValue(infoState);
   const [userInfo, setUserInfo] = useState<IUser>({});
-  const navigate = useNavigate();
 
   useEffect(() => {
     (async () => {
@@ -152,14 +153,26 @@ const UserInfoModal = ({ onClose, userId }: Props) => {
   const { isModalOpen: isInfoSettingOpen, onModalOpen: onInfoSettingOpen } =
     useModal({});
   const {
-    isModalOpen: isConfirmOpen,
-    onModalOpen: onConfirmOpen,
-    onModalClose: onConfirmClose,
+    isModalOpen: isStatModalOpen,
+    onModalOpen: onStatModalOpen,
+    onModalClose: onStatModalClose,
+  } = useModal({});
+  const {
+    isModalOpen: isConfirmModalOpen,
+    onModalOpen: onConfirmModalOpen,
+    onModalClose: onConfirmModalClose,
   } = useModal({});
 
   const { onAddFriend, onDelFriend } = useFriendUsers(userId);
   const friendUsers = useRecoilValue(friendUsersState);
   const isFriend = friendUsers.find((user) => user.userId === userId);
+  const navigate = useNavigate();
+
+  const onEnroll2FA = async () => {
+    await enroll2FAAPI();
+    removeJWT();
+    navigate("/");
+  };
 
   return (
     <ModalWrapper>
@@ -194,9 +207,14 @@ const UserInfoModal = ({ onClose, userId }: Props) => {
         </GridWrapper>
         <ButtonGroup width="100%" height="8%" backgroundColor="secondary">
           {userInfo.userId === myInfo.userId ? (
-            <UserInfoModalButton onClick={onInfoSettingOpen}>
-              프로필설정
-            </UserInfoModalButton>
+            <>
+              <UserInfoModalButton onClick={onConfirmModalOpen}>
+                2차인증 등록
+              </UserInfoModalButton>
+              <UserInfoModalButton onClick={onInfoSettingOpen}>
+                프로필설정
+              </UserInfoModalButton>
+            </>
           ) : isFriend ? (
             <UserInfoModalButton onClick={async () => await onDelFriend()}>
               친구삭제
@@ -206,7 +224,7 @@ const UserInfoModal = ({ onClose, userId }: Props) => {
               친구추가
             </UserInfoModalButton>
           )}
-          <UserInfoModalButton onClick={onConfirmOpen}>
+          <UserInfoModalButton onClick={onStatModalOpen}>
             최근전적
           </UserInfoModalButton>
         </ButtonGroup>
@@ -214,11 +232,18 @@ const UserInfoModal = ({ onClose, userId }: Props) => {
       {isInfoSettingOpen && (
         <UserInfoSettingModal onClose={onClose} info={userInfo} />
       )}
-      {isConfirmOpen && (
-        <StatConfirmModal
-          onClose={onConfirmClose}
-          onYesConfirm={() => navigate(`/stat/${userId}`)}
-          onNoConfirm={onConfirmClose}
+      {isConfirmModalOpen && (
+        <Confirm2FAModal
+          onClose={onConfirmModalClose}
+          onYesConfirm={onEnroll2FA}
+          onNoConfirm={onConfirmModalClose}
+        />
+      )}
+      {isStatModalOpen && (
+        <StatModal
+          onClose={onStatModalClose}
+          userId={userId}
+          nickname={userInfo.nickname as string}
         />
       )}
     </ModalWrapper>
