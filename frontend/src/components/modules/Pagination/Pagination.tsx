@@ -193,7 +193,7 @@ const Pagination = ({
   return (
     <PaginationStyled {...rest}>
       <Page itemGap={itemGap} gridTemplate={gridTemplate}>
-        {list.length
+        {list
           ? list?.map((item, idx) => (
               <PaginationItem
                 onItemClick={onItemClick}

@@ -38,6 +38,8 @@ import { existsSync, mkdirSync } from 'fs';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.auth.guard';
 import { v4 as uuid } from 'uuid';
 import { UserDetailResponseDto } from '../dto/response/user.detail.response.dto';
+import { users } from 'src/status/status.module';
+import { User as onlineUserResponse } from 'src/status/status.entity';
 
 @ApiTags('Users')
 @ApiBearerAuth()
@@ -62,11 +64,10 @@ export class UserController {
     type: OnlineUsersResponseDto,
   })
   @Get()
-  async getAllOnlineUsers(): Promise<OnlineUsersResponseDto> {
+  getAllOnlineUsers(): OnlineUsersResponseDto {
     this.logger.log(`Called ${this.getAllOnlineUsers.name}`);
     const response = new OnlineUsersResponseDto();
-    response.onlineUsers = await this.userService.getAllOnlineUsers();
-    console.log(response.onlineUsers);
+    response.onlineUsers = this.userService.getAllOnlineUsers();
     return response;
   }
 

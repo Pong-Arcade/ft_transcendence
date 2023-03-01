@@ -38,10 +38,14 @@ const useLobbyData = () => {
   }, [myInfo]);
   //온라인 유저 소켓 이벤트
   const addOnlineUser = (user: IUser) => {
+    onlineUsers.find((u) => u.userId == user.userId) &&
+      user.userId &&
+      deleteOnlineUser(user.userId);
     setOnlineUsers((prev) => [...prev, user]);
   };
   const deleteOnlineUser = (userId: number) => {
     console.log("delete");
+    if (!onlineUsers) return;
     setOnlineUsers((prev) => prev.filter((user) => user.userId != userId));
   };
   useEffect(() => {
