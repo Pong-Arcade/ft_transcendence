@@ -13,6 +13,7 @@ import { RankingFilter } from 'src/enum/ranking.filter.enum';
 import { SortDirection } from 'src/enum/sort.direction.enum';
 import { GameStatDto } from 'src/dto/game.stat.dto';
 import { MatchHistoryDto } from 'src/dto/match.history.dto';
+import { MatchType } from 'src/enum/match.type.enum';
 
 @Injectable()
 export class StatService {
@@ -63,5 +64,28 @@ export class StatService {
     this.logger.log(`Called ${this.createMatchHistory.name}`);
     await this.statRepository.createMatchHistory(matchHistory);
     // FIXME: ladder, normal 테이블 업데이트
+    const winner =
+      matchHistory.redScore > matchHistory.blueScore
+        ? matchHistory.redUserId
+        : matchHistory.blueUserId;
+    let delta =
+      winner !== matchHistory.redUserId
+        ? matchHistory.redScore - matchHistory.blueScore
+        : matchHistory.blueScore - matchHistory.redScore;
+
+    delta = delta > 5 ? 5 : delta;
+    delta *= 10;
+
+    const loser =
+      winner !== matchHistory.redUserId
+        ? matchHistory.redUserId
+        : matchHistory.blueUserId;
+    if (matchHistory.matchType === MatchType.NORMAL) {
+      await this.statRepository.updateWinNormalStat(winner);
+      await this.statRepository.updateLoseNormalStat(loser);
+    } else {
+      await this.statRepository.updateWinLadderStat(winner, delta);
+      await this.statRepository.updateLoseLadderStat(loser, delta);
+    }
   }
 }
