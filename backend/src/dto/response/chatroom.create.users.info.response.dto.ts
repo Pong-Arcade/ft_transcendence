@@ -27,6 +27,12 @@ export class ChatroomCreateUsersInfoResponseDto {
   mastUserId: number;
 
   @ApiProperty({
+    description: '최대 참여 인원',
+    example: 4,
+  })
+  maxUserCount: number;
+
+  @ApiProperty({
     description: '채팅방에 참여한 유저들의 정보',
     example: [
       {

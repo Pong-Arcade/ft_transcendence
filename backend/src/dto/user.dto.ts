@@ -37,4 +37,10 @@ export class UserDto {
     type: Date,
   })
   firstLogin?: Date; // 유저의 첫 로그인 시간
+
+  @ApiProperty({
+    description: '유저의 위치 정보',
+    example: 0,
+  })
+  location?: number;
 }

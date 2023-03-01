@@ -6,9 +6,9 @@ import {
   ILobbyChatRoomErrors,
   IUseChatRoomForm,
   MAX_PASSWORD_LENGTH,
+  MAX_TITLE_LENGTH,
 } from "./useChatRoomForm";
 
-// TODO: 기존값 받아오기
 const useModifyChatRoomForm = ({ onSubmit }: IUseChatRoomForm) => {
   const [values, setValues] = useState({
     mode: EChatRoomMode.PUBLIC as string,
@@ -16,7 +16,6 @@ const useModifyChatRoomForm = ({ onSubmit }: IUseChatRoomForm) => {
     password: "",
     maxUserCount: "",
   });
-  const [errors, setErrors] = useState<ILobbyChatRoomErrors>();
 
   const onChangeForm = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -33,20 +32,14 @@ const useModifyChatRoomForm = ({ onSubmit }: IUseChatRoomForm) => {
 
   const onSubmitForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setErrors(ChatRoomFormValidator({ ...values }));
+    const errors = ChatRoomFormValidator({ ...values });
     if (errors && Object.keys(errors).length === 0) {
       onSubmit(values);
     }
   };
 
-  const onErrorModalClose = () => {
-    setErrors(undefined);
-  };
-
   return {
     values,
-    errors,
-    onErrorModalClose,
     onChangeForm,
     onSubmitForm,
   };
@@ -54,12 +47,19 @@ const useModifyChatRoomForm = ({ onSubmit }: IUseChatRoomForm) => {
 
 const ChatRoomFormValidator = ({
   mode,
+  title,
   password,
 }: ILobbyChatRoomFormValues) => {
   const errors: ILobbyChatRoomErrors = {};
 
   if (!(mode in EChatRoomMode)) {
     errors.mode = "방유형이 옳바르지 않습니다";
+  }
+
+  if (!title.length) {
+    errors.title = "방제목을 입력해주세요";
+  } else if (title.length > MAX_TITLE_LENGTH) {
+    errors.title = `방제목은 ${MAX_TITLE_LENGTH}자 이내로 입력해주세요`;
   }
 
   if (mode === EChatRoomMode.PROTECTED) {

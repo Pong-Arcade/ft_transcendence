@@ -42,7 +42,6 @@ const ChatRoomPasswordModal = ({ onClose, roomId }: Props) => {
 
   const onPasswordSubmit = async () => {
     try {
-      console.log(inputRef.current?.value);
       const response = await joinChatRoomAPI(roomId, inputRef.current?.value);
       setChatRoomState(response.data);
 
