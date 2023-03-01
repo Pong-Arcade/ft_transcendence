@@ -132,7 +132,7 @@ const UserInfoModal = ({ onClose, userId }: Props) => {
       setUserInfo({ ...data, firstLogin: date.toISOString().split("T")[0] });
     })();
   }, []);
-  console.log(userInfo);
+
   const infoTitleList = ["이름", "가입일", "이메일"];
   const infoContentList = [
     userInfo.nickname,
