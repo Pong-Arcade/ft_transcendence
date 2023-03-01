@@ -83,8 +83,20 @@ const Login2FA = () => {
           </Button>
         </Login2FAForm>
       </LoginTemplate>
-      {isSuccessOpen && <SuccessModal onClose={onSuccessClose} />}
-      {isFailOpen && <FailModal onClose={onFailClose} />}
+      {isSuccessOpen && (
+        <SuccessModal
+          onClose={onSuccessClose}
+          title={"인증"}
+          content={"인증에 성공하였습니다"}
+        />
+      )}
+      {isFailOpen && (
+        <FailModal
+          onClose={onFailClose}
+          title={"인증"}
+          content={"인증에 실패하였습니다"}
+        />
+      )}
     </>
   );
 };

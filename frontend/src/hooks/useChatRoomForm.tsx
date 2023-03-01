@@ -19,6 +19,11 @@ export interface ILobbyChatRoomFormValues {
   password: string;
   maxUserCount: string;
 }
+
+export interface IChatRoomInviteForm {
+  users: number[];
+}
+
 export interface IUseChatRoomForm {
   onSubmit: (values: ILobbyChatRoomFormValues) => void;
 }

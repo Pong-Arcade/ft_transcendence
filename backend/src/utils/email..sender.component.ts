@@ -12,7 +12,6 @@ export class EmailSender {
 
   send2FAEmail(email: string, access: string): void {
     this.logger.log(`Called ${this.send2FAEmail.name}`);
-    console.log(access);
     const emailFrom = this.configService.get<string>('email.from');
     this.mailerService
       .sendMail({
