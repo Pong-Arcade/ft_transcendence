@@ -5,24 +5,18 @@ import Button from "../../atoms/Button";
 import Modal from "../../atoms/Modal";
 import ModalWrapper from "../../atoms/ModalWrapper";
 import UserInfoModal from "../UserInfoModal";
-import RelationConfirmModal from "../RelationConfirmModal";
 import { useRecoilValue } from "recoil";
 import friendUsersState from "../../../state/FriendUsersState";
 import blockUsersState from "../../../state/BlockUsersState";
-import { useParams } from "react-router-dom";
-import {
-  banChatRoomAPI,
-  demoteAdminAPI,
-  inviteGameAPI,
-  muteChatRoomAPI,
-  promoteAdminAPI,
-} from "../../../api/room";
+import { inviteGameAPI } from "../../../api/room";
 import { IUser, userMode } from "../Pagination/Pagination";
 import { SocketContext } from "../../../utils/ChatSocket";
 import chatRoomGameEvent from "../../../event/GameEvent/chatRoomGameEvent";
 import InviteGameWaitingModal from "../InviteGameWaitingModal";
 import InviteRejectModal from "../InviteRejectModal";
 import InviteGameModal from "../InviteGameModal";
+import ChatConfirmModal from "../ChatConfirmModal/ChatConfirmModal";
+import ErrorModal from "../ErrorModal";
 
 interface Props {
   list: IUser[];
@@ -69,6 +63,7 @@ export enum EChatCurrentOn {
   DEL_FRIEND = "DEL_FRIEND",
   ADD_BLOCK = "ADD_BLOCK",
   DEL_BLOCK = "DEL_BLOCK",
+  BAN = "BAN",
   MUTE = "MUTE",
   UNMUTE = "UNMUTE",
   PROMOTE = "PROMOTE",
@@ -113,10 +108,9 @@ const GeneralMenu = ({
   const blockUsers = useRecoilValue(blockUsersState);
   const [currentOn, setCurrentOn] = useState<EChatCurrentOn>();
   const [isMute, setIsMute] = useState(false);
-  // const [isPromote, setIsPromote] = useState(false);
-  // const [isMaster, setIsMaster] = useState(false);
-  const params = useParams();
   const socket = useContext(SocketContext);
+  const [error, setError] = useState(false);
+  const [errorContent, setErrorContent] = useState("");
   const [myInfo, setMyInfo] = useState<IUser>();
   useEffect(() => {
     setMyInfo(list.find((value) => value.userId == socket.userId));
@@ -189,27 +183,19 @@ const GeneralMenu = ({
         })();
         break;
       case EChatRoom.BAN:
-        banChatRoomAPI(Number(params.chatId), userId);
+        setCurrentOn(EChatCurrentOn.BAN);
         onConfirmOpen();
         break;
       case EChatRoom.MUTE:
-        muteChatRoomAPI(Number(params.chatId), userId);
         setCurrentOn(EChatCurrentOn.MUTE);
         setIsMute(true);
         onConfirmOpen();
         break;
-      case EChatRoom.UNMUTE:
-        setCurrentOn(EChatCurrentOn.UNMUTE);
-        setIsMute(false);
-        onConfirmOpen();
-        break;
       case EChatRoom.PROMOTE:
-        promoteAdminAPI(Number(params.chatId), userId);
         setCurrentOn(EChatCurrentOn.PROMOTE);
         onConfirmOpen();
         break;
       case EChatRoom.DEMOTE:
-        demoteAdminAPI(Number(params.chatId), userId);
         setCurrentOn(EChatCurrentOn.DEMOTE);
         onConfirmOpen();
         break;
@@ -264,10 +250,12 @@ const GeneralMenu = ({
         <UserInfoModal userId={userId} onClose={onUserInfoClose} />
       )}
       {isConfirmOpen && (
-        <RelationConfirmModal
+        <ChatConfirmModal
           onNoConfirm={onConfirmClose}
           onClose={onConfirmClose}
-          currentOn={currentOn} // TODO: chat menu 기능 넣어서 confirmModal 수정
+          setError={setError}
+          setErrorContent={setErrorContent}
+          currentOn={currentOn}
           userId={userId}
           name={name}
         />
@@ -281,6 +269,13 @@ const GeneralMenu = ({
       )}
       {isInviteRejectModalOpen && (
         <InviteRejectModal onClose={onInviteRejectModalClose} />
+      )}
+      {error && (
+        <ErrorModal
+          onClose={() => setError(false)}
+          errors={errorContent}
+          title="Error"
+        />
       )}
     </>
   );

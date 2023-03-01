@@ -319,5 +319,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       maxUserCount: room.maxUser,
       currentCount: room.users.length,
     });
+    this.server.in('chatroom' + roomId).emit('updateChatRoom', room.title);
   }
 }
