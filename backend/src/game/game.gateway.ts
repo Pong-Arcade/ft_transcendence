@@ -35,8 +35,8 @@ import { ChatroomService } from 'src/chat/chat.service';
 export const gameRooms = new Map<number, GameRoom>();
 export let invitations: Invitation[] = [];
 
-export const normalQuickMatchQueue = new Array<number>();
-export const ladderQuickMatchQueue = new Array<number>();
+// export const normalQuickMatchQueue = new Array<number>();
+// export const ladderQuickMatchQueue = new Array<number>();
 
 @WebSocketGateway({
   namespace: 'socket/game',

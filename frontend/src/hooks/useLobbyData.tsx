@@ -11,8 +11,6 @@ import {
   ILobbyChatRoom,
   IUser,
 } from "../components/modules/Pagination/Pagination";
-import lobbyChatEvent from "../event/ChatEvent/lobbyChatEvent";
-import lobbyGameEvent from "../event/GameEvent/lobbyGameEvent";
 import blockUsersState from "../state/BlockUsersState";
 import chatRoomListState from "../state/ChatRoomListState";
 import friendUsersState from "../state/FriendUsersState";
@@ -35,13 +33,7 @@ const useLobbyData = () => {
   };
   const deleteOnlineUser = (userId: number) => {
     console.log("delete");
-    setOnlineUsers((prev) => {
-      let users = new Array<IUser>();
-      prev.forEach((user) => {
-        if (user.userId != userId) users.push(user);
-      });
-      return users;
-    });
+    setOnlineUsers((prev) => prev.filter((user) => user.userId != userId));
   };
   useEffect(() => {
     socket.socket.on("addOnlineUser", (user) => addOnlineUser(user));
@@ -99,8 +91,6 @@ const useLobbyData = () => {
       myInfo,
     };
   };
-  lobbyChatEvent();
-  lobbyGameEvent();
 
   return { setLobbyData, getLobbyData };
 };

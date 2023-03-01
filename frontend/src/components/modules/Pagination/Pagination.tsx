@@ -58,11 +58,11 @@ export interface ILobbyGameRoom {
   roomId: number;
   redUser: IUser;
   blueUser: IUser;
+  mode: GameMode;
   maxSpectatorCount: number;
   curSpectatorCount: number;
   roomStatus: EGameRoomStatus;
   title: string;
-  mode: GameMode;
 }
 
 export interface IChatRoom {
