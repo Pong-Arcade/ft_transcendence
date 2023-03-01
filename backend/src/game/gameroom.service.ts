@@ -271,7 +271,11 @@ export class GameRoomService {
     this.logger.log(`Called ${this.leaveQuickMatchQueue.name}`);
     // matchType에 해당하는 매칭 대기열에서 userId를 제거
     for (const queue of Object.values(quickMatchQueues)) {
-      queue.splice(queue.indexOf(userId), 1);
+      const index = queue.indexOf(userId);
+      if (index !== -1) {
+        queue.splice(index, 1);
+        break;
+      }
     }
   }
 }
