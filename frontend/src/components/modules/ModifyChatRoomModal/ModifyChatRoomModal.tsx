@@ -1,6 +1,7 @@
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useParams } from "react-router-dom";
+import { useRecoilState } from "recoil";
 import styled from "styled-components";
-import { changeChatRoomInfoAPI } from "../../../api/room";
+import { updateChatRoomAPI } from "../../../api/room";
 import {
   EChatRoomFormValues,
   EChatRoomMode,
@@ -46,23 +47,29 @@ const SubmitButton = styled(Button).attrs({
 
 const ModifyChatRoomModal = ({ title, onClose }: Props) => {
   const [chatRoom, setChatRoom] = useRecoilState(chatRoomState);
+  const params = useParams();
+  const { isModalOpen: isSuccessOpen, onModalOpen: onSuccessOpen } = useModal(
+    {}
+  );
+  const { isModalOpen: isFailOpen, onModalOpen: onFailOpen } = useModal({});
   const { values, onChangeForm, onSubmitForm } = useModifyChatRoomForm({
-    onSubmit: async () => {
+    onSubmit: () => {
       try {
-        await changeChatRoomInfoAPI(chatRoom.roomId, values);
+        updateChatRoomAPI(
+          Number(params.chatId),
+          values.title,
+          values.mode,
+          values.password
+        );
         onSuccessOpen();
         setChatRoom((prev) => ({ ...prev, title: values.title }));
+
         //TODO: 채팅방 정보 변경 이벤트 발생시키기
       } catch (error) {
         onFailOpen();
       }
     },
   });
-  const { isModalOpen: isSuccessOpen, onModalOpen: onSuccessOpen } = useModal(
-    {}
-  );
-
-  const { isModalOpen: isFailOpen, onModalOpen: onFailOpen } = useModal({});
 
   return (
     <ModalWrapper>
