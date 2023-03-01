@@ -66,6 +66,7 @@ export class UserController {
     this.logger.log(`Called ${this.getAllOnlineUsers.name}`);
     const response = new OnlineUsersResponseDto();
     response.onlineUsers = await this.userService.getAllOnlineUsers();
+    console.log(response.onlineUsers);
     return response;
   }
 
