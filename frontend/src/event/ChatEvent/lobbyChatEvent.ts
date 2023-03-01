@@ -12,16 +12,12 @@ const lobbyChatEvent = () => {
 
   useEffect(() => {
     socket.socket.on("addChatRoom", async (addRoom: ILobbyChatRoom) => {
-      console.log("addChatRoom");
       await setChatRoomList((prev) => [...prev, addRoom]);
-      console.log(chatRoomList);
     });
     socket.socket.on("deleteChatRoom", async (roomId: number) => {
-      console.log("deleteChatRoom");
       await setChatRoomList(
         chatRoomList.filter((room) => room.roomId != roomId)
       );
-      console.log(chatRoomList);
     });
     socket.socket.on("updateChatRoom", async (updateRoom: ILobbyChatRoom) => {
       const newList = new Array<ILobbyChatRoom>();
@@ -30,7 +26,6 @@ const lobbyChatEvent = () => {
         if (room.roomId != updateRoom.roomId) newList.push(room);
         else newList.push(updateRoom);
       }
-      console.log(newList);
       await setChatRoomList(newList);
     });
     return () => {

@@ -40,11 +40,9 @@ const useLobbyData = () => {
   }, [myInfo]);
   //온라인 유저 소켓 이벤트
   const addOnlineUser = (user: IUser) => {
-    console.log("add");
     setOnlineUsers((prev) => [...prev, user]);
   };
   const deleteOnlineUser = (userId: number) => {
-    console.log("delete");
     setOnlineUsers((prev) => {
       let users = new Array<IUser>();
       prev.forEach((user) => {
