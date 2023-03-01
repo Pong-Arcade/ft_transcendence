@@ -46,7 +46,6 @@ const ChatRoom = () => {
   const socket = useContext(SocketContext);
 
   useEffect(() => {
-    socket.socket.off("updateChatRoom");
     socket.socket.on("updateChatRoom", (title) =>
       setChatRoom({
         roomId: chatRoom.roomId,
@@ -55,6 +54,9 @@ const ChatRoom = () => {
         title: title,
       })
     );
+    return () => {
+      socket.socket.off("updateChatRoom");
+    };
   }, []);
 
   return (

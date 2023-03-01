@@ -93,13 +93,15 @@ const Lobby = () => {
       });
       endLoading();
     })();
-    // socket.socket.off("inviteChatRoom");
 
     socket.socket.on("inviteChatRoom", (roomId: number, userName: string) => {
       setInviteRoomId(roomId);
       setInviteUserName(userName);
       onChatInviteModalOpen();
     });
+    return () => {
+      socket.socket.off("inviteChatRoom");
+    };
   }, []);
 
   const onNextPage = () => {

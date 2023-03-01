@@ -99,6 +99,7 @@ const GeneralMenu = ({
     isModalOpen: isConfirmOpen,
     onModalOpen: onConfirmOpen,
     onModalClose: onConfirmClose,
+    onSubmit: onConfirmSubmit,
   } = useModal({
     afterOpen: () => {
       onClose();
@@ -156,7 +157,8 @@ const GeneralMenu = ({
         onConfirmOpen();
         break;
       case EChatRoom.BAN:
-        banChatRoomAPI(Number(params.chatId), userId);
+        // onConfirmSubmit();
+        // banChatRoomAPI(Number(params.chatId), userId);
         onConfirmOpen();
         break;
       case EChatRoom.MUTE:
