@@ -28,9 +28,13 @@ export class UserService {
   /**
    * 모든 유저 정보를 가져옵니다.
    */
-  async getAllUsers(): Promise<UserDto[]> {
-    this.logger.log(`Called ${this.getAllUsers.name}`);
-    return await this.userRepository.getAllUser();
+  async getAllOnlineUsers(): Promise<UserDto[]> {
+    this.logger.log(`Called ${this.getAllOnlineUsers.name}`);
+    const results: UserDto[] = [];
+    for (const [userId, _] of users) {
+      results.push(await this.getUserInfo(userId));
+    }
+    return results;
   }
 
   /**
