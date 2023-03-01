@@ -27,49 +27,31 @@ const useLobbyData = () => {
   const [gameRoomList, setGameRoomList] = useRecoilState(gameRoomListState);
   const [myInfo, setMyInfo] = useRecoilState(infoState);
   const socket = useContext(SocketContext);
+
+  //유저 정보 변경시 소켓 이벤트
+  useEffect(() => {
+    socket.setUser(myInfo.userId, myInfo.nickname);
+    socket.socket.emit("addUser", {
+      userId: socket.userId,
+      userName: socket.userName,
+    });
+  }, [myInfo]);
+  //온라인 유저 소켓 이벤트
   const addOnlineUser = (user: IUser) => {
-    console.log("add");
     setOnlineUsers((prev) => [...prev, user]);
   };
   const deleteOnlineUser = (userId: number) => {
-    console.log("delete");
     setOnlineUsers((prev) => prev.filter((user) => user.userId != userId));
   };
   useEffect(() => {
     socket.socket.on("addOnlineUser", (user) => addOnlineUser(user));
     socket.socket.on("deleteOnlineUser", (userId) => deleteOnlineUser(userId));
+    return () => {
+      socket.socket.off("addOnlineUser");
+      socket.socket.off("deleteOnlineUser");
+    };
   }, [onlineUsers]);
-  useEffect(() => {
-    // socket.socket.on("inviteChatRoom", (roomid, fromid) => {
-    //   console.log("inviteChatRoom", roomid, fromid);
-    // });
-  }, []);
-  useEffect(() => {
-    socket.socket.off("addChatRoom");
-    socket.socket.off("deleteChatRoom");
-    socket.socket.off("updateChatRoom");
-    socket.socket.off("addOnlineUser");
-    socket.socket.off("deleteOnlineUser");
 
-    socket.socket.on("addChatRoom", async (addRoom: ILobbyChatRoom) => {
-      await setChatRoomList((prev) => [...prev, addRoom]);
-    });
-    socket.socket.on("deleteChatRoom", async (roomId: number) => {
-      await setChatRoomList(
-        chatRoomList.filter((room) => room.roomId != roomId)
-      );
-    });
-    socket.socket.on("updateChatRoom", async (updateRoom: ILobbyChatRoom) => {
-      const newList = new Array<ILobbyChatRoom>();
-      for (const room of chatRoomList) {
-        console.log(room.roomId, updateRoom.roomId);
-        if (room.roomId != updateRoom.roomId) newList.push(room);
-        else newList.push(updateRoom);
-      }
-      console.log(newList);
-      await setChatRoomList(newList);
-    });
-  }, [chatRoomList]);
   const setLobbyData = async () => {
     const info = JSON.parse(getDecodedCookie());
 

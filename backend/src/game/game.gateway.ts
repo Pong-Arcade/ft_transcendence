@@ -124,7 +124,7 @@ export class GameGateway implements OnGatewayDisconnect {
     const roomId = gameRooms.size + 1;
     const redUser: GameUserStatusDto = {
       ...(await this.userService.getUserInfo(user.userId)),
-      status: GameRoomUserStatus.UN_READY,
+      gameUserStatus: GameRoomUserStatus.UN_READY,
     };
     const gameRoom = new GameRoom(
       roomId,
@@ -164,7 +164,7 @@ export class GameGateway implements OnGatewayDisconnect {
       room.blueUser = {
         userId: user.userId,
         nickname: user.nickname,
-        status: GameRoomUserStatus.UN_READY,
+        gameUserStatus: GameRoomUserStatus.UN_READY,
       };
       this.chatGateway.server
         .in('lobby')
@@ -258,7 +258,7 @@ export class GameGateway implements OnGatewayDisconnect {
     const roomId = gameRooms.size + 1;
     const redUser: GameUserStatusDto = {
       ...(await this.userService.getUserInfo(inviterId)),
-      status: GameRoomUserStatus.UN_READY,
+      gameUserStatus: GameRoomUserStatus.UN_READY,
     };
     const gameRoom = new GameRoom(
       roomId,
@@ -271,11 +271,11 @@ export class GameGateway implements OnGatewayDisconnect {
     );
 
     // 초대한 유저가 채팅방에 입장한 상태라면, 채팅방을 나간다.
-    this.chatGateway.server
-      .in(inviterSocketInfo.socketId)
-      .socketsLeave(
-        `chatroom${this.chatroomService.getMyChatroomInfo(inviterId)?.id}`,
-      );
+    this.eventEmitter.emit(
+      'chatroom:leave',
+      this.chatroomService.getMyChatroomInfo(inviterId)?.id,
+      inviterId,
+    );
 
     // 초대보낸 유저가 게임방에 입장한다.
     this.server
@@ -284,18 +284,16 @@ export class GameGateway implements OnGatewayDisconnect {
 
     // 블루 유저를 게임방에 넣어줍니다.
     gameRoom.blueUser = {
-      ...(await this.userService.getUserInfo(inviterId)),
-      status: GameRoomUserStatus.UN_READY,
+      ...(await this.userService.getUserInfo(inviteeSocketInfo.userId)),
+      gameUserStatus: GameRoomUserStatus.UN_READY,
     };
 
     // 초대받은 유저가 채팅방에 입장한 상태라면, 채팅방을 나간다.
-    this.chatGateway.server
-      .in(inviteeSocketInfo.socketId)
-      .socketsLeave(
-        `chatroom${
-          this.chatroomService.getMyChatroomInfo(inviteeSocketInfo.userId)?.id
-        }`,
-      );
+    this.eventEmitter.emit(
+      'chatroom:leave',
+      this.chatroomService.getMyChatroomInfo(inviteeSocketInfo.userId)?.id,
+      inviteeSocketInfo.userId,
+    );
 
     // 초대받은 유저가 게임방에 입장한다.
     this.server
@@ -387,20 +385,20 @@ export class GameGateway implements OnGatewayDisconnect {
     this.logger.log(`Called ${this.readyGame.name}`);
     const room = gameRooms.get(roomId);
     if (room.redUser?.userId === userId) {
-      room.redUser.status = GameRoomUserStatus.READY;
+      room.redUser.gameUserStatus = GameRoomUserStatus.READY;
       this.server
         .in(`gameroom-${roomId}`)
         .emit('readyRedUser', room.redUser.userId);
     }
     if (room.blueUser?.userId === userId) {
-      room.blueUser.status = GameRoomUserStatus.READY;
+      room.blueUser.gameUserStatus = GameRoomUserStatus.READY;
       this.server
         .in(`gameroom-${roomId}`)
         .emit('readyBlueUser', room.blueUser.userId);
     }
     if (
-      room.redUser?.status === GameRoomUserStatus.READY &&
-      room.blueUser?.status === GameRoomUserStatus.READY
+      room.redUser?.gameUserStatus === GameRoomUserStatus.READY &&
+      room.blueUser?.gameUserStatus === GameRoomUserStatus.READY
     ) {
       room.status = GameRoomStatus.ON_GAME;
       // 1초 간격으로 총 3번 이벤트를 발생시킵니다.
@@ -422,13 +420,13 @@ export class GameGateway implements OnGatewayDisconnect {
     this.logger.log(`Called ${this.unreadyGame.name}`);
     const room = gameRooms.get(roomId);
     if (room.redUser?.userId === userId) {
-      room.redUser.status = GameRoomUserStatus.UN_READY;
+      room.redUser.gameUserStatus = GameRoomUserStatus.UN_READY;
       this.server
         .in(`gameroom-${roomId}`)
         .emit('unReadyRedUser', room.redUser.userId);
     }
     if (room.blueUser?.userId === userId) {
-      room.blueUser.status = GameRoomUserStatus.UN_READY;
+      room.blueUser.gameUserStatus = GameRoomUserStatus.UN_READY;
       this.server
         .in(`gameroom-${roomId}`)
         .emit('unReadyBlueUser', room.blueUser.userId);
@@ -457,7 +455,7 @@ export class GameGateway implements OnGatewayDisconnect {
     const roomId = gameRooms.size + 1;
     const redUser: GameUserStatusDto = {
       ...(await this.userService.getUserInfo(redUserId)),
-      status: GameRoomUserStatus.UN_READY,
+      gameUserStatus: GameRoomUserStatus.UN_READY,
     };
     const gameRoom = new GameRoom(
       roomId,
@@ -478,7 +476,7 @@ export class GameGateway implements OnGatewayDisconnect {
     // 블루 유저를 게임방에 넣어줍니다.
     gameRoom.blueUser = {
       ...(await this.userService.getUserInfo(blueUserId)),
-      status: GameRoomUserStatus.UN_READY,
+      gameUserStatus: GameRoomUserStatus.UN_READY,
     };
     this.chatGateway.server
       .in(blueUserSocketInfo.socketId)

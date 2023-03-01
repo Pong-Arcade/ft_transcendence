@@ -19,7 +19,7 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from './jwt/jwt.auth.guard';
 import { JwtService } from '@nestjs/jwt';
 import { EmailSender } from 'src/utils/email..sender.component';
-
+//
 @ApiTags('Auth')
 @ApiBearerAuth()
 @Controller('/api/auth')

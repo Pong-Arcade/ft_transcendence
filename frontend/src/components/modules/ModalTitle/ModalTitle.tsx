@@ -7,14 +7,21 @@ interface Props {
   height?: string;
   fontSize?: string;
   closeFontSize?: string;
-  onClose: () => void;
+  onClose?: () => void;
+  exceptCloseButton?: boolean;
 }
 
-const ModalTitle = ({ children, onClose, closeFontSize, ...rest }: Props) => {
+const ModalTitle = ({
+  children,
+  onClose,
+  closeFontSize,
+  exceptCloseButton,
+  ...rest
+}: Props) => {
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        onClose();
+        onClose?.();
       }
     };
 
@@ -26,7 +33,9 @@ const ModalTitle = ({ children, onClose, closeFontSize, ...rest }: Props) => {
   return (
     <Title {...rest}>
       {children}
-      <ModalCloseButton fontSize={closeFontSize} onClose={onClose} />
+      {!exceptCloseButton && (
+        <ModalCloseButton fontSize={closeFontSize} onClose={onClose} />
+      )}
     </Title>
   );
 };

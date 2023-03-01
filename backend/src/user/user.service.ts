@@ -28,9 +28,16 @@ export class UserService {
   /**
    * 모든 유저 정보를 가져옵니다.
    */
-  async getAllUsers(): Promise<UserDto[]> {
-    this.logger.log(`Called ${this.getAllUsers.name}`);
-    return await this.userRepository.getAllUser();
+  async getAllOnlineUsers(): Promise<UserDto[]> {
+    this.logger.log(`Called ${this.getAllOnlineUsers.name}`);
+    const results: UserDto[] = [];
+    for (const [userId, userSocketInfo] of users) {
+      const userInfo = await this.getUserInfo(userId);
+      if (userInfo) {
+        results.push(userInfo);
+      }
+    }
+    return results;
   }
 
   /**
@@ -41,6 +48,9 @@ export class UserService {
    */
   async getUserInfo(userId: number): Promise<UserDto> {
     this.logger.log(`Called ${this.getUserInfo.name}`);
+    if (userId === -1) {
+      return null;
+    }
     // 캐싱된 유저 정보가 있는지 확인합니다.
     let userInfo = await this.cacheManager.get<UserDto>(`user-${userId}`);
     if (!userInfo) {

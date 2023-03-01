@@ -1,5 +1,4 @@
-import { MouseEvent, useEffect, useState } from "react";
-import { useRecoilValue } from "recoil";
+import { useEffect, useState } from "react";
 import { getOnlineUsersAPI } from "../../../api/users";
 import useModal from "../../../hooks/useModal";
 import Button from "../../atoms/Button";
@@ -9,7 +8,7 @@ import ChatRoomInvitePagination from "../ChatRoomInvitePagination";
 import ChatRoomInviteUserItem from "../ChatRoomInviteUserItem";
 import InviteConfirmModal from "../InviteConfirmModal";
 import ModalTitle from "../ModalTitle";
-import { IItem, IUser } from "../Pagination/Pagination";
+import { IUser } from "../Pagination/Pagination";
 
 interface Props {
   list: IUser[] | Promise<IUser[]>;

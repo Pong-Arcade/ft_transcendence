@@ -69,14 +69,14 @@ const ChatList = ({ ...rest }: Props) => {
       }
       setList((prevList) => [...prevList, newMsg]);
     };
-    if (socket) {
-      socket.socket.off("message");
-      socket.socket.off("whisper");
-      socket.socket.off("systemMsg");
-      socket.socket.on("message", newMessage);
-      socket.socket.on("whisper", newMessage);
-      socket.socket.on("systemMsg", newMessage);
-    }
+    socket.socket.on("message", newMessage);
+    socket.socket.on("whisper", newMessage);
+    socket.socket.on("systemMsg", newMessage);
+    return () => {
+      socket.socket.off("message", newMessage);
+      socket.socket.off("whisper", newMessage);
+      socket.socket.off("systemMsg", newMessage);
+    };
   }, [blockUsers]);
   const scrollRef = useRef<HTMLDivElement>(null);
   useEffect(() => {

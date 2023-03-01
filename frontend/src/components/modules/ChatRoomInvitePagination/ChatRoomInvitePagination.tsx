@@ -1,8 +1,5 @@
-import { on } from "events";
-import { MouseEvent, useEffect, useState } from "react";
-import { getOnlineUsersAPI } from "../../../api/users";
 import Pagination from "../Pagination";
-import { IItem, IPaginationItem, IUser } from "../Pagination/Pagination";
+import { IItem, IPaginationItem } from "../Pagination/Pagination";
 
 interface Props {
   list: IItem[];

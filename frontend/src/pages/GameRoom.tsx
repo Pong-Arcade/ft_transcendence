@@ -119,7 +119,7 @@ const GameRoom = () => {
             <UserProfile
               id={redUser.userId?.toString()}
               onClick={onOpenMenu}
-              isReady={redUser.status === EGameUserStatus.READY}
+              isReady={redUser.gameUserStatus === EGameUserStatus.READY}
             >
               <Avatar width="8rem" height="8rem" src={redUser.avatarUrl} />
               <Typography fontSize="2rem">{redUser.nickname}</Typography>
@@ -129,7 +129,7 @@ const GameRoom = () => {
               id={blueUser?.userId?.toString()}
               onClick={onOpenMenu}
               disabled={!blueUser?.userId}
-              isReady={blueUser?.status === EGameUserStatus.READY}
+              isReady={blueUser?.gameUserStatus === EGameUserStatus.READY}
             >
               <Avatar width="8rem" height="8rem" src={blueUser?.avatarUrl} />
               <Typography fontSize="2rem">{blueUser?.nickname}</Typography>
