@@ -7,12 +7,9 @@ import { GameRoomUsersInfoResponseDto } from 'src/dto/response/gameroom.users.in
 import { MatchType } from 'src/enum/match.type.enum';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 
-export const normalQuickMatchQueue = new Array<number>();
-export const ladderQuickMatchQueue = new Array<number>();
-
 const quickMatchQueues = {
-  [MatchType.NORMAL]: normalQuickMatchQueue,
-  [MatchType.LADDER]: ladderQuickMatchQueue,
+  [MatchType.NORMAL]: new Array<number>(),
+  [MatchType.LADDER]: new Array<number>(),
 };
 
 @Injectable()
@@ -218,7 +215,7 @@ export class GameRoomService {
    */
   isInLadderQuickMatchQueue(userId: number): boolean {
     this.logger.log(`Called ${this.isInLadderQuickMatchQueue.name}`);
-    return ladderQuickMatchQueue.includes(userId);
+    return quickMatchQueues[MatchType.LADDER].includes(userId);
   }
 
   /**
@@ -230,7 +227,7 @@ export class GameRoomService {
    */
   isInNormalQuickMatchQueue(userId: number): boolean {
     this.logger.log(`Called ${this.isInNormalQuickMatchQueue.name}`);
-    return normalQuickMatchQueue.includes(userId);
+    return quickMatchQueues[MatchType.NORMAL].includes(userId);
   }
 
   /**
@@ -261,6 +258,7 @@ export class GameRoomService {
       quickMatchQueues[matchType] = quickMatchQueues[matchType].filter(
         (id) => id !== userId,
       );
+      this.logger.debug(`Removed ${userId} from quick match queue`);
     }, 1000 * 60);
   }
 
