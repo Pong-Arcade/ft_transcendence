@@ -15,10 +15,6 @@ export class AuthRepository implements IAuthRepository {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    @InjectRepository(NormalStat)
-    private readonly normalStatRepository: Repository<NormalStat>,
-    @InjectRepository(LadderStat)
-    private readonly ladderStatRepository: Repository<LadderStat>,
     @InjectRepository(TwoFactorAuth)
     private readonly twoFactorAuthRepository: Repository<TwoFactorAuth>,
   ) {}
@@ -26,7 +22,6 @@ export class AuthRepository implements IAuthRepository {
   /**
    * 유저가 존재하지 않으면 유저를 추가한다.
    * NormalStat과 LadderStat도 함께 생성한다.
-   * FIXME: 트랜잭션 처리가 필요합니다.
    * @param user
    */
   async addUserIfNotExists(user: UserDto): Promise<[UserAuthDto, boolean]> {
@@ -65,32 +60,38 @@ export class AuthRepository implements IAuthRepository {
     }
 
     const firstLogin = new Date();
-    await this.userRepository.insert({
-      userId: user.userId,
-      nickname: user.nickname,
-      avatarUrl: user.avatarUrl,
-      email: user.email,
-      firstLogin,
-    });
+    // Start transaction
+    this.userRepository.manager.transaction(
+      async (transactionalEntityManager) => {
+        await transactionalEntityManager.insert(User, {
+          userId: user.userId,
+          nickname: user.nickname,
+          avatarUrl: user.avatarUrl,
+          email: user.email,
+          firstLogin,
+        });
 
-    await this.twoFactorAuthRepository.insert({
-      userId: user.userId,
-      is2FA: false,
-      access: null,
-    });
+        await transactionalEntityManager.insert(TwoFactorAuth, {
+          userId: user.userId,
+          is2FA: false,
+          access: null,
+        });
 
-    await this.normalStatRepository.insert({
-      userId: user.userId,
-      winCount: 0,
-      loseCount: 0,
-    });
+        await transactionalEntityManager.insert(NormalStat, {
+          userId: user.userId,
+          winCount: 0,
+          loseCount: 0,
+        });
 
-    await this.ladderStatRepository.insert({
-      userId: user.userId,
-      ladderScore: 1000,
-      winCount: 0,
-      loseCount: 0,
-    });
+        await transactionalEntityManager.insert(LadderStat, {
+          userId: user.userId,
+          ladderScore: 1000,
+          winCount: 0,
+          loseCount: 0,
+        });
+      },
+    );
+
     return [
       {
         userId: user.userId,
@@ -124,12 +125,10 @@ export class AuthRepository implements IAuthRepository {
     }
     await this.twoFactorAuthRepository.update(userId, {
       is2FA: true,
-      // FIXME: bcrypt로 암호화한 값으로 저장해야 함.
       access: uuid(),
     });
   }
 
-  // FIXME: bcrypt로 암호화한 값과 비교해야 함.
   async verify2FA(access: string): Promise<UserDto> {
     this.logger.debug(`Called ${this.verify2FA.name}`);
     const find = await this.userRepository.findOne({
@@ -152,7 +151,6 @@ export class AuthRepository implements IAuthRepository {
     if (!find) {
       return null;
     }
-
     if (find.twoFactorAuth.access === access) {
       return {
         userId: find.userId,
