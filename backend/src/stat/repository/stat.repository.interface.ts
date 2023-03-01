@@ -34,4 +34,28 @@ export interface IStatRepository {
    * @param matchHistory
    */
   createMatchHistory(matchHistory: MatchHistoryDto): Promise<void>;
+
+  /**
+   * 일반게임의 승자의 winCount를 올립니다.
+   * @param userId
+   */
+  updateWinNormalStat(userId: number): Promise<void>;
+
+  /**
+   * 일반게임의 패자의 loseCount를 올립니다.
+   * @param userId
+   */
+  updateLoseNormalStat(userId: number): Promise<void>;
+
+  /**
+   * 레더게임의 승자의 windCount를 올리고 ladder스코어를 반영합니다.
+   * @param userId
+   */
+  updateWinLadderStat(userId: number, score: number): Promise<void>;
+
+  /**
+   * 레더게임의 패자의 loseCount를 올리고 ladder스코어를 반영합니다.
+   * @param userId
+   */
+  updateLoseLadderStat(userId: number, score: number): Promise<void>;
 }
