@@ -1,10 +1,17 @@
-import { CACHE_MANAGER, Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  CACHE_MANAGER,
+  forwardRef,
+  Inject,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { UserDto } from 'src/dto/user.dto';
 import { IUserRepository } from './repository/user.repository.interface';
 import { Cache } from 'cache-manager';
-import { ChatGateway } from 'src/chat/chat.geteway';
-import { GameGateway } from 'src/game/game.gateway';
-import { OnlineUsersResponseDto } from 'src/dto/response/online.users.response.dto';
+import { UserDetailResponseDto } from '../dto/response/user.detail.response.dto';
+import { StatService } from '../stat/stat.service';
+import { users } from 'src/status/status.module';
+import { UserStatus } from 'src/enum/user.status.enum';
 
 @Injectable()
 export class UserService {
@@ -13,7 +20,9 @@ export class UserService {
   constructor(
     @Inject('IUserRepository')
     private readonly userRepository: IUserRepository,
-    @Inject(CACHE_MANAGER) private cacheManager: Cache, //private chatGateway: ChatGateway, //private gameGateway: GameGateway,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    @Inject(forwardRef(() => StatService))
+    private statService: StatService,
   ) {}
 
   /**
@@ -21,8 +30,6 @@ export class UserService {
    */
   async getAllUsers(): Promise<UserDto[]> {
     this.logger.log(`Called ${this.getAllUsers.name}`);
-    //console.log(this.chatGateway.server.sockets);
-    //console.log(this.gameGateway.server.sockets);
     return await this.userRepository.getAllUser();
   }
 
@@ -43,6 +50,38 @@ export class UserService {
     return userInfo;
   }
 
+  async getUserDetail(userId: number): Promise<UserDetailResponseDto> {
+    this.logger.log(`Called ${this.getUserDetail.name}`);
+    const userDto: UserDto = await this.getUserInfo(userId);
+    const [ladderInfo, normalInfo] = await this.statService.getUserGameStat(
+      userId,
+    );
+
+    const userSocketInfo = users.get(userId);
+    let userStatus = UserStatus.OFFLINE;
+    if (!userSocketInfo)
+      return { ...userDto, status: userStatus } as UserDetailResponseDto;
+    if (userSocketInfo.location === 0) {
+      userStatus = UserStatus.LOBBY;
+    } else if (userSocketInfo.location < 0) {
+      userStatus = UserStatus.GAME;
+    } else if (userSocketInfo.location > 0) {
+      userStatus = UserStatus.CHAT;
+    }
+
+    return {
+      ...userDto,
+      status: userStatus,
+      ladderInfo,
+      normalInfo,
+    } as UserDetailResponseDto;
+  }
+
+  /**
+   * @param userId
+   * @param newNickname
+   * @param newAvatarUrl
+   */
   async updateUserInfo(
     userId: number,
     newNickname?: string,

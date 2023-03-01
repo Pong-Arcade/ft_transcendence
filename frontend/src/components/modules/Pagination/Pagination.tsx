@@ -10,6 +10,12 @@ export enum userMode {
   NORMAL = "NORMAL",
 }
 
+export enum userStatus {
+  ONLINE = "ONLINE",
+  OFFLINE = "OFFLINE",
+  GAME = "GAME",
+}
+
 export enum EGameUserStatus {
   READY = "READY",
   UN_READY = "UN_READY",
@@ -21,6 +27,7 @@ export interface IUser {
   email?: string;
   mode?: userMode;
   firstLogin?: string;
+  location?: number;
   status?: EGameUserStatus;
 }
 
@@ -51,17 +58,19 @@ export interface ILobbyGameRoom {
   roomId: number;
   redUser: IUser;
   blueUser: IUser;
+  mode: GameMode;
   maxSpectatorCount: number;
   curSpectatorCount: number;
   roomStatus: EGameRoomStatus;
   title: string;
-  mode: GameMode;
 }
 
 export interface IChatRoom {
   roomId: number;
   mastUserId: number;
   users: IUser[];
+  title?: string;
+  maxUserCount?: string;
 }
 
 export interface IGameRoom {

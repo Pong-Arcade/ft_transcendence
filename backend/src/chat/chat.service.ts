@@ -26,11 +26,11 @@ export class ChatroomService {
     const chatroomUsersInfo = new ChatroomUsersInfoResponseDto();
     chatroomUsersInfo.mastUserId = chatroomInfo.masterUser;
     chatroomUsersInfo.adminUsers = new Array<number>();
+    chatroomUsersInfo.title = chatroomInfo.title;
     for (const admin of chatroomInfo.adminUsers) {
       chatroomUsersInfo.adminUsers.push(admin);
     }
     chatroomUsersInfo.users = new Array<UserChatDto>();
-    console.log('chatroomInfo:', chatroomUsersInfo);
     for (const userId of chatroomInfo.users) {
       const userInfo = await this.userService.getUserInfo(userId);
       chatroomUsersInfo.users.push({
@@ -58,6 +58,8 @@ export class ChatroomService {
     chatroomUsersInfo.roomId = chatroomInfo.id;
     chatroomUsersInfo.mastUserId = chatroomInfo.masterUser;
     chatroomUsersInfo.users = new Array<UserChatDto>();
+    chatroomUsersInfo.title = chatroomInfo.title;
+    chatroomUsersInfo.maxUserCount = chatroomInfo.maxUser;
     for (const userId of chatroomInfo.users) {
       const userInfo = await this.userService.getUserInfo(userId);
       chatroomUsersInfo.users.push({

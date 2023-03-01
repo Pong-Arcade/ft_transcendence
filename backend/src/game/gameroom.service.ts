@@ -1,11 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { GameRoomListResponseDto } from 'src/dto/response/gameroom.list.response.dto';
-import {
-  gameRooms,
-  invitations,
-  ladderQuickMatchQueue,
-  normalQuickMatchQueue,
-} from './game.gateway';
+import { gameRooms, invitations } from './game.gateway';
 import { UserService } from 'src/user/user.service';
 import { GameRoom } from './gameroom.entity';
 import { GameRoomUsersInfoResponseDto } from 'src/dto/response/gameroom.users.info.response.dto';
@@ -13,8 +8,8 @@ import { MatchType } from 'src/enum/match.type.enum';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 
 const quickMatchQueues = {
-  [MatchType.NORMAL]: normalQuickMatchQueue,
-  [MatchType.LADDER]: ladderQuickMatchQueue,
+  [MatchType.NORMAL]: new Array<number>(),
+  [MatchType.LADDER]: new Array<number>(),
 };
 
 @Injectable()
@@ -220,7 +215,7 @@ export class GameRoomService {
    */
   isInLadderQuickMatchQueue(userId: number): boolean {
     this.logger.log(`Called ${this.isInLadderQuickMatchQueue.name}`);
-    return ladderQuickMatchQueue.includes(userId);
+    return quickMatchQueues[MatchType.LADDER].includes(userId);
   }
 
   /**
@@ -232,7 +227,7 @@ export class GameRoomService {
    */
   isInNormalQuickMatchQueue(userId: number): boolean {
     this.logger.log(`Called ${this.isInNormalQuickMatchQueue.name}`);
-    return normalQuickMatchQueue.includes(userId);
+    return quickMatchQueues[MatchType.NORMAL].includes(userId);
   }
 
   /**
@@ -263,6 +258,7 @@ export class GameRoomService {
       quickMatchQueues[matchType] = quickMatchQueues[matchType].filter(
         (id) => id !== userId,
       );
+      this.logger.debug(`Removed ${userId} from quick match queue`);
     }, 1000 * 60);
   }
 
@@ -274,9 +270,12 @@ export class GameRoomService {
   leaveQuickMatchQueue(userId: number) {
     this.logger.log(`Called ${this.leaveQuickMatchQueue.name}`);
     // matchType에 해당하는 매칭 대기열에서 userId를 제거
-    const gameroom = gameRooms.get(userId);
-    quickMatchQueues[gameroom.type] = quickMatchQueues[gameroom.type].filter(
-      (id) => id !== userId,
-    );
+    for (const queue of Object.values(quickMatchQueues)) {
+      const index = queue.indexOf(userId);
+      if (index !== -1) {
+        queue.splice(index, 1);
+        break;
+      }
+    }
   }
 }

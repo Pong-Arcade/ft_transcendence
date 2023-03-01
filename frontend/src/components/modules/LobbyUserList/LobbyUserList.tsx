@@ -1,6 +1,9 @@
 import { useState } from "react";
+import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
+import { getFriendUsersAPI } from "../../../api/users";
 import useMenu from "../../../hooks/useMenu";
+import friendUsersState from "../../../state/FriendUsersState";
 import Board from "../../atoms/Board";
 import GeneralMenu from "../GeneralMenu";
 import LobbyUserItem from "../LobbyUserItem";
@@ -26,25 +29,6 @@ interface Props {
   friendUsers: IUser[];
   blockUsers: IUser[];
 }
-// const addOnlineUser = (user: IUser) => {
-//   console.log("add");
-//   setOnlineUsers((prev) => [...prev, user]);
-// };
-// const deleteOnlineUser = (userId: string) => {
-//   console.log("delete");
-//   setOnlineUsers((prev) => {
-//     let users = new Array<IUser>();
-//     prev.forEach((user) => {
-//       if (user.userId != userId) users.push(user);
-//     });
-//     return users;
-//   });
-// };
-// useEffect(() => {
-//   console.log(socket);
-//   socket.socket.on("addOnlineUser", (user) => addOnlineUser(user));
-//   socket.socket.on("deleteOnlineUser", (userId) => deleteOnlineUser(userId));
-// }, []);
 const LobbyUserList = ({ onlineUsers, friendUsers, blockUsers }: Props) => {
   const {
     isOpenMenu,
@@ -57,8 +41,15 @@ const LobbyUserList = ({ onlineUsers, friendUsers, blockUsers }: Props) => {
   } = useMenu();
 
   const [currentButton, setCurrentButton] = useState(EUSER_BUTTON.ONLINE_USERS);
+  const setFriendUsers = useSetRecoilState(friendUsersState);
   const [page, setPage] = useState(0);
+  const onGetFriendUsers = async () => {
+    setFriendUsers(await getFriendUsersAPI());
+  };
   const onChoiceButtonClick = (button: EUSER_BUTTON) => {
+    if (button == "친구목록") {
+      onGetFriendUsers();
+    }
     setCurrentButton(button);
     setPage(0);
   };

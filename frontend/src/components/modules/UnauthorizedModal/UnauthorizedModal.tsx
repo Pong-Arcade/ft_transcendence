@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import errorState from "../../../state/ErrorState";
+import { removeJWT } from "../../../utils/token";
 import Board from "../../atoms/Board";
 import Button from "../../atoms/Button";
 import Modal from "../../atoms/Modal";
@@ -37,6 +38,7 @@ const UnauthorizedModal = () => {
 
   const onClose = () => {
     navigate("/");
+    removeJWT();
     setError(false);
   };
 

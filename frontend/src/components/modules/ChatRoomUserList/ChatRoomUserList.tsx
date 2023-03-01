@@ -15,6 +15,8 @@ import { IUser } from "../Pagination/Pagination";
 import { SocketContext } from "../../../utils/ChatSocket";
 import { useLocation, useNavigate } from "react-router-dom";
 import { userMode } from "../Pagination/Pagination";
+import { useRecoilValue } from "recoil";
+import infoState from "../../../state/InfoState";
 
 const ChatRoomUserListStyled = styled(Board).attrs({
   width: "100%",
@@ -50,27 +52,25 @@ const ChatRoomUserList = () => {
   const [userList, setUserList] = useState<IUser[]>();
   const location = useLocation();
   const navigate = useNavigate();
+  const myInfo = useRecoilValue(infoState);
+
   useEffect(() => {
     if (location.state && !userList) {
       const users: IUser[] = location.state.users;
       setUserList(users);
     }
-    socket.socket.off("joinChatRoom");
-    socket.socket.off("leaveChatRoom");
-    socket.socket.off("destructChatRoom");
-    socket.socket.off("banChatRoom");
-    socket.socket.off("addAdmin");
-    socket.socket.off("deleteAdmin");
+
     socket.socket.on("joinChatRoom", (user: IUser) => {
       setUserList((prev) => (prev ? [...prev, user] : new Array<IUser>(user)));
     });
     socket.socket.on("leaveChatRoom", (userId: number) => {
-      const newList = new Array<IUser>();
+      // const newList = new Array<IUser>();
       if (userList) {
-        for (const user of userList) {
-          if (user.userId !== userId) newList.push(user);
-        }
-        setUserList(newList);
+        setUserList(userList.filter((user) => user.userId !== userId));
+        // for (const user of userList) {
+        //   if (user.userId !== userId) newList.push(user);
+        // }
+        // setUserList(newList);
       }
     });
     socket.socket.on("destructChatRoom", () => {
@@ -96,6 +96,14 @@ const ChatRoomUserList = () => {
         )
       );
     });
+    return () => {
+      socket.socket.off("joinChatRoom");
+      socket.socket.off("leaveChatRoom");
+      socket.socket.off("destructChatRoom");
+      socket.socket.off("banChatRoom");
+      socket.socket.off("addAdmin");
+      socket.socket.off("deleteAdmin");
+    };
   }, [userList]);
 
   return (
@@ -111,15 +119,18 @@ const ChatRoomUserList = () => {
         />
         <Chat width="100%" height="55%" />
       </ChatRoomUserListStyled>
-      <ChatRoomMenu
-        list={userList ? userList : new Array<IUser>()}
-        top={positionY}
-        left={positionX}
-        isOpenMenu={isOpenMenu}
-        onClose={onCloseMenu}
-        userId={id}
-        name={name}
-      />
+      {myInfo.userId !== id && (
+        <ChatRoomMenu
+          list={userList ? userList : new Array<IUser>()}
+          top={positionY}
+          left={positionX}
+          isOpenMenu={isOpenMenu}
+          onClose={onCloseMenu}
+          userId={id}
+          name={name}
+        />
+      )}
+
       {isUserInfoOpen && (
         <UserInfoModal userId={id} onClose={onUserInfoClose} />
       )}

@@ -1,13 +1,15 @@
-import { MouseEvent } from "react";
+import { on } from "events";
+import { MouseEvent, useEffect, useState } from "react";
+import { getOnlineUsersAPI } from "../../../api/users";
 import Pagination from "../Pagination";
-import { IItem, IPaginationItem } from "../Pagination/Pagination";
+import { IItem, IPaginationItem, IUser } from "../Pagination/Pagination";
 
 interface Props {
   list: IItem[];
   subList?: string[];
   PaginationItem: (arg: IPaginationItem) => JSX.Element;
   page: number;
-  onItemClick?: (e: MouseEvent<HTMLButtonElement>) => void;
+  onItemClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   onNextPage?: () => void;
   onPrevPage?: () => void;
 }

@@ -1,7 +1,7 @@
 import axios from "axios";
 import { getCookie } from "../utils/cookie";
 
-const axiosClient = axios.create({
+export const axiosClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   withCredentials: true,
   headers: {
@@ -9,31 +9,39 @@ const axiosClient = axios.create({
   },
 });
 
-// axiosClient.interceptors.response.use(
-//   (response) => {
-//     return response;
-//   },
-//   (error) => {
-//     return Promise.reject(error);
-//   }
-// );
+axiosClient.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
-export function getRequest(URL: string) {
-  return axiosClient.get(`/api/${URL}`).then((response) => response);
+export async function getRequest(URL: string) {
+  return await axiosClient.get(`/api/${URL}`).then((response) => response);
 }
 
-export function postRequest(URL: string, payload?: object, options?: object) {
-  return axiosClient
+export async function postRequest(
+  URL: string,
+  payload?: object,
+  options?: object
+) {
+  return await axiosClient
     .post(`/api/${URL}`, payload, options)
     .then((response) => response);
 }
 
-export function patchRequest(URL: string, payload?: object, options?: object) {
-  return axiosClient
+export async function patchRequest(
+  URL: string,
+  payload?: object,
+  options?: object
+) {
+  return await axiosClient
     .patch(`/api/${URL}`, payload, options)
     .then((response) => response);
 }
 
-export function deleteRequest(URL: string) {
-  return axiosClient.delete(`/api/${URL}`).then((response) => response);
+export async function deleteRequest(URL: string) {
+  return await axiosClient.delete(`/api/${URL}`).then((response) => response);
 }

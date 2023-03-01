@@ -37,6 +37,7 @@ import { diskStorage } from 'multer';
 import { existsSync, mkdirSync } from 'fs';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.auth.guard';
 import { v4 as uuid } from 'uuid';
+import { UserDetailResponseDto } from '../dto/response/user.detail.response.dto';
 
 @ApiTags('Users')
 @ApiBearerAuth()
@@ -75,7 +76,7 @@ export class UserController {
   @ApiResponse({
     status: 200,
     description: '전체 유저 목록 정보(접속중인 유저)',
-    type: OnlineUsersResponseDto,
+    type: UserDetailResponseDto,
   })
   @ApiResponse({
     status: 400,
@@ -87,11 +88,10 @@ export class UserController {
   })
   @Get(':user_id')
   async getUserDetail(
-    @User() user: UserDto,
-    @Param('user_id', ParseIntPipe) userId,
-  ) {
+    @Param('user_id', ParseIntPipe) userId: number,
+  ): Promise<UserDetailResponseDto> {
     this.logger.log(`Called ${this.getUserDetail.name}`);
-    return await this.userService.getUserInfo(userId);
+    return await this.userService.getUserDetail(userId);
   }
 
   @ApiOperation({

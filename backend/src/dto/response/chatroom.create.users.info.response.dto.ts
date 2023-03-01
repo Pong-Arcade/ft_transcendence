@@ -15,10 +15,22 @@ export class ChatroomCreateUsersInfoResponseDto {
   roomId: number;
 
   @ApiProperty({
+    description: '생성된 채팅방의 제목',
+    example: '채팅방 제목',
+  })
+  title: string;
+
+  @ApiProperty({
     description: '방장의 유저 ID',
     example: 1,
   })
   mastUserId: number;
+
+  @ApiProperty({
+    description: '최대 참여 인원',
+    example: 4,
+  })
+  maxUserCount: number;
 
   @ApiProperty({
     description: '채팅방에 참여한 유저들의 정보',

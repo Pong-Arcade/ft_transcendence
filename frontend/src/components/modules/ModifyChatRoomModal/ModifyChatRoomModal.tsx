@@ -1,18 +1,24 @@
+import { useParams } from "react-router-dom";
+import { useRecoilState } from "recoil";
 import styled from "styled-components";
+import { updateChatRoomAPI } from "../../../api/room";
 import {
   EChatRoomFormValues,
   EChatRoomMode,
 } from "../../../hooks/useChatRoomForm";
+import useModal from "../../../hooks/useModal";
 import useModifyChatRoomForm from "../../../hooks/useModifyChatRoomForm";
+import chatRoomState from "../../../state/ChatRoomState";
 import Button from "../../atoms/Button";
 import Modal from "../../atoms/Modal";
 import ModalInputWrapper from "../../atoms/ModalInputWrapper";
 import ModalWrapper from "../../atoms/ModalWrapper";
-import ErrorModal from "../ErrorModal";
+import FailModal from "../FailModal";
 import LabledInput from "../LabledInput";
 import ModalInputListWrapper from "../ModalInputListWrapper";
 import ModalTitle from "../ModalTitle";
 import RoomTypeCheckBoxGroup from "../RoomTypeCheckBoxGroup";
+import SuccessModal from "../SuccessModal";
 
 interface Props {
   title?: string;
@@ -39,14 +45,31 @@ const SubmitButton = styled(Button).attrs({
   type: "submit",
 })``;
 
-// TODO: 초기값으로 세팅해놓기(비밀번호 제외)
-const CreateChatRoomModal = ({ title, onClose }: Props) => {
-  const { values, errors, onErrorModalClose, onChangeForm, onSubmitForm } =
-    useModifyChatRoomForm({
-      onSubmit: () => {
-        onClose();
-      },
-    });
+const ModifyChatRoomModal = ({ title, onClose }: Props) => {
+  const [chatRoom, setChatRoom] = useRecoilState(chatRoomState);
+  const params = useParams();
+  const { isModalOpen: isSuccessOpen, onModalOpen: onSuccessOpen } = useModal(
+    {}
+  );
+  const { isModalOpen: isFailOpen, onModalOpen: onFailOpen } = useModal({});
+  const { values, onChangeForm, onSubmitForm } = useModifyChatRoomForm({
+    onSubmit: () => {
+      try {
+        updateChatRoomAPI(
+          Number(params.chatId),
+          values.title,
+          values.mode,
+          values.password
+        );
+        onSuccessOpen();
+        setChatRoom((prev) => ({ ...prev, title: values.title }));
+
+        //TODO: 채팅방 정보 변경 이벤트 발생시키기
+      } catch (error) {
+        onFailOpen();
+      }
+    },
+  });
 
   return (
     <ModalWrapper>
@@ -71,7 +94,9 @@ const CreateChatRoomModal = ({ title, onClose }: Props) => {
                 onChange={onChangeForm}
                 type="text"
                 placeholder={
-                  values.mode === EChatRoomMode.PRIVATE ? "비밀방입니다." : ""
+                  values.mode === EChatRoomMode.PRIVATE
+                    ? "비밀방입니다."
+                    : (chatRoom.title as string)
                 }
               />
             </ModalInputWrapper>
@@ -89,26 +114,32 @@ const CreateChatRoomModal = ({ title, onClose }: Props) => {
               <LabledInput
                 title="최대인원"
                 name={EChatRoomFormValues.MAXUSER_COUNT}
-                value={values.maxUserCount}
+                placeholder={`${chatRoom.maxUserCount as string}명`}
                 onChange={onChangeForm}
                 type="number"
                 disabled
-                placeholder="2 ~ 10 숫자만 입력하세요"
               />
             </ModalInputWrapper>
           </ModalInputListWrapper>
           <SubmitButton>생성</SubmitButton>
         </CreateRoomForm>
       </Modal>
-      {errors && (
-        <ErrorModal
-          onClose={onErrorModalClose}
-          errors={errors}
-          title="변경 실패"
+      {isSuccessOpen && (
+        <SuccessModal
+          onClose={onClose}
+          title="채팅방 정보 변경"
+          content="채팅방 정보 변경에 성공하였습니다"
+        />
+      )}
+      {isFailOpen && (
+        <FailModal
+          onClose={onClose}
+          title="채팅방 정보 변경"
+          content="채팅방 정보 변경에 실패하였습니다"
         />
       )}
     </ModalWrapper>
   );
 };
 
-export default CreateChatRoomModal;
+export default ModifyChatRoomModal;
