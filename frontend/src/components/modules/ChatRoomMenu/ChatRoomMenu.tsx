@@ -13,11 +13,16 @@ import { useParams } from "react-router-dom";
 import {
   banChatRoomAPI,
   demoteAdminAPI,
+  inviteGameAPI,
   muteChatRoomAPI,
   promoteAdminAPI,
 } from "../../../api/room";
 import { IUser, userMode } from "../Pagination/Pagination";
 import { SocketContext } from "../../../utils/ChatSocket";
+import chatRoomGameEvent from "../../../event/GameEvent/chatRoomGameEvent";
+import InviteGameWaitingModal from "../InviteGameWaitingModal";
+import InviteRejectModal from "../InviteRejectModal";
+import InviteGameModal from "../InviteGameModal";
 
 interface Props {
   list: IUser[];
@@ -51,7 +56,7 @@ export enum EChatRoom {
   DEL_FRIEND = "친구삭제",
   ADD_BLOCK = "차단하기",
   DEL_BLOCK = "차단해제",
-  APPLY_GAME = "게임신청",
+  INVIATE_GAME = "게임신청",
   BAN = "강퇴하기", // 관리자만 보이기
   MUTE = "채팅금지", // 관리자만 보이기
   UNMUTE = "채팅금지해제", // 관리자만 보이기
@@ -129,6 +134,31 @@ const GeneralMenu = ({
       ? left - window.innerWidth * 0.1
       : left;
 
+  const {
+    isModalOpen: isInviteGameModalOpen,
+    onModalOpen: onInviteGameModalOpen,
+    onModalClose: onInviteGameModalClose,
+  } = useModal({});
+  const {
+    isModalOpen: isInviteWaitingModalOpen,
+    onModalOpen: onInviteWaitingModalOpen,
+    onModalClose: onInviteWaitingModalClose,
+  } = useModal({});
+  const {
+    isModalOpen: isInviteRejectModalOpen,
+    onModalOpen: onInviteRejectModalOpen,
+    onModalClose: onInviteRejectModalClose,
+  } = useModal({
+    afterClose: () => {
+      onInviteWaitingModalClose();
+    },
+  });
+
+  const { inviteUser } = chatRoomGameEvent({
+    onInviteGameModalOpen,
+    onInviteRejectModalOpen,
+  });
+
   const onClick = (e: MouseEvent<HTMLButtonElement>) => {
     const { innerText } = e.currentTarget;
 
@@ -152,8 +182,11 @@ const GeneralMenu = ({
         setCurrentOn(EChatCurrentOn.DEL_BLOCK);
         onConfirmOpen();
         break;
-      case EChatRoom.APPLY_GAME:
-        onConfirmOpen();
+      case EChatRoom.INVIATE_GAME:
+        (async () => {
+          await inviteGameAPI(userId);
+          onInviteWaitingModalOpen();
+        })();
         break;
       case EChatRoom.BAN:
         banChatRoomAPI(Number(params.chatId), userId);
@@ -199,7 +232,7 @@ const GeneralMenu = ({
             ) : (
               <MenuButton onClick={onClick}>{EChatRoom.ADD_BLOCK}</MenuButton>
             )}
-            <MenuButton onClick={onClick}>{EChatRoom.APPLY_GAME}</MenuButton>
+            <MenuButton onClick={onClick}>{EChatRoom.INVIATE_GAME}</MenuButton>
             {myInfo &&
             myInfo.mode &&
             (myInfo.mode == userMode.ADMIN ||
@@ -238,6 +271,16 @@ const GeneralMenu = ({
           userId={userId}
           name={name}
         />
+      )}
+      {isInviteWaitingModalOpen && <InviteGameWaitingModal />}
+      {isInviteGameModalOpen && (
+        <InviteGameModal
+          inviteUser={inviteUser}
+          onClose={onInviteGameModalClose}
+        />
+      )}
+      {isInviteRejectModalOpen && (
+        <InviteRejectModal onClose={onInviteRejectModalClose} />
       )}
     </>
   );

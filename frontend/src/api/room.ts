@@ -93,3 +93,18 @@ export const unReadyGameRoomAPI = async (roomId: number) => {
   const response = await patchRequest(`game-rooms/unready/${roomId}`);
   return response;
 };
+
+export const inviteGameAPI = async (userId: number) => {
+  const response = await postRequest(`game-rooms/invite/${userId}`);
+  return response;
+};
+
+export const acceptGameAPI = async () => {
+  const response = await postRequest(`game-rooms/invite/accept`);
+  return response;
+};
+
+export const rejectGameAPI = async () => {
+  const response = await postRequest(`game-rooms/invite/reject`);
+  return response;
+};
