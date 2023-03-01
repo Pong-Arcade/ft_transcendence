@@ -137,7 +137,7 @@ export const acceptGameAPI = async () => {
 };
 
 export const rejectGameAPI = async () => {
-  const response = await postRequest(`game-rooms/invite/reject`);
+  const response = await deleteRequest(`game-rooms/invite/reject`);
   return response;
 };
 export const joinQuickMatchAPI = async (matcheType: EGameType) => {

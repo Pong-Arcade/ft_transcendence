@@ -149,7 +149,7 @@ const GeneralMenu = ({
     onModalOpen: onInviteRejectModalOpen,
     onModalClose: onInviteRejectModalClose,
   } = useModal({
-    afterClose: () => {
+    beforeOpen: () => {
       onInviteWaitingModalClose();
     },
   });

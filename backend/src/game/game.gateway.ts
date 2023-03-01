@@ -284,7 +284,7 @@ export class GameGateway implements OnGatewayDisconnect {
 
     // 블루 유저를 게임방에 넣어줍니다.
     gameRoom.blueUser = {
-      ...(await this.userService.getUserInfo(inviterId)),
+      ...(await this.userService.getUserInfo(inviteeSocketInfo.userId)),
       gameUserStatus: GameRoomUserStatus.UN_READY,
     };
 
