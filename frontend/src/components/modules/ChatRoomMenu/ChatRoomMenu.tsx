@@ -18,6 +18,8 @@ import {
 } from "../../../api/room";
 import { IUser, userMode } from "../Pagination/Pagination";
 import { SocketContext } from "../../../utils/ChatSocket";
+import ChatConfirmModal from "../ChatConfirmModal/ChatConfirmModal";
+import ErrorModal from "../ErrorModal";
 
 interface Props {
   list: IUser[];
@@ -64,6 +66,7 @@ export enum EChatCurrentOn {
   DEL_FRIEND = "DEL_FRIEND",
   ADD_BLOCK = "ADD_BLOCK",
   DEL_BLOCK = "DEL_BLOCK",
+  BAN = "BAN",
   MUTE = "MUTE",
   UNMUTE = "UNMUTE",
   PROMOTE = "PROMOTE",
@@ -108,10 +111,10 @@ const GeneralMenu = ({
   const blockUsers = useRecoilValue(blockUsersState);
   const [currentOn, setCurrentOn] = useState<EChatCurrentOn>();
   const [isMute, setIsMute] = useState(false);
-  // const [isPromote, setIsPromote] = useState(false);
-  // const [isMaster, setIsMaster] = useState(false);
   const params = useParams();
   const socket = useContext(SocketContext);
+  const [error, setError] = useState(false);
+  const [errorContent, setErrorContent] = useState("");
   const [myInfo, setMyInfo] = useState<IUser>();
   useEffect(() => {
     setMyInfo(list.find((value) => value.userId == socket.userId));
@@ -156,27 +159,19 @@ const GeneralMenu = ({
         onConfirmOpen();
         break;
       case EChatRoom.BAN:
-        banChatRoomAPI(Number(params.chatId), userId);
+        setCurrentOn(EChatCurrentOn.BAN);
         onConfirmOpen();
         break;
       case EChatRoom.MUTE:
-        muteChatRoomAPI(Number(params.chatId), userId);
         setCurrentOn(EChatCurrentOn.MUTE);
         setIsMute(true);
         onConfirmOpen();
         break;
-      case EChatRoom.UNMUTE:
-        setCurrentOn(EChatCurrentOn.UNMUTE);
-        setIsMute(false);
-        onConfirmOpen();
-        break;
       case EChatRoom.PROMOTE:
-        promoteAdminAPI(Number(params.chatId), userId);
         setCurrentOn(EChatCurrentOn.PROMOTE);
         onConfirmOpen();
         break;
       case EChatRoom.DEMOTE:
-        demoteAdminAPI(Number(params.chatId), userId);
         setCurrentOn(EChatCurrentOn.DEMOTE);
         onConfirmOpen();
         break;
@@ -231,12 +226,21 @@ const GeneralMenu = ({
         <UserInfoModal userId={userId} onClose={onUserInfoClose} />
       )}
       {isConfirmOpen && (
-        <RelationConfirmModal
+        <ChatConfirmModal
           onNoConfirm={onConfirmClose}
           onClose={onConfirmClose}
+          setError={setError}
+          setErrorContent={setErrorContent}
           currentOn={currentOn} // TODO: chat menu 기능 넣어서 confirmModal 수정
           userId={userId}
           name={name}
+        />
+      )}
+      {error && (
+        <ErrorModal
+          onClose={() => setError(false)}
+          errors={errorContent}
+          title="Error"
         />
       )}
     </>
