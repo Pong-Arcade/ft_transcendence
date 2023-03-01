@@ -5,19 +5,16 @@ import Button from "../../atoms/Button";
 import Modal from "../../atoms/Modal";
 import ModalWrapper from "../../atoms/ModalWrapper";
 import UserInfoModal from "../UserInfoModal";
-import RelationConfirmModal from "../RelationConfirmModal";
 import { useRecoilValue } from "recoil";
 import friendUsersState from "../../../state/FriendUsersState";
 import blockUsersState from "../../../state/BlockUsersState";
-import { useParams } from "react-router-dom";
-import {
-  banChatRoomAPI,
-  demoteAdminAPI,
-  muteChatRoomAPI,
-  promoteAdminAPI,
-} from "../../../api/room";
+import { inviteGameAPI } from "../../../api/room";
 import { IUser, userMode } from "../Pagination/Pagination";
 import { SocketContext } from "../../../utils/ChatSocket";
+import chatRoomGameEvent from "../../../event/GameEvent/chatRoomGameEvent";
+import InviteGameWaitingModal from "../InviteGameWaitingModal";
+import InviteRejectModal from "../InviteRejectModal";
+import InviteGameModal from "../InviteGameModal";
 import ChatConfirmModal from "../ChatConfirmModal/ChatConfirmModal";
 import ErrorModal from "../ErrorModal";
 
@@ -53,7 +50,7 @@ export enum EChatRoom {
   DEL_FRIEND = "친구삭제",
   ADD_BLOCK = "차단하기",
   DEL_BLOCK = "차단해제",
-  APPLY_GAME = "게임신청",
+  INVIATE_GAME = "게임신청",
   BAN = "강퇴하기", // 관리자만 보이기
   MUTE = "채팅금지", // 관리자만 보이기
   UNMUTE = "채팅금지해제", // 관리자만 보이기
@@ -111,7 +108,6 @@ const GeneralMenu = ({
   const blockUsers = useRecoilValue(blockUsersState);
   const [currentOn, setCurrentOn] = useState<EChatCurrentOn>();
   const [isMute, setIsMute] = useState(false);
-  const params = useParams();
   const socket = useContext(SocketContext);
   const [error, setError] = useState(false);
   const [errorContent, setErrorContent] = useState("");
@@ -131,6 +127,31 @@ const GeneralMenu = ({
     left > window.innerWidth - window.innerWidth * 0.1
       ? left - window.innerWidth * 0.1
       : left;
+
+  const {
+    isModalOpen: isInviteGameModalOpen,
+    onModalOpen: onInviteGameModalOpen,
+    onModalClose: onInviteGameModalClose,
+  } = useModal({});
+  const {
+    isModalOpen: isInviteWaitingModalOpen,
+    onModalOpen: onInviteWaitingModalOpen,
+    onModalClose: onInviteWaitingModalClose,
+  } = useModal({});
+  const {
+    isModalOpen: isInviteRejectModalOpen,
+    onModalOpen: onInviteRejectModalOpen,
+    onModalClose: onInviteRejectModalClose,
+  } = useModal({
+    beforeOpen: () => {
+      onInviteWaitingModalClose();
+    },
+  });
+
+  const { inviteUser } = chatRoomGameEvent({
+    onInviteGameModalOpen,
+    onInviteRejectModalOpen,
+  });
 
   const onClick = (e: MouseEvent<HTMLButtonElement>) => {
     const { innerText } = e.currentTarget;
@@ -155,8 +176,11 @@ const GeneralMenu = ({
         setCurrentOn(EChatCurrentOn.DEL_BLOCK);
         onConfirmOpen();
         break;
-      case EChatRoom.APPLY_GAME:
-        onConfirmOpen();
+      case EChatRoom.INVIATE_GAME:
+        (async () => {
+          await inviteGameAPI(userId);
+          onInviteWaitingModalOpen();
+        })();
         break;
       case EChatRoom.BAN:
         setCurrentOn(EChatCurrentOn.BAN);
@@ -194,7 +218,7 @@ const GeneralMenu = ({
             ) : (
               <MenuButton onClick={onClick}>{EChatRoom.ADD_BLOCK}</MenuButton>
             )}
-            <MenuButton onClick={onClick}>{EChatRoom.APPLY_GAME}</MenuButton>
+            <MenuButton onClick={onClick}>{EChatRoom.INVIATE_GAME}</MenuButton>
             {myInfo &&
             myInfo.mode &&
             (myInfo.mode == userMode.ADMIN ||
@@ -231,10 +255,20 @@ const GeneralMenu = ({
           onClose={onConfirmClose}
           setError={setError}
           setErrorContent={setErrorContent}
-          currentOn={currentOn} // TODO: chat menu 기능 넣어서 confirmModal 수정
+          currentOn={currentOn}
           userId={userId}
           name={name}
         />
+      )}
+      {isInviteWaitingModalOpen && <InviteGameWaitingModal />}
+      {isInviteGameModalOpen && (
+        <InviteGameModal
+          inviteUser={inviteUser}
+          onClose={onInviteGameModalClose}
+        />
+      )}
+      {isInviteRejectModalOpen && (
+        <InviteRejectModal onClose={onInviteRejectModalClose} />
       )}
       {error && (
         <ErrorModal
