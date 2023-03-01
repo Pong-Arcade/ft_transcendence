@@ -271,11 +271,11 @@ export class GameGateway implements OnGatewayDisconnect {
     );
 
     // 초대한 유저가 채팅방에 입장한 상태라면, 채팅방을 나간다.
-    this.chatGateway.server
-      .in(inviterSocketInfo.socketId)
-      .socketsLeave(
-        `chatroom${this.chatroomService.getMyChatroomInfo(inviterId)?.id}`,
-      );
+    this.eventEmitter.emit(
+      'chatroom:leave',
+      this.chatroomService.getMyChatroomInfo(inviterId)?.id,
+      inviterId,
+    );
 
     // 초대보낸 유저가 게임방에 입장한다.
     this.server
@@ -289,13 +289,11 @@ export class GameGateway implements OnGatewayDisconnect {
     };
 
     // 초대받은 유저가 채팅방에 입장한 상태라면, 채팅방을 나간다.
-    this.chatGateway.server
-      .in(inviteeSocketInfo.socketId)
-      .socketsLeave(
-        `chatroom${
-          this.chatroomService.getMyChatroomInfo(inviteeSocketInfo.userId)?.id
-        }`,
-      );
+    this.eventEmitter.emit(
+      'chatroom:leave',
+      this.chatroomService.getMyChatroomInfo(inviteeSocketInfo.userId)?.id,
+      inviteeSocketInfo.userId,
+    );
 
     // 초대받은 유저가 게임방에 입장한다.
     this.server
