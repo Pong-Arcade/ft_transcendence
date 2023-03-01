@@ -48,7 +48,7 @@ export class UserService {
    */
   async getUserInfo(userId: number): Promise<UserDto> {
     this.logger.log(`Called ${this.getUserInfo.name}`);
-    if (userId === -1) {
+    if (userId === -1 || userId === 0) {
       return null;
     }
     // 캐싱된 유저 정보가 있는지 확인합니다.
