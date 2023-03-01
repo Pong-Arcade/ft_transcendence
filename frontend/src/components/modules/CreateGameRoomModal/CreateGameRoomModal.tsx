@@ -11,6 +11,7 @@ import gameRoomState from "../../../state/GameRoomState";
 import Button from "../../atoms/Button";
 import Modal from "../../atoms/Modal";
 import ModalInputWrapper from "../../atoms/ModalInputWrapper";
+import ModalWrapper from "../../atoms/ModalWrapper";
 import ErrorModal from "../ErrorModal";
 import GameTypeCheckBoxGroup from "../GameTypeCheckBoxGroup/GameTypeCheckBoxGroup";
 import LabledInput from "../LabledInput";
@@ -61,7 +62,7 @@ const CreateGameRoomModal = ({ title, onClose }: Props) => {
     });
 
   return (
-    <>
+    <ModalWrapper>
       <Modal width="60%" height="70%">
         <CreateRoomForm onSubmit={onSubmitForm}>
           <ModalTitle onClose={onClose} fontSize="3rem">
@@ -115,7 +116,7 @@ const CreateGameRoomModal = ({ title, onClose }: Props) => {
           title="방만들기 실패"
         />
       )}
-    </>
+    </ModalWrapper>
   );
 };
 

@@ -2,19 +2,25 @@ import { useContext, useEffect, useState } from "react";
 import GameSocket from "../../state/GameSocket";
 
 const gameStartEvent = () => {
-  const [isGameStart, setGameStart] = useState(false);
   const { socket } = useContext(GameSocket);
+  const [timeLimit, setTimeLimit] = useState(0);
+  const [isCountDown, setCountDown] = useState(false);
 
   useEffect(() => {
     socket.on("startGame", () => {
-      setGameStart(true);
+      console.log("game start");
     });
-
+    socket.on("readyTick", (timeLimit: number) => {
+      if (!isCountDown) setCountDown(true);
+      setTimeLimit(timeLimit);
+    });
+    // 업데이트 이벤트 등록
+    // 키 이벤트 보내야 함
     return () => {
       socket.off("startGame");
     };
   }, []);
-  return isGameStart;
+  return { isCountDown, timeLimit };
 };
 
 export default gameStartEvent;
