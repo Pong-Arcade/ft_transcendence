@@ -69,13 +69,13 @@ export class StatService {
         ? matchHistory.redUserId
         : matchHistory.blueUserId;
     let delta =
-      winner !== matchHistory.redUserId
+      winner === matchHistory.redUserId
         ? matchHistory.redScore - matchHistory.blueScore
         : matchHistory.blueScore - matchHistory.redScore;
 
     delta = delta > 5 ? 5 : delta;
     delta *= 10;
-
+    console.log('delta:', delta);
     const loser =
       winner !== matchHistory.redUserId
         ? matchHistory.redUserId
