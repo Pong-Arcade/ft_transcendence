@@ -7,12 +7,14 @@ import useGameRoomForm, {
   EGameRoomFormValues,
   EGameType,
 } from "../../../hooks/useGameRoomForm";
+import useModal from "../../../hooks/useModal";
 import gameRoomState from "../../../state/GameRoomState";
 import Button from "../../atoms/Button";
 import Modal from "../../atoms/Modal";
 import ModalInputWrapper from "../../atoms/ModalInputWrapper";
 import ModalWrapper from "../../atoms/ModalWrapper";
 import ErrorModal from "../ErrorModal";
+import FailModal from "../FailModal";
 import GameTypeCheckBoxGroup from "../GameTypeCheckBoxGroup/GameTypeCheckBoxGroup";
 import LabledInput from "../LabledInput";
 import ModalInputListWrapper from "../ModalInputListWrapper";
@@ -43,21 +45,26 @@ const SubmitButton = styled(Button).attrs({
 const CreateGameRoomModal = ({ title, onClose }: Props) => {
   const navigate = useNavigate();
   const setGameRoomState = useSetRecoilState(gameRoomState);
+  const { isModalOpen: isFailOpen, onModalOpen: onFailOpen } = useModal({});
   const { values, errors, onErrorModalClose, onChangeForm, onSubmitForm } =
     useGameRoomForm({
       onSubmit: async () => {
-        let data;
-        if (title === ERoomCreateButtonName.LADDERGAME)
-          data = await createGameRoomAPI(EGameType.NORMAL, values);
-        else data = await createGameRoomAPI(EGameType.LADDER, values);
-        onClose();
+        try {
+          let data;
+          if (title === ERoomCreateButtonName.LADDERGAME)
+            data = await createGameRoomAPI(EGameType.LADDER, values);
+          else data = await createGameRoomAPI(EGameType.NORMAL, values);
+          onClose();
 
-        setGameRoomState({
-          roomId: data.roomId,
-          redUser: { ...data.redUser, status: EGameUserStatus.UN_READY },
-          blueUser: {},
-        });
-        navigate(`/game-rooms/${data.roomId}`);
+          setGameRoomState({
+            roomId: data.roomId,
+            redUser: { ...data.redUser, status: EGameUserStatus.UN_READY },
+            blueUser: {},
+          });
+          navigate(`/game-rooms/${data.roomId}`);
+        } catch {
+          onFailOpen();
+        }
       },
     });
 
@@ -114,6 +121,13 @@ const CreateGameRoomModal = ({ title, onClose }: Props) => {
           onClose={onErrorModalClose}
           errors={errors}
           title="방만들기 실패"
+        />
+      )}
+      {isFailOpen && (
+        <FailModal
+          onClose={onClose}
+          title="채팅방 정보 변경"
+          content="채팅방 정보 변경에 실패하였습니다"
         />
       )}
     </ModalWrapper>

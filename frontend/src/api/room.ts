@@ -116,6 +116,11 @@ export const leaveGameRoomAPI = async (roomId: number) => {
   return response;
 };
 
+export const leaveGameSpectatorAPI = async (roomId: number) => {
+  const response = await deleteRequest(`game-rooms/spectate/leave/${roomId}`);
+  return response;
+};
+
 export const readyGameRoomAPI = async (roomId: number) => {
   const response = await patchRequest(`game-rooms/ready/${roomId}`);
   return response;
