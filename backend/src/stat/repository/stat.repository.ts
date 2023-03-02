@@ -198,4 +198,54 @@ export class StatRepository implements IStatRepository {
     // matchHistory를 저장한다.
     await this.matchHistoryRepository.save(matchHistory);
   }
+
+  async updateWinNormalStat(userId: number): Promise<void> {
+    this.logger.log(`Called ${this.updateWinNormalStat.name}`);
+    const data = await this.normalStatRepository.findOne({
+      where: { userId },
+    });
+    if (!data) {
+      throw new Error('User not found');
+    }
+    data.winCount += 1;
+    await this.normalStatRepository.update(userId, data);
+  }
+
+  async updateLoseNormalStat(userId: number): Promise<void> {
+    this.logger.log(`Called ${this.updateLoseNormalStat.name}`);
+    const data = await this.normalStatRepository.findOne({
+      where: { userId },
+    });
+    if (!data) {
+      throw new Error('User not found');
+    }
+    data.loseCount += 1;
+    await this.normalStatRepository.update(userId, data);
+  }
+
+  async updateWinLadderStat(userId: number, score: number): Promise<void> {
+    this.logger.log(`Called ${this.updateWinNormalStat.name} param: {userId: ${userId}, score: ${score}}`);
+    const data = await this.ladderStatRepository.findOne({
+      where: { userId },
+    });
+    if (!data) {
+      throw new Error('User not found');
+    }
+    data.winCount += 1;
+    data.ladderScore += score;
+    await this.ladderStatRepository.update(userId, data);
+  }
+
+  async updateLoseLadderStat(userId: number, score: number): Promise<void> {
+    this.logger.log(`Called ${this.updateLoseLadderStat.name} param: {userId: ${userId}, score: ${score}}`);
+    const data = await this.ladderStatRepository.findOne({
+      where: { userId },
+    });
+    if (!data) {
+      throw new Error('User not found');
+    }
+    data.loseCount += 1;
+    data.ladderScore -= score;
+    await this.ladderStatRepository.update(userId, data);
+  }
 }
