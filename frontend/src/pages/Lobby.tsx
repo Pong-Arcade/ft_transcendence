@@ -12,7 +12,7 @@ import useFirstLoginModal from "../hooks/useFirstLoginModal";
 import useLoading from "../hooks/useLoading";
 import FullSpinner from "../components/atoms/FullSpinner";
 import useLobbyData from "../hooks/useLobbyData";
-import { useSetRecoilState } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import errorState from "../state/ErrorState";
 import LobbyRoomListTypeChoiceButtonGroup from "../components/modules/LobbyRoomListTypeChoiceButtonGroup";
 import { EROOM_BUTTON } from "../components/modules/LobbyRoomListTypeChoiceButtonGroup/LobbyRoomListTypeChoiceButtonGroup";
@@ -23,6 +23,7 @@ import lobbyChatEvent from "../event/ChatEvent/lobbyChatEvent";
 import lobbyGameEvent from "../event/GameEvent/lobbyGameEvent";
 import { SocketContext } from "../utils/ChatSocket";
 import ErrorModal from "../components/modules/ErrorModal";
+import chatRoomState from "../state/ChatRoomState";
 
 const UserWrapper = styled(Board).attrs({
   width: "25%",
@@ -78,6 +79,7 @@ const Lobby = () => {
   const [inviteUserName, setInviteUserName] = useState("");
   const [roomError, setRoomError] = useState(false);
   const [errorContent, setErrorContent] = useState("");
+  const chatRoom = useRecoilValue(chatRoomState);
 
   const onChoiceButtonClick = (button: EROOM_BUTTON) => {
     setCurrentButton(button);

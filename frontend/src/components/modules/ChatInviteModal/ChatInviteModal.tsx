@@ -1,10 +1,12 @@
 import { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
+import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import {
   acceptInviteChatRoomAPI,
   rejectInviteChatRoomAPI,
 } from "../../../api/room";
+import chatRoomState from "../../../state/ChatRoomState";
 import Button from "../../atoms/Button";
 import Typography from "../../atoms/Typography";
 import ButtonGroup from "../ButtonGroup";
@@ -31,12 +33,13 @@ const ChatInviteModal = ({
   setErrorContent,
 }: Props) => {
   const navigate = useNavigate();
+  const setChatRoomState = useSetRecoilState(chatRoomState);
   const onYesConfirm = async () => {
     try {
       const response = await acceptInviteChatRoomAPI(roomId);
-      navigate("/chat-rooms/" + roomId, {
-        state: { users: response.data.users },
-      });
+      response.data.roomId = roomId;
+      setChatRoomState(response.data);
+      navigate("/chat-rooms/" + roomId);
     } catch (e: any | AxiosError) {
       onClose();
       if (e instanceof AxiosError) {
