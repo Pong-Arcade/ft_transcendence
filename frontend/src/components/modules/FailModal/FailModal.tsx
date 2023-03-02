@@ -36,7 +36,9 @@ const FailModal = ({ onClose, title, content }: Props) => {
           {title}
         </ModalTitle>
         <Wrapper>
-          <Typography fontSize="2rem">{content}</Typography>
+          <Typography fontSize="2rem" fontColor="yellow">
+            {content}
+          </Typography>
         </Wrapper>
         <ModalButton onClick={onClose}>확인</ModalButton>
       </Modal>

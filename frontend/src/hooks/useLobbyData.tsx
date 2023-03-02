@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { getChatRoomListAPI, getGameRoomListAPI } from "../api/room";
 import {
   getBlockUsersAPI,
@@ -7,12 +7,10 @@ import {
   getOnlineUsersAPI,
   getUserInfoAPI,
 } from "../api/users";
-import {
-  ILobbyChatRoom,
-  IUser,
-} from "../components/modules/Pagination/Pagination";
+import { IUser } from "../components/modules/Pagination/Pagination";
 import blockUsersState from "../state/BlockUsersState";
 import chatRoomListState from "../state/ChatRoomListState";
+import chatRoomState from "../state/ChatRoomState";
 import friendUsersState from "../state/FriendUsersState";
 import gameRoomListState from "../state/GameRoomListState";
 import infoState from "../state/InfoState";
@@ -25,6 +23,7 @@ const useLobbyData = () => {
   const [blockUsers, setBlockUsers] = useRecoilState(blockUsersState);
   const [chatRoomList, setChatRoomList] = useRecoilState(chatRoomListState);
   const [gameRoomList, setGameRoomList] = useRecoilState(gameRoomListState);
+  const [chatRoom, setChatRoom] = useRecoilState(chatRoomState);
   const [myInfo, setMyInfo] = useRecoilState(infoState);
   const socket = useContext(SocketContext);
 
@@ -58,7 +57,7 @@ const useLobbyData = () => {
 
   const setLobbyData = async () => {
     const info = JSON.parse(getDecodedCookie());
-
+    setChatRoom({ roomId: -1, title: "", mastUserId: -1, users: [] });
     setMyInfo(await getUserInfoAPI(info.userId));
     setOnlineUsers(await getOnlineUsersAPI());
     setFriendUsers(await getFriendUsersAPI());

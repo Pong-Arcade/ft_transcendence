@@ -43,11 +43,10 @@ const ChatRoomPasswordModal = ({ onClose, roomId }: Props) => {
   const onPasswordSubmit = async () => {
     try {
       const response = await joinChatRoomAPI(roomId, inputRef.current?.value);
+      response.data.roomId = roomId;
       setChatRoomState(response.data);
 
-      navigate(`/chat-rooms/${roomId}`, {
-        state: { users: response.data.users },
-      });
+      navigate(`/chat-rooms/${roomId}`);
     } catch (e: any | AxiosError) {
       if (e instanceof AxiosError) {
         setError(true);

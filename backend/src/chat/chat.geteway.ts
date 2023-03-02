@@ -118,9 +118,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       fromId: msg.userId,
       content: msg.msg,
       type: EMessageType.MESSAGE,
-      roomId: room.id,
+      roomId: room.roomId,
     };
-    if (room.id === 0) {
+    if (room.roomId === 0) {
       this.server.to('lobby').emit('message', message);
     } else {
       if (this.muteUsers.find((value) => value == msg.userId)) {
@@ -228,7 +228,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     rooms.set(roomId, room);
     console.log('create', roomId);
     this.server.in('lobby').emit('addChatRoom', {
-      roomId: room.id,
+      roomId: room.roomId,
       title: room.title,
       mode: room.mode,
       maxUserCount: room.maxUser,
@@ -254,8 +254,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async acceptInviteChatRoom(roomId, userId) {
     const room = rooms.get(roomId);
     const user = users.get(userId);
-    room.invitedUsers.push(userId);
     this.joinChatRoom(roomId, userId);
+    room.invitedUsers = room.invitedUsers.filter((id) => id != userId);
   }
 
   @OnEvent('chatroom:invite:reject')
@@ -315,7 +315,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (roomInfo.password || room.mode != ChatRoomMode.PUBLIC)
       room.password = roomInfo.password;
     this.server.in('lobby').emit('updateChatRoom', {
-      roomId: room.id,
+      roomId: room.roomId,
       title: room.title,
       mode: room.mode,
       maxUserCount: room.maxUser,
