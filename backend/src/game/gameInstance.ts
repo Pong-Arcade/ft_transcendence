@@ -215,11 +215,11 @@ export class GameInstance {
       this.scored = true;
       this.info.redScore++;
       nextBallX = this.info.gameScreen.width;
-    } else if (nextBallY < 0) {
+    } else if (nextBallY - gameConfig.ball.size < 0) {
       //천장 충돌
       nextBallY = 0;
       tempBallDy *= -1;
-    } else if (nextBallY > this.info.gameScreen.height) {
+    } else if (nextBallY + gameConfig.ball.size > this.info.gameScreen.height) {
       //바닥 충돌
       nextBallY = this.info.gameScreen.height;
       tempBallDy *= -1;
