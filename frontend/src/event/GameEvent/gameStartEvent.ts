@@ -8,8 +8,9 @@ const gameStartEvent = () => {
 
   useEffect(() => {
     socket.on("startGame", () => {
-      console.log("game start");
+      console.log("game start"); //TODO:
     });
+
     socket.on("readyTick", (timeLimit: number) => {
       if (!isCountDown) setCountDown(true);
       setTimeLimit(timeLimit);
@@ -18,6 +19,7 @@ const gameStartEvent = () => {
     // 키 이벤트 보내야 함
     return () => {
       socket.off("startGame");
+      socket.off("readyTick");
     };
   }, []);
   return { isCountDown, timeLimit };
