@@ -75,7 +75,7 @@ export class StatService {
 
     delta = delta > 5 ? 5 : delta;
     delta *= 10;
-    console.log('delta:', delta);
+
     const loser =
       winner !== matchHistory.redUserId
         ? matchHistory.redUserId
