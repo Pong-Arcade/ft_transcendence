@@ -1,11 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { GameRoomListResponseDto } from 'src/dto/response/gameroom.list.response.dto';
-import { gameRooms, invitations } from './game.gateway';
+import { gameRooms } from './game.gateway';
 import { UserService } from 'src/user/user.service';
-import { GameRoom } from './gameroom.entity';
+import { GameRoom, Invitation } from './gameroom.entity';
 import { GameRoomUsersInfoResponseDto } from 'src/dto/response/gameroom.users.info.response.dto';
 import { MatchType } from 'src/enum/match.type.enum';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { User } from 'src/status/status.entity';
+
+export let invitations: Invitation[] = [];
 
 const quickMatchQueues = {
   [MatchType.NORMAL]: new Array<number>(),
@@ -20,6 +23,59 @@ export class GameRoomService {
     private readonly userService: UserService,
     private readonly eventEmitter: EventEmitter2,
   ) {}
+
+  disconnectUser(userSocketInfo: User) {
+    this.logger.log(`Called ${this.disconnectUser.name}`);
+    for (const roomId of gameRooms.keys()) {
+      if (this.isOnThatGameRoom(roomId, userSocketInfo.userId)) {
+        this.eventEmitter.emit('gameroom:leave', roomId, userSocketInfo.userId);
+      }
+      // 초대장을 가지고 있다면 삭제
+      invitations = invitations.filter(
+        (invitation) =>
+          invitation.inviteeId !== userSocketInfo.userId &&
+          invitation.inviterId !== userSocketInfo.userId,
+      );
+    }
+  }
+
+  createInvitation(
+    inviterId: number,
+    inviteeId: number,
+    matchType: MatchType,
+  ): Invitation {
+    this.logger.log(`Called ${this.createInvitation.name}`);
+    const invitation = new Invitation();
+    invitation.invitationId = invitations.length + 1;
+    invitation.inviterId = inviterId;
+    invitation.inviteeId = inviteeId;
+    invitation.matchType = matchType;
+    invitation.expirationTime = new Date();
+    invitation.expirationTime.setMinutes(
+      invitation.expirationTime.getMinutes() + 1,
+    );
+    invitations.push(invitation);
+    return invitation;
+  }
+
+  deleteInvitationById(invitation: Invitation) {
+    this.logger.log(`Called ${this.deleteInvitationById.name}`);
+    invitations = invitations.filter(
+      (invitation) => invitation.invitationId !== invitations.length,
+    );
+  }
+
+  deleteInvitaionByInviteeId(inviteeId: number) {
+    this.logger.log(`Called ${this.deleteInvitaionByInviteeId.name}`);
+    invitations = invitations.filter(
+      (invitation) => invitation.inviteeId !== inviteeId,
+    );
+  }
+
+  findInvitationByInviteeId(inviteeId: number): Invitation {
+    this.logger.log(`Called ${this.findInvitationByInviteeId.name}`);
+    return invitations.find((invitation) => invitation.inviteeId === inviteeId);
+  }
 
   /**
    * 전체 게임방 목록을 조회합니다.
