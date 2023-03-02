@@ -11,6 +11,7 @@ import Typography from "../components/atoms/Typography";
 import Board from "../components/atoms/Board";
 import { useContext, useEffect } from "react";
 import { SocketContext } from "../utils/ChatSocket";
+import errorState from "../state/ErrorState";
 
 const TitleTypography = styled(Typography).attrs({
   fontSize: "2.5rem",
@@ -44,8 +45,10 @@ const ChatRoom = () => {
   const [chatRoom, setChatRoom] = useRecoilState(chatRoomState);
   const myInfo = useRecoilValue(infoState);
   const socket = useContext(SocketContext);
+  const [error, setError] = useRecoilState(errorState);
 
   useEffect(() => {
+    if (chatRoom.roomId === -1) setError(true);
     socket.socket.on("updateChatRoom", (title) =>
       setChatRoom({
         roomId: chatRoom.roomId,
