@@ -14,7 +14,8 @@ import Typography from "../components/atoms/Typography";
 import ButtonGroup from "../components/modules/ButtonGroup";
 import Chat from "../components/modules/Chat";
 import ExitConfirmModal from "../components/modules/ExitConfirmModal";
-import GameStart from "../components/modules/GameStart";
+import GameBoard from "../components/modules/GameBoard";
+import GameCountDown from "../components/modules/GameCountDown";
 import GeneralMenu from "../components/modules/GeneralMenu";
 import { EGameUserStatus } from "../components/modules/Pagination/Pagination";
 import GameRoomTemplate from "../components/templates/GameRoomTemplate";
@@ -25,15 +26,6 @@ import useModal from "../hooks/useModal";
 import gameRoomState from "../state/GameRoomState";
 import infoState from "../state/InfoState";
 
-const GameBoard = styled(Board).attrs((props) => {
-  return {
-    width: "75%",
-    height: "98%",
-    backgroundColor: props.theme.background.middle,
-    borderRadius: true,
-    boxShadow: true,
-  };
-})``;
 const Wrapper = styled(Board).attrs({
   width: "24%",
   height: "98%",
@@ -100,8 +92,7 @@ const GameRoom = () => {
   };
 
   gameRoomEvent();
-  const isGameStart = gameStartEvent();
-
+  const { isCountDown, timeLimit } = gameStartEvent();
   const [isReady, setReady] = useState(false);
 
   const onReady = async () => {
@@ -113,7 +104,7 @@ const GameRoom = () => {
   return (
     <>
       <GameRoomTemplate>
-        <GameBoard></GameBoard>
+        <GameBoard roomId={roomId} userId={myInfo.userId} />
         <Wrapper>
           <UserProfileGroup>
             <UserProfile
@@ -146,7 +137,7 @@ const GameRoom = () => {
           >
             {(myInfo.userId === redUser.userId ||
               myInfo.userId === blueUser?.userId) && (
-              <GameRoomButton onClick={onReady}>
+              <GameRoomButton onClick={onReady} disabled={isCountDown}>
                 {isReady ? "대기" : "준비"}
               </GameRoomButton>
             )}
@@ -169,7 +160,7 @@ const GameRoom = () => {
           onNoConfirm={() => onConfirmClose()}
         />
       )}
-      {isGameStart && <GameStart />}
+      {isCountDown && <GameCountDown timeLimit={timeLimit} />}
     </>
   );
 };

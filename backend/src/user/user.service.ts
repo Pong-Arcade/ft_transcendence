@@ -28,15 +28,17 @@ export class UserService {
   /**
    * 모든 유저 정보를 가져옵니다.
    */
-  async getAllOnlineUsers(): Promise<UserDto[]> {
+  getAllOnlineUsers(): UserDto[] {
     this.logger.log(`Called ${this.getAllOnlineUsers.name}`);
     const results: UserDto[] = [];
-    for (const [userId, userSocketInfo] of users) {
-      const userInfo = await this.getUserInfo(userId);
-      if (userInfo) {
-        results.push(userInfo);
-      }
-    }
+    users.forEach((value, key) => {
+      if (value.userId >= 0)
+        results.push({
+          userId: value.userId,
+          nickname: value.userName,
+          location: value.location,
+        });
+    });
     return results;
   }
 
@@ -48,7 +50,7 @@ export class UserService {
    */
   async getUserInfo(userId: number): Promise<UserDto> {
     this.logger.log(`Called ${this.getUserInfo.name}`);
-    if (userId === -1) {
+    if (userId === -1 || userId === 0) {
       return null;
     }
     // 캐싱된 유저 정보가 있는지 확인합니다.

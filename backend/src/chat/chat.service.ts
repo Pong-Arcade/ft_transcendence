@@ -81,13 +81,15 @@ export class ChatroomService {
     const chatrooms = new ChatRoomListResponseDto();
     chatrooms.chatRooms = [];
     for (const room of rooms.values()) {
-      chatrooms.chatRooms.push({
-        roomId: room.id,
-        title: room.title,
-        mode: room.mode,
-        maxUserCount: room.maxUser,
-        currentCount: room.users.length,
-      });
+      if (room.id !== 0) {
+        chatrooms.chatRooms.push({
+          roomId: room.id,
+          title: room.title,
+          mode: room.mode,
+          maxUserCount: room.maxUser,
+          currentCount: room.users.length,
+        });
+      }
     }
     return chatrooms;
   }
