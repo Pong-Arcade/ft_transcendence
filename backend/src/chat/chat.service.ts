@@ -55,7 +55,7 @@ export class ChatroomService {
     this.logger.log(`Called ${this.getChatroomCreateUsersInfo.name}`);
     const chatroomInfo = this.getChatroomInfo(roomId);
     const chatroomUsersInfo = new ChatroomCreateUsersInfoResponseDto();
-    chatroomUsersInfo.roomId = chatroomInfo.id;
+    chatroomUsersInfo.roomId = chatroomInfo.roomId;
     chatroomUsersInfo.mastUserId = chatroomInfo.masterUser;
     chatroomUsersInfo.users = new Array<UserChatDto>();
     chatroomUsersInfo.title = chatroomInfo.title;
@@ -81,9 +81,9 @@ export class ChatroomService {
     const chatrooms = new ChatRoomListResponseDto();
     chatrooms.chatRooms = [];
     for (const room of rooms.values()) {
-      if (room.id !== 0) {
+      if (room.roomId !== 0) {
         chatrooms.chatRooms.push({
-          roomId: room.id,
+          roomId: room.roomId,
           title: room.title,
           mode: room.mode,
           maxUserCount: room.maxUser,
@@ -114,7 +114,7 @@ export class ChatroomService {
     this.logger.log(`Called ${this.getMyMasterChatroomId.name}`);
     for (const room of rooms.values()) {
       if (room.masterUser === userId) {
-        return room.id;
+        return room.roomId;
       }
     }
     return null;
