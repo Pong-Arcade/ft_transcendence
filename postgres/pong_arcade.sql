@@ -86,11 +86,75 @@ COMMENT ON COLUMN public.ladder_stat.ladder_score IS '래더 점수';
 
 
 --
+-- Name: relation; Type: TABLE; Schema: public; Owner: arcade
+--
+
+CREATE TABLE public.relation (
+    relation_id integer NOT NULL,
+    user_id integer NOT NULL,
+    target_user_id integer NOT NULL,
+    relation_type character varying(16) NOT NULL
+);
+
+
+ALTER TABLE public.relation OWNER TO arcade;
+
+--
+-- Name: COLUMN relation.relation_id; Type: COMMENT; Schema: public; Owner: arcade
+--
+
+COMMENT ON COLUMN public.relation.relation_id IS '관계 ID';
+
+
+--
+-- Name: COLUMN relation.user_id; Type: COMMENT; Schema: public; Owner: arcade
+--
+
+COMMENT ON COLUMN public.relation.user_id IS '유저의 ID';
+
+
+--
+-- Name: COLUMN relation.target_user_id; Type: COMMENT; Schema: public; Owner: arcade
+--
+
+COMMENT ON COLUMN public.relation.target_user_id IS '유저가 관계를 갖는 대상 유저의 ID';
+
+
+--
+-- Name: COLUMN relation.relation_type; Type: COMMENT; Schema: public; Owner: arcade
+--
+
+COMMENT ON COLUMN public.relation.relation_type IS '관계 유형';
+
+
+--
+-- Name: relation_relation_id_seq; Type: SEQUENCE; Schema: public; Owner: arcade
+--
+
+CREATE SEQUENCE public.relation_relation_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.relation_relation_id_seq OWNER TO arcade;
+
+--
+-- Name: relation_relation_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: arcade
+--
+
+ALTER SEQUENCE public.relation_relation_id_seq OWNED BY public.relation.relation_id;
+
+
+--
 -- Name: match_history; Type: TABLE; Schema: public; Owner: arcade
 --
 
 CREATE TABLE public.match_history (
-    match_id integer NOT NULL,
+    match_id integer DEFAULT nextval('public.relation_relation_id_seq'::regclass) NOT NULL,
     red_user_id integer DEFAULT 0 NOT NULL,
     blue_user_id integer DEFAULT 0 NOT NULL,
     red_score integer NOT NULL,
@@ -221,70 +285,6 @@ COMMENT ON COLUMN public.normal_stat.win_count IS '승리 횟수';
 --
 
 COMMENT ON COLUMN public.normal_stat.lose_count IS '패배횟수';
-
-
---
--- Name: relation; Type: TABLE; Schema: public; Owner: arcade
---
-
-CREATE TABLE public.relation (
-    relation_id integer NOT NULL,
-    user_id integer NOT NULL,
-    target_user_id integer NOT NULL,
-    relation_type character varying(16) NOT NULL
-);
-
-
-ALTER TABLE public.relation OWNER TO arcade;
-
---
--- Name: COLUMN relation.relation_id; Type: COMMENT; Schema: public; Owner: arcade
---
-
-COMMENT ON COLUMN public.relation.relation_id IS '관계 ID';
-
-
---
--- Name: COLUMN relation.user_id; Type: COMMENT; Schema: public; Owner: arcade
---
-
-COMMENT ON COLUMN public.relation.user_id IS '유저의 ID';
-
-
---
--- Name: COLUMN relation.target_user_id; Type: COMMENT; Schema: public; Owner: arcade
---
-
-COMMENT ON COLUMN public.relation.target_user_id IS '유저가 관계를 갖는 대상 유저의 ID';
-
-
---
--- Name: COLUMN relation.relation_type; Type: COMMENT; Schema: public; Owner: arcade
---
-
-COMMENT ON COLUMN public.relation.relation_type IS '관계 유형';
-
-
---
--- Name: relation_relation_id_seq; Type: SEQUENCE; Schema: public; Owner: arcade
---
-
-CREATE SEQUENCE public.relation_relation_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.relation_relation_id_seq OWNER TO arcade;
-
---
--- Name: relation_relation_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: arcade
---
-
-ALTER SEQUENCE public.relation_relation_id_seq OWNED BY public.relation.relation_id;
 
 
 --
@@ -459,6 +459,7 @@ COPY public."user" (user_id, nickname, avatar_url, email, first_login) FROM stdi
 4	test4	https://profile.intra.42.fr/assets/42_logo_black-684989d43d629b3c0ff6fd7e1157ee04db9bb7a73fba8ec4e01543d650a1c607.png	\N	2023-02-21 00:39:37
 5	test5	https://profile.intra.42.fr/assets/42_logo_black-684989d43d629b3c0ff6fd7e1157ee04db9bb7a73fba8ec4e01543d650a1c607.png	\N	2023-02-21 00:39:37
 6	test6	https://profile.intra.42.fr/assets/42_logo_black-684989d43d629b3c0ff6fd7e1157ee04db9bb7a73fba8ec4e01543d650a1c607.png	\N	2023-02-21 00:39:37
+0	inactive	https://profile.intra.42.fr/assets/42_logo_black-684989d43d629b3c0ff6fd7e1157ee04db9bb7a73fba8ec4e01543d650a1c607.png	\N	\N
 \.
 
 
@@ -473,7 +474,7 @@ SELECT pg_catalog.setval('public.match_history_history_id_seq', 1, false);
 -- Name: relation_relation_id_seq; Type: SEQUENCE SET; Schema: public; Owner: arcade
 --
 
-SELECT pg_catalog.setval('public.relation_relation_id_seq', 9, true);
+SELECT pg_catalog.setval('public.relation_relation_id_seq', 11, true);
 
 
 --
@@ -585,7 +586,7 @@ ALTER TABLE ONLY public."user"
 --
 
 ALTER TABLE ONLY public.ladder_stat
-    ADD CONSTRAINT ladder_stat_user_null_fk FOREIGN KEY (user_id) REFERENCES public."user"(user_id);
+    ADD CONSTRAINT ladder_stat_user_null_fk FOREIGN KEY (user_id) REFERENCES public."user"(user_id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -609,7 +610,7 @@ ALTER TABLE ONLY public.match_history
 --
 
 ALTER TABLE ONLY public.normal_stat
-    ADD CONSTRAINT normal_stat_user_null_fk FOREIGN KEY (user_id) REFERENCES public."user"(user_id);
+    ADD CONSTRAINT normal_stat_user_null_fk FOREIGN KEY (user_id) REFERENCES public."user"(user_id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -633,7 +634,7 @@ ALTER TABLE ONLY public.relation
 --
 
 ALTER TABLE ONLY public.two_factor_auth
-    ADD CONSTRAINT two_factor_auth_user_null_fk FOREIGN KEY (user_id) REFERENCES public."user"(user_id);
+    ADD CONSTRAINT two_factor_auth_user_null_fk FOREIGN KEY (user_id) REFERENCES public."user"(user_id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --

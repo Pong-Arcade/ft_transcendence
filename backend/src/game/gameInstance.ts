@@ -45,7 +45,6 @@ export class GameInstance {
     };
     this.intervalId = null;
     this.gameInit();
-    this.startGame();
   }
 
   static makeSetConfig(): InGameConfigDto {

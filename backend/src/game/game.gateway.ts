@@ -400,17 +400,17 @@ export class GameGateway implements OnGatewayDisconnect {
       room.redUser?.gameUserStatus === GameRoomUserStatus.READY &&
       room.blueUser?.gameUserStatus === GameRoomUserStatus.READY
     ) {
-      room.status = GameRoomStatus.ON_GAME;
       // 1초 간격으로 총 3번 이벤트를 발생시킵니다.
       let timeLimit = 3;
       const interval = setInterval(() => {
-        this.server.in(`gameroom-${roomId}`).emit('readyTick', timeLimit);
-        --timeLimit;
         if (timeLimit === 0) {
-          clearInterval(interval);
           this.server.in(`gameroom-${roomId}`).emit('startGame');
           this.eventEmitter.emit('gameroom:start', roomId);
+          room.status = GameRoomStatus.ON_GAME;
+          clearInterval(interval);
         }
+        this.server.in(`gameroom-${roomId}`).emit('readyTick', timeLimit);
+        --timeLimit;
       }, 1000);
     }
   }
@@ -502,9 +502,7 @@ export class GameGateway implements OnGatewayDisconnect {
   @OnEvent('gameroom:start')
   async startGame(roomId: number) {
     const room = gameRooms.get(roomId);
-    if (room.status === GameRoomStatus.ON_GAME) {
-      return;
-    }
+
     //gameInstance는 생성과 동시에 게임이 시작합니다.
     room.gameInstance = new GameInstance(
       roomId,
@@ -513,15 +511,13 @@ export class GameGateway implements OnGatewayDisconnect {
       this.server,
       this.eventEmitter,
     );
+    room.gameInstance.startGame();
   }
-
+  //
   @OnEvent('gameroom:finish')
   async onGameFinish(roomId: number) {
     this.logger.log(`Called ${this.onGameFinish.name}`);
     const room = gameRooms.get(roomId);
-    if (room.status !== GameRoomStatus.ON_GAME) {
-      return;
-    }
     //전적 처리를 위한 게임 결과 정보 반환
     const gameResult = room.gameInstance.finishGame();
     room.gameInstance = null;
@@ -545,41 +541,35 @@ export class GameGateway implements OnGatewayDisconnect {
   }
 
   @SubscribeMessage('keyDown')
-  setKeyDownEvent(client, roomId, userId, keyCode) {
+  setKeyDownEvent(client, { roomId, userId, keyCode }) {
     const room = gameRooms.get(roomId);
-    if (
-      room === undefined &&
-      !(room.redUser.userId === userId || room.blueUser.userId === userId)
-    ) {
+    if (!(room?.redUser.userId === userId || room?.blueUser.userId === userId))
       return;
-    }
-    if (room.status !== GameRoomStatus.ON_GAME) {
-      return;
-    }
+    if (room.status !== GameRoomStatus.ON_GAME) return;
+
     const user =
       room.redUser.userId === userId ? InGamePlayer.RED : InGamePlayer.BLUE;
-    if (keyCode === 38) {
-      room.gameInstance.setPaddleDirection(user, InGameKeyEvent.ARROW_UP);
-    } else if (keyCode === 40) {
-      room.gameInstance.setPaddleDirection(user, InGameKeyEvent.ARROW_DOWN);
-    }
+    if (room.gameInstance) {
+      if (keyCode === 'ArrowUp') {
+        room.gameInstance.setPaddleDirection(user, InGameKeyEvent.ARROW_UP);
+      } else if (keyCode === 'ArrowDown') {
+        room.gameInstance.setPaddleDirection(user, InGameKeyEvent.ARROW_DOWN);
+      }
+    } else console.log(room);
   }
 
   @SubscribeMessage('keyUp')
-  setKeyUpEvent(client, roomId, userId) {
+  setKeyUpEvent(client, { roomId, userId }) {
     const room = gameRooms.get(roomId);
-    if (
-      room === undefined &&
-      !(room.redUser.userId === userId || room.blueUser.userId === userId)
-    ) {
+
+    if (!(room?.redUser.userId === userId || room?.blueUser.userId === userId))
       return;
-    }
-    if (room.status !== GameRoomStatus.ON_GAME) {
-      return;
-    }
+    if (room.status !== GameRoomStatus.ON_GAME) return;
+
     const user: InGamePlayer =
       room.redUser.userId === userId ? InGamePlayer.RED : InGamePlayer.BLUE;
-    room.gameInstance.setPaddleDirection(user, InGameKeyEvent.STOP);
+    if (room.gameInstance)
+      room.gameInstance.setPaddleDirection(user, InGameKeyEvent.STOP);
+    else console.log(room);
   }
 }
-//
