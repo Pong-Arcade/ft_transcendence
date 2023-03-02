@@ -1,12 +1,7 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
 import styled from "styled-components";
-import {
-  leaveGameRoomAPI,
-  readyGameRoomAPI,
-  unReadyGameRoomAPI,
-} from "../api/room";
+import { leaveGameRoomAPI, leaveGameSpectatorAPI } from "../api/room";
 import Avatar from "../components/atoms/Avatar";
 import Board from "../components/atoms/Board";
 import Button from "../components/atoms/Button";
@@ -16,6 +11,7 @@ import Chat from "../components/modules/Chat";
 import ExitConfirmModal from "../components/modules/ExitConfirmModal";
 import GameBoard from "../components/modules/GameBoard";
 import GameCountDown from "../components/modules/GameCountDown";
+import GameFinish from "../components/modules/GameFinish";
 import GeneralMenu from "../components/modules/GeneralMenu";
 import { EGameUserStatus } from "../components/modules/Pagination/Pagination";
 import GameRoomTemplate from "../components/templates/GameRoomTemplate";
@@ -82,7 +78,9 @@ const GameRoom = () => {
   const myInfo = useRecoilValue(infoState);
 
   const onLeaveGameRoom = async () => {
-    await leaveGameRoomAPI(roomId);
+    if (myInfo.userId === redUser.userId || myInfo.userId === blueUser.userId)
+      await leaveGameRoomAPI(roomId);
+    else await leaveGameSpectatorAPI(roomId);
     setGameState({
       roomId: -1,
       redUser: {},
@@ -92,19 +90,25 @@ const GameRoom = () => {
   };
 
   gameRoomEvent();
-  const { isCountDown, timeLimit } = gameStartEvent();
-  const [isReady, setReady] = useState(false);
-
-  const onReady = async () => {
-    if (!isReady) await readyGameRoomAPI(roomId);
-    else await unReadyGameRoomAPI(roomId);
-    setReady((prev) => !prev);
-  };
+  const {
+    onReady,
+    isReady,
+    isOnGame,
+    timeLimit,
+    scoreRef,
+    isGameFinish,
+    setGameFinish,
+  } = gameStartEvent(roomId);
 
   return (
     <>
       <GameRoomTemplate>
-        <GameBoard roomId={roomId} userId={myInfo.userId} />
+        <GameBoard
+          roomId={roomId}
+          userId={myInfo.userId}
+          isOnGame={isOnGame}
+          scoreRef={scoreRef}
+        />
         <Wrapper>
           <UserProfileGroup>
             <UserProfile
@@ -137,7 +141,7 @@ const GameRoom = () => {
           >
             {(myInfo.userId === redUser.userId ||
               myInfo.userId === blueUser?.userId) && (
-              <GameRoomButton onClick={onReady} disabled={isCountDown}>
+              <GameRoomButton onClick={onReady} disabled={isOnGame}>
                 {isReady ? "대기" : "준비"}
               </GameRoomButton>
             )}
@@ -160,7 +164,15 @@ const GameRoom = () => {
           onNoConfirm={() => onConfirmClose()}
         />
       )}
-      {isCountDown && <GameCountDown timeLimit={timeLimit} />}
+      {isOnGame && <GameCountDown timeLimit={timeLimit} />}
+      {isGameFinish && (
+        <GameFinish
+          scoreRef={scoreRef}
+          redUser={redUser}
+          blueUser={blueUser}
+          onClose={() => setGameFinish(false)}
+        />
+      )}
     </>
   );
 };

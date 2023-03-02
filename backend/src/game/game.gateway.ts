@@ -171,7 +171,7 @@ export class GameGateway implements OnGatewayDisconnect {
         .emit('joinGameRoom', { joinUser, roomId });
     }
   }
-  //
+
   @OnEvent('gameroom:leave')
   async leaveGame(roomId: number, userId: number) {
     this.logger.log(`Called ${this.leaveGame.name}`);
@@ -180,7 +180,8 @@ export class GameGateway implements OnGatewayDisconnect {
     const user = room.redUser.userId === userId ? room.redUser : room.blueUser;
     const userSocketInfo = users.get(user.userId);
     //gameInstance 종료 이벤트
-    await this.eventEmitter.emitAsync('gameroom:finish', roomId);
+    if (room.status === GameRoomStatus.ON_GAME)
+      await this.eventEmitter.emitAsync('gameroom:finish', roomId);
     if (user.userId === room.redUser.userId) {
       this.server.in(`gameroom-${room.roomId}`).emit('destructGameRoom');
       this.chatGateway.server
@@ -513,7 +514,7 @@ export class GameGateway implements OnGatewayDisconnect {
     );
     room.gameInstance.startGame();
   }
-  //
+
   @OnEvent('gameroom:finish')
   async onGameFinish(roomId: number) {
     this.logger.log(`Called ${this.onGameFinish.name}`);
