@@ -3,7 +3,7 @@ import ModalCloseButton from "../../atoms/ModalCloseButton";
 import Title from "../Title";
 
 interface Props {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   height?: string;
   fontSize?: string;
   closeFontSize?: string;

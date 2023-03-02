@@ -1,7 +1,9 @@
-import { useRef } from "react";
+import { MutableRefObject, useRef } from "react";
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
-import gameBaordEvent from "../../../event/GameEvent/gameBoardEvent";
+import gameBaordEvent, {
+  IScore,
+} from "../../../event/GameEvent/gameBoardEvent";
 import gameBoardState from "../../../state/GameBoardState";
 import Board from "../../atoms/Board";
 
@@ -17,13 +19,15 @@ const GameBoardSteyld = styled(Board).attrs((props) => {
 interface Props {
   roomId: number;
   userId: number;
+  isOnGame: boolean;
+  scoreRef: MutableRefObject<IScore>;
 }
 
-const GameBoard = ({ roomId, userId }: Props) => {
+const GameBoard = ({ roomId, userId, isOnGame, scoreRef }: Props) => {
   const gameBoard = useRecoilValue(gameBoardState);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  gameBaordEvent({ gameBoard, canvasRef, roomId, userId });
+  gameBaordEvent({ gameBoard, canvasRef, roomId, userId, isOnGame, scoreRef });
 
   return (
     <GameBoardSteyld>

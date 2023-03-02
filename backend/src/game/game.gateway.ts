@@ -514,7 +514,7 @@ export class GameGateway implements OnGatewayDisconnect {
     );
     room.gameInstance.startGame();
   }
-  //
+
   @OnEvent('gameroom:finish')
   async onGameFinish(roomId: number) {
     this.logger.log(`Called ${this.onGameFinish.name}`);

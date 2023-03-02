@@ -7,10 +7,7 @@ import {
   getOnlineUsersAPI,
   getUserInfoAPI,
 } from "../api/users";
-import {
-  ILobbyChatRoom,
-  IUser,
-} from "../components/modules/Pagination/Pagination";
+import { IUser } from "../components/modules/Pagination/Pagination";
 import blockUsersState from "../state/BlockUsersState";
 import chatRoomListState from "../state/ChatRoomListState";
 import friendUsersState from "../state/FriendUsersState";

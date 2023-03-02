@@ -1,8 +1,15 @@
-import { RefObject, useContext, useEffect, useRef, useState } from "react";
+import {
+  MutableRefObject,
+  RefObject,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { IGameBoardState } from "../../state/GameBoardState";
 import GameSocket from "../../state/GameSocket";
 
-interface IScore {
+export interface IScore {
   redScore: number;
   blueScore: number;
 }
@@ -27,9 +34,18 @@ interface Props {
   canvasRef: RefObject<HTMLCanvasElement>;
   roomId: number;
   userId: number;
+  isOnGame: boolean;
+  scoreRef: MutableRefObject<IScore>;
 }
 
-const gameBaordEvent = ({ gameBoard, canvasRef, roomId, userId }: Props) => {
+const gameBaordEvent = ({
+  gameBoard,
+  canvasRef,
+  roomId,
+  userId,
+  isOnGame,
+  scoreRef,
+}: Props) => {
   const { socket } = useContext(GameSocket);
   const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null);
   const updateBoardRef = useRef<IUpdateBoard>({
@@ -37,12 +53,15 @@ const gameBaordEvent = ({ gameBoard, canvasRef, roomId, userId }: Props) => {
     redPaddle: gameBoard.redPaddle,
     bluePaddle: gameBoard.bluePaddle,
   });
-  const scoreRef = useRef<IScore>({
-    redScore: 0,
-    blueScore: 0,
-  });
+  const isOnGameRef = useRef<boolean>(isOnGame);
 
   const drawBoard = (ctx: CanvasRenderingContext2D) => {
+    ctx.clearRect(
+      0,
+      0,
+      gameBoard.gameCanvas.width,
+      gameBoard.gameCanvas.height
+    );
     ctx.beginPath();
     ctx.fillStyle = "rgba(3, 169, 244, 0.5)";
     ctx.rect(0, 0, gameBoard.gameCanvas.width, gameBoard.gameCanvas.height);
@@ -102,7 +121,13 @@ const gameBaordEvent = ({ gameBoard, canvasRef, roomId, userId }: Props) => {
     }
   };
 
+  useEffect(() => {
+    isOnGameRef.current = isOnGame;
+  }, [isOnGame]);
+
   const draw = () => {
+    const onGame = isOnGameRef.current;
+    console.log("onGame: ", onGame);
     if (ctx) {
       drawBoard(ctx);
       drawScore(
@@ -119,7 +144,6 @@ const gameBaordEvent = ({ gameBoard, canvasRef, roomId, userId }: Props) => {
       );
 
       drawMiddleLine(ctx);
-
       drawBall(ctx);
       drawPaddle(
         ctx,
@@ -133,6 +157,9 @@ const gameBaordEvent = ({ gameBoard, canvasRef, roomId, userId }: Props) => {
         updateBoardRef.current.redPaddle.x,
         updateBoardRef.current.redPaddle.y
       );
+      if (onGame) {
+        window.requestAnimationFrame(draw);
+      }
     }
   };
 
@@ -151,12 +178,20 @@ const gameBaordEvent = ({ gameBoard, canvasRef, roomId, userId }: Props) => {
 
   useEffect(() => {
     setCtx(canvasRef.current?.getContext("2d") as CanvasRenderingContext2D);
-    window.requestAnimationFrame(draw);
+    draw();
+
+    socket.on("startGame", () => {
+      scoreRef.current = {
+        redScore: 0,
+        blueScore: 0,
+      };
+      window.requestAnimationFrame(draw);
+    });
 
     socket.on("update", (update: IUpdateBoard) => {
       updateBoardRef.current = update;
-      window.requestAnimationFrame(draw);
     });
+
     socket.on("score", (score: IScore) => {
       scoreRef.current = score;
     });
@@ -165,6 +200,7 @@ const gameBaordEvent = ({ gameBoard, canvasRef, roomId, userId }: Props) => {
     document.addEventListener("keydown", keyDownEvent);
 
     return () => {
+      socket.off("startGame");
       socket.off("update");
       socket.off("score");
       document.removeEventListener("keyup", keyUpEvent);

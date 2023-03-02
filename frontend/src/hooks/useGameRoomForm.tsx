@@ -1,9 +1,5 @@
 import React, { useState } from "react";
-import {
-  MAX_TITLE_LENGTH,
-  MAX_USER_NUMBER,
-  MIN_USER_NUMBER,
-} from "./useChatRoomForm";
+import { MAX_TITLE_LENGTH, MAX_USER_NUMBER } from "./useChatRoomForm";
 
 export enum EGameRoomFormValues {
   MODE = "mode",
@@ -49,8 +45,9 @@ function useGameRoomForm({ onSubmit }: IUseGameRoomForm) {
 
   const onSubmitForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setErrors(ChatRoomFormValidator({ ...values }));
-    if (errors && Object.keys(errors).length === 0) {
+    const error = GameRoomFormValidator({ ...values });
+    setErrors(error);
+    if (error && Object.keys(error).length === 0) {
       onSubmit(values);
     }
   };
@@ -70,7 +67,7 @@ function useGameRoomForm({ onSubmit }: IUseGameRoomForm) {
 
 const MIN_WINSCORE_NUMBER = 1;
 const MAX_WINSCORE_NUMBER = 10;
-const ChatRoomFormValidator = ({
+const GameRoomFormValidator = ({
   mode,
   title,
   winScore,
@@ -99,11 +96,8 @@ const ChatRoomFormValidator = ({
 
   if (!maxSpectatorCount.length) {
     errors.maxSpectatorCount = "최대인원을 입력해주세요";
-  } else if (
-    MIN_USER_NUMBER > +maxSpectatorCount ||
-    +maxSpectatorCount > MAX_USER_NUMBER
-  ) {
-    errors.maxSpectatorCount = `최대인원은 ${MIN_USER_NUMBER} ~ ${MAX_USER_NUMBER} 이내로 입력해주세요`;
+  } else if (0 > +maxSpectatorCount || +maxSpectatorCount > MAX_USER_NUMBER) {
+    errors.maxSpectatorCount = `최대인원은 0 ~ ${MAX_USER_NUMBER} 이내로 입력해주세요`;
   }
 
   return errors;
