@@ -228,10 +228,9 @@ export class GameInstance {
       const paddle =
         tempBallDx >= 0 ? this.state.bluePaddle : this.state.redPaddle;
       if (
-        this.isIntersection(
+        this.checkCollision(
           nextBallX,
           nextBallY,
-          ballSize,
           ballSize,
           paddle.x,
           paddle.y,
@@ -251,6 +250,46 @@ export class GameInstance {
 
   private isIntersection(ax, ay, aw, ah, bx, by, bw, bh): boolean {
     return ax < bx + bw && ay < by + bh && bx < ax + aw && by < ay + ah;
+  }
+
+  private checkCollision(ballX, ballY, radius, paddleX, paddleY, paddleW, paddleH): boolean {
+    let left = paddleX;
+    let right = paddleX + paddleW;
+    let top = ballY;
+    let bottom = ballY + paddleH;
+
+    if ( (left <= ballX && ballX <= right) || (bottom <= ballY && ballY <= top) ) {
+      left = left - radius;
+      right = right + radius;
+      top = top + radius;
+      bottom = bottom - radius;
+      if (left < ballX && ballX < right && bottom < ballY && ballY < top)
+      {
+         return true;
+      }
+    }
+    else
+    {
+      if (this.isPointonCircle(ballX, ballY, radius, left, top)) return true;
+      if (this.isPointonCircle(ballX, ballY, radius, left, bottom)) return true;
+      if (this.isPointonCircle(ballX, ballY, radius, right, top)) return true;
+      if (this.isPointonCircle(ballX, ballY, radius, left, bottom)) return true;
+    }
+
+    return false;
+  }
+
+  private isPointonCircle(ballX, ballY, radius, pointX, pointY): boolean {
+    const deltaX = ballX - pointX;
+    const deltaY = ballY - pointY;
+
+    const length = deltaX*deltaX + deltaY*deltaY;
+
+    if (length > radius*radius) {
+      return false;
+    }
+
+    return true;
   }
 
   public async updateGame() {
