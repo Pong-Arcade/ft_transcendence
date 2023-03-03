@@ -44,10 +44,9 @@ export class UserRepository implements IUserRepository {
     if (!user) {
       throw new NotFoundException('존재하지 않는 유저입니다.');
     }
-
     if (
-      (await this.userRepository.find({ where: { nickname: newNickname } })) &&
-      !(user.nickname === newNickname)
+      //  새로운 닉네임이 기존에 존재-> Throw
+      await this.userRepository.findOne({ where: { nickname: newNickname } })
     ) {
       throw new ConflictException('이미 존재하는 닉네임입니다.');
     }
@@ -58,10 +57,6 @@ export class UserRepository implements IUserRepository {
       user.avatarUrl = newAvatarUrl;
     }
     await this.userRepository.save(user);
-    return {
-      userId: user.userId,
-      nickname: user.nickname,
-      avatarUrl: user.avatarUrl,
-    } as UserDto;
+    return user as UserDto;
   }
 }
