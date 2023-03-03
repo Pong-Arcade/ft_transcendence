@@ -36,10 +36,6 @@ import { MatchHistoryDto } from 'src/dto/match.history.dto';
 import { StatService } from 'src/stat/stat.service';
 
 export const gameRooms = new Map<number, GameRoom>();
-export let invitations: Invitation[] = [];
-
-// export const normalQuickMatchQueue = new Array<number>();
-// export const ladderQuickMatchQueue = new Array<number>();
 
 @WebSocketGateway({
   namespace: 'socket/game',
@@ -49,9 +45,6 @@ export class GameGateway implements OnGatewayDisconnect {
   private logger = new Logger(GameGateway.name);
   //
   constructor(
-    private readonly jwtService: JwtService,
-    private readonly authService: AuthService,
-    private readonly configService: ConfigService,
     private readonly userService: UserService,
     private readonly eventEmitter: EventEmitter2,
     private readonly gameRoomService: GameRoomService,
@@ -71,26 +64,8 @@ export class GameGateway implements OnGatewayDisconnect {
     // 끊긴 소켓 삭제
     const userSocketInfo = users.get(socket.id);
     if (userSocketInfo) {
-      gameRooms.forEach((_, roomId) => {
-        if (
-          this.gameRoomService.isOnThatGameRoom(
-            roomId + 1,
-            userSocketInfo.userId,
-          )
-        ) {
-          this.eventEmitter.emit(
-            'gameroom:leave',
-            roomId + 1,
-            userSocketInfo.userId,
-          );
-        }
-      });
-      // 초대장을 가지고 있다면 삭제
-      invitations = invitations.filter(
-        (invitation) =>
-          invitation.inviteeId !== userSocketInfo.userId &&
-          invitation.inviterId !== userSocketInfo.userId,
-      );
+      console.log('disconnect gameroom user: ', userSocketInfo);
+      this.gameRoomService.disconnectUser(userSocketInfo);
     }
   }
 
@@ -180,8 +155,9 @@ export class GameGateway implements OnGatewayDisconnect {
     const user = room.redUser.userId === userId ? room.redUser : room.blueUser;
     const userSocketInfo = users.get(user.userId);
     //gameInstance 종료 이벤트
-    if (room.status === GameRoomStatus.ON_GAME)
+    if (room.status === GameRoomStatus.ON_GAME) {
       await this.eventEmitter.emitAsync('gameroom:finish', roomId);
+    }
     if (user.userId === room.redUser.userId) {
       this.server.in(`gameroom-${room.roomId}`).emit('destructGameRoom');
       this.chatGateway.server
@@ -217,13 +193,11 @@ export class GameGateway implements OnGatewayDisconnect {
     const userSocketInfo = users.get(userId);
 
     // 초대장을 생성
-    invitations.push({
-      invitationId: invitations.length + 1,
-      inviterId: userId,
-      inviteeId: targetUserId,
-      matchType: matchType,
-      expirationTime: new Date(new Date().getTime() + 1000 * 60),
-    });
+    const invitation = this.gameRoomService.createInvitation(
+      userId,
+      targetUserId,
+      matchType,
+    );
 
     // 초대장을 받은 유저에게 초대장을 전달
     // FIXME: 초대장에 어떤 내용을 담을지 협의 필요
@@ -234,9 +208,7 @@ export class GameGateway implements OnGatewayDisconnect {
 
     // 1분 후 초대장이 남아있다면 초대장을 삭제
     setTimeout(() => {
-      invitations = invitations.filter(
-        (invitation) => invitation.invitationId !== invitations.length,
-      );
+      this.gameRoomService.deleteInvitationById(invitation);
     }, 1000 * 60);
   }
 
@@ -247,9 +219,7 @@ export class GameGateway implements OnGatewayDisconnect {
     const inviteeSocketInfo = users.get(userId);
 
     // 초대장 정보
-    const invitation = invitations.find(
-      (invitation) => invitation.inviteeId === userId,
-    );
+    const invitation = this.gameRoomService.findInvitationByInviteeId(userId);
 
     // 초대한 사람의 socket 정보
     const inviterId = invitation.inviterId;
@@ -305,9 +275,7 @@ export class GameGateway implements OnGatewayDisconnect {
     this.server.in(`gameroom-${roomId}`).emit('gameRoomMatched', gameRoom);
 
     // 초대장을 삭제
-    invitations = invitations.filter(
-      (invitation) => invitation.inviteeId !== userId,
-    );
+    this.gameRoomService.deleteInvitaionByInviteeId(userId);
 
     // 게임방에 입장한 유저들에게 입장 메시지를 보냅니다.
     this.server
@@ -327,16 +295,13 @@ export class GameGateway implements OnGatewayDisconnect {
     // 초대받은 사람의 socket 정보
     const inviteeSocketInfo = users.get(userId);
 
-    const inviterId = invitations.find(
-      (invitation) => invitation.inviteeId === userId,
-    ).inviterId;
+    const inviterId =
+      this.gameRoomService.findInvitationByInviteeId(userId).inviterId;
     // 초대한 사람의 socket 정보
     const inviterSocketInfo = users.get(inviterId);
 
     // inviteeId가 userId인 초대장을 삭제
-    invitations = invitations.filter(
-      (invitation) => invitation.inviteeId !== userId,
-    );
+    this.gameRoomService.deleteInvitaionByInviteeId(userId);
 
     // 초대한 사람에게 초대 거절을 알림
     this.server.in(inviterSocketInfo.gameSocketId).emit('rejectInviteGameRoom');
@@ -519,6 +484,10 @@ export class GameGateway implements OnGatewayDisconnect {
   async onGameFinish(roomId: number) {
     this.logger.log(`Called ${this.onGameFinish.name}`);
     const room = gameRooms.get(roomId);
+    // 유저를 unready 상태로 변경
+    this.eventEmitter.emit('gameroom:unready', roomId, room.redUser?.userId);
+    this.eventEmitter.emit('gameroom:unready', roomId, room.blueUser?.userId);
+
     //전적 처리를 위한 게임 결과 정보 반환
     const gameResult = room.gameInstance.finishGame();
     room.gameInstance = null;
