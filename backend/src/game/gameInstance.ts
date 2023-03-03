@@ -217,11 +217,11 @@ export class GameInstance {
       nextBallX = this.info.gameScreen.width;
     } else if (nextBallY - gameConfig.ball.size < 0) {
       //천장 충돌
-      nextBallY = 0;
+      nextBallY = 0 + gameConfig.ball.size;
       tempBallDy *= -1;
     } else if (nextBallY + gameConfig.ball.size > this.info.gameScreen.height) {
       //바닥 충돌
-      nextBallY = this.info.gameScreen.height;
+      nextBallY = this.info.gameScreen.height - gameConfig.ball.size;
       tempBallDy *= -1;
     } else {
       //패들 충돌
@@ -255,15 +255,16 @@ export class GameInstance {
   private checkCollision(ballX, ballY, radius, paddleX, paddleY, paddleW, paddleH): boolean {
     let left = paddleX;
     let right = paddleX + paddleW;
-    let top = ballY;
-    let bottom = ballY + paddleH;
+    let top = paddleY;
+    let bottom = paddleY + paddleH;
 
-    if ( (left <= ballX && ballX <= right) || (bottom <= ballY && ballY <= top) ) {
-      left = left - radius;
-      right = right + radius;
-      top = top + radius;
-      bottom = bottom - radius;
-      if (left < ballX && ballX < right && bottom < ballY && ballY < top)
+    if ( (left <= ballX && ballX <= right) || (top <= ballY && ballY <= bottom) ) {
+      const leftEx = left - radius;
+      const rightEx = right + radius;
+      const topEx = top - radius;
+      const bottomEx = bottom + radius;
+
+      if (leftEx < ballX && ballX < rightEx && topEx < ballY && ballY < bottomEx)
       {
          return true;
       }
@@ -282,13 +283,11 @@ export class GameInstance {
   private isPointonCircle(ballX, ballY, radius, pointX, pointY): boolean {
     const deltaX = ballX - pointX;
     const deltaY = ballY - pointY;
-
     const length = deltaX*deltaX + deltaY*deltaY;
 
     if (length > radius*radius) {
       return false;
     }
-
     return true;
   }
 
