@@ -140,6 +140,10 @@ export class ChatroomController {
       }
     }
 
+    if (chatroomInfo.mode === ChatRoomMode.PRIVATE) {
+      throw new ForbiddenException('초대된 유저만 입장할 수 있습니다.');
+    }
+
     // 7. 채팅방에 입장
     this.eventEmitter.emit('chatroom:join', roomId, user.userId);
 

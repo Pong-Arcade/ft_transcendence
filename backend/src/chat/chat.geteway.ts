@@ -19,6 +19,7 @@ import { ChangeChatroomInfoRequestDto } from 'src/dto/request/chatroom.change.in
 import { UserChatMode } from 'src/enum/user.chat.mode.enum';
 import { UserChatDto } from 'src/dto/user.chat.dto';
 import { ChatRoomMode } from 'src/enum/chatroom.mode.enum';
+import { GameRoomService } from 'src/game/gameroom.service';
 export const rooms = new Map<number, Room>();
 let roomCount = 1;
 
@@ -44,11 +45,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   eventEmitter = new EventEmitter2();
   muteUsers = new Array<number>();
 
-  // private readonly userService: UserService;
   constructor(
-    private readonly chatService: ChatroomService,
-    //@Inject(UserService)
     private readonly userService: UserService,
+    private readonly gameRoomService: GameRoomService,
   ) {}
 
   @WebSocketServer() server: Namespace;
@@ -59,6 +58,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       // 끊긴 소켓 삭제
       users.forEach((value, key, map) => {
         if (socket.id == value.socketId) {
+          // 채팅방 소켓 정리
           if (value.location > 0) {
             for (let i = 0; i < rooms.get(value.location).users.length; i++) {
               if (rooms.get(value.location).users[i] == value.userId) {
@@ -69,6 +69,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
                 break;
               }
             }
+          } else {
+            // 게임방 소켓 정리
+            this.gameRoomService.disconnectUser(value);
           }
           this.server.to('lobby').emit('deleteOnlineUser', key);
           users.delete(key);
@@ -79,7 +82,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
   //연결 끊김
   async handleDisconnect(client) {
-    console.log('disconnect');
+    this.logger.log(`Called ${this.handleDisconnect.name}`);
   }
 
   @SubscribeMessage('addUser')
@@ -97,9 +100,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       user = new User(info.userId, info.userName);
     }
     user.socketId = client.id;
-    console.log(user);
     users.set(info.userId, user);
-    console.log(users);
 
     // 로비 채팅방에 유저 추가
     client.join('lobby');
@@ -117,9 +118,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       fromId: msg.userId,
       content: msg.msg,
       type: EMessageType.MESSAGE,
-      roomId: room.id,
+      roomId: room.roomId,
     };
-    if (room.id === 0) {
+    if (room.roomId === 0) {
       this.server.to('lobby').emit('message', message);
     } else {
       if (this.muteUsers.find((value) => value == msg.userId)) {
@@ -185,6 +186,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @OnEvent('chatroom:leave')
   async leaveChatRoom(roomId, userId) {
     const room = rooms.get(roomId);
+    if (!room) return;
     if (room.masterUser === userId) {
       this.server.in(`chatroom${roomId}`).emit('destructChatRoom');
       this.server.in(`chatroom${roomId}`).socketsJoin('lobby');
@@ -226,7 +228,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     rooms.set(roomId, room);
     console.log('create', roomId);
     this.server.in('lobby').emit('addChatRoom', {
-      roomId: room.id,
+      roomId: room.roomId,
       title: room.title,
       mode: room.mode,
       maxUserCount: room.maxUser,
@@ -252,8 +254,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async acceptInviteChatRoom(roomId, userId) {
     const room = rooms.get(roomId);
     const user = users.get(userId);
-    room.invitedUsers.push(userId);
     this.joinChatRoom(roomId, userId);
+    room.invitedUsers = room.invitedUsers.filter((id) => id != userId);
   }
 
   @OnEvent('chatroom:invite:reject')
@@ -313,7 +315,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (roomInfo.password || room.mode != ChatRoomMode.PUBLIC)
       room.password = roomInfo.password;
     this.server.in('lobby').emit('updateChatRoom', {
-      roomId: room.id,
+      roomId: room.roomId,
       title: room.title,
       mode: room.mode,
       maxUserCount: room.maxUser,

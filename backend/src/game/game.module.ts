@@ -22,11 +22,11 @@ import { StatModule } from 'src/stat/stat.module';
     }),
     AuthModule,
     UserModule,
-    ChatModule,
+    forwardRef(() => ChatModule),
     StatModule,
   ],
   providers: [GameGateway, GameRoomService],
-  exports: [GameGateway],
+  exports: [GameGateway, GameRoomService],
   controllers: [GameRoomController],
 })
 export class GameModule {}

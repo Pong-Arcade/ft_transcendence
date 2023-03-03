@@ -13,10 +13,11 @@ import UserInfoModal from "../UserInfoModal";
 import ChatRoomMenu from "../ChatRoomMenu";
 import { IUser } from "../Pagination/Pagination";
 import { SocketContext } from "../../../utils/ChatSocket";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { userMode } from "../Pagination/Pagination";
 import { useRecoilValue } from "recoil";
 import infoState from "../../../state/InfoState";
+import chatRoomState from "../../../state/ChatRoomState";
 
 const ChatRoomUserListStyled = styled(Board).attrs({
   width: "100%",
@@ -35,7 +36,6 @@ const ChatRoomUserList = () => {
     id,
     name,
   } = useMenu();
-  // const chatRoomInfo = useRecoilValue(chatRoomState);
 
   const {
     isModalOpen: isUserInfoOpen,
@@ -50,13 +50,13 @@ const ChatRoomUserList = () => {
   const socket = useContext(SocketContext);
   const [page, setPage] = useState(0);
   const [userList, setUserList] = useState<IUser[]>();
-  const location = useLocation();
   const navigate = useNavigate();
   const myInfo = useRecoilValue(infoState);
+  const chatRoom = useRecoilValue(chatRoomState);
 
   useEffect(() => {
-    if (location.state && !userList) {
-      const users: IUser[] = location.state.users;
+    if (!userList) {
+      const users: IUser[] = chatRoom.users;
       setUserList(users);
     }
 
