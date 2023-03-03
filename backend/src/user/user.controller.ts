@@ -112,6 +112,10 @@ export class UserController {
     status: 404,
     description: '존재하지 않는 유저입니다.',
   })
+  @ApiResponse({
+    status: 409,
+    description: '이미 존재하는 닉네임입니다.',
+  })
   @HttpCode(201)
   @Post('update')
   @UseInterceptors(
