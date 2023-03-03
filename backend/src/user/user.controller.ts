@@ -38,6 +38,7 @@ import { existsSync, mkdirSync } from 'fs';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.auth.guard';
 import { v4 as uuid } from 'uuid';
 import { UserDetailResponseDto } from '../dto/response/user.detail.response.dto';
+import { users } from '../status/status.module';
 
 @ApiTags('Users')
 @ApiBearerAuth()
@@ -110,6 +111,10 @@ export class UserController {
   @ApiResponse({
     status: 404,
     description: '존재하지 않는 유저입니다.',
+  })
+  @ApiResponse({
+    status: 409,
+    description: '이미 존재하는 닉네임입니다.',
   })
   @HttpCode(201)
   @Post('update')

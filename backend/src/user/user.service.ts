@@ -100,10 +100,12 @@ export class UserService {
     newAvatarUrl?: string,
   ): Promise<UserDto> {
     this.logger.log(`Called ${this.updateUserInfo.name}`);
-    return await this.userRepository.updateUserInfo(
+    const userInfo = (await this.userRepository.updateUserInfo(
       userId,
       newNickname,
       newAvatarUrl,
-    );
+    )) as UserDto;
+    users.get(userId).userName = userInfo.nickname;
+    return userInfo;
   }
 }
