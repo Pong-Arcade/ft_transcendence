@@ -205,12 +205,12 @@ export class GameInstance {
     const ballSize = this.info.ball.size;
 
     //승점 처리, 충돌 처리!
-    if (nextBallX < 0) {
+    if (nextBallX - gameConfig.ball.size < 0) {
       //player2 win
       this.scored = true;
       this.info.blueScore++;
       nextBallX = 0;
-    } else if (nextBallX > this.info.gameScreen.width) {
+    } else if (nextBallX + gameConfig.ball.size > this.info.gameScreen.width) {
       //player1 win
       this.scored = true;
       this.info.redScore++;
