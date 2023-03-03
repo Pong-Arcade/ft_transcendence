@@ -127,7 +127,6 @@ const gameBaordEvent = ({
 
   const draw = () => {
     const onGame = isOnGameRef.current;
-    console.log("onGame: ", onGame);
     if (ctx) {
       drawBoard(ctx);
       drawScore(

@@ -69,7 +69,6 @@ export const inviteChatRoomAPI = async (roomId: number, userId: string[]) => {
   const userForm = { users: new Array<number>() };
   for (const id of userId) userForm.users.push(Number(id));
   const response = await postRequest(`chat-rooms/invite/${roomId}`, userForm);
-  console.log("response: ", response);
   return response;
 };
 

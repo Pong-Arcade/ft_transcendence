@@ -57,6 +57,7 @@ const useLobbyData = () => {
 
   const setLobbyData = async () => {
     const info = JSON.parse(getDecodedCookie());
+
     setChatRoom({ roomId: -1, title: "", mastUserId: -1, users: [] });
     setMyInfo(await getUserInfoAPI(info.userId));
     setOnlineUsers(await getOnlineUsersAPI());

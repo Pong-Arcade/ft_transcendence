@@ -25,7 +25,6 @@ const InviteModal = ({ list, onClose }: Props) => {
     getOnlineUsers();
   }, []);
   const onClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    console.log("event: ", e.currentTarget.id);
     if (inviteList.includes(e.currentTarget.id)) {
       setInviteList(inviteList.filter((id) => id !== e.currentTarget.id));
     } else {

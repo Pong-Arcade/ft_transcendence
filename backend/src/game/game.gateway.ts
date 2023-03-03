@@ -64,7 +64,6 @@ export class GameGateway implements OnGatewayDisconnect {
     // 끊긴 소켓 삭제
     const userSocketInfo = users.get(socket.id);
     if (userSocketInfo) {
-      console.log('disconnect gameroom user: ', userSocketInfo);
       this.gameRoomService.disconnectUser(userSocketInfo);
     }
   }
@@ -519,13 +518,11 @@ export class GameGateway implements OnGatewayDisconnect {
 
     const user =
       room.redUser.userId === userId ? InGamePlayer.RED : InGamePlayer.BLUE;
-    if (room.gameInstance) {
-      if (keyCode === 'ArrowUp') {
-        room.gameInstance.setPaddleDirection(user, InGameKeyEvent.ARROW_UP);
-      } else if (keyCode === 'ArrowDown') {
-        room.gameInstance.setPaddleDirection(user, InGameKeyEvent.ARROW_DOWN);
-      }
-    } else console.log(room);
+    if (keyCode === 'ArrowUp') {
+      room.gameInstance.setPaddleDirection(user, InGameKeyEvent.ARROW_UP);
+    } else if (keyCode === 'ArrowDown') {
+      room.gameInstance.setPaddleDirection(user, InGameKeyEvent.ARROW_DOWN);
+    }
   }
 
   @SubscribeMessage('keyUp')
@@ -538,8 +535,6 @@ export class GameGateway implements OnGatewayDisconnect {
 
     const user: InGamePlayer =
       room.redUser.userId === userId ? InGamePlayer.RED : InGamePlayer.BLUE;
-    if (room.gameInstance)
-      room.gameInstance.setPaddleDirection(user, InGameKeyEvent.STOP);
-    else console.log(room);
+    room.gameInstance.setPaddleDirection(user, InGameKeyEvent.STOP);
   }
 }

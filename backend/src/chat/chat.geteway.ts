@@ -124,7 +124,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       this.server.to('lobby').emit('message', message);
     } else {
       if (this.muteUsers.find((value) => value == msg.userId)) {
-        console.log('muted');
         return;
       }
       this.server
@@ -149,7 +148,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         };
         this.server.to(client.id).emit('whisper', toWhisperMsg);
         this.server.to(value.socketId).emit('whisper', fromWhisperMsg);
-        console.log('whisper send');
         return;
       }
     }
@@ -226,7 +224,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       userId,
     );
     rooms.set(roomId, room);
-    console.log('create', roomId);
     this.server.in('lobby').emit('addChatRoom', {
       roomId: room.roomId,
       title: room.title,
@@ -238,7 +235,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @OnEvent('chatroom:invite')
   async inviteChatRoom(roomId, fromId, toUsers) {
-    console.log('invite: ', toUsers);
     const room = rooms.get(roomId);
     const userName = users.get(fromId).userName;
     const to = new Array<User>();
@@ -268,7 +264,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async banChatRoom(roomId, userId) {
     const room = rooms.get(roomId);
     const user = users.get(userId);
-    console.log('ban ', room, user);
     this.server.to(user.socketId).emit('banChatRoom', roomId);
     room.bannedUsers.push(userId);
     this.leaveChatRoom(roomId, userId);
@@ -309,7 +304,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @OnEvent('chatroom:change-info')
   async updateChatRoom(roomId: number, roomInfo: ChangeChatroomInfoRequestDto) {
     const room = rooms.get(roomId);
-    console.log('update', roomInfo);
     room.title = roomInfo.title;
     room.mode = roomInfo.mode;
     if (roomInfo.password || room.mode != ChatRoomMode.PUBLIC)

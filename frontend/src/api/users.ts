@@ -1,6 +1,5 @@
 import { deleteRequest, getRequest, patchRequest, postRequest } from "./axios";
 
-// TODO: 실패 처리
 export const getOnlineUsersAPI = async () => {
   const response = await getRequest("users");
   return response.data.onlineUsers;

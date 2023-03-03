@@ -99,7 +99,7 @@ const RelationConfirmModal = ({
   let onYesConfirm = () => {
     return;
   };
-  console.log("cur:", currentOn);
+
   switch (currentOn) {
     case EChatCurrentOn.ADD_FRIEND:
       title = EMenu.ADD_FRIEND;
@@ -122,7 +122,6 @@ const RelationConfirmModal = ({
       onYesConfirm = onDelBlock;
       break;
     case EChatCurrentOn.BAN:
-      console.log("banuser");
       title = EChatCurrentOn.BAN;
       content = `${name}님을 추방하시겠습니까?`;
       onYesConfirm = onBanUser;

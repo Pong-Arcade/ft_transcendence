@@ -52,7 +52,7 @@ const ChatInviteModal = ({
     rejectInviteChatRoomAPI(roomId);
     onClose();
   };
-  console.log("in modal:", userName, roomId);
+
   return (
     <ConfirmModal title="채팅초대" onClose={onClose}>
       <Typography fontSize="2.8rem">
