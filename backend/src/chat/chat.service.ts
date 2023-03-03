@@ -82,13 +82,18 @@ export class ChatroomService {
     chatrooms.chatRooms = [];
     for (const room of rooms.values()) {
       if (room.roomId !== 0) {
-        chatrooms.chatRooms.push({
-          roomId: room.roomId,
-          title: room.title,
-          mode: room.mode,
-          maxUserCount: room.maxUser,
-          currentCount: room.users.length,
-        });
+        if (room.users.length === 0) {
+          // 방의 목록을 출력하는 상황이 되었을 때 Lazy하게 빈 방을 제거
+          rooms.delete(room.roomId);
+        } else {
+          chatrooms.chatRooms.push({
+            roomId: room.roomId,
+            title: room.title,
+            mode: room.mode,
+            maxUserCount: room.maxUser,
+            currentCount: room.users.length,
+          });
+        }
       }
     }
     return chatrooms;
