@@ -22,7 +22,6 @@ const lobbyChatEvent = () => {
     socket.socket.on("updateChatRoom", async (updateRoom: ILobbyChatRoom) => {
       const newList = new Array<ILobbyChatRoom>();
       for (const room of chatRoomList) {
-        console.log(room.roomId, updateRoom.roomId);
         if (room.roomId != updateRoom.roomId) newList.push(room);
         else newList.push(updateRoom);
       }

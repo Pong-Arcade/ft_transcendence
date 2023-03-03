@@ -53,6 +53,7 @@ const CreateChatRoomModal = ({ title, onClose }: Props) => {
 
           setChatRoomState(response.data);
           onClose();
+
           navigate(`/chat-rooms/${response.data.roomId}`);
         })();
       },

@@ -9,8 +9,6 @@ import LobbyUserProfile from "../components/modules/LobbyUserProfile";
 import UserInfoSettingModal from "../components/modules/UserInfoSettingModal";
 import LobbyTemplate from "../components/templates/LobbyTemplate";
 import useFirstLoginModal from "../hooks/useFirstLoginModal";
-import useLoading from "../hooks/useLoading";
-import FullSpinner from "../components/atoms/FullSpinner";
 import useLobbyData from "../hooks/useLobbyData";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import errorState from "../state/ErrorState";
@@ -58,9 +56,6 @@ const Lobby = () => {
   lobbyGameEvent();
 
   const { setLobbyData, getLobbyData } = useLobbyData();
-  const { isLoading, endLoading } = useLoading({
-    initialLoading: true,
-  });
 
   const {
     onlineUsers,
@@ -98,7 +93,6 @@ const Lobby = () => {
       await setLobbyData().catch(() => {
         setError(true);
       });
-      endLoading();
     })();
 
     socket.socket.on("inviteChatRoom", (roomId: number, userName: string) => {
@@ -158,7 +152,6 @@ const Lobby = () => {
       {isFirstLoginModal && (
         <UserInfoSettingModal onClose={FirstLoginModalClose} info={myInfo} />
       )}
-      {isLoading && <FullSpinner />}
       {isChatInviteModalOpen && (
         <ChatInviteModal
           roomId={inviteRoomId}

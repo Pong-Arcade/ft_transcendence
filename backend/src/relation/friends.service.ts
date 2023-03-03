@@ -60,7 +60,7 @@ export class FriendsService {
       const user = users.get(friend.userId);
       if (user) friend.location = users.get(friend.userId).location;
     });
-    console.log(friends);
+
     return {
       friendUsers: friends,
     };

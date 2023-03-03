@@ -55,7 +55,6 @@ const LobbyChatRoomList = ({ list, page, onNextPage, onPrevPage }: Props) => {
     try {
       const response = await joinChatRoomAPI(roomId);
       response.data.roomId = roomId;
-      console.log(response.data);
       setChatRoomState(response.data);
 
       navigate(`/chat-rooms/${roomId}`, {

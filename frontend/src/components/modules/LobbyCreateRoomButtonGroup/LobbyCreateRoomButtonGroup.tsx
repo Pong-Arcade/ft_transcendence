@@ -45,7 +45,7 @@ const LobbyCreateRoomButtonGroup = () => {
   });
 
   const leaveQuickMatch = async () => {
-    console.log("leave : ", await leaveQuickMatchAPI());
+    await leaveQuickMatchAPI();
     onQuickMatchClose();
   };
 

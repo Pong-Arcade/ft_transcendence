@@ -5,7 +5,6 @@ import Button from "../../atoms/Button";
 import Modal from "../../atoms/Modal";
 import ModalWrapper from "../../atoms/ModalWrapper";
 import Typography from "../../atoms/Typography";
-import ModalTitle from "../ModalTitle";
 import { IUser } from "../Pagination/Pagination";
 
 interface Props {

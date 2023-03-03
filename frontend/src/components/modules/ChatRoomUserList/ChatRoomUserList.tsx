@@ -72,11 +72,9 @@ const ChatRoomUserList = () => {
       navigate(`/lobby`);
     });
     socket.socket.on("banChatRoom", () => {
-      console.log("banchat");
       navigate(`/lobby`);
     });
     socket.socket.on("addAdmin", (userId) => {
-      console.log("addadmin", userId);
       setUserList(
         userList?.map((user) =>
           user.userId == userId ? { ...user, mode: userMode.ADMIN } : user
@@ -84,7 +82,6 @@ const ChatRoomUserList = () => {
       );
     });
     socket.socket.on("deleteAdmin", (userId) => {
-      console.log("deleteadmin", userId);
       setUserList(
         userList?.map((user) =>
           user.userId == userId ? { ...user, mode: userMode.NORMAL } : user

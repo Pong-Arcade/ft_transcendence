@@ -20,7 +20,7 @@ const ConfirmButton = styled(Button).attrs({
 
 const InviteConfirmModal = ({ onClose, onYesConfirm, list }: Props) => {
   const params = useParams();
-  console.log("list: ", list);
+
   if (list.length !== 0) {
     inviteChatRoomAPI(Number(params.chatId), list);
   }

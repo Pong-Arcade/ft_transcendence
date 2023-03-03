@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import ReactDOM from "react-dom/client";
 import {
   createBrowserRouter,
@@ -6,15 +7,17 @@ import {
 } from "react-router-dom";
 import { RecoilRoot } from "recoil";
 import { ThemeProvider } from "styled-components";
-import ChatRoom from "./pages/ChatRoom";
-import GameRoom from "./pages/GameRoom";
-import Lobby from "./pages/Lobby";
+import FullSpinner from "./components/atoms/FullSpinner";
 import Login from "./pages/Login";
 import Login2FA from "./pages/Login2FA";
-import Ranking from "./pages/Ranking";
 import Root from "./pages/Root";
 import GlobalStyle from "./styles/GlobalStyle";
 import theme from "./styles/theme";
+
+const Lobby = lazy(() => import("./pages/Lobby"));
+const Ranking = lazy(() => import("./pages/Ranking"));
+const ChatRoom = lazy(() => import("./pages/ChatRoom"));
+const GameRoom = lazy(() => import("./pages/GameRoom"));
 
 const router = createBrowserRouter([
   {
@@ -61,9 +64,15 @@ root.render(
   // <React.StrictMode>
   <ThemeProvider theme={theme}>
     <GlobalStyle />
-    <RecoilRoot>
-      <RouterProvider router={router} />
-    </RecoilRoot>
+    <Suspense fallback={<Loading />}>
+      <RecoilRoot>
+        <RouterProvider router={router} />
+      </RecoilRoot>
+    </Suspense>
   </ThemeProvider>
   // </React.StrictMode>
 );
+
+function Loading() {
+  return <FullSpinner />;
+}
