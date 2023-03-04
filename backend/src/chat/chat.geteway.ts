@@ -217,6 +217,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async addChatRoom(userId, roomInfo: ChatroomCreateRequestDto) {
     const roomId = roomCount++;
     const user = users.get(userId);
+    if (!user) return;
     user.mode = UserChatMode.MASTER;
     const room = new Room(
       roomId,
