@@ -39,7 +39,7 @@ const UnauthorizedModal = () => {
   const onClose = () => {
     navigate("/");
     removeJWT();
-    setError(false);
+    setError({ isError: false, error: null });
   };
 
   return (

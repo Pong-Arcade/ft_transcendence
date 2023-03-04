@@ -68,7 +68,7 @@ const GlobalErrorModal = ({ errors }: Props) => {
           ) : (
             <ErrorMessage>{message}</ErrorMessage>
           )}
-          <ErrorMessage>로비로 이동하겠습니다</ErrorMessage>
+          <ErrorMessage>로비로 이동</ErrorMessage>
         </Wrapper>
         <ModalButton onClick={onClick}>확인</ModalButton>
       </Modal>
