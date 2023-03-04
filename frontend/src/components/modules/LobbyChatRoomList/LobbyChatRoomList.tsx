@@ -1,5 +1,4 @@
-import { AxiosError } from "axios";
-import { MouseEvent, useRef, useState } from "react";
+import { MouseEvent, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
@@ -7,9 +6,9 @@ import { joinChatRoomAPI } from "../../../api/room";
 import { EChatRoomMode } from "../../../hooks/useChatRoomForm";
 import useModal from "../../../hooks/useModal";
 import chatRoomState from "../../../state/ChatRoomState";
+import errorState from "../../../state/ErrorState";
 import Board from "../../atoms/Board";
 import ChatRoomPasswordModal from "../ChatRoomPasswordModal";
-import ErrorModal from "../ErrorModal";
 import LobbyChatRoomItem from "../LobbyChatRoomItem";
 import LobbyChatRoomPagination from "../LobbyChatRoomPagination";
 import { ILobbyChatRoom } from "../Pagination/Pagination";
@@ -33,8 +32,7 @@ interface Props {
 }
 
 const LobbyChatRoomList = ({ list, page, onNextPage, onPrevPage }: Props) => {
-  const [error, setError] = useState(false);
-  const [errorContent, setErrorContent] = useState("");
+  const setError = useSetRecoilState(errorState);
   const setChatRoomState = useSetRecoilState(chatRoomState);
   const navigate = useNavigate();
   const {
@@ -60,11 +58,8 @@ const LobbyChatRoomList = ({ list, page, onNextPage, onPrevPage }: Props) => {
       navigate(`/chat-rooms/${roomId}`, {
         state: { users: response.data.users },
       });
-    } catch (e: any | AxiosError) {
-      if (e instanceof AxiosError) {
-        setError(true);
-        setErrorContent(e.response?.data.message);
-      }
+    } catch (error) {
+      setError({ isError: true, error });
     }
   };
 
@@ -84,13 +79,6 @@ const LobbyChatRoomList = ({ list, page, onNextPage, onPrevPage }: Props) => {
         <ChatRoomPasswordModal
           onClose={onChatRoomPasswordModalClose}
           roomId={roomIdRef.current as number}
-        />
-      )}
-      {error && (
-        <ErrorModal
-          onClose={() => setError(false)}
-          errors={errorContent}
-          title="방입장 실패"
         />
       )}
     </>

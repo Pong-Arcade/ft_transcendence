@@ -5,7 +5,7 @@ import Button from "../../atoms/Button";
 import Modal from "../../atoms/Modal";
 import ModalWrapper from "../../atoms/ModalWrapper";
 import UserInfoModal from "../UserInfoModal";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import friendUsersState from "../../../state/FriendUsersState";
 import blockUsersState from "../../../state/BlockUsersState";
 import { inviteGameAPI } from "../../../api/room";
@@ -16,7 +16,7 @@ import InviteGameWaitingModal from "../InviteGameWaitingModal";
 import InviteRejectModal from "../InviteRejectModal";
 import InviteGameModal from "../InviteGameModal";
 import ChatConfirmModal from "../ChatConfirmModal/ChatConfirmModal";
-import ErrorModal from "../ErrorModal";
+import errorState from "../../../state/ErrorState";
 
 interface Props {
   list: IUser[];
@@ -109,9 +109,8 @@ const GeneralMenu = ({
   const [currentOn, setCurrentOn] = useState<EChatCurrentOn>();
   const [isMute, setIsMute] = useState(false);
   const socket = useContext(SocketContext);
-  const [error, setError] = useState(false);
-  const [errorContent, setErrorContent] = useState("");
   const [myInfo, setMyInfo] = useState<IUser>();
+  const setError = useSetRecoilState(errorState);
   useEffect(() => {
     setMyInfo(list.find((value) => value.userId == socket.userId));
   }, [list]);
@@ -178,8 +177,12 @@ const GeneralMenu = ({
         break;
       case EChatRoom.INVIATE_GAME:
         (async () => {
-          await inviteGameAPI(userId);
-          onInviteWaitingModalOpen();
+          try {
+            await inviteGameAPI(userId);
+            onInviteWaitingModalOpen();
+          } catch (error) {
+            setError({ isError: true, error });
+          }
         })();
         break;
       case EChatRoom.BAN:
@@ -253,8 +256,6 @@ const GeneralMenu = ({
         <ChatConfirmModal
           onNoConfirm={onConfirmClose}
           onClose={onConfirmClose}
-          setError={setError}
-          setErrorContent={setErrorContent}
           currentOn={currentOn}
           userId={userId}
           name={name}
@@ -269,13 +270,6 @@ const GeneralMenu = ({
       )}
       {isInviteRejectModalOpen && (
         <InviteRejectModal onClose={onInviteRejectModalClose} />
-      )}
-      {error && (
-        <ErrorModal
-          onClose={() => setError(false)}
-          errors={errorContent}
-          title="Error"
-        />
       )}
     </>
   );

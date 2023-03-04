@@ -1,5 +1,5 @@
-import { AxiosError } from "axios";
 import { useParams } from "react-router-dom";
+import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import {
   banChatRoomAPI,
@@ -8,6 +8,7 @@ import {
   promoteAdminAPI,
 } from "../../../api/room";
 import useRelation from "../../../hooks/useRelation";
+import errorState from "../../../state/ErrorState";
 import Button from "../../atoms/Button";
 import Typography from "../../atoms/Typography";
 import ButtonGroup from "../ButtonGroup";
@@ -18,8 +19,6 @@ import { EGeneralCurrentOn, EMenu } from "../GeneralMenu/GeneralMenu";
 interface Props {
   onNoConfirm: () => void;
   onClose: () => void;
-  setError: React.Dispatch<React.SetStateAction<boolean>>;
-  setErrorContent: React.Dispatch<React.SetStateAction<string>>;
   currentOn?: EChatCurrentOn | EGeneralCurrentOn;
   userId: number;
   name: string;
@@ -38,59 +37,47 @@ const Content = styled(Typography).attrs({
   white-space: break-spaces;
 `;
 
-const RelationConfirmModal = ({
+const ChatConfirmModal = ({
   onNoConfirm,
   onClose,
-  setError,
-  setErrorContent,
   currentOn,
   userId,
   name,
 }: Props) => {
+  const setError = useSetRecoilState(errorState);
+
   const { onAddFriend, onDelFriend, onAddBlock, onDelBlock } =
     useRelation(userId);
   const onAddAdmin = async () => {
     try {
-      const response = await promoteAdminAPI(Number(params.chatId), userId);
-    } catch (e: any | AxiosError) {
+      await promoteAdminAPI(Number(params.chatId), userId);
+    } catch (error: any) {
       onClose();
-      if (e instanceof AxiosError) {
-        setError(true);
-        setErrorContent(e.response?.data.message);
-      }
+      setError({ isError: true, error });
     }
   };
   const onDelAdmin = async () => {
     try {
-      const response = await demoteAdminAPI(Number(params.chatId), userId);
-    } catch (e: any | AxiosError) {
+      await demoteAdminAPI(Number(params.chatId), userId);
+    } catch (error: any) {
       onClose();
-      if (e instanceof AxiosError) {
-        setError(true);
-        setErrorContent(e.response?.data.message);
-      }
+      setError({ isError: true, error });
     }
   };
   const onMuteUser = async () => {
     try {
-      const response = await muteChatRoomAPI(Number(params.chatId), userId);
-    } catch (e: any | AxiosError) {
+      await muteChatRoomAPI(Number(params.chatId), userId);
+    } catch (error: any) {
       onClose();
-      if (e instanceof AxiosError) {
-        setError(true);
-        setErrorContent(e.response?.data.message);
-      }
+      setError({ isError: true, error });
     }
   };
   const onBanUser = async () => {
     try {
-      const response = await banChatRoomAPI(Number(params.chatId), userId);
-    } catch (e: any | AxiosError) {
+      await banChatRoomAPI(Number(params.chatId), userId);
+    } catch (error: any) {
       onClose();
-      if (e instanceof AxiosError) {
-        setError(true);
-        setErrorContent(e.response?.data.message);
-      }
+      setError({ isError: true, error });
     }
   };
   let title = "";
@@ -157,4 +144,4 @@ const RelationConfirmModal = ({
   );
 };
 
-export default RelationConfirmModal;
+export default ChatConfirmModal;

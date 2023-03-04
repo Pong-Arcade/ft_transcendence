@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import { enroll2FAAPI } from "../../../api/auth";
 import { getUserInfoAPI } from "../../../api/users";
 import useFriendUsers from "../../../hooks/useFriendUsers";
 import useModal from "../../../hooks/useModal";
+import errorState from "../../../state/ErrorState";
 import friendUsersState from "../../../state/FriendUsersState";
 import infoState from "../../../state/InfoState";
 import { removeJWT } from "../../../utils/token";
@@ -124,12 +125,17 @@ const CurrentLocationContent = styled(Board).attrs({
 const UserInfoModal = ({ onClose, userId }: Props) => {
   const myInfo = useRecoilValue(infoState);
   const [userInfo, setUserInfo] = useState<IUser>({});
+  const setError = useSetRecoilState(errorState);
 
   useEffect(() => {
     (async () => {
-      const data = await getUserInfoAPI(userId);
-      const date = new Date(data.firstLogin);
-      setUserInfo({ ...data, firstLogin: date.toISOString().split("T")[0] });
+      try {
+        const data = await getUserInfoAPI(userId);
+        const date = new Date(data.firstLogin);
+        setUserInfo({ ...data, firstLogin: date.toISOString().split("T")[0] });
+      } catch (error) {
+        setError({ isError: true, error });
+      }
     })();
   }, []);
 
@@ -169,9 +175,13 @@ const UserInfoModal = ({ onClose, userId }: Props) => {
   const navigate = useNavigate();
 
   const onEnroll2FA = async () => {
-    await enroll2FAAPI();
-    removeJWT();
-    navigate("/");
+    try {
+      await enroll2FAAPI();
+      removeJWT();
+      navigate("/");
+    } catch (error) {
+      setError({ isError: true, error });
+    }
   };
 
   return (

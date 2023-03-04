@@ -1,5 +1,7 @@
 import { useContext, useEffect, useRef, useState } from "react";
+import { useSetRecoilState } from "recoil";
 import { readyGameRoomAPI, unReadyGameRoomAPI } from "../../api/room";
+import errorState from "../../state/ErrorState";
 import GameSocket from "../../state/GameSocket";
 import { IScore } from "./gameBoardEvent";
 
@@ -32,10 +34,15 @@ const gameStartEvent = (roomId: number) => {
     };
   }, []);
 
+  const setError = useSetRecoilState(errorState);
   const onReady = async () => {
-    if (!isReady) await readyGameRoomAPI(roomId);
-    else await unReadyGameRoomAPI(roomId);
-    setReady((prev) => !prev);
+    try {
+      if (!isReady) await readyGameRoomAPI(roomId);
+      else await unReadyGameRoomAPI(roomId);
+      setReady((prev) => !prev);
+    } catch (error) {
+      setError({ isError: true, error });
+    }
   };
 
   return {

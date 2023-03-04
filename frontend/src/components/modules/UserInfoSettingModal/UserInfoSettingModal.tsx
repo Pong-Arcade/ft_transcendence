@@ -3,6 +3,7 @@ import { ChangeEvent, useState } from "react";
 import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import { getUserInfoAPI, updateUserInfoAPI } from "../../../api/users";
+import errorState from "../../../state/ErrorState";
 import infoState from "../../../state/InfoState";
 import Avatar from "../../atoms/Avatar";
 import Board from "../../atoms/Board";
@@ -59,26 +60,28 @@ const UserInfoSettingModal = ({ onClose, info }: Props) => {
   });
   const [avatarUrl, setAvatarUrl] = useState<string>(info.avatarUrl);
   const setMyInfo = useSetRecoilState(infoState);
+  const setError = useSetRecoilState(errorState);
 
   const onSubmit = async () => {
-    if (userInfo.avatarImage) {
-      const options = {
-        maxWidthOrHeight: 200,
-      };
-      try {
+    try {
+      if (userInfo.avatarImage) {
+        const options = {
+          maxWidthOrHeight: 200,
+        };
+
         const compressedFile = await imageCompression(
           userInfo.avatarImage,
           options
         );
         await updateUserInfoAPI(userInfo.nickname, compressedFile);
-      } catch (e: any) {
-        throw new Error(e);
+      } else {
+        await updateUserInfoAPI(userInfo.nickname);
       }
-    } else {
-      await updateUserInfoAPI(userInfo.nickname);
+      setMyInfo(await getUserInfoAPI(info.userId as number));
+      onClose();
+    } catch (error) {
+      setError({ isError: true, error });
     }
-    setMyInfo(await getUserInfoAPI(info.userId as number));
-    onClose();
   };
 
   const onChangeUserInfo = async (e: ChangeEvent<HTMLInputElement>) => {
