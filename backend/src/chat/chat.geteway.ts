@@ -144,6 +144,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
   @SubscribeMessage('whisper')
   async onWhisper(client, msg) {
+    if (msg.fromName == msg.toName) {
+      return;
+    }
     for (const value of users.values()) {
       if (value.userName == msg.toName) {
         const toWhisperMsg: IMessage = {
