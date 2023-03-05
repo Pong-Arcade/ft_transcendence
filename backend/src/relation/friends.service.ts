@@ -12,7 +12,7 @@ import Relation from 'src/entity/relation.entity';
 import { Repository } from 'typeorm';
 import { UserRelationType } from 'src/enum/user.relation.enum';
 import { UserService } from 'src/user/user.service';
-import { users } from '../status/status.module';
+import { StatusService } from 'src/status/status.service';
 
 @Injectable()
 export class FriendsService {
@@ -21,6 +21,7 @@ export class FriendsService {
     @InjectRepository(Relation)
     private readonly relationRepository: Repository<Relation>,
     private readonly userService: UserService,
+    private readonly statusService: StatusService,
   ) {}
 
   /**
@@ -57,8 +58,8 @@ export class FriendsService {
       },
     );
     friends.forEach((friend) => {
-      const user = users.get(friend.userId);
-      if (user) friend.location = users.get(friend.userId).location;
+      const user = this.statusService.getUserSocketInfoByUserId(friend.userId);
+      if (user) friend.location = user.location;
     });
 
     return {

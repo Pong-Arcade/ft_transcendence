@@ -1,6 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { GameRoomListResponseDto } from 'src/dto/response/gameroom.list.response.dto';
-import { gameRooms } from './game.gateway';
 import { UserService } from 'src/user/user.service';
 import { GameRoom, Invitation } from './gameroom.entity';
 import { GameRoomUsersInfoResponseDto } from 'src/dto/response/gameroom.users.info.response.dto';
@@ -9,6 +8,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { User } from 'src/status/status.entity';
 
 export let invitations: Invitation[] = [];
+export const gameRooms = new Map<number, GameRoom>();
 
 const quickMatchQueues = {
   [MatchType.NORMAL]: new Array<number>(),
@@ -24,6 +24,12 @@ export class GameRoomService {
     private readonly eventEmitter: EventEmitter2,
   ) {}
 
+  /**
+   * 유저와 연결이 끊어졌을 때 호출되는 메서드입니다.
+   * 유저가 게임방에 있을 경우 게임방에서 나가는 로직을 호출합니다.
+   * 유저가 초대장을 가지고 있을 경우 초대장을 삭제합니다.
+   * @param userSocketInfo
+   */
   disconnectUser(userSocketInfo: User) {
     this.logger.log(`Called ${this.disconnectUser.name}`);
     for (const roomId of gameRooms.keys()) {
@@ -39,6 +45,15 @@ export class GameRoomService {
     }
   }
 
+  /**
+   * 초대장을 생성합니다.
+   * 초대장은 1분간 유효합니다.
+   * 초대장을 생성할 때마다 초대장 ID를 1씩 증가시킵니다.
+   * @param inviterId
+   * @param inviteeId
+   * @param matchType
+   * @returns
+   */
   createInvitation(
     inviterId: number,
     inviteeId: number,
@@ -58,6 +73,10 @@ export class GameRoomService {
     return invitation;
   }
 
+  /**
+   * 초대장 ID로 초대장을 삭제합니다.
+   * @param invitation
+   */
   deleteInvitationById(invitation: Invitation) {
     this.logger.log(`Called ${this.deleteInvitationById.name}`);
     invitations = invitations.filter(
@@ -65,6 +84,10 @@ export class GameRoomService {
     );
   }
 
+  /**
+   * 초대 받은 사람의 ID로 초대장을 삭제합니다.
+   * @param inviteeId
+   */
   deleteInvitaionByInviteeId(inviteeId: number) {
     this.logger.log(`Called ${this.deleteInvitaionByInviteeId.name}`);
     invitations = invitations.filter(
@@ -72,6 +95,11 @@ export class GameRoomService {
     );
   }
 
+  /**
+   * 초대 받은 사람의 ID로 초대장을 조회합니다.
+   * @param inviteeId
+   * @returns
+   */
   findInvitationByInviteeId(inviteeId: number): Invitation {
     this.logger.log(`Called ${this.findInvitationByInviteeId.name}`);
     return invitations.find((invitation) => invitation.inviteeId === inviteeId);
@@ -148,6 +176,30 @@ export class GameRoomService {
   getGameRoomInfo(roomId: number): GameRoom {
     this.logger.log(`Called ${this.getGameRoomInfo.name}`);
     return gameRooms.get(roomId);
+  }
+
+  /**
+   * 게임방의 개수를 조회합니다.
+   * @returns
+   */
+  getGameRoomCount(): number {
+    this.logger.log(`Called ${this.getGameRoomCount.name}`);
+    return gameRooms.size;
+  }
+
+  /**
+   * 새 게임방을 생성합니다.
+   * @param roomId
+   * @param gameRoom
+   */
+  createGameRoom(roomId: number, gameRoom: GameRoom) {
+    this.logger.log(`Called ${this.createGameRoom.name}`);
+    gameRooms.set(roomId, gameRoom);
+  }
+
+  deleteGameRoom(roomId: number) {
+    this.logger.log(`Called ${this.deleteGameRoom.name}`);
+    gameRooms.delete(roomId);
   }
 
   /**

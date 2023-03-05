@@ -10,8 +10,8 @@ import { IUserRepository } from './repository/user.repository.interface';
 import { Cache } from 'cache-manager';
 import { UserDetailResponseDto } from '../dto/response/user.detail.response.dto';
 import { StatService } from '../stat/stat.service';
-import { users } from 'src/status/status.module';
 import { UserStatus } from 'src/enum/user.status.enum';
+import { users } from 'src/status/status.module';
 
 @Injectable()
 export class UserService {

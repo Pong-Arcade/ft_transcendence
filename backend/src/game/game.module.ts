@@ -8,6 +8,7 @@ import { GameRoomService } from './gameroom.service';
 import { UserModule } from 'src/user/user.module';
 import { ChatModule } from 'src/chat/chat.module';
 import { StatModule } from 'src/stat/stat.module';
+import { StatusModule } from 'src/status/status.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { StatModule } from 'src/stat/stat.module';
     UserModule,
     forwardRef(() => ChatModule),
     StatModule,
+    StatusModule,
   ],
   providers: [GameGateway, GameRoomService],
   exports: [GameGateway, GameRoomService],

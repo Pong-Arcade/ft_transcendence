@@ -6,7 +6,6 @@ import {
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { User } from '../status/status.entity';
-import { users } from '../status/status.module';
 import { Room } from '../chat/chatroom.entity';
 import { Namespace } from 'socket.io';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
@@ -18,6 +17,7 @@ import { ChangeChatroomInfoRequestDto } from 'src/dto/request/chatroom.change.in
 import { UserChatMode } from 'src/enum/user.chat.mode.enum';
 import { ChatRoomMode } from 'src/enum/chatroom.mode.enum';
 import { GameRoomService } from 'src/game/gameroom.service';
+import { users } from 'src/status/status.module';
 export const rooms = new Map<number, Room>();
 let roomCount = 1;
 
