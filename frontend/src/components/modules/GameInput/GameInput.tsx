@@ -1,10 +1,10 @@
 import React, { useContext, useState } from "react";
 import Input from "../../atoms/Input";
-import { SocketContext } from "../../../utils/ChatSocket";
+import GameSocket from "../../../state/GameSocket";
 
-const ChatInput = () => {
+const GameInput = () => {
   const [msg, setMsg] = useState<string>();
-  const socket = useContext(SocketContext);
+  const socket = useContext(GameSocket);
   const enterkey = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key !== "Enter" || !msg || msg === "" || !socket) return;
 
@@ -41,4 +41,4 @@ const ChatInput = () => {
   );
 };
 
-export default ChatInput;
+export default GameInput;

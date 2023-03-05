@@ -11,6 +11,7 @@ import ButtonGroup from "../components/modules/ButtonGroup";
 import Chat from "../components/modules/Chat";
 import ExitConfirmModal from "../components/modules/ExitConfirmModal";
 import GameBoard from "../components/modules/GameBoard";
+import GameChat from "../components/modules/GameChat";
 import GameCountDown from "../components/modules/GameCountDown";
 import GameFinish from "../components/modules/GameFinish";
 import GeneralMenu from "../components/modules/GeneralMenu";
@@ -142,7 +143,7 @@ const GameRoom = () => {
               <Typography fontSize="1.2rem">(BLUE)</Typography>
             </UserProfile>
           </UserProfileGroup>
-          <Chat width="98%" height="54%" />
+          <GameChat width="98%" height="54%" />
           <ButtonGroup
             width="100%"
             height="10%"

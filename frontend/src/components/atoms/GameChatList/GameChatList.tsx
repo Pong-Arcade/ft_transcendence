@@ -1,7 +1,9 @@
+
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import blockUsersState from "../../../state/BlockUsersState";
+import GameSocket from "../../../state/GameSocket";
 import { SocketContext } from "../../../utils/ChatSocket";
 import ChatListItem from "../ChatListItem";
 
@@ -14,7 +16,7 @@ interface Props {
   fontSize?: string;
 }
 
-const ChatListStyled = styled.div<Props>`
+const GameChatListStyled = styled.div<Props>`
   width: ${(props) => props.width};
   height: ${(props) => props.height};
   background-color: ${(props) =>
@@ -57,10 +59,10 @@ export enum EMessageType {
   SYSTEMMSG = "systemMsg",
 }
 
-const ChatList = ({ ...rest }: Props) => {
+const GameChatList = ({ ...rest }: Props) => {
   const [list, setList] = useState<IMessage[]>([]);
   const blockUsers = useRecoilValue(blockUsersState);
-  const socket = useContext(SocketContext);
+  const socket = useContext(GameSocket);
   useEffect(() => {
     const newMessage = (newMsg: IMessage) => {
       for (const user of blockUsers) {
@@ -84,7 +86,7 @@ const ChatList = ({ ...rest }: Props) => {
   });
 
   return (
-    <ChatListStyled {...rest} ref={scrollRef}>
+    <GameChatListStyled {...rest} ref={scrollRef}>
       {list.map((item, index) =>
         item.type === EMessageType.MESSAGE ? (
           <ChatListItem key={index}>{item.content}</ChatListItem>
@@ -100,8 +102,8 @@ const ChatList = ({ ...rest }: Props) => {
           )
         )
       )}
-    </ChatListStyled>
+    </GameChatListStyled>
   );
 };
 
-export default ChatList;
+export default GameChatList;
