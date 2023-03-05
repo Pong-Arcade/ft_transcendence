@@ -10,7 +10,7 @@ import UserInfoSettingModal from "../components/modules/UserInfoSettingModal";
 import LobbyTemplate from "../components/templates/LobbyTemplate";
 import useFirstLoginModal from "../hooks/useFirstLoginModal";
 import useLobbyData from "../hooks/useLobbyData";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useSetRecoilState } from "recoil";
 import errorState from "../state/ErrorState";
 import LobbyRoomListTypeChoiceButtonGroup from "../components/modules/LobbyRoomListTypeChoiceButtonGroup";
 import { EROOM_BUTTON } from "../components/modules/LobbyRoomListTypeChoiceButtonGroup/LobbyRoomListTypeChoiceButtonGroup";
@@ -20,8 +20,6 @@ import ChatInviteModal from "../components/modules/ChatInviteModal";
 import lobbyChatEvent from "../event/ChatEvent/lobbyChatEvent";
 import lobbyGameEvent from "../event/GameEvent/lobbyGameEvent";
 import { SocketContext } from "../utils/ChatSocket";
-import ErrorModal from "../components/modules/ErrorModal";
-import chatRoomState from "../state/ChatRoomState";
 
 const UserWrapper = styled(Board).attrs({
   width: "25%",
@@ -72,9 +70,6 @@ const Lobby = () => {
   const socket = useContext(SocketContext);
   const [inviteRoomId, setInviteRoomId] = useState(0);
   const [inviteUserName, setInviteUserName] = useState("");
-  const [roomError, setRoomError] = useState(false);
-  const [errorContent, setErrorContent] = useState("");
-  const chatRoom = useRecoilValue(chatRoomState);
 
   const onChoiceButtonClick = (button: EROOM_BUTTON) => {
     setCurrentButton(button);
@@ -90,9 +85,11 @@ const Lobby = () => {
 
   useEffect(() => {
     (async () => {
-      await setLobbyData().catch(() => {
-        setError(true);
-      });
+      try {
+        await setLobbyData();
+      } catch (error) {
+        setError({ isError: true, error });
+      }
     })();
 
     socket.socket.on("inviteChatRoom", (roomId: number, userName: string) => {
@@ -102,7 +99,7 @@ const Lobby = () => {
     });
 
     socket.socket.on("otherLogin", () => {
-      setError(true);
+      setError({ isError: true, error: "" });
     });
     return () => {
       socket.socket.off("inviteChatRoom");
@@ -162,15 +159,6 @@ const Lobby = () => {
           roomId={inviteRoomId}
           userName={inviteUserName}
           onClose={onChatInviteModalClose} // 초대 거절
-          setError={setRoomError}
-          setErrorContent={setErrorContent}
-        />
-      )}
-      {roomError && (
-        <ErrorModal
-          onClose={() => setRoomError(false)}
-          errors={errorContent}
-          title="방입장 실패"
         />
       )}
     </>

@@ -1,4 +1,3 @@
-import { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
 import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
@@ -7,6 +6,7 @@ import {
   rejectInviteChatRoomAPI,
 } from "../../../api/room";
 import chatRoomState from "../../../state/ChatRoomState";
+import errorState from "../../../state/ErrorState";
 import Button from "../../atoms/Button";
 import Typography from "../../atoms/Typography";
 import ButtonGroup from "../ButtonGroup";
@@ -16,8 +16,6 @@ interface Props {
   userName: string;
   roomId: number;
   onClose: () => void;
-  setError: (arg0: boolean) => void;
-  setErrorContent: (arg0: string) => void;
 }
 
 const ConfirmButton = styled(Button).attrs({
@@ -25,27 +23,19 @@ const ConfirmButton = styled(Button).attrs({
   height: "100%",
 })``;
 
-const ChatInviteModal = ({
-  userName,
-  roomId,
-  onClose,
-  setError,
-  setErrorContent,
-}: Props) => {
+const ChatInviteModal = ({ userName, roomId, onClose }: Props) => {
   const navigate = useNavigate();
   const setChatRoomState = useSetRecoilState(chatRoomState);
+  const setError = useSetRecoilState(errorState);
   const onYesConfirm = async () => {
     try {
       const response = await acceptInviteChatRoomAPI(roomId);
       response.data.roomId = roomId;
       setChatRoomState(response.data);
       navigate("/chat-rooms/" + roomId);
-    } catch (e: any | AxiosError) {
+    } catch (error) {
       onClose();
-      if (e instanceof AxiosError) {
-        setError(true);
-        setErrorContent(e.response?.data.message);
-      }
+      setError({ isError: true, error });
     }
   };
   const onNoConfirm = () => {

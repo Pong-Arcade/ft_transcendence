@@ -7,6 +7,7 @@ import useChatRoomForm, {
   EChatRoomMode,
 } from "../../../hooks/useChatRoomForm";
 import chatRoomState from "../../../state/ChatRoomState";
+import errorState from "../../../state/ErrorState";
 import Button from "../../atoms/Button";
 import Modal from "../../atoms/Modal";
 import ModalInputWrapper from "../../atoms/ModalInputWrapper";
@@ -45,16 +46,19 @@ const SubmitButton = styled(Button).attrs({
 const CreateChatRoomModal = ({ title, onClose }: Props) => {
   const navigate = useNavigate();
   const setChatRoomState = useSetRecoilState(chatRoomState);
+  const setError = useSetRecoilState(errorState);
   const { values, errors, onErrorModalClose, onChangeForm, onSubmitForm } =
     useChatRoomForm({
       onSubmit: () => {
         (async () => {
-          const response = await createChatRoomAPI(values);
-
-          setChatRoomState(response.data);
-          onClose();
-
-          navigate(`/chat-rooms/${response.data.roomId}`);
+          try {
+            const response = await createChatRoomAPI(values);
+            setChatRoomState(response.data);
+            onClose();
+            navigate(`/chat-rooms/${response.data.roomId}`);
+          } catch (error) {
+            setError({ isError: true, error });
+          }
         })();
       },
     });

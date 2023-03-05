@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
-import UnauthorizedModal from "../components/modules/UnauthorizedModal";
+import GlobalErrorModal from "../components/modules/GlobalErrorModal";
 import errorState from "../state/ErrorState";
 
 const RootStyled = styled.div`
@@ -21,7 +21,7 @@ const Root = () => {
       <RootStyled>
         <Outlet />
       </RootStyled>
-      {error && <UnauthorizedModal />}
+      {error.isError && <GlobalErrorModal errors={error}></GlobalErrorModal>}
     </>
   );
 };

@@ -53,6 +53,7 @@ export class ChatroomService {
     roomId: number,
   ): Promise<ChatroomCreateUsersInfoResponseDto> {
     this.logger.log(`Called ${this.getChatroomCreateUsersInfo.name}`);
+    if (!roomId) return undefined;
     const chatroomInfo = this.getChatroomInfo(roomId);
     const chatroomUsersInfo = new ChatroomCreateUsersInfoResponseDto();
     chatroomUsersInfo.roomId = chatroomInfo.roomId;

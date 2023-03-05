@@ -3,7 +3,7 @@ import Title from "../components/modules/Title";
 import ChatRoomUserList from "../components/modules/ChatRoomUserList";
 import ChatRoomButtonGroup from "../components/modules/ChatRoomButtonGroup";
 import ChatRoomPasswordModify from "../components/modules/ChatRoomPasswordModify";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import chatRoomState from "../state/ChatRoomState";
 import infoState from "../state/InfoState";
 import styled from "styled-components";
@@ -45,10 +45,11 @@ const ChatRoom = () => {
   const [chatRoom, setChatRoom] = useRecoilState(chatRoomState);
   const myInfo = useRecoilValue(infoState);
   const socket = useContext(SocketContext);
-  const [error, setError] = useRecoilState(errorState);
+  const setError = useSetRecoilState(errorState);
 
   useEffect(() => {
-    // if (chatRoom.roomId === -1) setError(true);
+    if (chatRoom.roomId === -1) setError({ isError: true, error: "" });
+
     socket.socket.on("updateChatRoom", (title) =>
       setChatRoom({
         roomId: chatRoom.roomId,
@@ -58,7 +59,7 @@ const ChatRoom = () => {
       })
     );
     socket.socket.on("otherLogin", () => {
-      setError(true);
+      setError({ isError: true, error: "" });
     });
     return () => {
       socket.socket.off("updateChatRoom");

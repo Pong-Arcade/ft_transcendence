@@ -42,21 +42,12 @@ const useChatRoomForm = ({ onSubmit }: IUseChatRoomForm) => {
   const onChangeForm = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     if (name === EChatRoomFormValues.MODE) {
-      if (value === EChatRoomMode.PRIVATE) {
-        setValues({
-          [name]: value,
-          [EChatRoomFormValues.TITLE]: "",
-          [EChatRoomFormValues.PASSWORD]: "",
-          [EChatRoomFormValues.MAXUSER_COUNT]: "",
-        });
-      } else {
-        setValues({
-          [name]: value,
-          [EChatRoomFormValues.TITLE]: "",
-          [EChatRoomFormValues.PASSWORD]: "",
-          [EChatRoomFormValues.MAXUSER_COUNT]: "",
-        });
-      }
+      setValues({
+        [name]: value,
+        [EChatRoomFormValues.TITLE]: "",
+        [EChatRoomFormValues.PASSWORD]: "",
+        [EChatRoomFormValues.MAXUSER_COUNT]: "",
+      });
     } else {
       setValues({ ...values, [name]: value });
     }
@@ -64,8 +55,9 @@ const useChatRoomForm = ({ onSubmit }: IUseChatRoomForm) => {
 
   const onSubmitForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setErrors(ChatRoomFormValidator({ ...values }));
-    if (errors && Object.keys(errors).length === 0) {
+    const error = ChatRoomFormValidator({ ...values });
+    setErrors(error);
+    if (error && Object.keys(error).length === 0) {
       onSubmit(values);
     }
   };

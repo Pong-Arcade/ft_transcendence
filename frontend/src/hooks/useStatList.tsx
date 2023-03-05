@@ -1,14 +1,20 @@
 import { useEffect, useState } from "react";
+import { useSetRecoilState } from "recoil";
 import { getStatAPI } from "../api/stat";
 import { IStat } from "../components/modules/StatList/StatList";
+import errorState from "../state/ErrorState";
 
 const useStatList = (userId: number) => {
   const [statList, setStatList] = useState<IStat[]>([]);
-
+  const setError = useSetRecoilState(errorState);
   useEffect(() => {
     (async () => {
-      const data = await getStatAPI(userId);
-      setStatList(data);
+      try {
+        const data = await getStatAPI(userId);
+        setStatList(data);
+      } catch (error) {
+        setError({ isError: true, error });
+      }
     })();
   }, []);
   return { statList };

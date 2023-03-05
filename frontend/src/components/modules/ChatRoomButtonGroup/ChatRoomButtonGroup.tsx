@@ -1,10 +1,10 @@
-import { AxiosError } from "axios";
-import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import { leaveChatRoomAPI } from "../../../api/room";
 import { getOnlineUsersAPI } from "../../../api/users";
 import useModal from "../../../hooks/useModal";
+import errorState from "../../../state/ErrorState";
 import Button from "../../atoms/Button";
 import ButtonGroup from "../ButtonGroup";
 import ExitConfirmModal from "../ExitConfirmModal";
@@ -17,6 +17,7 @@ const ChatRoomButton = styled(Button).attrs({
 })``;
 
 const ChatRoomButtonGroup = () => {
+  const setError = useSetRecoilState(errorState);
   const {
     isModalOpen: isConfirmOpen,
     onModalOpen: onConfirmOpen,
@@ -29,8 +30,7 @@ const ChatRoomButtonGroup = () => {
   } = useModal({});
   const navigate = useNavigate();
   const params = useParams();
-  const [error, setError] = useState(false);
-  const [errorContent, setErrorContent] = useState("");
+
   return (
     <>
       <ButtonGroup height="7%" width="100%" backgroundColor="secondary">
@@ -47,11 +47,8 @@ const ChatRoomButtonGroup = () => {
             try {
               await leaveChatRoomAPI(Number(params.chatId));
               navigate("/lobby");
-            } catch (e: any | AxiosError) {
-              if (e instanceof AxiosError) {
-                setError(true);
-                setErrorContent(e.response?.data.message);
-              }
+            } catch (error) {
+              setError({ isError: true, error });
             }
           }}
           onNoConfirm={() => onConfirmClose()}

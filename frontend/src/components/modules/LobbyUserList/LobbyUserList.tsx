@@ -3,6 +3,7 @@ import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import { getFriendUsersAPI } from "../../../api/users";
 import useMenu from "../../../hooks/useMenu";
+import errorState from "../../../state/ErrorState";
 import friendUsersState from "../../../state/FriendUsersState";
 import Board from "../../atoms/Board";
 import GeneralMenu from "../GeneralMenu";
@@ -43,8 +44,13 @@ const LobbyUserList = ({ onlineUsers, friendUsers, blockUsers }: Props) => {
   const [currentButton, setCurrentButton] = useState(EUSER_BUTTON.ONLINE_USERS);
   const setFriendUsers = useSetRecoilState(friendUsersState);
   const [page, setPage] = useState(0);
+  const setError = useSetRecoilState(errorState);
   const onGetFriendUsers = async () => {
-    setFriendUsers(await getFriendUsersAPI());
+    try {
+      setFriendUsers(await getFriendUsersAPI());
+    } catch (error) {
+      setError({ isError: true, error });
+    }
   };
   const onChoiceButtonClick = (button: EUSER_BUTTON) => {
     if (button == "친구목록") {

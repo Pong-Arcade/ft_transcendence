@@ -1,5 +1,7 @@
+import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import { acceptGameAPI, rejectGameAPI } from "../../../api/room";
+import errorState from "../../../state/ErrorState";
 import Button from "../../atoms/Button";
 import Typography from "../../atoms/Typography";
 import ButtonGroup from "../ButtonGroup";
@@ -18,13 +20,22 @@ const ConfirmButton = styled(Button).attrs({
 })``;
 
 const InviteGameModal = ({ onClose, inviteUser }: Props) => {
+  const setError = useSetRecoilState(errorState);
   const onYesConfirm = async () => {
-    await acceptGameAPI();
-    onClose();
+    try {
+      await acceptGameAPI();
+      onClose();
+    } catch (error) {
+      setError({ isError: true, error });
+    }
   };
   const onNoConfirm = async () => {
-    await rejectGameAPI();
-    onClose();
+    try {
+      await rejectGameAPI();
+      onClose();
+    } catch (error) {
+      setError({ isError: true, error });
+    }
   };
   return (
     <ConfirmModal title="게임신청" onClose={onClose}>

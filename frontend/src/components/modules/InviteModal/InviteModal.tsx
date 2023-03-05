@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
+import { useSetRecoilState } from "recoil";
 import { getOnlineUsersAPI } from "../../../api/users";
 import useModal from "../../../hooks/useModal";
+import errorState from "../../../state/ErrorState";
 import Button from "../../atoms/Button";
 import Modal from "../../atoms/Modal";
 import ModalWrapper from "../../atoms/ModalWrapper";
@@ -18,8 +20,13 @@ interface Props {
 const InviteModal = ({ list, onClose }: Props) => {
   const [inviteList, setInviteList] = useState<string[]>([]);
   const [onlineUsers, setOnlineUsers] = useState<IUser[]>([]);
+  const setError = useSetRecoilState(errorState);
   const getOnlineUsers = async () => {
-    setOnlineUsers(await getOnlineUsersAPI());
+    try {
+      setOnlineUsers(await getOnlineUsersAPI());
+    } catch (error) {
+      setError({ isError: true, error });
+    }
   };
   useEffect(() => {
     getOnlineUsers();

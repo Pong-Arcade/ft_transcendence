@@ -1,3 +1,4 @@
+import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import { joinQuickMatchAPI, leaveQuickMatchAPI } from "../../../api/room";
 import useCreateRoom, {
@@ -5,6 +6,7 @@ import useCreateRoom, {
 } from "../../../hooks/useCreateRoom";
 import { EGameType } from "../../../hooks/useGameRoomForm";
 import useModal from "../../../hooks/useModal";
+import errorState from "../../../state/ErrorState";
 import Button from "../../atoms/Button";
 import ButtonGroup from "../ButtonGroup";
 import ChooseGameModal from "../ChooseGameModal";
@@ -22,7 +24,7 @@ const CreateRoomButton = styled(Button).attrs({
 const LobbyCreateRoomButtonGroup = () => {
   const { isOpenModal, buttonTitle, roomCreateList, onCreateButton, onClose } =
     useCreateRoom();
-
+  const setError = useSetRecoilState(errorState);
   const {
     isModalOpen: isCreateGameOpen,
     onModalOpen: onCreateGameOpen,
@@ -38,15 +40,24 @@ const LobbyCreateRoomButtonGroup = () => {
     onModalClose: onQuickMatchClose,
   } = useModal({
     beforeOpen: async () => {
-      onClose();
-      if (buttonTitle === "레더게임") await joinQuickMatchAPI(EGameType.LADDER);
-      else await joinQuickMatchAPI(EGameType.NORMAL);
+      try {
+        onClose();
+        if (buttonTitle === "레더게임")
+          await joinQuickMatchAPI(EGameType.LADDER);
+        else await joinQuickMatchAPI(EGameType.NORMAL);
+      } catch (error) {
+        setError({ isError: true, error });
+      }
     },
   });
 
   const leaveQuickMatch = async () => {
-    await leaveQuickMatchAPI();
-    onQuickMatchClose();
+    try {
+      await leaveQuickMatchAPI();
+      onQuickMatchClose();
+    } catch (error) {
+      setError({ isError: true, error });
+    }
   };
 
   return (
