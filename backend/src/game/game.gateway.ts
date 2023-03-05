@@ -93,15 +93,29 @@ export class GameGateway implements OnGatewayDisconnect {
 
   @SubscribeMessage('message')
   async onMessage(_, msg) {
+    console.log('message', msg);
     const userSocketInfo = this.statusService.getUserSocketInfoByUserId(
       msg.userId,
     );
+    console.log('userSocketInfo', userSocketInfo);
+    if (!userSocketInfo) {
+      return;
+    }
     if (userSocketInfo.location >= 0) {
       return;
     }
+    console.log(userSocketInfo.location);
     const room = this.gameRoomService.getGameRoomInfo(
       Math.abs(userSocketInfo.location),
     );
+    console.log('room', room);
+    if (msg.msg.length >= 512) {
+      this.server
+        .in(userSocketInfo.socketId)
+        .emit('systemMsg', '512자 이상으로 입력할 수 없습니다.');
+      return;
+    }
+    console.log('here?');
     const message: IMessage = {
       fromId: msg.userId,
       content: msg.msg,
@@ -129,8 +143,16 @@ export class GameGateway implements OnGatewayDisconnect {
           content: `${msg.fromName}로부터: ${msg.msg}`,
           type: EMessageType.WHISPER,
         };
-        this.server.to(client.id).emit('whisper', toWhisperMsg);
-        this.server.to(value.gameSocketId).emit('whisper', fromWhisperMsg);
+        if (value.location >= 0) {
+          this.chatGateway.server
+            .to(value.socketId)
+            .emit('whisper', toWhisperMsg);
+          this.chatGateway.server.to(client.id).emit('whisper', fromWhisperMsg);
+          return;
+        } else {
+          this.server.to(client.id).emit('whisper', toWhisperMsg);
+          this.server.to(value.gameSocketId).emit('whisper', fromWhisperMsg);
+        }
         return;
       }
     }
@@ -217,6 +239,9 @@ export class GameGateway implements OnGatewayDisconnect {
     const userSocketInfo = this.statusService.getUserSocketInfoByUserId(
       user.userId,
     );
+    if (!userSocketInfo) {
+      return;
+    }
     userSocketInfo.location = 0;
     //gameInstance 종료 이벤트
     if (room.status === GameRoomStatus.ON_GAME) {
@@ -375,6 +400,7 @@ export class GameGateway implements OnGatewayDisconnect {
   async joinSpectator(roomId: number, userId: number) {
     this.logger.log(`Called ${this.joinSpectator.name}`);
     const userSocketInfo = this.statusService.getUserSocketInfoByUserId(userId);
+    userSocketInfo.location = -roomId;
     this.chatGateway.server.in(userSocketInfo.socketId).socketsLeave('lobby');
     this.server
       .in(userSocketInfo.gameSocketId)
@@ -394,6 +420,7 @@ export class GameGateway implements OnGatewayDisconnect {
     const room = this.gameRoomService.getGameRoomInfo(roomId);
     room.spectatorUsers = room.spectatorUsers.filter((id) => id !== userId);
     const userSocketInfo = this.statusService.getUserSocketInfoByUserId(userId);
+    userSocketInfo.location = 0;
     this.server
       .in(userSocketInfo.gameSocketId)
       .socketsLeave(`gameroom-${room.roomId}`);

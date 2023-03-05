@@ -8,7 +8,7 @@ import ModalTitle from "../ModalTitle";
 
 export enum EGameRoomJoin {
   PLAYER = "플레이어",
-  SPECTATOR = "관람자",
+  SPECTATOR = "관전자",
 }
 
 interface Props {

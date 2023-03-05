@@ -587,8 +587,7 @@ export class GameRoomController {
 
   @ApiOperation({
     summary: '게임룸 캔버스 설정 요소 요청',
-    description:
-      'canvas에 그릴 요소 정보를 요청합니다.',
+    description: 'canvas에 그릴 요소 정보를 요청합니다.',
   })
   @Get('/config')
   async getGameRoomConfig(): Promise<InGameConfigDto> {

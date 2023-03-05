@@ -177,6 +177,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async joinChatRoom(roomId: number, userId: number) {
     const room = rooms.get(roomId);
     const user = users.get(userId);
+    if (!room || !user) return;
     user.location = roomId;
     if (!user.mode) user.mode = UserChatMode.NORMAL;
     this.server.to(user.socketId).socketsLeave('lobby');

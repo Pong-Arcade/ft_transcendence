@@ -34,7 +34,19 @@ export class GameRoomService {
     this.logger.debug(`Called ${this.disconnectUser.name}`);
     for (const roomId of gameRooms.keys()) {
       if (this.isOnThatGameRoom(roomId, userSocketInfo.userId)) {
-        this.eventEmitter.emit('gameroom:leave', roomId, userSocketInfo.userId);
+        if (this.isPlayer(roomId, userSocketInfo.userId)) {
+          this.eventEmitter.emit(
+            'gameroom:leave',
+            roomId,
+            userSocketInfo.userId,
+          );
+        } else if (this.isSpectator(roomId, userSocketInfo.userId)) {
+          this.eventEmitter.emit(
+            'gameroom:spectator:leave',
+            roomId,
+            userSocketInfo.userId,
+          );
+        }
       }
       // 초대장을 가지고 있다면 삭제
       invitations = invitations.filter(
@@ -385,5 +397,41 @@ export class GameRoomService {
         break;
       }
     }
+  }
+
+  /**
+   * 자신이 관전자인지 확인합니다.
+   * @param roomId
+   * @param userId
+   * @returns
+   */
+  isSpectator(roomId: number, userId: number): boolean {
+    this.logger.debug(`Called ${this.isSpectator.name}`);
+    const room = gameRooms.get(roomId);
+    if (room) {
+      for (const spectatorUserId of room.spectatorUsers) {
+        if (spectatorUserId === userId) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  /**
+   * 자신이 플레이어인지 확인합니다.
+   * @param roomId
+   * @param userId
+   * @returns
+   */
+  isPlayer(roomId: number, userId: number): boolean {
+    this.logger.debug(`Called ${this.isPlayer.name}`);
+    const room = gameRooms.get(roomId);
+    if (room) {
+      if (room.redUser?.userId === userId || room.blueUser?.userId === userId) {
+        return true;
+      }
+    }
+    return false;
   }
 }

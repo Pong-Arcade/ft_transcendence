@@ -83,7 +83,10 @@ const GameRoom = () => {
   const setError = useSetRecoilState(errorState);
   const onLeaveGameRoom = async () => {
     try {
-      if (myInfo.userId === redUser.userId || myInfo.userId === blueUser.userId)
+      if (
+        myInfo.userId === redUser.userId ||
+        myInfo.userId === blueUser?.userId
+      )
         await leaveGameRoomAPI(roomId);
       else await leaveGameSpectatorAPI(roomId);
       setGameState({
