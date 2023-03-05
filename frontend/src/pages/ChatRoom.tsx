@@ -56,10 +56,10 @@ const ChatRoom = () => {
         mastUserId: chatRoom.mastUserId,
         users: chatRoom.users,
         title: title,
+        maxUserCount: chatRoom.maxUserCount,
       })
     );
     socket.socket.on("otherLogin", () => {
-      console.log("otherLogin");
       setError({ isError: true, error: "" });
     });
     return () => {

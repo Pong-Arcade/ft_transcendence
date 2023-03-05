@@ -54,6 +54,7 @@ const lobbyGameEvent = () => {
       navigate(`/game-rooms/${gameRoom.roomId}}`);
     });
     gameSocket.socket.on("config", (gameBoard: IGameBoardState) => {
+      console.log('event config');
       setGameBoardState(gameBoard);
     });
 
