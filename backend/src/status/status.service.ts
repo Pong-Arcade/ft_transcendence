@@ -5,6 +5,15 @@ import { User } from './status.entity';
 @Injectable()
 export class StatusService {
   /**
+   * 모든 유저의 소켓 정보를 가져옴
+   * @param socketId
+   * @returns
+   */
+  getAllUserSocketInof(): Map<number, User> {
+    return users;
+  }
+
+  /**
    * 소켓 ID로 유저의 소켓 정보를 가져옴
    * @param socketId
    * @returns

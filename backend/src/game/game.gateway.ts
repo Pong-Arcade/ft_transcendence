@@ -111,6 +111,37 @@ export class GameGateway implements OnGatewayDisconnect {
     this.server.to(`gameroom-${room.roomId}`).emit('message', message);
   }
 
+  @SubscribeMessage('whisper')
+  async onWhisper(client, msg) {
+    if (msg.fromName == msg.toName) {
+      return;
+    }
+    const users = this.statusService.getAllUserSocketInof();
+    for (const value of users.values()) {
+      if (value.userName == msg.toName) {
+        const toWhisperMsg: IMessage = {
+          fromId: msg.fromId,
+          content: `${msg.toName}에게: ${msg.msg}`,
+          type: EMessageType.WHISPER,
+        };
+        const fromWhisperMsg: IMessage = {
+          fromId: msg.fromId,
+          content: `${msg.fromName}로부터: ${msg.msg}`,
+          type: EMessageType.WHISPER,
+        };
+        this.server.to(client.id).emit('whisper', toWhisperMsg);
+        this.server.to(value.gameSocketId).emit('whisper', fromWhisperMsg);
+        return;
+      }
+    }
+    const message: IMessage = {
+      fromId: msg.fromId,
+      content: '접속중이지 않은 유저입니다.',
+      type: EMessageType.SYSTEMMSG,
+    };
+    this.server.to(client.id).emit('systemMsg', message);
+  }
+
   /**
    * 게임방을 생성합니다.
    * 게임방 객체를 생성하고, 로비에 있는 유저들에게 게임방 리스트를 추가하라는 이벤트를 발생시킵니다.
@@ -186,6 +217,7 @@ export class GameGateway implements OnGatewayDisconnect {
     const userSocketInfo = this.statusService.getUserSocketInfoByUserId(
       user.userId,
     );
+    userSocketInfo.location = 0;
     //gameInstance 종료 이벤트
     if (room.status === GameRoomStatus.ON_GAME) {
       await this.eventEmitter.emitAsync('gameroom:finish', roomId);
