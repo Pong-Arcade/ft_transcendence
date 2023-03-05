@@ -50,7 +50,7 @@ const GlobalErrorModal = ({ errors }: Props) => {
   };
 
   if (!errors.error.response || errors.error.response.status === 401) {
-    return <UnauthorizedModal></UnauthorizedModal>;
+    return <UnauthorizedModal />;
   }
   const message = errors.error.response.data.message;
 

@@ -3,7 +3,7 @@ import Title from "../components/modules/Title";
 import ChatRoomUserList from "../components/modules/ChatRoomUserList";
 import ChatRoomButtonGroup from "../components/modules/ChatRoomButtonGroup";
 import ChatRoomPasswordModify from "../components/modules/ChatRoomPasswordModify";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import chatRoomState from "../state/ChatRoomState";
 import infoState from "../state/InfoState";
 import styled from "styled-components";
@@ -11,6 +11,7 @@ import Typography from "../components/atoms/Typography";
 import Board from "../components/atoms/Board";
 import { useContext, useEffect } from "react";
 import { SocketContext } from "../utils/ChatSocket";
+import errorState from "../state/ErrorState";
 
 const TitleTypography = styled(Typography).attrs({
   fontSize: "2.5rem",
@@ -44,9 +45,11 @@ const ChatRoom = () => {
   const [chatRoom, setChatRoom] = useRecoilState(chatRoomState);
   const myInfo = useRecoilValue(infoState);
   const socket = useContext(SocketContext);
+  const setError = useSetRecoilState(errorState);
 
   useEffect(() => {
-    // if (chatRoom.roomId === -1) setError(true); // 어떤 역할을 하는지?
+    if (chatRoom.roomId === -1) setError({ isError: true, error: "" });
+    console.log(chatRoom.roomId);
     socket.socket.on("updateChatRoom", (title) =>
       setChatRoom({
         roomId: chatRoom.roomId,

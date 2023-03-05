@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
@@ -106,6 +107,9 @@ const GameRoom = () => {
     setGameFinish,
   } = gameStartEvent(roomId);
 
+  useEffect(() => {
+    if (roomId === -1) setError({ isError: true, error: "" });
+  }, []);
   return (
     <>
       <GameRoomTemplate>
