@@ -27,7 +27,7 @@ export class BlockService {
    * @param userRelationDto
    */
   async getBlocks(user: UserDto): Promise<UserBlockListResponseDto> {
-    this.logger.log(`Called ${this.getBlocks.name}`);
+    this.logger.debug(`Called ${this.getBlocks.name}`);
     const results = await this.relationRepository.find({
       where: {
         user: {
@@ -59,7 +59,7 @@ export class BlockService {
   }
 
   async addBlockUser(relation: UserRelationDto): Promise<void> {
-    this.logger.log(`Called ${this.addBlockUser.name}`);
+    this.logger.debug(`Called ${this.addBlockUser.name}`);
     if (relation.userId === relation.targetUserId) {
       throw new ConflictException('자기 자신을 차단할 수 없습니다.');
     }
@@ -113,7 +113,7 @@ export class BlockService {
   }
 
   async delBlockUser(relation: UserRelationDto): Promise<void> {
-    this.logger.log(`Called ${this.delBlockUser.name}`);
+    this.logger.debug(`Called ${this.delBlockUser.name}`);
     const findUser = await this.userService.getUserInfo(relation.targetUserId);
     if (!findUser) {
       throw new NotFoundException('존재하지 않는 유저입니다.');

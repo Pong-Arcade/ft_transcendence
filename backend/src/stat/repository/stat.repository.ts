@@ -31,7 +31,7 @@ export class StatRepository implements IStatRepository {
     filter: RankingFilter,
     order: SortDirection,
   ): Promise<RankDto[]> {
-    this.logger.log(`Called ${this.getRanking.name}`);
+    this.logger.debug(`Called ${this.getRanking.name}`);
     // 전체 유저의 랭킹을 가져온다.
     const results = await this.ladderStatRepository
       .createQueryBuilder('ladder_stat')
@@ -72,7 +72,7 @@ export class StatRepository implements IStatRepository {
   }
 
   async getRecentRecord(userId: number): Promise<MyMatchHistoryDto[]> {
-    this.logger.log(`Called ${this.getRecentRecord.name}`);
+    this.logger.debug(`Called ${this.getRecentRecord.name}`);
     // userId로 최근 10개의 매치 기록을 가져온다.
     const results = await this.matchHistoryRepository.find({
       relations: {
@@ -149,7 +149,7 @@ export class StatRepository implements IStatRepository {
   }
 
   async getUserLadderStat(userId: number): Promise<GameStatDto> {
-    this.logger.log(`Called ${this.getUserLadderStat.name}`);
+    this.logger.debug(`Called ${this.getUserLadderStat.name}`);
     // userId로 ladder_stat을 가져온다.
     const result = await this.ladderStatRepository
       .createQueryBuilder('ladder_stat')
@@ -172,7 +172,7 @@ export class StatRepository implements IStatRepository {
   }
 
   async getUserNormalStat(userId: number): Promise<GameStatDto> {
-    this.logger.log(`Called ${this.getUserNormalStat.name}`);
+    this.logger.debug(`Called ${this.getUserNormalStat.name}`);
     // userId로 normal_stat을 가져온다.
     const result = await this.normalStatRepository
       .createQueryBuilder('normal_stat')
@@ -194,13 +194,13 @@ export class StatRepository implements IStatRepository {
   }
 
   async createMatchHistory(matchHistory: MatchHistoryDto): Promise<void> {
-    this.logger.log(`Called ${this.createMatchHistory.name}`);
+    this.logger.debug(`Called ${this.createMatchHistory.name}`);
     // matchHistory를 저장한다.
     await this.matchHistoryRepository.save(matchHistory);
   }
 
   async updateWinNormalStat(userId: number): Promise<void> {
-    this.logger.log(`Called ${this.updateWinNormalStat.name}`);
+    this.logger.debug(`Called ${this.updateWinNormalStat.name}`);
     const data = await this.normalStatRepository.findOne({
       where: { userId },
     });
@@ -212,7 +212,7 @@ export class StatRepository implements IStatRepository {
   }
 
   async updateLoseNormalStat(userId: number): Promise<void> {
-    this.logger.log(`Called ${this.updateLoseNormalStat.name}`);
+    this.logger.debug(`Called ${this.updateLoseNormalStat.name}`);
     const data = await this.normalStatRepository.findOne({
       where: { userId },
     });
@@ -224,7 +224,9 @@ export class StatRepository implements IStatRepository {
   }
 
   async updateWinLadderStat(userId: number, score: number): Promise<void> {
-    this.logger.log(`Called ${this.updateWinNormalStat.name} param: {userId: ${userId}, score: ${score}}`);
+    this.logger.debug(
+      `Called ${this.updateWinNormalStat.name} param: {userId: ${userId}, score: ${score}}`,
+    );
     const data = await this.ladderStatRepository.findOne({
       where: { userId },
     });
@@ -237,7 +239,9 @@ export class StatRepository implements IStatRepository {
   }
 
   async updateLoseLadderStat(userId: number, score: number): Promise<void> {
-    this.logger.log(`Called ${this.updateLoseLadderStat.name} param: {userId: ${userId}, score: ${score}}`);
+    this.logger.debug(
+      `Called ${this.updateLoseLadderStat.name} param: {userId: ${userId}, score: ${score}}`,
+    );
     const data = await this.ladderStatRepository.findOne({
       where: { userId },
     });

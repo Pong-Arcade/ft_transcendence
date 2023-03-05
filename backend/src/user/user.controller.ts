@@ -38,7 +38,6 @@ import { existsSync, mkdirSync } from 'fs';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.auth.guard';
 import { v4 as uuid } from 'uuid';
 import { UserDetailResponseDto } from '../dto/response/user.detail.response.dto';
-import { users } from '../status/status.module';
 
 @ApiTags('Users')
 @ApiBearerAuth()

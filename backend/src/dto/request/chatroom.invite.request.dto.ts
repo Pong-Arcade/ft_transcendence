@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsNumber } from 'class-validator';
+import { IsNumber } from 'class-validator';
 
 /**
  * 채팅방 초대 요청 dto입니다.

@@ -6,7 +6,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import MatchHistory from 'src/entity/match.history.entity';
 import { UserModule } from 'src/user/user.module';
 import LadderStat from 'src/entity/ladder.stat.entity';
-import { UserService } from '../user/user.service';
 import NormalStat from 'src/entity/normal.stat.entity';
 
 const repo = {

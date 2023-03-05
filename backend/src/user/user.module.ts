@@ -7,7 +7,6 @@ import { UserService } from './user.service';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { StatModule } from '../stat/stat.module';
-import { StatService } from '../stat/stat.service';
 
 export const repo = {
   provide: 'IUserRepository',

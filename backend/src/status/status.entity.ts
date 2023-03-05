@@ -1,4 +1,3 @@
-import { UserChatDto } from 'src/dto/user.chat.dto';
 import { UserChatMode } from 'src/enum/user.chat.mode.enum';
 
 export class User {
