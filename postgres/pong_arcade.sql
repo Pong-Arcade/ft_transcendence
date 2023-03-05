@@ -327,7 +327,7 @@ COMMENT ON COLUMN public.two_factor_auth.access IS '인증 코드';
 
 CREATE TABLE public."user" (
     user_id integer NOT NULL,
-    nickname character varying(32) NOT NULL,
+    nickname character varying(36) NOT NULL,
     avatar_url text,
     email character varying(64),
     first_login timestamp without time zone
