@@ -1,13 +1,14 @@
 import {
-  WebSocketGateway,
-  WebSocketServer,
-  SubscribeMessage,
+  ConnectedSocket,
   OnGatewayConnection,
   OnGatewayDisconnect,
+  SubscribeMessage,
+  WebSocketGateway,
+  WebSocketServer,
 } from '@nestjs/websockets';
 import { User } from '../status/status.entity';
 import { Room } from '../chat/chatroom.entity';
-import { Namespace } from 'socket.io';
+import { Namespace, Socket } from 'socket.io';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { MockRepository } from 'src/mock/mock.repository';
 import { ChatroomCreateRequestDto } from 'src/dto/request/chatroom.create.request.dto';
@@ -49,39 +50,41 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   ) {}
 
   @WebSocketServer() server: Namespace;
-  async handleConnection(socket) {
+  async handleConnection(@ConnectedSocket() socket: Socket) {
     this.logger.log(`Called ${this.handleConnection.name}`);
-    // 연결 끊김 핸들러
-    socket.on('disconnect', () => {
-      // 끊긴 소켓 삭제
-      users.forEach((value, key) => {
-        if (socket.id == value.socketId) {
-          // 채팅방 소켓 정리
-          if (value.location > 0) {
-            for (let i = 0; i < rooms.get(value.location).users.length; i++) {
-              if (rooms.get(value.location).users[i] == value.userId) {
-                rooms.get(value.location).users.splice(i);
-                this.server
-                  .to(`chatroom${value.location}`)
-                  .emit('leaveChatRoom', value.userId);
-                break;
-              }
-            }
-          } else {
-            // 게임방 소켓 정리
-            this.gameRoomService.disconnectUser(value);
-          }
-          this.server.to('lobby').emit('deleteOnlineUser', key);
-          users.delete(key);
-          this.mock.deleteOnlineUser(key);
-        }
-      });
-    });
+    console.log('con');
+    socket.join('lobby');
   }
 
   //연결 끊김
-  async handleDisconnect() {
+  async handleDisconnect(socket) {
     this.logger.log(`Called ${this.handleDisconnect.name}`);
+    for (const [userId, user] of users) {
+      if (socket.id !== user.socketId) {
+        continue;
+      }
+      // Leave chatroom
+      if (user.location > 0) {
+        const chatRoom = rooms.get(user.location);
+        const userIndex = chatRoom.users.indexOf(userId);
+        if (userIndex !== -1) {
+          chatRoom.users.splice(userIndex, 1);
+          this.server
+            .to(`chatroom${user.location}`)
+            .emit('leaveChatRoom', userId);
+        }
+      }
+      // Disconnect from game room
+      else {
+        this.gameRoomService.disconnectUser(user);
+      }
+
+      // Delete the user
+      users.delete(userId);
+      this.mock.deleteOnlineUser(userId);
+      this.server.to('lobby').emit('deleteOnlineUser', userId);
+      break;
+    }
   }
 
   @SubscribeMessage('addUser')
@@ -99,10 +102,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       user = new User(info.userId, info.userName);
     }
     user.socketId = client.id;
+    user.mode = UserChatMode.NORMAL;
     users.set(info.userId, user);
 
     // 로비 채팅방에 유저 추가
-    client.join('lobby');
+    //client.join('lobby');
     this.mock.patchOnlineUser(info.userId);
     this.server.to('lobby').emit('addOnlineUser', {
       userId: info.userId,
@@ -168,6 +172,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.to(user.socketId).socketsLeave('lobby');
     this.server.to(user.socketId).socketsJoin(`chatroom${roomId}`);
     const userInfo = await this.userService.getUserInfo(userId);
+    if (user.mode !== UserChatMode.MASTER) room.users.push(userId);
     this.server.in(`chatroom${roomId}`).emit('joinChatRoom', {
       userId: userId,
       nickname: user.userName,
@@ -179,7 +184,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server
       .in(`chatroom${roomId}`)
       .emit('systemMsg', user.userName + '님이 입장하였습니다.');
-    room.users.push(userId);
   }
 
   @OnEvent('chatroom:leave')
@@ -203,18 +207,19 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       const user = users.get(userId);
       user.location = 0;
       user.mode = UserChatMode.NORMAL;
-      await this.server.in(`chatroom${roomId}`).emit('leaveChatRoom', userId);
+      this.server.in(`chatroom${roomId}`).emit('leaveChatRoom', userId);
       this.server.in(user.socketId).socketsLeave(`chatroom${roomId}`);
       this.server.in(user.socketId).socketsJoin('lobby');
       room.users = room.users.filter((id) => id != userId);
     }
-    if (room.users.length == 0) rooms.delete(roomId);
+    if (room.users.length == 0) rooms.delete(roomId); //--);
   }
 
   @OnEvent('chatroom:create')
   async addChatRoom(userId: number, roomInfo: ChatroomCreateRequestDto) {
     const roomId = roomCount++;
     const user = users.get(userId);
+    if (!user) return;
     user.mode = UserChatMode.MASTER;
     const room = new Room(
       roomId,
@@ -225,6 +230,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       userId,
     );
     rooms.set(roomId, room);
+    rooms.get(roomId).users.push(userId);
     this.server.in('lobby').emit('addChatRoom', {
       roomId: room.roomId,
       title: room.title,
