@@ -123,7 +123,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('message')
   onMessage(_, msg) {
-    const room = rooms.get(users.get(msg.userId).location);
+    const user = users.get(msg.userId);
+    if (!user) return;
+    const room = rooms.get(user.location);
+    if (!room) return;
     const message: IMessage = {
       fromId: msg.userId,
       content: msg.msg,
@@ -177,6 +180,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async joinChatRoom(roomId: number, userId: number) {
     const room = rooms.get(roomId);
     const user = users.get(userId);
+    if (!room || !user) return;
     user.location = roomId;
     if (!user.mode) user.mode = UserChatMode.NORMAL;
     this.server.to(user.socketId).socketsLeave('lobby');
@@ -218,6 +222,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       rooms.delete(roomId);
     } else {
       const user = users.get(userId);
+      if (!user) return;
       user.location = 0;
       user.mode = UserChatMode.NORMAL;
       this.server.in(`chatroom${roomId}`).emit('leaveChatRoom', userId);
@@ -262,6 +267,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @OnEvent('chatroom:invite')
   inviteChatRoom(roomId: number, fromId: number, toUsers: number[]) {
     const room = rooms.get(roomId);
+    if (!room) return;
     const userName = users.get(fromId).userName;
     const to = new Array<User>();
     for (const id of toUsers) {
@@ -275,6 +281,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @OnEvent('chatroom:invite:accept')
   acceptInviteChatRoom(roomId: number, userId: number) {
     const room = rooms.get(roomId);
+    if (!room) return;
     this.joinChatRoom(roomId, userId);
     room.invitedUsers = room.invitedUsers.filter((id) => id != userId);
   }
@@ -282,12 +289,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @OnEvent('chatroom:invite:reject')
   rejectInviteChatRoom(roomId: number, userId: number) {
     const room = rooms.get(roomId);
+    if (!room) return;
     room.invitedUsers = room.invitedUsers.filter((id) => id != userId);
   }
   @OnEvent('chatroom:ban')
   banChatRoom(roomId: number, userId: number) {
     const room = rooms.get(roomId);
     const user = users.get(userId);
+    if (!room || !user) return;
     this.server.to(user.socketId).emit('banChatRoom', roomId);
     room.bannedUsers.push(userId);
     this.leaveChatRoom(roomId, userId);
@@ -296,6 +305,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   addAdmin(roomId: number, userId: number) {
     const room = rooms.get(roomId);
     const user = users.get(userId);
+    if (!room || !user) return;
     room.adminUsers.push(userId);
     user.mode = UserChatMode.ADMIN;
     this.server.in(`chatroom${roomId}`).emit('addAdmin', userId);
@@ -304,6 +314,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   deleteAdmin(roomId: number, userId: number) {
     const room = rooms.get(roomId);
     const user = users.get(userId);
+    if (!room || !user) return;
     room.adminUsers = room.adminUsers.filter((id) => id !== userId);
     user.mode = UserChatMode.NORMAL;
     this.server.in(`chatroom${roomId}`).emit('deleteAdmin', userId);
@@ -311,8 +322,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @OnEvent('chatroom:mute-user')
   muteUser(roomId: number, userId: number, duration: number) {
     this.muteUsers.push(userId);
-
     const user = users.get(userId);
+    if (!user) return;
     const message: IMessage = {
       fromId: userId,
       content: user.userName + '님이 채팅금지 당하셨습니다.',
@@ -334,6 +345,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @OnEvent('chatroom:change-info')
   updateChatRoom(roomId: number, roomInfo: ChangeChatroomInfoRequestDto) {
     const room = rooms.get(roomId);
+    if (!room) return;
     room.title = roomInfo.title;
     room.mode = roomInfo.mode;
     if (roomInfo.password || room.mode != ChatRoomMode.PUBLIC)
