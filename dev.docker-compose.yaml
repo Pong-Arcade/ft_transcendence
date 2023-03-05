@@ -2,7 +2,7 @@ version: "3"
 
 services:
   nginx_dev:
-    image: nginx:latest
+    image: nginx_dev
     container_name: nginx_dev
     build:
       context: .

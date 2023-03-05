@@ -98,11 +98,17 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (users.has(info.userId)) {
       user = users.get(info.userId);
       if (user.socketId !== client.id) {
-        const tmp = user.gameSocketId;
+        const gameId = user.gameSocketId;
+        const chatId = user.socketId;
         this.handleDisconnect({ id: user.socketId });
         user = new User(info.userId, info.userName);
+<<<<<<< HEAD
         user.gameSocketId = tmp;
         this.server.to(user.socketId).emit('otherLogin');
+=======
+        user.gameSocketId = gameId;
+        this.server.to(chatId).emit('otherLogin');
+>>>>>>> d80d14901cf8f15658b8d183dd0d45895175beeb
       }
     } else {
       user = new User(info.userId, info.userName);
