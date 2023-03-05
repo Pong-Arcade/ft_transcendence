@@ -2,3 +2,4 @@ build
 dist
 *.env
 backend/uploads
+postgres/data

@@ -22,7 +22,7 @@ export class ChatroomService {
   async getChatroomUsersInfo(
     chatroomInfo: Room,
   ): Promise<ChatroomUsersInfoResponseDto> {
-    this.logger.log(`Called ${this.getChatroomUsersInfo.name}`);
+    this.logger.debug(`Called ${this.getChatroomUsersInfo.name}`);
     const chatroomUsersInfo = new ChatroomUsersInfoResponseDto();
     chatroomUsersInfo.mastUserId = chatroomInfo.masterUser;
     chatroomUsersInfo.adminUsers = new Array<number>();
@@ -52,7 +52,7 @@ export class ChatroomService {
   async getChatroomCreateUsersInfo(
     roomId: number,
   ): Promise<ChatroomCreateUsersInfoResponseDto> {
-    this.logger.log(`Called ${this.getChatroomCreateUsersInfo.name}`);
+    this.logger.debug(`Called ${this.getChatroomCreateUsersInfo.name}`);
     if (!roomId) return undefined;
     const chatroomInfo = this.getChatroomInfo(roomId);
     const chatroomUsersInfo = new ChatroomCreateUsersInfoResponseDto();
@@ -78,7 +78,7 @@ export class ChatroomService {
    * @returns 채팅방 목록
    */
   getAllChatrooms(): ChatRoomListResponseDto {
-    this.logger.log(`Called ${this.getAllChatrooms.name}`);
+    this.logger.debug(`Called ${this.getAllChatrooms.name}`);
     const chatrooms = new ChatRoomListResponseDto();
     chatrooms.chatRooms = [];
     for (const room of rooms.values()) {
@@ -106,7 +106,7 @@ export class ChatroomService {
    * @returns 채팅방 정보
    */
   getChatroomInfo(roomId: number): Room {
-    this.logger.log(`Called ${this.getChatroomInfo.name}`);
+    this.logger.debug(`Called ${this.getChatroomInfo.name}`);
     return rooms.get(roomId);
   }
 
@@ -117,7 +117,7 @@ export class ChatroomService {
    *         방장이 아닌 경우 null
    */
   getMyMasterChatroomId(userId: number): number {
-    this.logger.log(`Called ${this.getMyMasterChatroomId.name}`);
+    this.logger.debug(`Called ${this.getMyMasterChatroomId.name}`);
     for (const room of rooms.values()) {
       if (room.masterUser === userId) {
         return room.roomId;
@@ -131,7 +131,7 @@ export class ChatroomService {
    * @param userId 유저 ID
    */
   getMyChatroomInfo(userId: number): Room {
-    this.logger.log(`Called ${this.getMyChatroomInfo.name}`);
+    this.logger.debug(`Called ${this.getMyChatroomInfo.name}`);
     for (const room of rooms.values()) {
       if (room.users.includes(userId)) {
         return room;
@@ -149,7 +149,7 @@ export class ChatroomService {
   //   userId: number,
   //   chatroomCreateRequestDto: ChatroomCreateRequestDto,
   // ): Promise<number> {
-  //   this.logger.log(`Called ${this.createChatroom.name}`);
+  //   this.logger.debug(`Called ${this.createChatroom.name}`);
   //   const chatroom = new Room(
   //     rooms.size + 1,
   //     chatroomCreateRequestDto.title,
@@ -170,7 +170,7 @@ export class ChatroomService {
    * @returns 채팅방에서 유저의 모드(방장/관리자/일반)
    */
   getChatroomUserMode(chatroom: Room, userId: number): UserChatMode {
-    this.logger.log(`Called ${this.getChatroomUserMode.name}`);
+    this.logger.debug(`Called ${this.getChatroomUserMode.name}`);
     if (chatroom.masterUser === userId) {
       return UserChatMode.MASTER;
     }
@@ -190,7 +190,7 @@ export class ChatroomService {
     userChatMode: UserChatMode,
     targetUserChatMode: UserChatMode,
   ): boolean {
-    this.logger.log(`Called ${this.isHigherChatMode.name}`);
+    this.logger.debug(`Called ${this.isHigherChatMode.name}`);
     if (userChatMode === UserChatMode.MASTER) {
       return true;
     }

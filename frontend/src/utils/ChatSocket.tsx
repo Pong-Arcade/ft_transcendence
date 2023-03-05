@@ -5,15 +5,9 @@ class ChatSocket {
   socket: Socket;
   userId: number;
   userName: string;
-  // ignore_list: Array<IUser>;
 
-  // constructor(userId: number, userName: string) {
-  //   this.socket = io("ws://localhost:80/socket/chat");
-  //   this.userId = userId;
-  //   this.userName = userName;
-  // }
   constructor() {
-    this.socket = io("ws://localhost:80/socket/chat");
+    this.socket = io(`${import.meta.env.VITE_SOCKET_URL}/socket/chat`);
     this.userId = -1;
     this.userName = "";
   }

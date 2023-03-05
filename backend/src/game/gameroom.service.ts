@@ -1,6 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { GameRoomListResponseDto } from 'src/dto/response/gameroom.list.response.dto';
-import { gameRooms } from './game.gateway';
 import { UserService } from 'src/user/user.service';
 import { GameRoom, Invitation } from './gameroom.entity';
 import { GameRoomUsersInfoResponseDto } from 'src/dto/response/gameroom.users.info.response.dto';
@@ -9,6 +8,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { User } from 'src/status/status.entity';
 
 export let invitations: Invitation[] = [];
+export const gameRooms = new Map<number, GameRoom>();
 
 const quickMatchQueues = {
   [MatchType.NORMAL]: new Array<number>(),
@@ -24,8 +24,14 @@ export class GameRoomService {
     private readonly eventEmitter: EventEmitter2,
   ) {}
 
+  /**
+   * 유저와 연결이 끊어졌을 때 호출되는 메서드입니다.
+   * 유저가 게임방에 있을 경우 게임방에서 나가는 로직을 호출합니다.
+   * 유저가 초대장을 가지고 있을 경우 초대장을 삭제합니다.
+   * @param userSocketInfo
+   */
   disconnectUser(userSocketInfo: User) {
-    this.logger.log(`Called ${this.disconnectUser.name}`);
+    this.logger.debug(`Called ${this.disconnectUser.name}`);
     for (const roomId of gameRooms.keys()) {
       if (this.isOnThatGameRoom(roomId, userSocketInfo.userId)) {
         this.eventEmitter.emit('gameroom:leave', roomId, userSocketInfo.userId);
@@ -39,12 +45,21 @@ export class GameRoomService {
     }
   }
 
+  /**
+   * 초대장을 생성합니다.
+   * 초대장은 1분간 유효합니다.
+   * 초대장을 생성할 때마다 초대장 ID를 1씩 증가시킵니다.
+   * @param inviterId
+   * @param inviteeId
+   * @param matchType
+   * @returns
+   */
   createInvitation(
     inviterId: number,
     inviteeId: number,
     matchType: MatchType,
   ): Invitation {
-    this.logger.log(`Called ${this.createInvitation.name}`);
+    this.logger.debug(`Called ${this.createInvitation.name}`);
     const invitation = new Invitation();
     invitation.invitationId = invitations.length + 1;
     invitation.inviterId = inviterId;
@@ -58,22 +73,35 @@ export class GameRoomService {
     return invitation;
   }
 
+  /**
+   * 초대장 ID로 초대장을 삭제합니다.
+   * @param invitation
+   */
   deleteInvitationById(invitation: Invitation) {
-    this.logger.log(`Called ${this.deleteInvitationById.name}`);
+    this.logger.debug(`Called ${this.deleteInvitationById.name}`);
     invitations = invitations.filter(
-      (invitation) => invitation.invitationId !== invitations.length,
+      (inv) => inv.invitationId !== invitation.invitationId,
     );
   }
 
+  /**
+   * 초대 받은 사람의 ID로 초대장을 삭제합니다.
+   * @param inviteeId
+   */
   deleteInvitaionByInviteeId(inviteeId: number) {
-    this.logger.log(`Called ${this.deleteInvitaionByInviteeId.name}`);
+    this.logger.debug(`Called ${this.deleteInvitaionByInviteeId.name}`);
     invitations = invitations.filter(
       (invitation) => invitation.inviteeId !== inviteeId,
     );
   }
 
+  /**
+   * 초대 받은 사람의 ID로 초대장을 조회합니다.
+   * @param inviteeId
+   * @returns
+   */
   findInvitationByInviteeId(inviteeId: number): Invitation {
-    this.logger.log(`Called ${this.findInvitationByInviteeId.name}`);
+    this.logger.debug(`Called ${this.findInvitationByInviteeId.name}`);
     return invitations.find((invitation) => invitation.inviteeId === inviteeId);
   }
 
@@ -84,7 +112,7 @@ export class GameRoomService {
    * @returns 전체 게임방 목록
    */
   async getAllGameRooms(): Promise<GameRoomListResponseDto> {
-    this.logger.log(`Called ${this.getAllGameRooms.name}`);
+    this.logger.debug(`Called ${this.getAllGameRooms.name}`);
     const rooms = new GameRoomListResponseDto();
     rooms.gameRooms = [];
     for (const [roomId, room] of gameRooms.entries()) {
@@ -114,7 +142,7 @@ export class GameRoomService {
   async getGameRoomUsersInfo(
     gameRoomInfo: GameRoom,
   ): Promise<GameRoomUsersInfoResponseDto> {
-    this.logger.log(`Called ${this.getGameRoomUsersInfo.name}`);
+    this.logger.debug(`Called ${this.getGameRoomUsersInfo.name}`);
     const redUser = gameRoomInfo.redUser
       ? {
           ...(await this.userService.getUserInfo(gameRoomInfo.redUser.userId)),
@@ -146,8 +174,32 @@ export class GameRoomService {
    * @returnshat
    */
   getGameRoomInfo(roomId: number): GameRoom {
-    this.logger.log(`Called ${this.getGameRoomInfo.name}`);
+    this.logger.debug(`Called ${this.getGameRoomInfo.name}`);
     return gameRooms.get(roomId);
+  }
+
+  /**
+   * 게임방의 개수를 조회합니다.
+   * @returns
+   */
+  getGameRoomCount(): number {
+    this.logger.debug(`Called ${this.getGameRoomCount.name}`);
+    return gameRooms.size;
+  }
+
+  /**
+   * 새 게임방을 생성합니다.
+   * @param roomId
+   * @param gameRoom
+   */
+  createGameRoom(roomId: number, gameRoom: GameRoom) {
+    this.logger.debug(`Called ${this.createGameRoom.name}`);
+    gameRooms.set(roomId, gameRoom);
+  }
+
+  deleteGameRoom(roomId: number) {
+    this.logger.debug(`Called ${this.deleteGameRoom.name}`);
+    gameRooms.delete(roomId);
   }
 
   /**
@@ -158,7 +210,7 @@ export class GameRoomService {
    * @returns
    */
   isOnThatGameRoom(roomId: number, userId: number): boolean {
-    this.logger.log(`Called ${this.isOnThatGameRoom.name}`);
+    this.logger.debug(`Called ${this.isOnThatGameRoom.name}`);
     const room = gameRooms.get(roomId);
     if (room) {
       if (
@@ -179,7 +231,7 @@ export class GameRoomService {
    * @returns
    */
   isOnGameRoom(userId: number): boolean {
-    this.logger.log(`Called ${this.isOnGameRoom.name}`);
+    this.logger.debug(`Called ${this.isOnGameRoom.name}`);
     for (const room of gameRooms.values()) {
       if (
         room.redUser?.userId === userId ||
@@ -219,7 +271,7 @@ export class GameRoomService {
    *         방장이 아닌 경우 null
    */
   getMyMasterGameRoomId(userId: number): number {
-    this.logger.log(`Called ${this.getMyMasterGameRoomId.name}`);
+    this.logger.debug(`Called ${this.getMyMasterGameRoomId.name}`);
     for (const room of gameRooms.values()) {
       if (room.redUser?.userId === userId) {
         return room.roomId;
@@ -236,7 +288,7 @@ export class GameRoomService {
    * @returns
    */
   isInviter(userId: number): boolean {
-    this.logger.log(`Called ${this.isInviter.name}`);
+    this.logger.debug(`Called ${this.isInviter.name}`);
     for (const invitation of invitations) {
       if (invitation.inviterId === userId) {
         return true;
@@ -253,7 +305,7 @@ export class GameRoomService {
    * @returns
    */
   isInvitee(userId: number): boolean {
-    this.logger.log(`Called ${this.isInvitee.name}`);
+    this.logger.debug(`Called ${this.isInvitee.name}`);
     for (const invitation of invitations) {
       if (invitation.inviteeId === userId) {
         return true;
@@ -270,7 +322,7 @@ export class GameRoomService {
    * @returns
    */
   isInLadderQuickMatchQueue(userId: number): boolean {
-    this.logger.log(`Called ${this.isInLadderQuickMatchQueue.name}`);
+    this.logger.debug(`Called ${this.isInLadderQuickMatchQueue.name}`);
     return quickMatchQueues[MatchType.LADDER].includes(userId);
   }
 
@@ -282,7 +334,7 @@ export class GameRoomService {
    * @returns
    */
   isInNormalQuickMatchQueue(userId: number): boolean {
-    this.logger.log(`Called ${this.isInNormalQuickMatchQueue.name}`);
+    this.logger.debug(`Called ${this.isInNormalQuickMatchQueue.name}`);
     return quickMatchQueues[MatchType.NORMAL].includes(userId);
   }
 
@@ -292,7 +344,7 @@ export class GameRoomService {
    * @param matchType
    */
   joinQuickMatchQueue(userId: number, matchType: MatchType): void {
-    this.logger.log(`Called ${this.joinQuickMatchQueue.name}`);
+    this.logger.debug(`Called ${this.joinQuickMatchQueue.name}`);
     // matchType에 해당하는 매칭 대기열에 userId를 추가
     const queue = quickMatchQueues[matchType];
     queue.push(userId);
@@ -324,7 +376,7 @@ export class GameRoomService {
    * @param matchType
    */
   leaveQuickMatchQueue(userId: number) {
-    this.logger.log(`Called ${this.leaveQuickMatchQueue.name}`);
+    this.logger.debug(`Called ${this.leaveQuickMatchQueue.name}`);
     // matchType에 해당하는 매칭 대기열에서 userId를 제거
     for (const queue of Object.values(quickMatchQueues)) {
       const index = queue.indexOf(userId);

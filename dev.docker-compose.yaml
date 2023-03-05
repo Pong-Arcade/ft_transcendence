@@ -1,14 +1,14 @@
 version: "3"
 
 services:
-  nginx:
+  nginx_dev:
     image: nginx:latest
     container_name: nginx_dev
-    volumes:
-      - ./nginx/:/etc/nginx/conf.d/
+    build:
+      context: .
+      dockerfile: ./nginx/Dockerfile.dev
     ports:
       - "80:80"
-      - "8080:8080"
     restart: always
     networks:
       - pong_arcade
@@ -34,7 +34,6 @@ services:
       dockerfile: ./Dockerfile.dev
     ports:
       - "3000:3000"
-      - "4242:4242"
     volumes:
       - ./backend:/backend
       - /backend/node_modules

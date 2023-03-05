@@ -64,14 +64,15 @@ export class GameInstance {
       },
       redPaddle: {
         x: gameConfig.paddle.buffer,
-        y: gameConfig.gameCanvas.height / 2,
+        y:
+        (gameConfig.gameCanvas.height / 2) - gameConfig.paddle.height / 2,
       },
       bluePaddle: {
         x:
           gameConfig.gameCanvas.width -
           gameConfig.paddle.buffer -
           gameConfig.paddle.width,
-        y: gameConfig.gameCanvas.height / 2,
+        y: (gameConfig.gameCanvas.height / 2) - gameConfig.paddle.height / 2,
       },
     };
   }
@@ -252,25 +253,38 @@ export class GameInstance {
     return ax < bx + bw && ay < by + bh && bx < ax + aw && by < ay + ah;
   }
 
-  private checkCollision(ballX, ballY, radius, paddleX, paddleY, paddleW, paddleH): boolean {
-    let left = paddleX;
-    let right = paddleX + paddleW;
-    let top = paddleY;
-    let bottom = paddleY + paddleH;
+  private checkCollision(
+    ballX,
+    ballY,
+    radius,
+    paddleX,
+    paddleY,
+    paddleW,
+    paddleH,
+  ): boolean {
+    const left = paddleX;
+    const right = paddleX + paddleW;
+    const top = paddleY;
+    const bottom = paddleY + paddleH;
 
-    if ( (left <= ballX && ballX <= right) || (top <= ballY && ballY <= bottom) ) {
+    if (
+      (left <= ballX && ballX <= right) ||
+      (top <= ballY && ballY <= bottom)
+    ) {
       const leftEx = left - radius;
       const rightEx = right + radius;
       const topEx = top - radius;
       const bottomEx = bottom + radius;
 
-      if (leftEx < ballX && ballX < rightEx && topEx < ballY && ballY < bottomEx)
-      {
-         return true;
+      if (
+        leftEx < ballX &&
+        ballX < rightEx &&
+        topEx < ballY &&
+        ballY < bottomEx
+      ) {
+        return true;
       }
-    }
-    else
-    {
+    } else {
       if (this.isPointonCircle(ballX, ballY, radius, left, top)) return true;
       if (this.isPointonCircle(ballX, ballY, radius, left, bottom)) return true;
       if (this.isPointonCircle(ballX, ballY, radius, right, top)) return true;
@@ -283,9 +297,9 @@ export class GameInstance {
   private isPointonCircle(ballX, ballY, radius, pointX, pointY): boolean {
     const deltaX = ballX - pointX;
     const deltaY = ballY - pointY;
-    const length = deltaX*deltaX + deltaY*deltaY;
+    const length = deltaX * deltaX + deltaY * deltaY;
 
-    if (length > radius*radius) {
+    if (length > radius * radius) {
       return false;
     }
     return true;

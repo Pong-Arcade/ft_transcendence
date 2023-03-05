@@ -37,9 +37,9 @@ import { User } from 'src/decorator/user.decorator';
 import { GameRoomCreateRequestDto } from 'src/dto/request/gameroom.create.request.dto';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.auth.guard';
 import { GameRoomService } from './gameroom.service';
-import { users } from 'src/status/status.module';
 import { UserService } from 'src/user/user.service';
 import { MatchType } from 'src/enum/match.type.enum';
+import { StatusService } from 'src/status/status.service';
 
 @ApiTags('Game')
 @ApiBearerAuth()
@@ -52,6 +52,7 @@ export class GameRoomController {
     private readonly eventEmitter: EventEmitter2,
     private readonly gameRoomService: GameRoomService,
     private readonly userService: UserService,
+    private readonly statusService: StatusService,
   ) {}
 
   @ApiOperation({
@@ -365,7 +366,7 @@ export class GameRoomController {
     }
 
     // 2. 오프라인 유저에게 신청한 경우
-    if (!users.has(targetUserId)) {
+    if (!this.statusService.isOnline(targetUserId)) {
       throw new ConflictException('오프라인 유저에게는 신청할 수 없습니다.');
     }
 

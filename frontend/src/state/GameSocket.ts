@@ -8,7 +8,7 @@ interface IGameSocket {
 }
 
 const gameSocket: IGameSocket = {
-  socket: io("ws://localhost:80/socket/game"),
+  socket: io(`${import.meta.env.VITE_SOCKET_URL}/socket/game`),
   userId: -1,
   userName: "",
 };

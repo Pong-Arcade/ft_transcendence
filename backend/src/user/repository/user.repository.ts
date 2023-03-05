@@ -14,7 +14,7 @@ export class UserRepository implements IUserRepository {
   ) {}
 
   async getUserInfo(userId: number): Promise<UserDto> {
-    this.logger.log(`Called ${this.getUserInfo.name}`);
+    this.logger.debug(`Called ${this.getUserInfo.name}`);
     const user = await this.userRepository.findOne({
       where: { userId },
     });
@@ -35,7 +35,7 @@ export class UserRepository implements IUserRepository {
     newNickname?: string,
     newAvatarUrl?: string,
   ): Promise<UserDto> {
-    this.logger.log(`Called ${this.updateUserInfo.name}`);
+    this.logger.debug(`Called ${this.updateUserInfo.name}`);
     // newNickname이 존재하면 닉네임을 변경합니다.
     // newAvatarUrl이 존재하면 아바타 이미지를 변경합니다.
     const user = await this.userRepository.findOne({
@@ -46,7 +46,8 @@ export class UserRepository implements IUserRepository {
     }
     if (
       //  새로운 닉네임이 기존에 존재-> Throw
-      await this.userRepository.findOne({ where: { nickname: newNickname } })
+      await this.userRepository.findOne({ where: { nickname: newNickname } }) &&
+      user.nickname !== newNickname
     ) {
       throw new ConflictException('이미 존재하는 닉네임입니다.');
     }

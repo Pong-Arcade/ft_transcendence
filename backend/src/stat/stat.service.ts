@@ -30,7 +30,7 @@ export class StatService {
     filter: RankingFilter,
     order: SortDirection,
   ): Promise<RankListResponseDto> {
-    this.logger.log(`Called ${this.getRanking.name}`);
+    this.logger.debug(`Called ${this.getRanking.name}`);
     const rankList = await this.statRepository.getRanking(filter, order);
     return {
       rankList: rankList,
@@ -40,7 +40,7 @@ export class StatService {
   async getRecentRecord(
     userId: number,
   ): Promise<UserRecentMatchHistoryResponseDto> {
-    this.logger.log(`Called ${this.getRecentRecord.name}`);
+    this.logger.debug(`Called ${this.getRecentRecord.name}`);
     const userInfo = await this.userService.getUserInfo(userId);
     if (!userInfo) {
       throw new NotFoundException('존재하지 않는 유저입니다.');
@@ -53,7 +53,7 @@ export class StatService {
   }
 
   async getUserGameStat(userId: number): Promise<[GameStatDto, GameStatDto]> {
-    this.logger.log(`Called ${this.getUserGameStat.name}`);
+    this.logger.debug(`Called ${this.getUserGameStat.name}`);
     return [
       await this.statRepository.getUserLadderStat(userId),
       await this.statRepository.getUserNormalStat(userId),
@@ -61,7 +61,7 @@ export class StatService {
   }
 
   async createMatchHistory(matchHistory: MatchHistoryDto): Promise<void> {
-    this.logger.log(`Called ${this.createMatchHistory.name}`);
+    this.logger.debug(`Called ${this.createMatchHistory.name}`);
     await this.statRepository.createMatchHistory(matchHistory);
     // FIXME: ladder, normal 테이블 업데이트
     const winner =
