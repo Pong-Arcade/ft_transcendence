@@ -1,5 +1,6 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import { leaveGameRoomAPI, leaveGameSpectatorAPI } from "../api/room";
 import Avatar from "../components/atoms/Avatar";
@@ -19,6 +20,7 @@ import gameRoomEvent from "../event/GameEvent/gameRoomEvent";
 import gameStartEvent from "../event/GameEvent/gameStartEvent";
 import useMenu from "../hooks/useMenu";
 import useModal from "../hooks/useModal";
+import errorState from "../state/ErrorState";
 import gameRoomState from "../state/GameRoomState";
 import infoState from "../state/InfoState";
 
@@ -77,16 +79,21 @@ const GameRoom = () => {
     useRecoilState(gameRoomState);
   const myInfo = useRecoilValue(infoState);
 
+  const setError = useSetRecoilState(errorState);
   const onLeaveGameRoom = async () => {
-    if (myInfo.userId === redUser.userId || myInfo.userId === blueUser.userId)
-      await leaveGameRoomAPI(roomId);
-    else await leaveGameSpectatorAPI(roomId);
-    setGameState({
-      roomId: -1,
-      redUser: {},
-      blueUser: {},
-    });
-    navigate("/lobby");
+    try {
+      if (myInfo.userId === redUser.userId || myInfo.userId === blueUser.userId)
+        await leaveGameRoomAPI(roomId);
+      else await leaveGameSpectatorAPI(roomId);
+      setGameState({
+        roomId: -1,
+        redUser: {},
+        blueUser: {},
+      });
+      navigate("/lobby");
+    } catch (error) {
+      setError({ isError: true, error });
+    }
   };
 
   gameRoomEvent();
@@ -100,6 +107,9 @@ const GameRoom = () => {
     setGameFinish,
   } = gameStartEvent(roomId);
 
+  useEffect(() => {
+    if (roomId === -1) setError({ isError: true, error: "" });
+  }, []);
   return (
     <>
       <GameRoomTemplate>

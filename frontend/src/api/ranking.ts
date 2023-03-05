@@ -4,7 +4,6 @@ import {
 } from "../components/atoms/RankingFilter/RankingFilter";
 import { getRequest } from "./axios";
 
-// TODO: 실패 처리
 export const getRankListAPI = async (
   filter: ERankingFilter,
   order: ERankingOrder

@@ -1,15 +1,14 @@
-import { AxiosError } from "axios";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import { joinChatRoomAPI } from "../../../api/room";
 import chatRoomState from "../../../state/ChatRoomState";
+import errorState from "../../../state/ErrorState";
 import Button from "../../atoms/Button";
 import Input from "../../atoms/Input";
 import ButtonGroup from "../ButtonGroup";
 import ConfirmModal from "../ConfirmModal";
-import ErrorModal from "../ErrorModal";
 
 interface Props {
   onClose: () => void;
@@ -31,8 +30,7 @@ const PasswordInput = styled(Input).attrs({
 
 const ChatRoomPasswordModal = ({ onClose, roomId }: Props) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [error, setError] = useState(false);
-  const [errorContent, setErrorContent] = useState("");
+  const setError = useSetRecoilState(errorState);
   const setChatRoomState = useSetRecoilState(chatRoomState);
   const navigate = useNavigate();
 
@@ -47,11 +45,8 @@ const ChatRoomPasswordModal = ({ onClose, roomId }: Props) => {
       setChatRoomState(response.data);
 
       navigate(`/chat-rooms/${roomId}`);
-    } catch (e: any | AxiosError) {
-      if (e instanceof AxiosError) {
-        setError(true);
-        setErrorContent(e.response?.data.message);
-      }
+    } catch (error) {
+      setError({ isError: true, error });
     }
   };
   return (
@@ -62,13 +57,6 @@ const ChatRoomPasswordModal = ({ onClose, roomId }: Props) => {
           <ConfirmButton onClick={onPasswordSubmit}>입장</ConfirmButton>
         </ButtonGroup>
       </ConfirmModal>
-      {error && (
-        <ErrorModal
-          onClose={() => setError(false)}
-          errors={errorContent}
-          title="방입장 실패"
-        />
-      )}
     </>
   );
 };

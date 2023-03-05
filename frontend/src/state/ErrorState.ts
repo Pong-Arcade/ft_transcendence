@@ -1,8 +1,16 @@
 import { atom } from "recoil";
 
-const errorState = atom<boolean>({
+interface IErrorState {
+  isError: boolean;
+  error: any;
+}
+
+const errorState = atom<IErrorState>({
   key: "errorState",
-  default: false,
+  default: {
+    isError: false,
+    error: "",
+  },
 });
 
 export default errorState;

@@ -11,7 +11,7 @@ export const getCookie = () => {
 
 export const getDecodedCookie = () => {
   const cookie = getCookie();
-  if (!cookie) throw new Error();
+  if (!cookie) throw new Error("유효한 토큰이 없습니다");
 
   const payload = cookie.split(".")[1];
   const decoded = window.atob(payload);
