@@ -1,16 +1,12 @@
 import { Inject, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
 import {
-  ConnectedSocket,
   OnGatewayDisconnect,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { Namespace, Socket } from 'socket.io';
-import { AuthService } from 'src/auth/auth.service';
-import { GameRoom, Invitation } from './gameroom.entity';
+import { Namespace } from 'socket.io';
+import { GameRoom } from './gameroom.entity';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { GameRoomCreateRequestDto } from 'src/dto/request/gameroom.create.request.dto';
 import { users } from 'src/status/status.module';
@@ -31,7 +27,6 @@ import {
 } from 'src/enum/ingame.event.enum';
 import { GameRoomService } from './gameroom.service';
 import { ChatroomService } from 'src/chat/chat.service';
-import MatchHistory from 'src/entity/match.history.entity';
 import { MatchHistoryDto } from 'src/dto/match.history.dto';
 import { StatService } from 'src/stat/stat.service';
 
@@ -189,7 +184,6 @@ export class GameGateway implements OnGatewayDisconnect {
   @OnEvent('gameroom:invite')
   async inviteGame(userId: number, targetUserId: number, matchType: MatchType) {
     this.logger.log(`Called ${this.inviteGame.name}`);
-    const userSocketInfo = users.get(userId);
 
     // 초대장을 생성
     const invitation = this.gameRoomService.createInvitation(
@@ -290,9 +284,6 @@ export class GameGateway implements OnGatewayDisconnect {
   @OnEvent('gameroom:invite:reject')
   async rejectInviteGame(userId: number) {
     this.logger.log(`Called ${this.rejectInviteGame.name}`);
-
-    // 초대받은 사람의 socket 정보
-    const inviteeSocketInfo = users.get(userId);
 
     const inviterId =
       this.gameRoomService.findInvitationByInviteeId(userId).inviterId;

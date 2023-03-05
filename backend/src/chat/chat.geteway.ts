@@ -12,12 +12,10 @@ import { Namespace } from 'socket.io';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { MockRepository } from 'src/mock/mock.repository';
 import { ChatroomCreateRequestDto } from 'src/dto/request/chatroom.create.request.dto';
-import { ChatroomService } from './chat.service';
 import { UserService } from 'src/user/user.service';
 import { Logger } from '@nestjs/common';
 import { ChangeChatroomInfoRequestDto } from 'src/dto/request/chatroom.change.info.request.dto';
 import { UserChatMode } from 'src/enum/user.chat.mode.enum';
-import { UserChatDto } from 'src/dto/user.chat.dto';
 import { ChatRoomMode } from 'src/enum/chatroom.mode.enum';
 import { GameRoomService } from 'src/game/gameroom.service';
 export const rooms = new Map<number, Room>();
@@ -56,7 +54,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // 연결 끊김 핸들러
     socket.on('disconnect', () => {
       // 끊긴 소켓 삭제
-      users.forEach((value, key, map) => {
+      users.forEach((value, key) => {
         if (socket.id == value.socketId) {
           // 채팅방 소켓 정리
           if (value.location > 0) {
@@ -80,8 +78,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       });
     });
   }
+
   //연결 끊김
-  async handleDisconnect(client) {
+  async handleDisconnect() {
     this.logger.log(`Called ${this.handleDisconnect.name}`);
   }
 
@@ -112,7 +111,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('message')
-  async onMessage(client, msg) {
+  async onMessage(_, msg) {
     const room = rooms.get(users.get(msg.userId).location);
     const message: IMessage = {
       fromId: msg.userId,
@@ -132,6 +131,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         .emit('message', message);
     }
   }
+
   @SubscribeMessage('whisper')
   async onWhisper(client, msg) {
     for (const value of users.values()) {
@@ -160,7 +160,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @OnEvent('chatroom:join')
-  async joinChatRoom(roomId, userId) {
+  async joinChatRoom(roomId: number, userId: number) {
     const room = rooms.get(roomId);
     const user = users.get(userId);
     user.location = roomId;
@@ -181,8 +181,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       .emit('systemMsg', user.userName + '님이 입장하였습니다.');
     room.users.push(userId);
   }
+
   @OnEvent('chatroom:leave')
-  async leaveChatRoom(roomId, userId) {
+  async leaveChatRoom(roomId: number, userId: number) {
     const room = rooms.get(roomId);
     if (!room) return;
     if (room.masterUser === userId) {
@@ -211,7 +212,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @OnEvent('chatroom:create')
-  async addChatRoom(userId, roomInfo: ChatroomCreateRequestDto) {
+  async addChatRoom(userId: number, roomInfo: ChatroomCreateRequestDto) {
     const roomId = roomCount++;
     const user = users.get(userId);
     user.mode = UserChatMode.MASTER;
@@ -234,7 +235,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @OnEvent('chatroom:invite')
-  async inviteChatRoom(roomId, fromId, toUsers) {
+  async inviteChatRoom(roomId: number, fromId: number, toUsers: number[]) {
     const room = rooms.get(roomId);
     const userName = users.get(fromId).userName;
     const to = new Array<User>();
@@ -247,21 +248,19 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     });
   }
   @OnEvent('chatroom:invite:accept')
-  async acceptInviteChatRoom(roomId, userId) {
+  async acceptInviteChatRoom(roomId: number, userId: number) {
     const room = rooms.get(roomId);
-    const user = users.get(userId);
     this.joinChatRoom(roomId, userId);
     room.invitedUsers = room.invitedUsers.filter((id) => id != userId);
   }
 
   @OnEvent('chatroom:invite:reject')
-  async rejectInviteChatRoom(roomId, userId) {
+  async rejectInviteChatRoom(roomId: number, userId: number) {
     const room = rooms.get(roomId);
-    const user = users.get(userId);
     room.invitedUsers = room.invitedUsers.filter((id) => id != userId);
   }
   @OnEvent('chatroom:ban')
-  async banChatRoom(roomId, userId) {
+  async banChatRoom(roomId: number, userId: number) {
     const room = rooms.get(roomId);
     const user = users.get(userId);
     this.server.to(user.socketId).emit('banChatRoom', roomId);
@@ -269,7 +268,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.leaveChatRoom(roomId, userId);
   }
   @OnEvent('chatroom:promote-admin')
-  async addAdmin(roomId, userId) {
+  async addAdmin(roomId: number, userId: number) {
     const room = rooms.get(roomId);
     const user = users.get(userId);
     room.adminUsers.push(userId);
@@ -277,7 +276,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.in(`chatroom${roomId}`).emit('addAdmin', userId);
   }
   @OnEvent('chatroom:demote-admin')
-  async deleteAdmin(roomId, userId) {
+  async deleteAdmin(roomId: number, userId: number) {
     const room = rooms.get(roomId);
     const user = users.get(userId);
     room.adminUsers = room.adminUsers.filter((id) => id !== userId);
@@ -285,7 +284,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.in(`chatroom${roomId}`).emit('deleteAdmin', userId);
   }
   @OnEvent('chatroom:mute-user')
-  async muteUser(roomId, userId, duration) {
+  async muteUser(roomId: number, userId: number, duration: number) {
     this.muteUsers.push(userId);
     setTimeout(() => {
       this.muteUsers.splice(
@@ -298,8 +297,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       }
     }, 3 * 60 * 1000);
   }
-  // @OnEvent('chatroom:unmute-user')
-  // async unmuteUser(roomId, userId, duration) {}
 
   @OnEvent('chatroom:change-info')
   async updateChatRoom(roomId: number, roomInfo: ChangeChatroomInfoRequestDto) {

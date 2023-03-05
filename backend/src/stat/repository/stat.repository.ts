@@ -224,7 +224,9 @@ export class StatRepository implements IStatRepository {
   }
 
   async updateWinLadderStat(userId: number, score: number): Promise<void> {
-    this.logger.log(`Called ${this.updateWinNormalStat.name} param: {userId: ${userId}, score: ${score}}`);
+    this.logger.log(
+      `Called ${this.updateWinNormalStat.name} param: {userId: ${userId}, score: ${score}}`,
+    );
     const data = await this.ladderStatRepository.findOne({
       where: { userId },
     });
@@ -237,7 +239,9 @@ export class StatRepository implements IStatRepository {
   }
 
   async updateLoseLadderStat(userId: number, score: number): Promise<void> {
-    this.logger.log(`Called ${this.updateLoseLadderStat.name} param: {userId: ${userId}, score: ${score}}`);
+    this.logger.log(
+      `Called ${this.updateLoseLadderStat.name} param: {userId: ${userId}, score: ${score}}`,
+    );
     const data = await this.ladderStatRepository.findOne({
       where: { userId },
     });

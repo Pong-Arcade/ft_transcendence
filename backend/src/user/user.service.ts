@@ -31,7 +31,7 @@ export class UserService {
   getAllOnlineUsers(): UserDto[] {
     this.logger.log(`Called ${this.getAllOnlineUsers.name}`);
     const results: UserDto[] = [];
-    users.forEach((value, key) => {
+    users.forEach((value) => {
       if (value.userId >= 0)
         results.push({
           userId: value.userId,

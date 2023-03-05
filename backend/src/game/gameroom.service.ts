@@ -61,7 +61,7 @@ export class GameRoomService {
   deleteInvitationById(invitation: Invitation) {
     this.logger.log(`Called ${this.deleteInvitationById.name}`);
     invitations = invitations.filter(
-      (invitation) => invitation.invitationId !== invitations.length,
+      (inv) => inv.invitationId !== invitation.invitationId,
     );
   }
 
