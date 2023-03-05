@@ -30,6 +30,19 @@ import { MatchHistoryDto } from 'src/dto/match.history.dto';
 import { StatService } from 'src/stat/stat.service';
 import { StatusService } from 'src/status/status.service';
 
+type MessageType = 'message' | 'whisper' | 'systemMsg';
+interface IMessage {
+  fromId: number;
+  content: string;
+  type: MessageType;
+  roomId?: number;
+}
+enum EMessageType {
+  MESSAGE = 'message',
+  WHISPER = 'whisper',
+  SYSTEMMSG = 'systemMsg',
+}
+
 @WebSocketGateway({
   namespace: 'socket/game',
 })
@@ -76,6 +89,26 @@ export class GameGateway implements OnGatewayDisconnect {
     }
     user.gameSocketId = client.id;
     this.statusService.setUserSocketInfo(info.userId, user);
+  }
+
+  @SubscribeMessage('message')
+  async onMessage(_, msg) {
+    const userSocketInfo = this.statusService.getUserSocketInfoByUserId(
+      msg.userId,
+    );
+    if (userSocketInfo.location >= 0) {
+      return;
+    }
+    const room = this.gameRoomService.getGameRoomInfo(
+      Math.abs(userSocketInfo.location),
+    );
+    const message: IMessage = {
+      fromId: msg.userId,
+      content: msg.msg,
+      type: EMessageType.MESSAGE,
+      roomId: room.roomId,
+    };
+    this.server.to(`gameroom-${room.roomId}`).emit('message', message);
   }
 
   /**
