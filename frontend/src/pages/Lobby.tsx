@@ -99,7 +99,6 @@ const Lobby = () => {
     });
 
     socket.socket.on("otherLogin", () => {
-      console.log("otherLogin");
       setError({ isError: true, error: "" });
     });
     return () => {

@@ -1,6 +1,10 @@
 import { useContext, useEffect, useState } from "react";
-import { useRecoilState } from "recoil";
-import { getChatRoomListAPI, getGameRoomListAPI } from "../api/room";
+import { useRecoilState, useSetRecoilState } from "recoil";
+import {
+  getChatRoomListAPI,
+  getGameBoardConfigAPI,
+  getGameRoomListAPI,
+} from "../api/room";
 import {
   getBlockUsersAPI,
   getFriendUsersAPI,
@@ -12,6 +16,7 @@ import blockUsersState from "../state/BlockUsersState";
 import chatRoomListState from "../state/ChatRoomListState";
 import chatRoomState from "../state/ChatRoomState";
 import friendUsersState from "../state/FriendUsersState";
+import gameBoardState from "../state/GameBoardState";
 import gameRoomListState from "../state/GameRoomListState";
 import infoState from "../state/InfoState";
 import { SocketContext } from "../utils/ChatSocket";
@@ -23,8 +28,9 @@ const useLobbyData = () => {
   const [blockUsers, setBlockUsers] = useRecoilState(blockUsersState);
   const [chatRoomList, setChatRoomList] = useRecoilState(chatRoomListState);
   const [gameRoomList, setGameRoomList] = useRecoilState(gameRoomListState);
-  const [chatRoom, setChatRoom] = useRecoilState(chatRoomState);
+  const setChatRoom = useSetRecoilState(chatRoomState);
   const [myInfo, setMyInfo] = useRecoilState(infoState);
+  const setGameBoardState = useSetRecoilState(gameBoardState);
   const socket = useContext(SocketContext);
 
   //유저 정보 변경시 소켓 이벤트
@@ -37,6 +43,7 @@ const useLobbyData = () => {
   }, [myInfo]);
   //온라인 유저 소켓 이벤트
   const addOnlineUser = (user: IUser) => {
+    console.log("addOnlineUser");
     onlineUsers.find((u) => u.userId == user.userId) &&
       user.userId &&
       deleteOnlineUser(user.userId);
@@ -65,6 +72,7 @@ const useLobbyData = () => {
     setBlockUsers(await getBlockUsersAPI());
     setChatRoomList(await getChatRoomListAPI());
     setGameRoomList(await getGameRoomListAPI());
+    setGameBoardState(await getGameBoardConfigAPI());
   };
 
   const getLobbyData = () => {

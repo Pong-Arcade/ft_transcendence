@@ -40,6 +40,7 @@ const ChatInput = () => {
 
     if (msg.split(" ")[0] === "/w") {
       socket.socket.emit("whisper", {
+        fromId: socket.userId,
         fromName: socket.userName,
         toName: msg.split(" ")[1],
         msg: msg.substring(msg.split(" ")[1].length + 4),

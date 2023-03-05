@@ -40,6 +40,8 @@ import { GameRoomService } from './gameroom.service';
 import { UserService } from 'src/user/user.service';
 import { MatchType } from 'src/enum/match.type.enum';
 import { StatusService } from 'src/status/status.service';
+import { InGameConfigDto } from 'src/dto/ingame.config.dto';
+import { GameInstance } from './gameInstance';
 
 @ApiTags('Game')
 @ApiBearerAuth()
@@ -581,5 +583,16 @@ export class GameRoomController {
 
     // 4. 게임 준비 취소 요청
     this.eventEmitter.emit('gameroom:unready', roomId, user.userId);
+  }
+
+  @ApiOperation({
+    summary: '게임룸 캔버스 설정 요소 요청',
+    description:
+      'canvas에 그릴 요소 정보를 요청합니다.',
+  })
+  @Get('/config')
+  async getGameRoomConfig(): Promise<InGameConfigDto> {
+    this.logger.log(`Called ${this.getGameRoomConfig.name}`);
+    return GameInstance.makeSetConfig();
   }
 }
