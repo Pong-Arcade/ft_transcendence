@@ -98,6 +98,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     let user: User;
     if (users.has(info.userId)) {
       user = users.get(info.userId);
+      this.server.to(user.socketId).emit('otherLogin');
     } else {
       user = new User(info.userId, info.userName);
     }
