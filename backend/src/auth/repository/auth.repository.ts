@@ -60,8 +60,7 @@ export class AuthRepository implements IAuthRepository {
       ];
     }
 
-    user.nickname = uuid62.generateId();
-    console.log(user.nickname.length);
+    user.nickname = uuid62.v4();
     const firstLogin = new Date();
     // Start transaction
     this.userRepository.manager.transaction(
