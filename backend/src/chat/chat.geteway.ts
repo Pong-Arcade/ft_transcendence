@@ -191,9 +191,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       mode: user.mode,
       firstLogin: userInfo.firstLogin,
     });
-    this.server
-      .in(`chatroom${roomId}`)
-      .emit('systemMsg', user.userName + '님이 입장하였습니다.');
+    const message: IMessage = {
+      fromId: userId,
+      content: user.userName + '님이 입장하였습니다.',
+      type: EMessageType.SYSTEMMSG,
+    };
+    this.server.in(`chatroom${roomId}`).emit('systemMsg', message);
   }
 
   @OnEvent('chatroom:leave')
@@ -221,6 +224,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       this.server.in(user.socketId).socketsLeave(`chatroom${roomId}`);
       this.server.in(user.socketId).socketsJoin('lobby');
       room.users = room.users.filter((id) => id != userId);
+      const message: IMessage = {
+        fromId: userId,
+        content: user.userName + '님이 퇴장하였습니다.',
+        type: EMessageType.SYSTEMMSG,
+      };
+      this.server.in(`chatroom${roomId}`).emit('systemMsg', message);
     }
     if (room.users.length == 0) rooms.delete(roomId); //--);
   }
@@ -302,6 +311,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @OnEvent('chatroom:mute-user')
   async muteUser(roomId: number, userId: number, duration: number) {
     this.muteUsers.push(userId);
+
+    const user = users.get(userId);
+    const message: IMessage = {
+      fromId: userId,
+      content: user.userName + '님이 채팅금지 당하셨습니다.',
+      type: EMessageType.SYSTEMMSG,
+    };
+    this.server.in(`chatroom${roomId}`).emit('systemMsg', message);
     setTimeout(() => {
       this.muteUsers.splice(
         this.muteUsers.find((id) => {
