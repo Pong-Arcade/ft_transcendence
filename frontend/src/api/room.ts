@@ -155,3 +155,8 @@ export const leaveQuickMatchAPI = async () => {
   const response = await deleteRequest("game-rooms/leave/quick-match");
   return response;
 };
+
+export const getGameBoardConfigAPI = async () => {
+  const response = await getRequest("game-rooms/config");
+  return response.data;
+};

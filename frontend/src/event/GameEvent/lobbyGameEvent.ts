@@ -5,7 +5,6 @@ import {
   IGameRoom,
   ILobbyGameRoom,
 } from "../../components/modules/Pagination/Pagination";
-import gameBoardState, { IGameBoardState } from "../../state/GameBoardState";
 import gameRoomListState from "../../state/GameRoomListState";
 import gameRoomState from "../../state/GameRoomState";
 import GameSocket from "../../state/GameSocket";
@@ -18,7 +17,6 @@ const lobbyGameEvent = () => {
   const myInfo = useRecoilValue(infoState);
   const setGameRoomList = useSetRecoilState(gameRoomListState);
   const setGameRoomState = useSetRecoilState(gameRoomState);
-  const setGameBoardState = useSetRecoilState(gameBoardState);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -53,17 +51,12 @@ const lobbyGameEvent = () => {
       setGameRoomState(gameRoom);
       navigate(`/game-rooms/${gameRoom.roomId}}`);
     });
-    gameSocket.socket.on("config", (gameBoard: IGameBoardState) => {
-      console.log("event config");
-      setGameBoardState(gameBoard);
-    });
 
     return () => {
       chatSocket.socket.off("addGameRoom");
       chatSocket.socket.off("deleteGameRoom");
       chatSocket.socket.off("joinGameRoom");
       gameSocket.socket.off("gameRoomMatched");
-      gameSocket.socket.off("config");
     };
   }, []);
 
