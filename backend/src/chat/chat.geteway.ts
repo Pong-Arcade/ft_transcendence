@@ -122,7 +122,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('message')
-  async onMessage(_, msg) {
+  onMessage(_, msg) {
     const room = rooms.get(users.get(msg.userId).location);
     const message: IMessage = {
       fromId: msg.userId,
@@ -144,7 +144,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('whisper')
-  async onWhisper(client, msg) {
+  onWhisper(client, msg) {
     if (msg.fromName == msg.toName) {
       return;
     }
@@ -200,7 +200,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @OnEvent('chatroom:leave')
-  async leaveChatRoom(roomId: number, userId: number) {
+  leaveChatRoom(roomId: number, userId: number) {
     const room = rooms.get(roomId);
     if (!room) return;
     if (room.masterUser === userId) {
@@ -235,7 +235,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @OnEvent('chatroom:create')
-  async addChatRoom(userId: number, roomInfo: ChatroomCreateRequestDto) {
+  addChatRoom(userId: number, roomInfo: ChatroomCreateRequestDto) {
     const roomId = roomCount++;
     const user = users.get(userId);
     if (!user) return;
@@ -260,7 +260,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @OnEvent('chatroom:invite')
-  async inviteChatRoom(roomId: number, fromId: number, toUsers: number[]) {
+  inviteChatRoom(roomId: number, fromId: number, toUsers: number[]) {
     const room = rooms.get(roomId);
     const userName = users.get(fromId).userName;
     const to = new Array<User>();
@@ -273,19 +273,19 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     });
   }
   @OnEvent('chatroom:invite:accept')
-  async acceptInviteChatRoom(roomId: number, userId: number) {
+  acceptInviteChatRoom(roomId: number, userId: number) {
     const room = rooms.get(roomId);
     this.joinChatRoom(roomId, userId);
     room.invitedUsers = room.invitedUsers.filter((id) => id != userId);
   }
 
   @OnEvent('chatroom:invite:reject')
-  async rejectInviteChatRoom(roomId: number, userId: number) {
+  rejectInviteChatRoom(roomId: number, userId: number) {
     const room = rooms.get(roomId);
     room.invitedUsers = room.invitedUsers.filter((id) => id != userId);
   }
   @OnEvent('chatroom:ban')
-  async banChatRoom(roomId: number, userId: number) {
+  banChatRoom(roomId: number, userId: number) {
     const room = rooms.get(roomId);
     const user = users.get(userId);
     this.server.to(user.socketId).emit('banChatRoom', roomId);
@@ -293,7 +293,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.leaveChatRoom(roomId, userId);
   }
   @OnEvent('chatroom:promote-admin')
-  async addAdmin(roomId: number, userId: number) {
+  addAdmin(roomId: number, userId: number) {
     const room = rooms.get(roomId);
     const user = users.get(userId);
     room.adminUsers.push(userId);
@@ -301,7 +301,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.in(`chatroom${roomId}`).emit('addAdmin', userId);
   }
   @OnEvent('chatroom:demote-admin')
-  async deleteAdmin(roomId: number, userId: number) {
+  deleteAdmin(roomId: number, userId: number) {
     const room = rooms.get(roomId);
     const user = users.get(userId);
     room.adminUsers = room.adminUsers.filter((id) => id !== userId);
@@ -309,7 +309,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.in(`chatroom${roomId}`).emit('deleteAdmin', userId);
   }
   @OnEvent('chatroom:mute-user')
-  async muteUser(roomId: number, userId: number, duration: number) {
+  muteUser(roomId: number, userId: number, duration: number) {
     this.muteUsers.push(userId);
 
     const user = users.get(userId);
@@ -332,7 +332,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @OnEvent('chatroom:change-info')
-  async updateChatRoom(roomId: number, roomInfo: ChangeChatroomInfoRequestDto) {
+  updateChatRoom(roomId: number, roomInfo: ChangeChatroomInfoRequestDto) {
     const room = rooms.get(roomId);
     room.title = roomInfo.title;
     room.mode = roomInfo.mode;
