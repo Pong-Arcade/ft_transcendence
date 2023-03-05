@@ -7,6 +7,7 @@ const chatRoomState = atom<IChatRoom>({
     roomId: -1,
     mastUserId: -1,
     users: [],
+    maxUserCount: -1,
   },
 });
 

@@ -114,7 +114,7 @@ const ModifyChatRoomModal = ({ title, onClose }: Props) => {
               <LabledInput
                 title="최대인원"
                 name={EChatRoomFormValues.MAXUSER_COUNT}
-                placeholder={`${chatRoom.maxUserCount as string}명`}
+                placeholder={`${chatRoom.maxUserCount as number}명`}
                 onChange={onChangeForm}
                 type="number"
                 disabled

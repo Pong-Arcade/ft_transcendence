@@ -88,10 +88,10 @@ const GameRoomFormValidator = ({
   if (!winScore.length) {
     errors.winScore = "승리점수를 입력해주세요";
   } else if (
-    MIN_WINSCORE_NUMBER > +maxSpectatorCount ||
-    +maxSpectatorCount > MAX_WINSCORE_NUMBER
+    MIN_WINSCORE_NUMBER > +winScore ||
+    +winScore > MAX_WINSCORE_NUMBER
   ) {
-    errors.maxSpectatorCount = `최대인원은 ${MIN_WINSCORE_NUMBER} ~ ${MAX_WINSCORE_NUMBER} 이내로 입력해주세요`;
+    errors.winScore = `승리점수는  ${MIN_WINSCORE_NUMBER} ~ ${MAX_WINSCORE_NUMBER} 이내로 입력해주세요`;
   }
 
   if (!maxSpectatorCount.length) {

@@ -37,7 +37,6 @@ const ModalButton = styled(Button).attrs({
 })``;
 
 const GlobalErrorModal = ({ errors }: Props) => {
-  console.log(errors);
   const setError = useSetRecoilState(errorState);
   const navigate = useNavigate();
 

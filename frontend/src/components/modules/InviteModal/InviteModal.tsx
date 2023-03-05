@@ -13,11 +13,10 @@ import ModalTitle from "../ModalTitle";
 import { IUser } from "../Pagination/Pagination";
 
 interface Props {
-  list: IUser[] | Promise<IUser[]>;
   onClose: () => void;
 }
 
-const InviteModal = ({ list, onClose }: Props) => {
+const InviteModal = ({ onClose }: Props) => {
   const [inviteList, setInviteList] = useState<string[]>([]);
   const [onlineUsers, setOnlineUsers] = useState<IUser[]>([]);
   const setError = useSetRecoilState(errorState);
