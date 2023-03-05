@@ -62,8 +62,8 @@ export class GameGateway implements OnGatewayDisconnect {
 
   handleConnection(socket) {
     this.logger.log(`Called ${this.handleConnection.name}`);
-    //게임방 소켓 연결 직후 게임 스크린 정보 전달
-    this.eventEmitter.emit('gameroom:config', socket);
+    //게임방 소켓 연결 직후 게임 스크린 정보 전달(폐기예정)
+    //this.eventEmitter.emit('gameroom:config', socket);
   }
 
   handleDisconnect(socket) {
@@ -539,6 +539,7 @@ export class GameGateway implements OnGatewayDisconnect {
     await this.statService.createMatchHistory(matchHistory);
   }
 
+  //폐기예정
   @OnEvent('gameroom:config')
   pushConfig(client) {
     client.emit(InGameEvent.CONFIG, GameInstance.makeSetConfig());
