@@ -110,7 +110,7 @@ const GameRoom = () => {
   useEffect(() => {
     if (roomId === -1) setError({ isError: true, error: "" });
   }, []);
-  
+
   return (
     <>
       <GameRoomTemplate>
