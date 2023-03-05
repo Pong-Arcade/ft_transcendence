@@ -43,7 +43,6 @@ const useLobbyData = () => {
   }, [myInfo]);
   //온라인 유저 소켓 이벤트
   const addOnlineUser = (user: IUser) => {
-    console.log("addOnlineUser");
     onlineUsers.find((u) => u.userId == user.userId) &&
       user.userId &&
       deleteOnlineUser(user.userId);
