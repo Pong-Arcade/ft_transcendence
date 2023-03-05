@@ -97,8 +97,13 @@ const Lobby = () => {
       setInviteUserName(userName);
       onChatInviteModalOpen();
     });
+
+    socket.socket.on("otherLogin", () => {
+      setError({ isError: true, error: "" });
+    });
     return () => {
       socket.socket.off("inviteChatRoom");
+      socket.socket.off("otherLogin");
     };
   }, []);
 

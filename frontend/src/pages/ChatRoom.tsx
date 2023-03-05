@@ -49,7 +49,7 @@ const ChatRoom = () => {
 
   useEffect(() => {
     if (chatRoom.roomId === -1) setError({ isError: true, error: "" });
-    console.log(chatRoom.roomId);
+
     socket.socket.on("updateChatRoom", (title) =>
       setChatRoom({
         roomId: chatRoom.roomId,
@@ -58,8 +58,12 @@ const ChatRoom = () => {
         title: title,
       })
     );
+    socket.socket.on("otherLogin", () => {
+      setError({ isError: true, error: "" });
+    });
     return () => {
       socket.socket.off("updateChatRoom");
+      socket.socket.off("otherLogin");
     };
   }, []);
 
