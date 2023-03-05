@@ -9,6 +9,7 @@ import LadderStat from 'src/entity/ladder.stat.entity';
 import { TwoFactorAuth } from 'src/entity/two.factor.auth.entity';
 import { UserAuthDto } from 'src/dto/user.auth.dto';
 import { v4 as uuid } from 'uuid';
+import * as uuid62 from 'uuid62';
 
 export class AuthRepository implements IAuthRepository {
   private logger = new Logger(AuthRepository.name);
@@ -59,6 +60,7 @@ export class AuthRepository implements IAuthRepository {
       ];
     }
 
+    user.nickname = uuid62.v4();
     const firstLogin = new Date();
     // Start transaction
     this.userRepository.manager.transaction(

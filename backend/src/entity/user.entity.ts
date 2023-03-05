@@ -13,7 +13,7 @@ export default class User {
   @Column({
     name: 'nickname',
     type: 'varchar',
-    length: 32,
+    length: 36,
     unique: true,
   })
   nickname: string;
