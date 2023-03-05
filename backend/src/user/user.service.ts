@@ -29,7 +29,7 @@ export class UserService {
    * 모든 유저 정보를 가져옵니다.
    */
   getAllOnlineUsers(): UserDto[] {
-    this.logger.log(`Called ${this.getAllOnlineUsers.name}`);
+    this.logger.debug(`Called ${this.getAllOnlineUsers.name}`);
     const results: UserDto[] = [];
     users.forEach((value) => {
       if (value.userId >= 0)
@@ -49,7 +49,7 @@ export class UserService {
    * @param userId
    */
   async getUserInfo(userId: number): Promise<UserDto> {
-    this.logger.log(`Called ${this.getUserInfo.name}`);
+    this.logger.debug(`Called ${this.getUserInfo.name}`);
     if (userId === -1 || userId === 0) {
       return null;
     }
@@ -63,7 +63,7 @@ export class UserService {
   }
 
   async getUserDetail(userId: number): Promise<UserDetailResponseDto> {
-    this.logger.log(`Called ${this.getUserDetail.name}`);
+    this.logger.debug(`Called ${this.getUserDetail.name}`);
     const userDto: UserDto = await this.getUserInfo(userId);
     const [ladderInfo, normalInfo] = await this.statService.getUserGameStat(
       userId,
@@ -99,7 +99,7 @@ export class UserService {
     newNickname?: string,
     newAvatarUrl?: string,
   ): Promise<UserDto> {
-    this.logger.log(`Called ${this.updateUserInfo.name}`);
+    this.logger.debug(`Called ${this.updateUserInfo.name}`);
     const userInfo = (await this.userRepository.updateUserInfo(
       userId,
       newNickname,

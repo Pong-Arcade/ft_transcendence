@@ -52,7 +52,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Namespace;
   async handleConnection(@ConnectedSocket() socket: Socket) {
     this.logger.log(`Called ${this.handleConnection.name}`);
-    console.log('con');
     socket.join('lobby');
   }
 

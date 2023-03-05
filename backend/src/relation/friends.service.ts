@@ -29,7 +29,7 @@ export class FriendsService {
    * @param userRelationDto
    */
   async getFriends(user: UserDto): Promise<UserFriendListResponseDto> {
-    this.logger.log(`Called ${this.getFriends.name}`);
+    this.logger.debug(`Called ${this.getFriends.name}`);
     const results = await this.relationRepository.find({
       where: {
         user: {
@@ -68,7 +68,7 @@ export class FriendsService {
   }
 
   async addFriend(relation: UserRelationDto): Promise<void> {
-    this.logger.log(`Called ${this.addFriend.name}`);
+    this.logger.debug(`Called ${this.addFriend.name}`);
     if (relation.userId === relation.targetUserId) {
       throw new ConflictException('자기 자신을 친구로 추가할 수 없습니다.');
     }
@@ -122,7 +122,7 @@ export class FriendsService {
   }
 
   async delFriend(relation: UserRelationDto): Promise<void> {
-    this.logger.log(`Called ${this.delFriend.name}`);
+    this.logger.debug(`Called ${this.delFriend.name}`);
     const findUser = await this.userService.getUserInfo(relation.targetUserId);
     if (!findUser) {
       throw new NotFoundException('존재하지 않는 유저입니다.');
