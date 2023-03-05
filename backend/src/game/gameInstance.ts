@@ -205,33 +205,32 @@ export class GameInstance {
     const ballSize = this.info.ball.size;
 
     //승점 처리, 충돌 처리!
-    if (nextBallX < 0) {
+    if (nextBallX - gameConfig.ball.size < 0) {
       //player2 win
       this.scored = true;
       this.info.blueScore++;
       nextBallX = 0;
-    } else if (nextBallX > this.info.gameScreen.width) {
+    } else if (nextBallX + gameConfig.ball.size > this.info.gameScreen.width) {
       //player1 win
       this.scored = true;
       this.info.redScore++;
       nextBallX = this.info.gameScreen.width;
-    } else if (nextBallY < 0) {
+    } else if (nextBallY - gameConfig.ball.size < 0) {
       //천장 충돌
-      nextBallY = 0;
+      nextBallY = 0 + gameConfig.ball.size;
       tempBallDy *= -1;
-    } else if (nextBallY > this.info.gameScreen.height) {
+    } else if (nextBallY + gameConfig.ball.size > this.info.gameScreen.height) {
       //바닥 충돌
-      nextBallY = this.info.gameScreen.height;
+      nextBallY = this.info.gameScreen.height - gameConfig.ball.size;
       tempBallDy *= -1;
     } else {
       //패들 충돌
       const paddle =
         tempBallDx >= 0 ? this.state.bluePaddle : this.state.redPaddle;
       if (
-        this.isIntersection(
+        this.checkCollision(
           nextBallX,
           nextBallY,
-          ballSize,
           ballSize,
           paddle.x,
           paddle.y,
@@ -251,6 +250,45 @@ export class GameInstance {
 
   private isIntersection(ax, ay, aw, ah, bx, by, bw, bh): boolean {
     return ax < bx + bw && ay < by + bh && bx < ax + aw && by < ay + ah;
+  }
+
+  private checkCollision(ballX, ballY, radius, paddleX, paddleY, paddleW, paddleH): boolean {
+    let left = paddleX;
+    let right = paddleX + paddleW;
+    let top = paddleY;
+    let bottom = paddleY + paddleH;
+
+    if ( (left <= ballX && ballX <= right) || (top <= ballY && ballY <= bottom) ) {
+      const leftEx = left - radius;
+      const rightEx = right + radius;
+      const topEx = top - radius;
+      const bottomEx = bottom + radius;
+
+      if (leftEx < ballX && ballX < rightEx && topEx < ballY && ballY < bottomEx)
+      {
+         return true;
+      }
+    }
+    else
+    {
+      if (this.isPointonCircle(ballX, ballY, radius, left, top)) return true;
+      if (this.isPointonCircle(ballX, ballY, radius, left, bottom)) return true;
+      if (this.isPointonCircle(ballX, ballY, radius, right, top)) return true;
+      if (this.isPointonCircle(ballX, ballY, radius, left, bottom)) return true;
+    }
+
+    return false;
+  }
+
+  private isPointonCircle(ballX, ballY, radius, pointX, pointY): boolean {
+    const deltaX = ballX - pointX;
+    const deltaY = ballY - pointY;
+    const length = deltaX*deltaX + deltaY*deltaY;
+
+    if (length > radius*radius) {
+      return false;
+    }
+    return true;
   }
 
   public async updateGame() {
