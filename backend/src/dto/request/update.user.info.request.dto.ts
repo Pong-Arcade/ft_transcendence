@@ -11,7 +11,7 @@ export class UpdateUserInfoRequestDto {
   @Optional()
   @IsString()
   @IsNotEmpty()
-  @MaxLength(32)
+  @MaxLength(36)
   nickname?: string;
 
   @ApiProperty({

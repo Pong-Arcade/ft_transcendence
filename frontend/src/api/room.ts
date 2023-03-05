@@ -159,4 +159,4 @@ export const leaveQuickMatchAPI = async () => {
 export const getGameBoardConfigAPI = async () => {
   const response = await getRequest("game-rooms/config");
   return response.data;
-}
+};

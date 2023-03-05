@@ -5,7 +5,6 @@ import {
   IGameRoom,
   ILobbyGameRoom,
 } from "../../components/modules/Pagination/Pagination";
-import gameBoardState from "../../state/GameBoardState";
 import gameRoomListState from "../../state/GameRoomListState";
 import gameRoomState from "../../state/GameRoomState";
 import GameSocket from "../../state/GameSocket";

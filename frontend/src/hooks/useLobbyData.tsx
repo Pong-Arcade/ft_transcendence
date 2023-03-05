@@ -1,6 +1,10 @@
 import { useContext, useEffect, useState } from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
-import { getChatRoomListAPI, getGameBoardConfigAPI, getGameRoomListAPI } from "../api/room";
+import {
+  getChatRoomListAPI,
+  getGameBoardConfigAPI,
+  getGameRoomListAPI,
+} from "../api/room";
 import {
   getBlockUsersAPI,
   getFriendUsersAPI,
@@ -24,7 +28,7 @@ const useLobbyData = () => {
   const [blockUsers, setBlockUsers] = useRecoilState(blockUsersState);
   const [chatRoomList, setChatRoomList] = useRecoilState(chatRoomListState);
   const [gameRoomList, setGameRoomList] = useRecoilState(gameRoomListState);
-  const [chatRoom, setChatRoom] = useRecoilState(chatRoomState);
+  const setChatRoom = useSetRecoilState(chatRoomState);
   const [myInfo, setMyInfo] = useRecoilState(infoState);
   const setGameBoardState = useSetRecoilState(gameBoardState);
   const socket = useContext(SocketContext);
@@ -39,6 +43,7 @@ const useLobbyData = () => {
   }, [myInfo]);
   //온라인 유저 소켓 이벤트
   const addOnlineUser = (user: IUser) => {
+    console.log("addOnlineUser");
     onlineUsers.find((u) => u.userId == user.userId) &&
       user.userId &&
       deleteOnlineUser(user.userId);
