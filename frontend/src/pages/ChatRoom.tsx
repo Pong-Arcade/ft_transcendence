@@ -48,7 +48,7 @@ const ChatRoom = () => {
   const [error, setError] = useRecoilState(errorState);
 
   useEffect(() => {
-    if (chatRoom.roomId === -1) setError(true);
+    // if (chatRoom.roomId === -1) setError(true);
     socket.socket.on("updateChatRoom", (title) =>
       setChatRoom({
         roomId: chatRoom.roomId,
@@ -57,8 +57,12 @@ const ChatRoom = () => {
         title: title,
       })
     );
+    socket.socket.on("otherLogin", () => {
+      setError(true);
+    });
     return () => {
       socket.socket.off("updateChatRoom");
+      socket.socket.off("otherLogin");
     };
   }, []);
 
