@@ -93,41 +93,52 @@ export class GameGateway implements OnGatewayDisconnect {
 
   @SubscribeMessage('message')
   async onMessage(_, msg) {
-    console.log('message', msg);
     const userSocketInfo = this.statusService.getUserSocketInfoByUserId(
       msg.userId,
     );
-    console.log('userSocketInfo', userSocketInfo);
     if (!userSocketInfo) {
       return;
     }
     if (userSocketInfo.location >= 0) {
       return;
     }
-    console.log(userSocketInfo.location);
     const room = this.gameRoomService.getGameRoomInfo(
       Math.abs(userSocketInfo.location),
     );
-    console.log('room', room);
-    if (msg.msg.length >= 512) {
-      this.server
-        .in(userSocketInfo.socketId)
-        .emit('systemMsg', '512자 이상으로 입력할 수 없습니다.');
-      return;
-    }
-    console.log('here?');
     const message: IMessage = {
       fromId: msg.userId,
       content: msg.msg,
-      type: EMessageType.MESSAGE,
+      type: EMessageType.SYSTEMMSG,
       roomId: room.roomId,
     };
+
+    if (msg.msg.length >= 64) {
+      message.content = '64자 이상으로 입력할 수 없습니다.';
+      this.server.in(userSocketInfo.gameSocketId).emit('systemMsg', message);
+      return;
+    }
+
     this.server.to(`gameroom-${room.roomId}`).emit('message', message);
   }
 
   @SubscribeMessage('whisper')
   async onWhisper(client, msg) {
     if (msg.fromName == msg.toName) {
+      return;
+    }
+    const userSocketInfo = this.statusService.getUserSocketInfoByUserId(
+      msg.fromId,
+    );
+    if (!userSocketInfo) {
+      return;
+    }
+    if (msg.msg.length >= 64) {
+      const message: IMessage = {
+        fromId: msg.fromId,
+        content: '64자 이상으로 입력할 수 없습니다.',
+        type: EMessageType.SYSTEMMSG,
+      };
+      this.server.in(userSocketInfo.gameSocketId).emit('systemMsg', message);
       return;
     }
     const users = this.statusService.getAllUserSocketInof();
@@ -213,9 +224,12 @@ export class GameGateway implements OnGatewayDisconnect {
     const joinUser = await this.userService.getUserInfo(userSocketInfo.userId);
     this.server.in(`gameroom-${roomId}`).emit('joinGameRoom', joinUser);
 
-    this.server
-      .in(`gameroom-${roomId}`)
-      .emit('systemMsg', userSocketInfo.userName + '님이 입장하였습니다.');
+    const message: IMessage = {
+      fromId: userSocketInfo.userId,
+      content: userSocketInfo.userName + '님이 입장하였습니다.',
+      type: EMessageType.SYSTEMMSG,
+    };
+    this.server.in(`gameroom-${roomId}`).emit('systemMsg', message);
 
     const room = this.gameRoomService.getGameRoomInfo(roomId);
     if (room.redUser && room.redUser.userId != user.userId) {
@@ -264,9 +278,13 @@ export class GameGateway implements OnGatewayDisconnect {
       this.chatGateway.server.in(userSocketInfo.socketId).socketsJoin('lobby');
       const userInfo = await this.userService.getUserInfo(userId);
       this.server.in(`gameroom-${room.roomId}`).emit('leaveGameRoom', userId);
-      this.server
-        .in(`gameroom-${roomId}`)
-        .emit('systemMsg', userSocketInfo.userName + '님이 퇴장하였습니다.');
+
+      const message: IMessage = {
+        fromId: userSocketInfo.userId,
+        content: userSocketInfo.userName + '님이 퇴장하였습니다.',
+        type: EMessageType.SYSTEMMSG,
+      };
+      this.server.in(`gameroom-${roomId}`).emit('systemMsg', message);
 
       room.blueUser = null;
 
@@ -368,11 +386,6 @@ export class GameGateway implements OnGatewayDisconnect {
     // 초대장을 삭제
     this.gameRoomService.deleteInvitaionByInviteeId(userId);
 
-    // 게임방에 입장한 유저들에게 입장 메시지를 보냅니다.
-    this.server
-      .in(`gameroom-${roomId}`)
-      .emit('systemMsg', '게임방에 입장하였습니다.');
-
     this.gameRoomService.createGameRoom(roomId, gameRoom);
 
     // 로비에 있는 유저들에게 게임방이 생성되었다는 메시지를 보냅니다.
@@ -406,9 +419,12 @@ export class GameGateway implements OnGatewayDisconnect {
       .in(userSocketInfo.gameSocketId)
       .socketsJoin(`gameroom-${roomId}`);
 
-    this.server
-      .in(`gameroom-${roomId}`)
-      .emit('systemMsg', userSocketInfo.userName + '님이 입장 하였습니다.');
+    const message: IMessage = {
+      fromId: userSocketInfo.userId,
+      content: userSocketInfo.userName + '님이 관전 입장하였습니다.',
+      type: EMessageType.SYSTEMMSG,
+    };
+    this.server.in(`gameroom-${roomId}`).emit('systemMsg', message);
 
     const room = this.gameRoomService.getGameRoomInfo(roomId);
     room.spectatorUsers.push(userId);
@@ -426,9 +442,12 @@ export class GameGateway implements OnGatewayDisconnect {
       .socketsLeave(`gameroom-${room.roomId}`);
     this.chatGateway.server.in(userSocketInfo.socketId).socketsJoin('lobby');
 
-    this.server
-      .in(`gameroom-${roomId}`)
-      .emit('systemMsg', userSocketInfo.userName + '님이 퇴장 하였습니다.');
+    const message: IMessage = {
+      fromId: userSocketInfo.userId,
+      content: userSocketInfo.userName + '님이 관전 종료했습니다.',
+      type: EMessageType.SYSTEMMSG,
+    };
+    this.server.in(`gameroom-${roomId}`).emit('systemMsg', message);
   }
 
   /**
@@ -546,11 +565,6 @@ export class GameGateway implements OnGatewayDisconnect {
 
     // 게임이 매칭되었다는 메시지를 보냅니다.
     this.server.in(`gameroom-${roomId}`).emit('gameRoomMatched', gameRoom);
-
-    // 게임방에 입장한 유저들에게 입장 메시지를 보냅니다.
-    this.server
-      .in(`gameroom-${roomId}`)
-      .emit('systemMsg', '게임방에 입장하였습니다.');
 
     this.gameRoomService.createGameRoom(roomId, gameRoom);
 
