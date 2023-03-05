@@ -10,7 +10,7 @@ export const axiosClient = axios.create({
 });
 
 axiosClient.interceptors.request.use(async (config: any) => {
-  const token = getCookie(import.meta.env.VITE_API_URL);
+  const token = getCookie();
   config.headers = {
     Authorization: `Bearer ${token}`,
   };
