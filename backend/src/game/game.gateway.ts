@@ -159,8 +159,6 @@ export class GameGateway implements OnGatewayDisconnect {
         this.chatGateway.server
           .to(value.socketId)
           .emit('whisper', fromWhisperMsg);
-        this.server.to(client.id).emit('whisper', toWhisperMsg);
-        this.server.to(value.gameSocketId).emit('whisper', fromWhisperMsg);
         return;
       }
     }
