@@ -15,10 +15,10 @@ import errorState from "../state/ErrorState";
 
 const TitleTypography = styled(Typography).attrs({
   fontSize: "2.5rem",
-})`
+})<{ fullWidth?: boolean }>`
   background-color: ${(props) => props.theme.background.front};
   height: 90%;
-  width: 66%;
+  width: ${(props) => (props.fullWidth ? "89%" : "66.5%")};
   display: flex;
   align-items: center;
   padding: 1rem;
@@ -72,7 +72,9 @@ const ChatRoom = () => {
     <ChatRoomTemplate>
       <TitleWrapper>
         <TitleLabel>방제목</TitleLabel>
-        <TitleTypography> {chatRoom.title}</TitleTypography>
+        <TitleTypography fullWidth={myInfo.userId !== chatRoom.mastUserId}>
+          {chatRoom.title}
+        </TitleTypography>
       </TitleWrapper>
       {myInfo.userId === chatRoom.mastUserId && <ChatRoomPasswordModify />}
       <ChatRoomUserList />
