@@ -160,7 +160,11 @@ export class UserController {
     );
     // nickname이 변경된 경우, JWT 토큰을 재발급하고, 캐싱된 유저 정보를 업데이트합니다.
     if (newNickname) {
-      await this.cacheManager.set(`user-${user.userId}`, userInfo, 60 * 10);
+      await this.cacheManager.set(
+        `user-${user.userId}`,
+        userInfo,
+        60 * 10 * 1000,
+      );
 
       const token = this.jwtService.sign({
         userId: user.userId,
