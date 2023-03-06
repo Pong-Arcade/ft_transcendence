@@ -108,12 +108,13 @@ export class GameGateway implements OnGatewayDisconnect {
     const message: IMessage = {
       fromId: msg.userId,
       content: msg.msg,
-      type: EMessageType.SYSTEMMSG,
+      type: EMessageType.MESSAGE,
       roomId: room.roomId,
     };
 
     if (msg.msg.length >= 64) {
       message.content = '64자 이상으로 입력할 수 없습니다.';
+      message.type = EMessageType.SYSTEMMSG;
       this.server.in(userSocketInfo.gameSocketId).emit('systemMsg', message);
       return;
     }
@@ -311,7 +312,7 @@ export class GameGateway implements OnGatewayDisconnect {
       this.statusService.getUserSocketInfoByUserId(targetUserId);
     this.server
       .in(inviteeSocketInfo.gameSocketId)
-      .emit('inviteGameRoom', await this.userService.getUserInfo(userId));
+      .emit('inviteGameRoom', await this.userService.getUserDetail(userId));
 
     // 1분 후 초대장이 남아있다면 초대장을 삭제
     setTimeout(() => {
