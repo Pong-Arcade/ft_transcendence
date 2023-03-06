@@ -11,6 +11,12 @@ import ButtonGroup from "../ButtonGroup";
 import LogoutButton from "../LogoutButton";
 import LogoutConfirmModal from "../LogoutConfirmModal";
 import UserInfoModal from "../UserInfoModal";
+import { logoutAPI } from "../../../api/auth";
+import { useSetRecoilState } from "recoil";
+import errorState from "../../../state/ErrorState";
+import { useContext } from "react";
+import { SocketContext } from "../../../utils/ChatSocket";
+import GameSocket from "../../../state/GameSocket";
 
 const LobbyUserProfileStyled = styled(Board).attrs((props) => {
   return {
@@ -53,6 +59,9 @@ const ProfileButton = styled(Button).attrs({
 })``;
 
 const LobbyUserProfile = ({ info }: Props) => {
+  const socket = useContext(SocketContext);
+  const gameSocket = useContext(GameSocket);
+  const setError = useSetRecoilState(errorState);
   const {
     isModalOpen: isConfirmOpen,
     onModalOpen: onConfirmOpen,
@@ -65,9 +74,16 @@ const LobbyUserProfile = ({ info }: Props) => {
   } = useModal({});
 
   const navigate = useNavigate();
-  const onYesConfirm = () => {
-    removeJWT();
-    navigate("/");
+  const onYesConfirm = async () => {
+    try {
+      await logoutAPI();
+      removeJWT();
+      socket.socket.close();
+      gameSocket.socket.close();
+      navigate("/");
+    } catch (error) {
+      setError({ isError: true, error });
+    }
   };
 
   return (

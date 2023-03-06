@@ -64,15 +64,14 @@ export class GameInstance {
       },
       redPaddle: {
         x: gameConfig.paddle.buffer,
-        y:
-        (gameConfig.gameCanvas.height / 2) - gameConfig.paddle.height / 2,
+        y: gameConfig.gameCanvas.height / 2 - gameConfig.paddle.height / 2,
       },
       bluePaddle: {
         x:
           gameConfig.gameCanvas.width -
           gameConfig.paddle.buffer -
           gameConfig.paddle.width,
-        y: (gameConfig.gameCanvas.height / 2) - gameConfig.paddle.height / 2,
+        y: gameConfig.gameCanvas.height / 2 - gameConfig.paddle.height / 2,
       },
     };
   }

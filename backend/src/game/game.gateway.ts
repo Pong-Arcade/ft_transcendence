@@ -57,6 +57,7 @@ export class GameGateway implements OnGatewayDisconnect {
     private readonly gameRoomService: GameRoomService,
     private readonly chatroomService: ChatroomService,
     private readonly statService: StatService,
+    @Inject('StatusService')
     private readonly statusService: StatusService,
     private readonly jwtService: JwtService,
     @Inject(ChatGateway) private readonly chatGateway: ChatGateway,
