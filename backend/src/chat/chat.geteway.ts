@@ -122,8 +122,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('message')
-  async onMessage(_, msg) {
-    const room = rooms.get(users.get(msg.userId).location);
+  onMessage(_, msg) {
+    const user = users.get(msg.userId);
+    if (!user) return;
+    const room = rooms.get(user.location);
+    if (!room) return;
     const message: IMessage = {
       fromId: msg.userId,
       content: msg.msg,
@@ -144,7 +147,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('whisper')
-  async onWhisper(client, msg) {
+  onWhisper(client, msg) {
     if (msg.fromName == msg.toName) {
       return;
     }
@@ -192,13 +195,16 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       mode: user.mode,
       firstLogin: userInfo.firstLogin,
     });
-    this.server
-      .in(`chatroom${roomId}`)
-      .emit('systemMsg', user.userName + '님이 입장하였습니다.');
+    const message: IMessage = {
+      fromId: userId,
+      content: user.userName + '님이 입장하였습니다.',
+      type: EMessageType.SYSTEMMSG,
+    };
+    this.server.in(`chatroom${roomId}`).emit('systemMsg', message);
   }
 
   @OnEvent('chatroom:leave')
-  async leaveChatRoom(roomId: number, userId: number) {
+  leaveChatRoom(roomId: number, userId: number) {
     const room = rooms.get(roomId);
     if (!room) return;
     if (room.masterUser === userId) {
@@ -216,18 +222,25 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       rooms.delete(roomId);
     } else {
       const user = users.get(userId);
+      if (!user) return;
       user.location = 0;
       user.mode = UserChatMode.NORMAL;
       this.server.in(`chatroom${roomId}`).emit('leaveChatRoom', userId);
       this.server.in(user.socketId).socketsLeave(`chatroom${roomId}`);
       this.server.in(user.socketId).socketsJoin('lobby');
       room.users = room.users.filter((id) => id != userId);
+      const message: IMessage = {
+        fromId: userId,
+        content: user.userName + '님이 퇴장하였습니다.',
+        type: EMessageType.SYSTEMMSG,
+      };
+      this.server.in(`chatroom${roomId}`).emit('systemMsg', message);
     }
     if (room.users.length == 0) rooms.delete(roomId); //--);
   }
 
   @OnEvent('chatroom:create')
-  async addChatRoom(userId: number, roomInfo: ChatroomCreateRequestDto) {
+  addChatRoom(userId: number, roomInfo: ChatroomCreateRequestDto) {
     const roomId = roomCount++;
     const user = users.get(userId);
     if (!user) return;
@@ -252,8 +265,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @OnEvent('chatroom:invite')
-  async inviteChatRoom(roomId: number, fromId: number, toUsers: number[]) {
+  inviteChatRoom(roomId: number, fromId: number, toUsers: number[]) {
     const room = rooms.get(roomId);
+    if (!room) return;
     const userName = users.get(fromId).userName;
     const to = new Array<User>();
     for (const id of toUsers) {
@@ -265,44 +279,57 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     });
   }
   @OnEvent('chatroom:invite:accept')
-  async acceptInviteChatRoom(roomId: number, userId: number) {
+  acceptInviteChatRoom(roomId: number, userId: number) {
     const room = rooms.get(roomId);
+    if (!room) return;
     this.joinChatRoom(roomId, userId);
     room.invitedUsers = room.invitedUsers.filter((id) => id != userId);
   }
 
   @OnEvent('chatroom:invite:reject')
-  async rejectInviteChatRoom(roomId: number, userId: number) {
+  rejectInviteChatRoom(roomId: number, userId: number) {
     const room = rooms.get(roomId);
+    if (!room) return;
     room.invitedUsers = room.invitedUsers.filter((id) => id != userId);
   }
   @OnEvent('chatroom:ban')
-  async banChatRoom(roomId: number, userId: number) {
+  banChatRoom(roomId: number, userId: number) {
     const room = rooms.get(roomId);
     const user = users.get(userId);
+    if (!room || !user) return;
     this.server.to(user.socketId).emit('banChatRoom', roomId);
     room.bannedUsers.push(userId);
     this.leaveChatRoom(roomId, userId);
   }
   @OnEvent('chatroom:promote-admin')
-  async addAdmin(roomId: number, userId: number) {
+  addAdmin(roomId: number, userId: number) {
     const room = rooms.get(roomId);
     const user = users.get(userId);
+    if (!room || !user) return;
     room.adminUsers.push(userId);
     user.mode = UserChatMode.ADMIN;
     this.server.in(`chatroom${roomId}`).emit('addAdmin', userId);
   }
   @OnEvent('chatroom:demote-admin')
-  async deleteAdmin(roomId: number, userId: number) {
+  deleteAdmin(roomId: number, userId: number) {
     const room = rooms.get(roomId);
     const user = users.get(userId);
+    if (!room || !user) return;
     room.adminUsers = room.adminUsers.filter((id) => id !== userId);
     user.mode = UserChatMode.NORMAL;
     this.server.in(`chatroom${roomId}`).emit('deleteAdmin', userId);
   }
   @OnEvent('chatroom:mute-user')
-  async muteUser(roomId: number, userId: number, duration: number) {
+  muteUser(roomId: number, userId: number, duration: number) {
     this.muteUsers.push(userId);
+    const user = users.get(userId);
+    if (!user) return;
+    const message: IMessage = {
+      fromId: userId,
+      content: user.userName + '님이 채팅금지 당하셨습니다.',
+      type: EMessageType.SYSTEMMSG,
+    };
+    this.server.in(`chatroom${roomId}`).emit('systemMsg', message);
     setTimeout(() => {
       this.muteUsers.splice(
         this.muteUsers.find((id) => {
@@ -316,8 +343,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @OnEvent('chatroom:change-info')
-  async updateChatRoom(roomId: number, roomInfo: ChangeChatroomInfoRequestDto) {
+  updateChatRoom(roomId: number, roomInfo: ChangeChatroomInfoRequestDto) {
     const room = rooms.get(roomId);
+    if (!room) return;
     room.title = roomInfo.title;
     room.mode = roomInfo.mode;
     if (roomInfo.password || room.mode != ChatRoomMode.PUBLIC)
