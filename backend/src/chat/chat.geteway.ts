@@ -13,12 +13,13 @@ import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { MockRepository } from 'src/mock/mock.repository';
 import { ChatroomCreateRequestDto } from 'src/dto/request/chatroom.create.request.dto';
 import { UserService } from 'src/user/user.service';
-import { Logger } from '@nestjs/common';
+import { Logger, UnauthorizedException } from '@nestjs/common';
 import { ChangeChatroomInfoRequestDto } from 'src/dto/request/chatroom.change.info.request.dto';
 import { UserChatMode } from 'src/enum/user.chat.mode.enum';
 import { ChatRoomMode } from 'src/enum/chatroom.mode.enum';
 import { GameRoomService } from 'src/game/gameroom.service';
 import { users } from 'src/status/status.module';
+import { JwtService } from '@nestjs/jwt';
 export const rooms = new Map<number, Room>();
 let roomCount = 1;
 
@@ -47,11 +48,24 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     private readonly userService: UserService,
     private readonly gameRoomService: GameRoomService,
+    private readonly jwtService: JwtService,
   ) {}
 
   @WebSocketServer() server: Namespace;
   async handleConnection(@ConnectedSocket() socket: Socket) {
     this.logger.log(`Called ${this.handleConnection.name}`);
+    const token = socket.handshake?.auth?.token;
+    if (!token) {
+      return;
+    }
+    try {
+      this.jwtService.verify(token);
+    } catch (err) {
+      const error = new UnauthorizedException();
+      socket.emit('connect_unauth_error', error);
+      socket.disconnect(true);
+      return;
+    }
     socket.join('lobby');
   }
 

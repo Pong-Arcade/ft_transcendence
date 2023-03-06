@@ -74,8 +74,12 @@ const ChatRoom = () => {
     gameSocket.socket.on("connect_unauth_error", (err) => {
       setError({ isError: true, error: err.message });
     });
+    socket.socket.on("connect_unauth_error", (err) => {
+      setError({ isError: true, error: err.message });
+    });
     return () => {
       gameSocket.socket.off("connect_unauth_error");
+      socket.socket.off("connect_unauth_error");
     };
   }, []);
 

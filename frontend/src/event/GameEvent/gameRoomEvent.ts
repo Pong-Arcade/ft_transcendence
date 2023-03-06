@@ -5,12 +5,14 @@ import { EGameUserStatus } from "../../components/modules/Pagination/Pagination"
 import errorState from "../../state/ErrorState";
 import gameRoomState from "../../state/GameRoomState";
 import GameSocket from "../../state/GameSocket";
+import { SocketContext } from "../../utils/ChatSocket";
 
 const gameRoomEvent = () => {
   const { socket } = useContext(GameSocket);
   const setGameState = useSetRecoilState(gameRoomState);
   const naviagte = useNavigate();
   const setError = useSetRecoilState(errorState);
+  const chatSocket = useContext(SocketContext);
 
   useEffect(() => {
     socket.on("joinGameRoom", (joinUser) => {
@@ -64,6 +66,9 @@ const gameRoomEvent = () => {
     socket.on("connect_unauth_error", (err) => {
       setError({ isError: true, error: err.message });
     });
+    chatSocket.socket.on("connect_unauth_error", (err) => {
+      setError({ isError: true, error: err.message });
+    });
 
     return () => {
       socket.off("joinGameRoom");
@@ -74,6 +79,7 @@ const gameRoomEvent = () => {
       socket.off("readyBlueUser");
       socket.off("unReadyBlueUser");
       socket.off("connect_unauth_error");
+      chatSocket.socket.off("connect_unauth_error");
     };
   }, []);
 };
