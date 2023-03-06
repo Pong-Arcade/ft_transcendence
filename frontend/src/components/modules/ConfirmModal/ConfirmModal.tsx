@@ -12,18 +12,19 @@ interface Props {
   title: string;
   titleFontSize?: string;
   titleHeight?: string;
+  contextHeight?: string;
   onClose: () => void;
 }
 
 const Wrapper = styled(Board).attrs({
   width: "100%",
-  height: "79%",
   borderRadius: true,
   display: "flex",
   flexDirection: "column",
   justifyContent: "space-around",
-})`
+})<{ height?: string }>`
   background-color: ${(props) => props.theme.background.middle};
+  height: ${(props) => props.height || "79%"};
 `;
 
 const ConfirmModal = ({
@@ -33,6 +34,7 @@ const ConfirmModal = ({
   title,
   titleFontSize,
   titleHeight,
+  contextHeight,
   onClose,
 }: Props) => {
   return (
@@ -45,7 +47,7 @@ const ConfirmModal = ({
         >
           {title}
         </ModalTitle>
-        <Wrapper>{children}</Wrapper>
+        <Wrapper height={contextHeight}>{children}</Wrapper>
       </Modal>
     </ModalWrapper>
   );

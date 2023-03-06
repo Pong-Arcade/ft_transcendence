@@ -26,7 +26,7 @@ interface Props {
 const GameBoard = ({ roomId, userId, isOnGame, scoreRef }: Props) => {
   const gameBoard = useRecoilValue(gameBoardState);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  
+
   gameBaordEvent({ gameBoard, canvasRef, roomId, userId, isOnGame, scoreRef });
 
   return (

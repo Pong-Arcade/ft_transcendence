@@ -1,10 +1,8 @@
-
-import React, { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import blockUsersState from "../../../state/BlockUsersState";
 import GameSocket from "../../../state/GameSocket";
-import { SocketContext } from "../../../utils/ChatSocket";
 import ChatListItem from "../ChatListItem";
 
 interface Props {

@@ -1,1 +1,1 @@
-export {default } from './GameChat'
+export { default } from "./GameChat";
