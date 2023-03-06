@@ -154,7 +154,6 @@ const GeneralMenu = ({
 
   const onClick = (e: MouseEvent<HTMLButtonElement>) => {
     const { innerText } = e.currentTarget;
-
     switch (innerText) {
       case EChatRoom.INFO:
         onUserInfoOpen();
@@ -224,13 +223,17 @@ const GeneralMenu = ({
             <MenuButton onClick={onClick}>{EChatRoom.INVIATE_GAME}</MenuButton>
             {myInfo &&
             myInfo.mode &&
-            (myInfo.mode == userMode.ADMIN ||
+            ((myInfo.mode == userMode.ADMIN &&
+              list.find((value) => value.userId == userId)?.mode !=
+                userMode.MASTER) ||
               myInfo.mode == userMode.MASTER) ? (
               <MenuButton onClick={onClick}>{EChatRoom.BAN}</MenuButton>
             ) : null}
             {myInfo &&
             myInfo.mode &&
-            (myInfo.mode == userMode.ADMIN ||
+            ((myInfo.mode == userMode.ADMIN &&
+              list.find((value) => value.userId == userId)?.mode !=
+                userMode.MASTER) ||
               myInfo.mode == userMode.MASTER) ? (
               isMute ? (
                 <MenuButton onClick={onClick}>{EChatRoom.UNMUTE}</MenuButton>
