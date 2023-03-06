@@ -5,6 +5,7 @@ import Avatar from "../../atoms/Avatar";
 import Board from "../../atoms/Board";
 import Button from "../../atoms/Button";
 import { IPaginationItem, IUser } from "../Pagination/Pagination";
+import { userMode } from "../Pagination/Pagination";
 
 const ChatRoomItemStyled = styled(Button).attrs((props) => {
   return {
@@ -42,10 +43,11 @@ const RoleEmoji = styled(Board)`
 const ChatRoomItem = ({ item, onItemClick }: IPaginationItem) => {
   const chatRoom = useRecoilValue(chatRoomState);
 
-  const { nickname, userId, avatarUrl } = item as IUser;
+  const { nickname, userId, mode, avatarUrl } = item as IUser;
   return (
     <ChatRoomItemStyled id={userId?.toString()} onClick={onItemClick}>
-      {userId === chatRoom.mastUserId && <RoleEmoji>👑</RoleEmoji>}
+      {mode === userMode.MASTER && <RoleEmoji>👑</RoleEmoji>}
+      {mode === userMode.ADMIN && <RoleEmoji>👮</RoleEmoji>}
       <Avatar width="10vw" height="10vw" src={avatarUrl} />
       <Nickname>{nickname}</Nickname>
     </ChatRoomItemStyled>
