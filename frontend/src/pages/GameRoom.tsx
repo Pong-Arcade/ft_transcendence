@@ -8,7 +8,6 @@ import Board from "../components/atoms/Board";
 import Button from "../components/atoms/Button";
 import Typography from "../components/atoms/Typography";
 import ButtonGroup from "../components/modules/ButtonGroup";
-import Chat from "../components/modules/Chat";
 import ExitConfirmModal from "../components/modules/ExitConfirmModal";
 import GameBoard from "../components/modules/GameBoard";
 import GameChat from "../components/modules/GameChat";
@@ -133,7 +132,9 @@ const GameRoom = () => {
             >
               <Avatar width="8rem" height="8rem" src={redUser.avatarUrl} />
               <Typography fontSize="2rem">{redUser.nickname}</Typography>
-              <Typography fontSize="1.2rem">(RED)</Typography>
+              <Typography fontSize="1.2rem" fontColor="red">
+                (RED)
+              </Typography>
             </UserProfile>
             <UserProfile
               id={blueUser?.userId?.toString()}
@@ -143,7 +144,9 @@ const GameRoom = () => {
             >
               <Avatar width="8rem" height="8rem" src={blueUser?.avatarUrl} />
               <Typography fontSize="2rem">{blueUser?.nickname}</Typography>
-              <Typography fontSize="1.2rem">(BLUE)</Typography>
+              <Typography fontSize="1.2rem" fontColor="blue">
+                (BLUE)
+              </Typography>
             </UserProfile>
           </UserProfileGroup>
           <GameChat width="98%" height="54%" />
