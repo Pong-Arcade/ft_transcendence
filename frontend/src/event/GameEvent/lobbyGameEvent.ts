@@ -5,6 +5,7 @@ import {
   IGameRoom,
   ILobbyGameRoom,
 } from "../../components/modules/Pagination/Pagination";
+import errorState from "../../state/ErrorState";
 import gameRoomListState from "../../state/GameRoomListState";
 import gameRoomState from "../../state/GameRoomState";
 import GameSocket from "../../state/GameSocket";
@@ -17,6 +18,7 @@ const lobbyGameEvent = () => {
   const myInfo = useRecoilValue(infoState);
   const setGameRoomList = useSetRecoilState(gameRoomListState);
   const setGameRoomState = useSetRecoilState(gameRoomState);
+  const setError = useSetRecoilState(errorState);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -52,11 +54,16 @@ const lobbyGameEvent = () => {
       navigate(`/game-rooms/${gameRoom.roomId}}`);
     });
 
+    gameSocket.socket.on("connect_error", (err) => {
+      setError({ isError: true, error: err.message });
+    });
+
     return () => {
       chatSocket.socket.off("addGameRoom");
       chatSocket.socket.off("deleteGameRoom");
       chatSocket.socket.off("joinGameRoom");
       gameSocket.socket.off("gameRoomMatched");
+      gameSocket.socket.off("connect_error");
     };
   }, []);
 

@@ -19,13 +19,6 @@ const gameSocket: IGameSocket = {
   userName: "",
 };
 
-// FIXME: 적절한 위치로 옮겨야 함
-// const navigate = useNavigate();
-// gameSocket.socket.on("connect_error", (err) => {
-//   console.log(`connect_error due to ${err.message}`);
-//   navigate("/lobby");
-// });
-
 export const GameSocket = createContext(gameSocket);
 
 export default GameSocket;
