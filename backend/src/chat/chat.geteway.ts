@@ -133,6 +133,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       type: EMessageType.MESSAGE,
       roomId: room.roomId,
     };
+    if (msg.msg.length >= 64) {
+      message.content = '64자 이상으로 입력할 수 없습니다.';
+      message.type = EMessageType.SYSTEMMSG;
+      this.server.in(_.id).emit('systemMsg', message);
+      return;
+    }
     if (room.roomId === 0) {
       this.server.to('lobby').emit('message', message);
     } else {
@@ -149,6 +155,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('whisper')
   onWhisper(client, msg) {
     if (msg.fromName == msg.toName) {
+      return;
+    }
+    if (msg.msg.length >= 64) {
+      msg.content = '64자 이상으로 입력할 수 없습니다.';
+      msg.type = EMessageType.SYSTEMMSG;
+      this.server.in(client.id).emit('systemMsg', msg);
       return;
     }
     for (const value of users.values()) {
@@ -253,6 +265,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       roomInfo.maxUserCount,
       userId,
     );
+
+    user.location = roomId;
+    this.server.to(user.socketId).socketsLeave('lobby');
+    this.server.to(user.socketId).socketsJoin(`chatroom${roomId}`);
     rooms.set(roomId, room);
     rooms.get(roomId).users.push(userId);
     this.server.in('lobby').emit('addChatRoom', {
