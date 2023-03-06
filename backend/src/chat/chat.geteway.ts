@@ -339,7 +339,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       for (const id of this.muteUsers) {
         if (id == userId) this.muteUsers.splice(id);
       }
-    }, 3 * 60 * 1000);
+    }, duration * 1000);
   }
 
   @OnEvent('chatroom:change-info')
