@@ -71,11 +71,11 @@ const ChatRoom = () => {
   }, []);
 
   useEffect(() => {
-    gameSocket.socket.on("connect_error", (err) => {
+    gameSocket.socket.on("connect_unauth_error", (err) => {
       setError({ isError: true, error: err.message });
     });
     return () => {
-      gameSocket.socket.off("connect_error");
+      gameSocket.socket.off("connect_unauth_error");
     };
   }, []);
 

@@ -61,7 +61,7 @@ const gameRoomEvent = () => {
         },
       }));
     });
-    socket.on("connect_error", (err) => {
+    socket.on("connect_unauth_error", (err) => {
       setError({ isError: true, error: err.message });
     });
 
@@ -73,7 +73,7 @@ const gameRoomEvent = () => {
       socket.off("unReadyRedUser");
       socket.off("readyBlueUser");
       socket.off("unReadyBlueUser");
-      socket.off("connect_error");
+      socket.off("connect_unauth_error");
     };
   }, []);
 };

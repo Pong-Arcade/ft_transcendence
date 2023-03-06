@@ -72,7 +72,7 @@ export class GameGateway implements OnGatewayDisconnect {
       this.jwtService.verify(token);
     } catch (err) {
       const error = new UnauthorizedException();
-      socket.emit('connect_error', error);
+      socket.emit('connect_unauth_error', error);
       socket.disconnect(true);
       return;
     }

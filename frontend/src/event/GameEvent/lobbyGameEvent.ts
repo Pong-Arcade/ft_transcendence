@@ -54,7 +54,7 @@ const lobbyGameEvent = () => {
       navigate(`/game-rooms/${gameRoom.roomId}}`);
     });
 
-    gameSocket.socket.on("connect_error", (err) => {
+    gameSocket.socket.on("connect_unauth_error", (err) => {
       setError({ isError: true, error: err.message });
     });
 
@@ -63,7 +63,7 @@ const lobbyGameEvent = () => {
       chatSocket.socket.off("deleteGameRoom");
       chatSocket.socket.off("joinGameRoom");
       gameSocket.socket.off("gameRoomMatched");
-      gameSocket.socket.off("connect_error");
+      gameSocket.socket.off("connect_unauth_error");
     };
   }, []);
 
