@@ -277,12 +277,31 @@ export class ChatroomController {
     }
 
     // 3. 채팅방 초대
+
+    const allowedUsers = chatroomInviteRequestDto.users.filter(
+      (userId) => !chatroomInfo.bannedUsers.includes(userId),
+    );
+    const bannedUsers = chatroomInviteRequestDto.users.filter((userId) =>
+      chatroomInfo.bannedUsers.includes(userId),
+    );
+
+    //  마스터가 아니라면 밴 당하지 않은 사람 초대
     this.eventEmitter.emit(
       'chatroom:invite',
       roomId,
       user.userId,
-      chatroomInviteRequestDto.users,
+      allowedUsers,
     );
+
+    //  마스터라면 밴 당한 사람도 초대해줌
+    if (userChatMode === UserChatMode.MASTER) {
+      this.eventEmitter.emit(
+        'chatroom:invite',
+        roomId,
+        user.userId,
+        bannedUsers,
+      );
+    }
   }
 
   @ApiOperation({
@@ -344,15 +363,10 @@ export class ChatroomController {
       throw new ConflictException('채팅방 정원이 가득 찼습니다.');
     }
 
-    // 6. 추방당한 유저인지 확인
-    if (chatroomInfo.bannedUsers.includes(user.userId)) {
-      throw new ForbiddenException('추방당한 방에 참여할 수 없습니다.');
-    }
-
-    // 7. 채팅방에 입장
+    // 6. 채팅방에 입장
     this.eventEmitter.emit('chatroom:join', roomId, user.userId);
 
-    // 8. 채팅방에 속한 유저 정보 반환
+    // 7. 채팅방에 속한 유저 정보 반환
     return await this.chatroomService.getChatroomUsersInfo(chatroomInfo);
   }
 
