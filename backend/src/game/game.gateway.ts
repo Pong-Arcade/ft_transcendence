@@ -575,6 +575,7 @@ export class GameGateway implements OnGatewayDisconnect {
 
   @OnEvent('gameroom:start')
   async startGame(roomId: number) {
+    this.logger.log(`Called ${this.startGame.name}`);
     const room = this.gameRoomService.getGameRoomInfo(roomId);
 
     //gameInstance는 생성과 동시에 게임이 시작합니다.
