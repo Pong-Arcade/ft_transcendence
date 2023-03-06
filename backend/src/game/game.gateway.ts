@@ -272,16 +272,21 @@ export class GameGateway implements OnGatewayDisconnect {
     if (!userSocketInfo) {
       return;
     }
-    userSocketInfo.location = 0;
+
     //gameInstance 종료 이벤트
     if (room.status === GameRoomStatus.ON_GAME) {
       await this.eventEmitter.emitAsync('gameroom:finish', roomId);
     }
     if (user.userId === room.redUser.userId) {
       this.server.in(`gameroom-${room.roomId}`).emit('destructGameRoom');
-      this.chatGateway.server
-        .in(`gameroom-${room.roomId}`)
-        .socketsJoin('lobby');
+      for (const user of this.gameRoomService.getAllGameRoomUsers(roomId)) {
+        this.server
+          .in(user.gameSocketId)
+          .socketsLeave(`gameroom-${room.roomId}`);
+        this.chatGateway.server.in(user.socketId).socketsJoin('lobby');
+        user.location = 0;
+      }
+
       this.server
         .in(`gameroom-${room.roomId}`)
         .socketsLeave(`gameroom-${room.roomId}`);
