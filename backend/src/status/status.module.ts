@@ -1,13 +1,17 @@
-import { Module, forwardRef } from '@nestjs/common';
+import { Module, Provider } from '@nestjs/common';
 import { StatusService } from './status.service';
 import { User } from './status.entity';
-import { ChatModule } from 'src/chat/chat.module';
-import { GameModule } from 'src/game/game.module';
-import { AuthModule } from 'src/auth/auth.module';
+
 export const users = new Map<number, User>();
+
+const StatusServiceProvider: Provider = {
+  provide: 'StatusService',
+  useFactory: () => new StatusService(),
+  inject: [],
+};
 @Module({
-  imports: [forwardRef(() => GameModule), ChatModule],
-  providers: [StatusService],
-  exports: [StatusService],
+  imports: [],
+  providers: [StatusServiceProvider],
+  exports: ['StatusService'],
 })
 export class StatusModule {}

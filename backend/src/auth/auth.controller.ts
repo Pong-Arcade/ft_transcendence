@@ -1,8 +1,10 @@
 import {
+  CACHE_MANAGER,
   Controller,
   Delete,
   Get,
   HttpCode,
+  Inject,
   Logger,
   Param,
   Patch,
@@ -20,7 +22,6 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from './jwt/jwt.auth.guard';
 import { JwtService } from '@nestjs/jwt';
 import { EmailSender } from 'src/utils/email..sender.component';
-import { StatusService } from 'src/status/status.service';
 import { Cache } from 'cache-manager';
 
 @ApiTags('Auth')
@@ -32,9 +33,8 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
-    private readonly statusService: StatusService,
     private readonly emailSender: EmailSender,
-    private readonly cacheManager: Cache,
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {}
 
   @ApiOperation({ summary: '로그인', description: '42로그인 페이지로 이동' })
@@ -133,12 +133,13 @@ export class AuthController {
   })
   @Delete('logout')
   @HttpCode(204)
+  @UseGuards(JwtAuthGuard)
   async logout(@Res() res: Response, @User() user: UserDto) {
     this.logger.log(`Called ${this.logout.name}`);
     res.clearCookie(this.configService.get<string>('jwt.token'), {
       domain: this.configService.get<string>('fe_host').replace('http://', ''),
     });
-    this.statusService.deleteUserSocketInfo(user.userId);
     await this.cacheManager.del(`user-${user.userId}`);
+    res.status(204).send();
   }
 }

@@ -7,6 +7,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Inject,
   Logger,
   NotFoundException,
   Param,
@@ -54,6 +55,7 @@ export class GameRoomController {
     private readonly eventEmitter: EventEmitter2,
     private readonly gameRoomService: GameRoomService,
     private readonly userService: UserService,
+    @Inject('StatusService')
     private readonly statusService: StatusService,
   ) {}
 

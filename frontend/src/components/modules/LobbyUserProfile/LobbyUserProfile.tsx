@@ -14,6 +14,9 @@ import UserInfoModal from "../UserInfoModal";
 import { logoutAPI } from "../../../api/auth";
 import { useSetRecoilState } from "recoil";
 import errorState from "../../../state/ErrorState";
+import { useContext } from "react";
+import { SocketContext } from "../../../utils/ChatSocket";
+import GameSocket from "../../../state/GameSocket";
 
 const LobbyUserProfileStyled = styled(Board).attrs((props) => {
   return {
@@ -56,6 +59,8 @@ const ProfileButton = styled(Button).attrs({
 })``;
 
 const LobbyUserProfile = ({ info }: Props) => {
+  const socket = useContext(SocketContext);
+  const gameSocket = useContext(GameSocket);
   const setError = useSetRecoilState(errorState);
   const {
     isModalOpen: isConfirmOpen,
@@ -73,6 +78,8 @@ const LobbyUserProfile = ({ info }: Props) => {
     try {
       await logoutAPI();
       removeJWT();
+      socket.socket.close();
+      gameSocket.socket.close();
       navigate("/");
     } catch (error) {
       setError({ isError: true, error });
