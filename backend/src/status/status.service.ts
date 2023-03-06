@@ -1,10 +1,6 @@
-import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { users } from './status.module';
 import { User } from './status.entity';
-import { EventEmitter2 } from '@nestjs/event-emitter';
-import { GameRoomService } from 'src/game/gameroom.service';
-import { ChatroomService } from 'src/chat/chat.service';
-import { ChatGateway } from 'src/chat/chat.geteway';
 
 @Injectable()
 export class StatusService {

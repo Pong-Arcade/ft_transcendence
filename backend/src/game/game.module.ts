@@ -2,7 +2,6 @@ import { Module, forwardRef } from '@nestjs/common';
 import { GameGateway } from './game.gateway';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { AuthModule } from 'src/auth/auth.module';
 import { GameRoomController } from './gameroom.controller';
 import { GameRoomService } from './gameroom.service';
 import { UserModule } from 'src/user/user.module';
