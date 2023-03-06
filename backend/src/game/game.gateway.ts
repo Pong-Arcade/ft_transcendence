@@ -1,11 +1,11 @@
-import { Inject, Logger } from '@nestjs/common';
+import { Inject, Logger, UnauthorizedException } from '@nestjs/common';
 import {
   OnGatewayDisconnect,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { Namespace } from 'socket.io';
+import { Namespace, Socket } from 'socket.io';
 import { GameRoom } from './gameroom.entity';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { GameRoomCreateRequestDto } from 'src/dto/request/gameroom.create.request.dto';
@@ -29,6 +29,7 @@ import { ChatroomService } from 'src/chat/chat.service';
 import { MatchHistoryDto } from 'src/dto/match.history.dto';
 import { StatService } from 'src/stat/stat.service';
 import { StatusService } from 'src/status/status.service';
+import { JwtService } from '@nestjs/jwt';
 
 type MessageType = 'message' | 'whisper' | 'systemMsg';
 interface IMessage {
@@ -57,11 +58,24 @@ export class GameGateway implements OnGatewayDisconnect {
     private readonly chatroomService: ChatroomService,
     private readonly statService: StatService,
     private readonly statusService: StatusService,
+    private readonly jwtService: JwtService,
     @Inject(ChatGateway) private readonly chatGateway: ChatGateway,
   ) {}
 
-  handleConnection(socket) {
+  handleConnection(socket: Socket) {
     this.logger.log(`Called ${this.handleConnection.name}`);
+    const token = socket.handshake?.auth?.token;
+    if (!token) {
+      return;
+    }
+    try {
+      this.jwtService.verify(token);
+    } catch (err) {
+      const error = new UnauthorizedException();
+      socket.emit('connect_error', error);
+      socket.disconnect(true);
+      return;
+    }
     //게임방 소켓 연결 직후 게임 스크린 정보 전달(폐기예정)
     //this.eventEmitter.emit('gameroom:config', socket);
   }
