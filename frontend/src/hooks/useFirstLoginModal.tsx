@@ -13,7 +13,9 @@ const useFirstLoginModal = () => {
     onModalClose: FirstLoginModalClose,
     onSubmit: FirstLoginModalSubmit,
   } = useModal({
-    afterClose: () => {navigate('/lobby')}
+    afterClose: () => {
+      navigate("/lobby");
+    },
   });
 
   useEffect(() => {

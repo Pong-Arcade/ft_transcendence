@@ -1,1 +1,1 @@
-export { default } from './GameInput'
+export { default } from "./GameInput";
