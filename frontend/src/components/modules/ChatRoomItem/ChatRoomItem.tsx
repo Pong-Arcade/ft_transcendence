@@ -24,7 +24,11 @@ const Nickname = styled(Board).attrs((props) => {
     backgroundColor: props.theme.background.middle,
     borderRadius: true,
   };
-})``;
+})`
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
 
 const ChatRoomItem = ({ item, onItemClick }: IPaginationItem) => {
   const { nickname, userId, avatarUrl } = item as IUser;

@@ -8,6 +8,7 @@ interface Props {
 }
 
 const TypographyStyled = styled.p<Props>`
+  width: 100%;
   text-shadow: -0.1rem 0 ${(props) => props.theme.colors.blueCola},
     0 0.1rem ${(props) => props.theme.colors.blueCola},
     0.1rem 0 ${(props) => props.theme.colors.blueCola},
@@ -15,7 +16,9 @@ const TypographyStyled = styled.p<Props>`
   font-size: ${(props) => props.fontSize || "1rem"};
   color: ${(props) => props.fontColor || "white"};
   white-space: nowrap;
-  text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
 `;
 
 const Typography = ({ children, ...rest }: Props) => {

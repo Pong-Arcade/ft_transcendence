@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import Button from "../../atoms/Button";
+import Typography from "../../atoms/Typography";
 import { IPaginationItem, IUser } from "../Pagination/Pagination";
 
 const LobbyUserItemStyled = styled(Button).attrs((props) => {
@@ -14,7 +15,7 @@ const LobbyUserItem = ({ item, onItemClick }: IPaginationItem) => {
   const { nickname, userId } = item as IUser;
   return (
     <LobbyUserItemStyled id={userId?.toString()} onClick={onItemClick}>
-      {nickname}
+      <Typography fontSize="1.5rem">{nickname}</Typography>
     </LobbyUserItemStyled>
   );
 };

@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import Button from "../../atoms/Button";
+import Typography from "../../atoms/Typography";
 import { IPaginationItem, IRanking } from "../Pagination/Pagination";
 
 const LobbyUserItemStyled = styled(Button).attrs((props) => {
@@ -17,12 +18,21 @@ const LobbyUserItemStyled = styled(Button).attrs((props) => {
   }
 `;
 
-const Field = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100%;
+// const Field = styled.div`
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   width: 100%;
+//   height: 100%;
+//   white-space: nowrap;
+//   overflow: hidden;
+//   text-overflow: ellipsis;
+//   /* text-align: center; */
+// `;
+const Field = styled(Typography).attrs({
+  fontSize: "1.5rem",
+})`
+  align-self: center;
 `;
 
 const RankingItem = ({ item, onItemClick }: IPaginationItem) => {
