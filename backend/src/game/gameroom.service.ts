@@ -293,6 +293,26 @@ export class GameRoomService {
   }
 
   /**
+   * 자신이 속한 게임방의 ID를 조회합니다.
+   * @param userId 유저 ID
+   * @returns 자신이 속한 게임방의 ID
+   *          게임방에 속하지 않은 경우 null
+   */
+  getMyGameRoomId(userId: number): number {
+    this.logger.debug(`Called ${this.getMyGameRoomId.name}`);
+    for (const room of gameRooms.values()) {
+      if (
+        room.redUser?.userId === userId ||
+        room.blueUser?.userId === userId ||
+        room.spectatorUsers.includes(userId)
+      ) {
+        return room.roomId;
+      }
+    }
+    return null;
+  }
+
+  /**
    * 자신이 초대자인지 확인합니다.
    * 초대자인 경우 true를 반환합니다.
    * 초대자가 아닌 경우 false를 반환합니다.

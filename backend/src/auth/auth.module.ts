@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { FtStrategy } from './42/ft.strategy';
 import { AuthService } from './auth.service';
@@ -12,6 +12,8 @@ import NormalStat from 'src/entity/normal.stat.entity';
 import LadderStat from 'src/entity/ladder.stat.entity';
 import { TwoFactorAuth } from 'src/entity/two.factor.auth.entity';
 import { UtilsModule } from 'src/utils/utils.module';
+import { StatusModule } from 'src/status/status.module';
+import { GameModule } from 'src/game/game.module';
 
 const repo = {
   provide: 'IAuthRepository',
@@ -31,6 +33,8 @@ const repo = {
     }),
     TypeOrmModule.forFeature([User, TwoFactorAuth, NormalStat, LadderStat]),
     UtilsModule,
+    StatusModule,
+    forwardRef(() => GameModule),
   ],
   providers: [FtStrategy, JwtStrategy, AuthService, repo],
   controllers: [AuthController],

@@ -1,5 +1,6 @@
 import {
   Controller,
+  Delete,
   Get,
   HttpCode,
   Logger,
@@ -19,6 +20,8 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from './jwt/jwt.auth.guard';
 import { JwtService } from '@nestjs/jwt';
 import { EmailSender } from 'src/utils/email..sender.component';
+import { StatusService } from 'src/status/status.service';
+import { Cache } from 'cache-manager';
 
 @ApiTags('Auth')
 @ApiBearerAuth()
@@ -29,7 +32,9 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
+    private readonly statusService: StatusService,
     private readonly emailSender: EmailSender,
+    private readonly cacheManager: Cache,
   ) {}
 
   @ApiOperation({ summary: '로그인', description: '42로그인 페이지로 이동' })
@@ -119,5 +124,21 @@ export class AuthController {
     });
     await this.authService.enroll2FA(userInfo.userId);
     return { token };
+  }
+
+  @ApiOperation({
+    summary: '로그아웃',
+    description:
+      '로그아웃을 수행합니다. 토큰을 삭제합니다. 온라인 유저 리스트에서 요청한 유저를 삭제 처리합니다. 현재 방에 있을 경우, 방을 나가게 합니다.',
+  })
+  @Delete('logout')
+  @HttpCode(204)
+  async logout(@Res() res: Response, @User() user: UserDto) {
+    this.logger.log(`Called ${this.logout.name}`);
+    res.clearCookie(this.configService.get<string>('jwt.token'), {
+      domain: this.configService.get<string>('fe_host').replace('http://', ''),
+    });
+    this.statusService.deleteUserSocketInfo(user.userId);
+    await this.cacheManager.del(`user-${user.userId}`);
   }
 }
