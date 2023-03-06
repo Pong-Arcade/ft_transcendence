@@ -1,4 +1,6 @@
+import { useRecoilValue } from "recoil";
 import styled from "styled-components";
+import chatRoomState from "../../../state/ChatRoomState";
 import Avatar from "../../atoms/Avatar";
 import Board from "../../atoms/Board";
 import Button from "../../atoms/Button";
@@ -16,6 +18,7 @@ const ChatRoomItemStyled = styled(Button).attrs((props) => {
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
+  position: relative;
 `;
 const Nickname = styled(Board).attrs((props) => {
   return {
@@ -26,10 +29,23 @@ const Nickname = styled(Board).attrs((props) => {
   };
 })``;
 
+const RoleEmoji = styled(Board)`
+  height: 10%;
+  width: 100%;
+  position: absolute;
+  justify-content: end;
+  top: 2%;
+  margin-right: 1rem;
+  font-size: 2rem;
+`;
+
 const ChatRoomItem = ({ item, onItemClick }: IPaginationItem) => {
+  const chatRoom = useRecoilValue(chatRoomState);
+
   const { nickname, userId, avatarUrl } = item as IUser;
   return (
     <ChatRoomItemStyled id={userId?.toString()} onClick={onItemClick}>
+      {userId === chatRoom.mastUserId && <RoleEmoji>👑</RoleEmoji>}
       <Avatar width="10vw" height="10vw" src={avatarUrl} />
       <Nickname>{nickname}</Nickname>
     </ChatRoomItemStyled>
