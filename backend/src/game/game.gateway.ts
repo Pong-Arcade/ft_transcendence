@@ -171,16 +171,13 @@ export class GameGateway implements OnGatewayDisconnect {
           content: `${msg.fromName}로부터: ${msg.msg}`,
           type: EMessageType.WHISPER,
         };
-        if (value.location >= 0) {
-          this.chatGateway.server
-            .to(value.socketId)
-            .emit('whisper', toWhisperMsg);
-          this.chatGateway.server.to(client.id).emit('whisper', fromWhisperMsg);
-          return;
-        } else {
-          this.server.to(client.id).emit('whisper', toWhisperMsg);
-          this.server.to(value.gameSocketId).emit('whisper', fromWhisperMsg);
-        }
+
+        this.chatGateway.server
+          .to(userSocketInfo.socketId)
+          .emit('whisper', toWhisperMsg);
+        this.chatGateway.server
+          .to(value.socketId)
+          .emit('whisper', fromWhisperMsg);
         return;
       }
     }
