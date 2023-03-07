@@ -47,6 +47,7 @@ const useLobbyData = () => {
   const addOnlineUser = (user: IUser) => {
     setOnlineUsers((prev) => [...prev, user]);
   };
+
   const deleteOnlineUser = (userId: number) => {
     setOnlineUsers((prev) => prev.filter((user) => user.userId != userId));
   };

@@ -252,6 +252,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       if (!user) return;
       user.location = 0;
       user.mode = UserChatMode.NORMAL;
+      room.adminUsers = room.adminUsers.filter((uid) => uid !== userId);
       this.server.in(`chatroom${roomId}`).emit('leaveChatRoom', userId);
       this.server.in(user.socketId).socketsLeave(`chatroom${roomId}`);
       this.server.in(user.socketId).socketsJoin('lobby');
@@ -263,7 +264,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       };
       this.server.in(`chatroom${roomId}`).emit('systemMsg', message);
     }
-    if (room.users.length == 0) rooms.delete(roomId); //--);
+    if (room.users.length == 0) rooms.delete(roomId);
   }
 
   @OnEvent('chatroom:create')

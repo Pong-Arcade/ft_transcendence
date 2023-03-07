@@ -150,6 +150,7 @@ const GeneralMenu = ({
   const { inviteUser } = chatRoomGameEvent({
     onInviteGameModalOpen,
     onInviteRejectModalOpen,
+    onInviteGameModalClose,
   });
 
   const onClick = (e: MouseEvent<HTMLButtonElement>) => {
