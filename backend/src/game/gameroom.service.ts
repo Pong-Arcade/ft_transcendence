@@ -474,7 +474,7 @@ export class GameRoomService {
       }
       if (room.blueUser) {
         users.push(
-          this.statusService.getUserSocketInfoByUserId(room.redUser.userId),
+          this.statusService.getUserSocketInfoByUserId(room.blueUser.userId),
         );
       }
       for (const spectatorUserId of room.spectatorUsers) {
