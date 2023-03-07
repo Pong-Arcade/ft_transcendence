@@ -249,7 +249,7 @@ export class GameGateway implements OnGatewayDisconnect {
     this.server.in(`gameroom-${roomId}`).emit('systemMsg', message);
 
     const room = this.gameRoomService.getGameRoomInfo(roomId);
-    console.log(room, roomId, user);
+
     if (room.redUser && room.redUser.userId != user.userId) {
       room.blueUser = {
         userId: user.userId,
@@ -300,6 +300,7 @@ export class GameGateway implements OnGatewayDisconnect {
         .socketsLeave(`gameroom-${room.roomId}`);
       this.chatGateway.server.in(userSocketInfo.socketId).socketsJoin('lobby');
       const userInfo = await this.userService.getUserInfo(userId);
+      userSocketInfo.location = 0;
       this.server.in(`gameroom-${room.roomId}`).emit('leaveGameRoom', userId);
 
       const message: IMessage = {
@@ -563,8 +564,9 @@ export class GameGateway implements OnGatewayDisconnect {
       'Quickplay Arena',
       5,
     );
-    await this.eventEmitter.emitAsync('gameroom:create', redUser, gameRoom);
+    // 게임방 생성
 
+    await this.eventEmitter.emitAsync('gameroom:create', redUser, gameRoom);
     // 게임방에 입장
     this.eventEmitter.emit('gameroom:join', roomId, redUser);
 
