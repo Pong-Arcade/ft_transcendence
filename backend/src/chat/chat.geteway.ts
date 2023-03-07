@@ -358,16 +358,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       type: EMessageType.SYSTEMMSG,
     };
     this.server.in(`chatroom${roomId}`).emit('systemMsg', message);
-    setTimeout(() => {
-      this.muteUsers.splice(
-        this.muteUsers.find((id) => {
-          id == userId;
-        }),
-      );
-      for (const id of this.muteUsers) {
-        if (id == userId) this.muteUsers.splice(id);
-      }
-    }, duration * 1000);
+    setTimeout(() => this.unmuteUser(roomId, userId), duration * 1000);
   }
   @OnEvent('chatroom:unmute-user')
   unmuteUser(roomId: number, userId: number) {
