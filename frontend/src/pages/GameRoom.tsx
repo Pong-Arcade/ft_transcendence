@@ -111,7 +111,7 @@ const GameRoom = () => {
   } = gameStartEvent(roomId);
 
   useEffect(() => {
-    if (roomId === -1) setError({ isError: true, error: "" });
+    if (roomId === -1) setError({ isError: true, error: "해당 방이 없습니다", isChangePage: true });
   }, []);
 
   return (

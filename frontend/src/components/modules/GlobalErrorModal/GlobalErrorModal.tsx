@@ -18,7 +18,7 @@ const Wrapper = styled(Board).attrs((props) => {
   return {
     backgroundColor: props.theme.background.middle,
     width: "100%",
-    height: "51%",
+    height: "66.5%",
     borderRadius: true,
     flexDirection: "column",
     justifyContent: "space-around",
@@ -33,7 +33,7 @@ const ErrorMessage = styled(Typography).attrs({
 
 const ModalButton = styled(Button).attrs({
   width: "50%",
-  height: "20%",
+  height: "15%",
 })``;
 
 const GlobalErrorModal = ({ errors }: Props) => {
@@ -43,20 +43,24 @@ const GlobalErrorModal = ({ errors }: Props) => {
   const onClose = () => {
     setError({ isError: false, error: null });
   };
-  const onClick = () => {
+  const onStayCurrentPage = () => {
+    setError({ isError: false, error: null });
+  };
+  const onMoveLobbyPage = () => {
     setError({ isError: false, error: null });
     navigate("/lobby");
-  };
+  }
 
-  if (!errors.error.response || errors.error.response.status === 401) {
+  if (errors.error.response?.status === 401) {
     return <UnauthorizedModal />;
   }
-  const message = errors.error.response.data.message;
+  const status = errors.error.response?.status || (errors.isChangePage && 404);
+  const message = errors.error.response?.data.message || errors.error;
 
   return (
     <ModalWrapper>
-      <Modal width="40%" height="40%">
-        <ModalTitle onClose={onClose} height="25%" fontSize="2rem">
+      <Modal width="30%" height="40%">
+        <ModalTitle onClose={onClose} height="15%" fontSize="2rem">
           문제 발생
         </ModalTitle>
         <Wrapper>
@@ -67,9 +71,8 @@ const GlobalErrorModal = ({ errors }: Props) => {
           ) : (
             <ErrorMessage>{message}</ErrorMessage>
           )}
-          <ErrorMessage>로비로 이동</ErrorMessage>
         </Wrapper>
-        <ModalButton onClick={onClick}>확인</ModalButton>
+        <ModalButton onClick={status === 404 ? onMoveLobbyPage : onStayCurrentPage}>확인</ModalButton>
       </Modal>
     </ModalWrapper>
   );
