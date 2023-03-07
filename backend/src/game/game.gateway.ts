@@ -114,6 +114,7 @@ export class GameGateway implements OnGatewayDisconnect {
     if (!userSocketInfo) {
       return;
     }
+
     if (userSocketInfo.location >= 0) {
       return;
     }
@@ -248,6 +249,7 @@ export class GameGateway implements OnGatewayDisconnect {
     this.server.in(`gameroom-${roomId}`).emit('systemMsg', message);
 
     const room = this.gameRoomService.getGameRoomInfo(roomId);
+    console.log(room, roomId, user);
     if (room.redUser && room.redUser.userId != user.userId) {
       room.blueUser = {
         userId: user.userId,
@@ -545,10 +547,6 @@ export class GameGateway implements OnGatewayDisconnect {
     matchType: MatchType,
   ) {
     this.logger.log(`Called ${this.matchingGameRoom.name}`);
-    const redUserSocketInfo =
-      this.statusService.getUserSocketInfoByUserId(redUserId);
-    const blueUserSocketInfo =
-      this.statusService.getUserSocketInfoByUserId(blueUserId);
 
     // 빠른 대전 게임방을 생성, 레드 유저를 먼저 넣어줍니다.
     const roomId = this.gameRoomService.getGameRoomCount() + 1;
@@ -565,24 +563,17 @@ export class GameGateway implements OnGatewayDisconnect {
       'Quickplay Arena',
       5,
     );
-    this.chatGateway.server
-      .in(redUserSocketInfo.socketId)
-      .socketsLeave('lobby');
-    this.server
-      .in(redUserSocketInfo.gameSocketId)
-      .socketsJoin(`gameroom-${roomId}`);
+    await this.eventEmitter.emitAsync('gameroom:create', redUser, gameRoom);
+
+    // 게임방에 입장
+    this.eventEmitter.emit('gameroom:join', roomId, redUser);
 
     // 블루 유저를 게임방에 넣어줍니다.
     gameRoom.blueUser = {
       ...(await this.userService.getUserInfo(blueUserId)),
       gameUserStatus: GameRoomUserStatus.UN_READY,
     };
-    this.chatGateway.server
-      .in(blueUserSocketInfo.socketId)
-      .socketsLeave('lobby');
-    this.server
-      .in(blueUserSocketInfo.gameSocketId)
-      .socketsJoin(`gameroom-${roomId}`);
+    this.eventEmitter.emit('gameroom:join', roomId, gameRoom.blueUser);
 
     // 게임이 매칭되었다는 메시지를 보냅니다.
     this.server.in(`gameroom-${roomId}`).emit('gameRoomMatched', gameRoom);
