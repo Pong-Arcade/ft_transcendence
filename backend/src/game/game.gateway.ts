@@ -582,8 +582,8 @@ export class GameGateway implements OnGatewayDisconnect {
 
     this.gameRoomService.createGameRoom(roomId, gameRoom);
 
-    // 로비에 있는 유저들에게 게임방이 생성되었다는 메시지를 보냅니다.
-    this.chatGateway.server.in('lobby').emit('addGameRoom', gameRoom);
+    // 로비에 있는 유저들에게 게임방이 생성되었다는 메시지를 보냅니다. => gameroom:create 이벤트에서 처리 중
+    // this.chatGateway.server.in('lobby').emit('addGameRoom', gameRoom);
   }
 
   @OnEvent('gameroom:start')
