@@ -1,8 +1,9 @@
 import { atom } from "recoil";
 
-interface IErrorState {
+export interface IErrorState {
   isError: boolean;
   error: any;
+  isChangePage?: boolean;
 }
 
 const errorState = atom<IErrorState>({
@@ -10,6 +11,7 @@ const errorState = atom<IErrorState>({
   default: {
     isError: false,
     error: "",
+    isChangePage: false,
   },
 });
 

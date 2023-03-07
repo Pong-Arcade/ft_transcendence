@@ -1,7 +1,6 @@
-import { createContext, useContext } from "react";
+import { createContext } from "react";
 import { io, Socket } from "socket.io-client";
 import { getCookie } from "../utils/cookie";
-import { useNavigate } from "react-router-dom";
 
 interface IGameSocket {
   socket: Socket;

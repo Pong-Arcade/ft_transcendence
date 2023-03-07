@@ -20,7 +20,7 @@ FROM nginx:latest AS server
 
 COPY --from=builder /frontend/dist /usr/share/nginx/html
 
-RUN rm /etc/nginx/conf.d/default.conf
+RUN rm -f /etc/nginx/conf.d/default.conf
 
 COPY ./nginx/nginx.conf /etc/nginx/conf.d/
 

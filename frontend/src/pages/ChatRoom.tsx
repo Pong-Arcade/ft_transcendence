@@ -50,7 +50,12 @@ const ChatRoom = () => {
   const gameSocket = useContext(GameSocket);
 
   useEffect(() => {
-    if (chatRoom.roomId === -1) setError({ isError: true, error: "" });
+    if (chatRoom.roomId === -1)
+      setError({
+        isError: true,
+        error: "해당 방이 없습니다",
+        isChangePage: true,
+      });
 
     socket.socket.on("updateChatRoom", (title) =>
       setChatRoom({
@@ -62,7 +67,11 @@ const ChatRoom = () => {
       })
     );
     socket.socket.on("otherLogin", () => {
-      setError({ isError: true, error: "" });
+      setError({
+        isError: true,
+        error: "문제가 발생했습니다",
+        isChangePage: true,
+      });
     });
     return () => {
       socket.socket.off("updateChatRoom");

@@ -99,7 +99,11 @@ const Lobby = () => {
     });
 
     socket.socket.on("otherLogin", () => {
-      setError({ isError: true, error: "" });
+      setError({
+        isError: true,
+        error: "문제가 발생했습니다",
+        isChangePage: true,
+      });
     });
     return () => {
       socket.socket.off("inviteChatRoom");

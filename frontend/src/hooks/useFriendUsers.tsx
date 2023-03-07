@@ -13,7 +13,6 @@ const useFriendUsers = (userId: number) => {
   const setFriendUsers = useSetRecoilState(friendUsersState);
   const setBlockUsers = useSetRecoilState(blockUsersState);
 
-
   const onAddFriend = async () => {
     try {
       const response = await createFriendUsersAPI(userId);
