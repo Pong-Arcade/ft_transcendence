@@ -276,6 +276,7 @@ export class GameGateway implements OnGatewayDisconnect {
     if (user.userId === room.redUser.userId) {
       this.server.in(`gameroom-${room.roomId}`).emit('destructGameRoom');
       for (const user of this.gameRoomService.getAllGameRoomUsers(roomId)) {
+        if (!user) continue;
         this.server
           .in(user.gameSocketId)
           .socketsLeave(`gameroom-${room.roomId}`);
