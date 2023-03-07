@@ -194,6 +194,11 @@ const GeneralMenu = ({
         setIsMute(true);
         onConfirmOpen();
         break;
+      case EChatRoom.UNMUTE:
+        setCurrentOn(EChatCurrentOn.UNMUTE);
+        setIsMute(false);
+        onConfirmOpen();
+        break;
       case EChatRoom.PROMOTE:
         setCurrentOn(EChatCurrentOn.PROMOTE);
         onConfirmOpen();

@@ -5,6 +5,7 @@ import {
   banChatRoomAPI,
   demoteAdminAPI,
   muteChatRoomAPI,
+  unmuteChatRoomAPI,
   promoteAdminAPI,
 } from "../../../api/room";
 import useRelation from "../../../hooks/useRelation";
@@ -72,6 +73,14 @@ const ChatConfirmModal = ({
       setError({ isError: true, error });
     }
   };
+  const onUnmuteUser = async () => {
+    try {
+      await unmuteChatRoomAPI(Number(params.chatId), userId);
+    } catch (error: any) {
+      onClose();
+      setError({ isError: true, error });
+    }
+  };
   const onBanUser = async () => {
     try {
       await banChatRoomAPI(Number(params.chatId), userId);
@@ -127,6 +136,11 @@ const ChatConfirmModal = ({
       title = EChatCurrentOn.MUTE;
       content = `${name}님을 채팅금지하시겠습니까?`;
       onYesConfirm = onMuteUser;
+      break;
+    case EChatCurrentOn.UNMUTE:
+      title = EChatCurrentOn.UNMUTE;
+      content = `${name}님의 채팅금지를 해제하시겠습니까?`;
+      onYesConfirm = onUnmuteUser;
       break;
   }
   const onClick = () => {
