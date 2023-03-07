@@ -5,6 +5,7 @@ import {
   banChatRoomAPI,
   demoteAdminAPI,
   muteChatRoomAPI,
+  unmuteChatRoomAPI,
   promoteAdminAPI,
 } from "../../../api/room";
 import useRelation from "../../../hooks/useRelation";
