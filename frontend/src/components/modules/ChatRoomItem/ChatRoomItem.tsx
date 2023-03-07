@@ -1,6 +1,4 @@
-import { useRecoilValue } from "recoil";
 import styled from "styled-components";
-import chatRoomState from "../../../state/ChatRoomState";
 import Avatar from "../../atoms/Avatar";
 import Board from "../../atoms/Board";
 import Button from "../../atoms/Button";
@@ -45,8 +43,6 @@ const RoleEmoji = styled(Board)`
 `;
 
 const ChatRoomItem = ({ item, onItemClick }: IPaginationItem) => {
-  const chatRoom = useRecoilValue(chatRoomState);
-
   const { nickname, userId, mode, avatarUrl } = item as IUser;
   return (
     <ChatRoomItemStyled id={userId?.toString()} onClick={onItemClick}>

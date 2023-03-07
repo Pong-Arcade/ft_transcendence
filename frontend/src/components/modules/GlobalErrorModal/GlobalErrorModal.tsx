@@ -49,7 +49,7 @@ const GlobalErrorModal = ({ errors }: Props) => {
   const onMoveLobbyPage = () => {
     setError({ isError: false, error: null });
     navigate("/lobby");
-  }
+  };
 
   if (errors.error.response?.status === 401) {
     return <UnauthorizedModal />;
@@ -72,7 +72,11 @@ const GlobalErrorModal = ({ errors }: Props) => {
             <ErrorMessage>{message}</ErrorMessage>
           )}
         </Wrapper>
-        <ModalButton onClick={status === 404 ? onMoveLobbyPage : onStayCurrentPage}>확인</ModalButton>
+        <ModalButton
+          onClick={status === 404 ? onMoveLobbyPage : onStayCurrentPage}
+        >
+          확인
+        </ModalButton>
       </Modal>
     </ModalWrapper>
   );
