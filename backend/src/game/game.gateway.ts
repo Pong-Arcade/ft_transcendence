@@ -355,8 +355,6 @@ export class GameGateway implements OnGatewayDisconnect {
 
     // 초대한 사람의 socket 정보
     const inviterId = invitation.inviterId;
-    const inviterSocketInfo =
-      this.statusService.getUserSocketInfoByUserId(inviterId);
 
     // 초대 게임방을 생성, 레드 유저를 먼저 넣어줍니다.
     const roomId = this.gameRoomService.getGameRoomCount() + 1;
@@ -381,10 +379,10 @@ export class GameGateway implements OnGatewayDisconnect {
       inviterId,
     );
 
+    // 게임방 생성
+    await this.eventEmitter.emitAsync('gameroom:create', redUser, gameRoom);
     // 초대보낸 유저가 게임방에 입장한다.
-    this.server
-      .in(inviterSocketInfo.gameSocketId)
-      .socketsJoin(`gameroom-${roomId}`);
+    this.eventEmitter.emit('gameroom:join', roomId, redUser);
 
     // 블루 유저를 게임방에 넣어줍니다.
     gameRoom.blueUser = {
@@ -400,9 +398,7 @@ export class GameGateway implements OnGatewayDisconnect {
     );
 
     // 초대받은 유저가 게임방에 입장한다.
-    this.server
-      .in(inviteeSocketInfo.gameSocketId)
-      .socketsJoin(`gameroom-${roomId}`);
+    this.eventEmitter.emit('gameroom:join', roomId, gameRoom.blueUser);
 
     // 게임이 매칭되었다는 메시지를 보냅니다.
     this.server.in(`gameroom-${roomId}`).emit('gameRoomMatched', gameRoom);
@@ -412,8 +408,8 @@ export class GameGateway implements OnGatewayDisconnect {
 
     this.gameRoomService.createGameRoom(roomId, gameRoom);
 
-    // 로비에 있는 유저들에게 게임방이 생성되었다는 메시지를 보냅니다.
-    this.chatGateway.server.in('lobby').emit('addGameRoom', gameRoom);
+    // 로비에 있는 유저들에게 게임방이 생성되었다는 메시지를 보냅니다. => gameroom:create 이벤트에서 처리 중
+    // this.chatGateway.server.in('lobby').emit('addGameRoom', gameRoom);
   }
 
   @OnEvent('gameroom:invite:reject')
