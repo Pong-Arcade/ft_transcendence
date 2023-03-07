@@ -264,7 +264,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       };
       this.server.in(`chatroom${roomId}`).emit('systemMsg', message);
     }
-    if (room.users.length == 0) rooms.delete(roomId);
+    if (room.users.length == 0) {
+      rooms.delete(roomId);
+      this.server.in('lobby').emit('deleteChatRoom', roomId);
+    }
   }
 
   @OnEvent('chatroom:create')
