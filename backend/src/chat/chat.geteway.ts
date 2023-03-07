@@ -108,6 +108,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     let user: User;
     if (users.has(info.userId)) {
       user = users.get(info.userId);
+      if (user.userName !== info.userName) {
+        this.server.to('lobby').emit('deleteOnlineUser', user.userId);
+        user.userName = info.userName;
+      }
       if (user.socketId !== client.id) {
         const gameId = user.gameSocketId;
         const chatId = user.socketId;

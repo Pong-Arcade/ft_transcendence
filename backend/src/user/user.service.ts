@@ -105,7 +105,7 @@ export class UserService {
       newNickname,
       newAvatarUrl,
     )) as UserDto;
-    users.get(userId).userName = userInfo.nickname;
+    // users.get(userId).userName = userInfo.nickname;
     return userInfo;
   }
 }

@@ -35,6 +35,8 @@ const useLobbyData = () => {
 
   //유저 정보 변경시 소켓 이벤트
   useEffect(() => {
+    if (socket.userId === myInfo.userId && socket.userName === myInfo.nickname)
+      return;
     socket.setUser(myInfo.userId, myInfo.nickname);
     socket.socket.emit("addUser", {
       userId: socket.userId,
@@ -43,10 +45,7 @@ const useLobbyData = () => {
   }, [myInfo]);
   //온라인 유저 소켓 이벤트
   const addOnlineUser = (user: IUser) => {
-    setOnlineUsers((prev) => {
-      const newList = prev.filter((u) => u.userId !== user.userId);
-      return [...newList, user];
-    });
+    setOnlineUsers((prev) => [...prev, user]);
   };
 
   const deleteOnlineUser = (userId: number) => {
