@@ -1,5 +1,6 @@
 import { createContext } from "react";
 import { io, Socket } from "socket.io-client";
+import { getCookie } from "./cookie";
 
 class ChatSocket {
   socket: Socket;
@@ -7,7 +8,11 @@ class ChatSocket {
   userName: string;
 
   constructor() {
-    this.socket = io(`${import.meta.env.VITE_SOCKET_URL}/socket/chat`);
+    this.socket = io(`${import.meta.env.VITE_SOCKET_URL}/socket/chat`, {
+      auth: {
+        token: getCookie(),
+      },
+    });
     this.userId = -1;
     this.userName = "";
   }

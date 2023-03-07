@@ -11,11 +11,13 @@ import GameSocket from "../../state/GameSocket";
 interface IChatRoomGameEvent {
   onInviteGameModalOpen: () => void;
   onInviteRejectModalOpen: () => void;
+  onInviteGameModalClose: () => void;
 }
 
 const chatRoomGameEvent = ({
   onInviteGameModalOpen,
   onInviteRejectModalOpen,
+  onInviteGameModalClose,
 }: IChatRoomGameEvent) => {
   const { socket } = useContext(GameSocket);
   const [inviteUser, setInviteUser] = useState<IUser>({});
@@ -24,6 +26,7 @@ const chatRoomGameEvent = ({
 
   useEffect(() => {
     socket.on("inviteGameRoom", (user: IUser) => {
+      console.log(user);
       setInviteUser(user);
       onInviteGameModalOpen();
     });
@@ -37,10 +40,15 @@ const chatRoomGameEvent = ({
       onInviteRejectModalOpen();
     });
 
+    socket.on("timeoutInviteGameRoom", () => {
+      onInviteGameModalClose();
+    });
+
     return () => {
       socket.off("inviteGameRoom");
       socket.off("gameRoomMatched");
       socket.off("rejectInviteGameRoom");
+      socket.off("timeoutInviteGameRoom");
     };
   }, []);
   return { inviteUser };

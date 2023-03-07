@@ -104,6 +104,8 @@ const Lobby = () => {
     return () => {
       socket.socket.off("inviteChatRoom");
       socket.socket.off("otherLogin");
+      socket.socket.off("addOnlineUser");
+      socket.socket.off("deleteOnlineUser");
     };
   }, []);
 

@@ -6,9 +6,11 @@ import {
 } from "../api/users";
 import blockUsersState from "../state/BlockUsersState";
 import errorState from "../state/ErrorState";
+import friendUsersState from "../state/FriendUsersState";
 
 const useBlockUsers = (userId: number) => {
   const setBlockUsers = useSetRecoilState(blockUsersState);
+  const setFriendUsers = useSetRecoilState(friendUsersState);
   const setError = useSetRecoilState(errorState);
 
   const onAddBlock = async () => {
@@ -16,6 +18,7 @@ const useBlockUsers = (userId: number) => {
       const response = await createBlockUsersAPI(userId);
       if (response.status === 200) {
         const newBlockUsers = await getBlockUsersAPI();
+        setFriendUsers((prev) => prev.filter((user) => user.userId !== userId));
         setBlockUsers(newBlockUsers);
       }
     } catch (error) {

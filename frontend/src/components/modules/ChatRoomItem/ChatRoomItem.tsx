@@ -1,8 +1,11 @@
+import { useRecoilValue } from "recoil";
 import styled from "styled-components";
+import chatRoomState from "../../../state/ChatRoomState";
 import Avatar from "../../atoms/Avatar";
 import Board from "../../atoms/Board";
 import Button from "../../atoms/Button";
 import { IPaginationItem, IUser } from "../Pagination/Pagination";
+import { userMode } from "../Pagination/Pagination";
 
 const ChatRoomItemStyled = styled(Button).attrs((props) => {
   return {
@@ -16,6 +19,7 @@ const ChatRoomItemStyled = styled(Button).attrs((props) => {
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
+  position: relative;
 `;
 const Nickname = styled(Board).attrs((props) => {
   return {
@@ -30,10 +34,24 @@ const Nickname = styled(Board).attrs((props) => {
   text-overflow: ellipsis;
 `;
 
+const RoleEmoji = styled(Board)`
+  height: 10%;
+  width: 100%;
+  position: absolute;
+  justify-content: end;
+  top: 2%;
+  margin-right: 1rem;
+  font-size: 2rem;
+`;
+
 const ChatRoomItem = ({ item, onItemClick }: IPaginationItem) => {
-  const { nickname, userId, avatarUrl } = item as IUser;
+  const chatRoom = useRecoilValue(chatRoomState);
+
+  const { nickname, userId, mode, avatarUrl } = item as IUser;
   return (
     <ChatRoomItemStyled id={userId?.toString()} onClick={onItemClick}>
+      {mode === userMode.MASTER && <RoleEmoji>👑</RoleEmoji>}
+      {mode === userMode.ADMIN && <RoleEmoji>👮</RoleEmoji>}
       <Avatar width="10vw" height="10vw" src={avatarUrl} />
       <Nickname>{nickname}</Nickname>
     </ChatRoomItemStyled>

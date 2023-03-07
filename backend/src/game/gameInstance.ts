@@ -64,15 +64,14 @@ export class GameInstance {
       },
       redPaddle: {
         x: gameConfig.paddle.buffer,
-        y:
-        (gameConfig.gameCanvas.height / 2) - gameConfig.paddle.height / 2,
+        y: gameConfig.gameCanvas.height / 2 - gameConfig.paddle.height / 2,
       },
       bluePaddle: {
         x:
           gameConfig.gameCanvas.width -
           gameConfig.paddle.buffer -
           gameConfig.paddle.width,
-        y: (gameConfig.gameCanvas.height / 2) - gameConfig.paddle.height / 2,
+        y: gameConfig.gameCanvas.height / 2 - gameConfig.paddle.height / 2,
       },
     };
   }
@@ -197,10 +196,10 @@ export class GameInstance {
   private calcNextBall() {
     let nextBallX: number =
       this.state.ball.x +
-      (this.info.ball.velocity * this.ballDx) / this.info.fps;
+      (this.ballVelocity * this.ballDx) / this.info.fps;
     let nextBallY: number =
       this.state.ball.y +
-      (this.info.ball.velocity * this.ballDy) / this.info.fps;
+      (this.ballVelocity * this.ballDy) / this.info.fps;
     let tempBallDx: number = this.ballDx;
     let tempBallDy: number = this.ballDy;
     const ballSize = this.info.ball.size;

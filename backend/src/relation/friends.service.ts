@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  Inject,
   Injectable,
   Logger,
   NotFoundException,
@@ -21,6 +22,7 @@ export class FriendsService {
     @InjectRepository(Relation)
     private readonly relationRepository: Repository<Relation>,
     private readonly userService: UserService,
+    @Inject('StatusService')
     private readonly statusService: StatusService,
   ) {}
 

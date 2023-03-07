@@ -7,6 +7,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Inject,
   Logger,
   NotFoundException,
   Param,
@@ -54,6 +55,7 @@ export class GameRoomController {
     private readonly eventEmitter: EventEmitter2,
     private readonly gameRoomService: GameRoomService,
     private readonly userService: UserService,
+    @Inject('StatusService')
     private readonly statusService: StatusService,
   ) {}
 
@@ -315,7 +317,7 @@ export class GameRoomController {
     if (this.gameRoomService.isOnGameRoom(user.userId)) {
       throw new ConflictException('참여중인 게임방이 있습니다.');
     }
-    //
+
     // 2. 게임방 생성
     await this.eventEmitter.emitAsync(
       'gameroom:create',

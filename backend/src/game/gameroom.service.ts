@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { GameRoomListResponseDto } from 'src/dto/response/gameroom.list.response.dto';
 import { UserService } from 'src/user/user.service';
 import { GameRoom, Invitation } from './gameroom.entity';
@@ -6,6 +6,7 @@ import { GameRoomUsersInfoResponseDto } from 'src/dto/response/gameroom.users.in
 import { MatchType } from 'src/enum/match.type.enum';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { User } from 'src/status/status.entity';
+import { StatusService } from 'src/status/status.service';
 
 export let invitations: Invitation[] = [];
 export const gameRooms = new Map<number, GameRoom>();
@@ -22,6 +23,8 @@ export class GameRoomService {
   constructor(
     private readonly userService: UserService,
     private readonly eventEmitter: EventEmitter2,
+    @Inject('StatusService')
+    private readonly statusService: StatusService,
   ) {}
 
   /**
@@ -293,6 +296,26 @@ export class GameRoomService {
   }
 
   /**
+   * 자신이 속한 게임방의 ID를 조회합니다.
+   * @param userId 유저 ID
+   * @returns 자신이 속한 게임방의 ID
+   *          게임방에 속하지 않은 경우 null
+   */
+  getMyGameRoomId(userId: number): number {
+    this.logger.debug(`Called ${this.getMyGameRoomId.name}`);
+    for (const room of gameRooms.values()) {
+      if (
+        room.redUser?.userId === userId ||
+        room.blueUser?.userId === userId ||
+        room.spectatorUsers.includes(userId)
+      ) {
+        return room.roomId;
+      }
+    }
+    return null;
+  }
+
+  /**
    * 자신이 초대자인지 확인합니다.
    * 초대자인 경우 true를 반환합니다.
    * 초대자가 아닌 경우 false를 반환합니다.
@@ -433,5 +456,36 @@ export class GameRoomService {
       }
     }
     return false;
+  }
+
+  /**
+   * 플레이어 관전자를 포함해 게임방에 있는 모든 유저의 정보를 반환합니다.
+   * @param roomId
+   */
+  getAllGameRoomUsers(roomId: number): User[] {
+    this.logger.debug(`Called ${this.getAllGameRoomUsers.name}`);
+    const room = gameRooms.get(roomId);
+    if (room) {
+      const users: User[] = [];
+      if (room.redUser) {
+        users.push(
+          this.statusService.getUserSocketInfoByUserId(room.redUser.userId),
+        );
+      }
+      if (room.blueUser) {
+        users.push(
+          this.statusService.getUserSocketInfoByUserId(room.blueUser.userId),
+        );
+      }
+      for (const spectatorUserId of room.spectatorUsers) {
+        const user =
+          this.statusService.getUserSocketInfoByUserId(spectatorUserId);
+        if (user) {
+          users.push(user);
+        }
+      }
+      return users;
+    }
+    return [];
   }
 }

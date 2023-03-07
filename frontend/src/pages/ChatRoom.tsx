@@ -12,13 +12,14 @@ import Board from "../components/atoms/Board";
 import { useContext, useEffect } from "react";
 import { SocketContext } from "../utils/ChatSocket";
 import errorState from "../state/ErrorState";
+import GameSocket from "../state/GameSocket";
 
 const TitleTypography = styled(Typography).attrs({
   fontSize: "2.5rem",
-})`
+})<{ fullWidth?: boolean }>`
   background-color: ${(props) => props.theme.background.front};
   height: 90%;
-  width: 66%;
+  width: ${(props) => (props.fullWidth ? "89%" : "66.5%")};
   display: flex;
   align-items: center;
   padding: 1rem;
@@ -46,6 +47,7 @@ const ChatRoom = () => {
   const myInfo = useRecoilValue(infoState);
   const socket = useContext(SocketContext);
   const setError = useSetRecoilState(errorState);
+  const gameSocket = useContext(GameSocket);
 
   useEffect(() => {
     if (chatRoom.roomId === -1) setError({ isError: true, error: "" });
@@ -68,11 +70,26 @@ const ChatRoom = () => {
     };
   }, []);
 
+  useEffect(() => {
+    gameSocket.socket.on("connect_unauth_error", (err) => {
+      setError({ isError: true, error: err.message });
+    });
+    socket.socket.on("connect_unauth_error", (err) => {
+      setError({ isError: true, error: err.message });
+    });
+    return () => {
+      gameSocket.socket.off("connect_unauth_error");
+      socket.socket.off("connect_unauth_error");
+    };
+  }, []);
+
   return (
     <ChatRoomTemplate>
       <TitleWrapper>
         <TitleLabel>방제목</TitleLabel>
-        <TitleTypography> {chatRoom.title}</TitleTypography>
+        <TitleTypography fullWidth={myInfo.userId !== chatRoom.mastUserId}>
+          {chatRoom.title}
+        </TitleTypography>
       </TitleWrapper>
       {myInfo.userId === chatRoom.mastUserId && <ChatRoomPasswordModify />}
       <ChatRoomUserList />

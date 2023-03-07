@@ -9,7 +9,7 @@
     "velocity": 500,
     "height": 240
   },
-  "fps": 30,
+  "fps": 60,
   "ball": {
     "velocity": 540,
     "size": 7
