@@ -324,20 +324,15 @@ export class GameGateway implements OnGatewayDisconnect {
     );
 
     // 초대장을 받은 유저에게 초대장을 전달
-    // FIXME: 초대장에 어떤 내용을 담을지 협의 필요
+    const inviteeUserDetail = await this.userService.getUserDetail(userId);
     const inviteeSocketInfo =
       this.statusService.getUserSocketInfoByUserId(targetUserId);
     this.server
       .in(inviteeSocketInfo.gameSocketId)
-      .emit('inviteGameRoom', await this.userService.getUserDetail(userId));
+      .emit('inviteGameRoom', inviteeUserDetail);
 
-    // 15초 후 초대장이 남아있다면 초대장을 삭제
+    // 10초 후 초대장이 남아있다면 초대장을 삭제
     setTimeout(() => {
-      console.log(
-        this.gameRoomService.findInvitationByInviteeId(
-          inviteeSocketInfo.userId,
-        ),
-      );
       if (
         this.gameRoomService.findInvitationByInviteeId(inviteeSocketInfo.userId)
       ) {
@@ -355,7 +350,7 @@ export class GameGateway implements OnGatewayDisconnect {
           .in(inviteeSocketInfo.gameSocketId)
           .emit('timeoutInviteGameRoom');
       }
-    }, 1000 * 15);
+    }, 1000 * 10);
   }
 
   @OnEvent('gameroom:invite:accept')
