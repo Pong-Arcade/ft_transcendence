@@ -110,13 +110,23 @@ const GameRoom = () => {
     setGameFinish,
   } = gameStartEvent(roomId);
 
+  const preventClose = (e: BeforeUnloadEvent) => {
+    e.preventDefault();
+    e.returnValue = "";
+  };
+
   useEffect(() => {
+    window.addEventListener("beforeunload", preventClose);
+
     if (roomId === -1)
       setError({
         isError: true,
         error: "해당 방이 없습니다",
         isChangePage: true,
       });
+    return () => {
+      window.removeEventListener("beforeunload", preventClose);
+    };
   }, []);
 
   return (

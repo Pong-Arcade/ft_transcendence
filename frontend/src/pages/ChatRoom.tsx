@@ -49,7 +49,14 @@ const ChatRoom = () => {
   const setError = useSetRecoilState(errorState);
   const gameSocket = useContext(GameSocket);
 
+  const preventClose = (e: BeforeUnloadEvent) => {
+    e.preventDefault();
+    e.returnValue = "";
+  };
+
   useEffect(() => {
+    window.addEventListener("beforeunload", preventClose);
+
     if (chatRoom.roomId === -1)
       setError({
         isError: true,
@@ -76,6 +83,7 @@ const ChatRoom = () => {
     return () => {
       socket.socket.off("updateChatRoom");
       socket.socket.off("otherLogin");
+      window.removeEventListener("beforeunload", preventClose);
     };
   }, []);
 
