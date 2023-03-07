@@ -369,6 +369,21 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       }
     }, duration * 1000);
   }
+  @OnEvent('chatroom:unmute-user')
+  unmuteUser(roomId: number, userId: number) {
+    if (!(roomId && userId)) return;
+    const user = users.get(userId);
+    if (!user) return;
+    const message: IMessage = {
+      fromId: userId,
+      content: user.userName + '님의 채팅금지가 해제되었습니다.',
+      type: EMessageType.SYSTEMMSG,
+    };
+    if (this.muteUsers.includes(userId)) {
+      this.muteUsers = this.muteUsers.filter((uid) => uid !== userId);
+      this.server.in(`chatroom${roomId}`).emit('systemMsg', message);
+    }
+  }
 
   @OnEvent('chatroom:change-info')
   updateChatRoom(roomId: number, roomInfo: ChangeChatroomInfoRequestDto) {
