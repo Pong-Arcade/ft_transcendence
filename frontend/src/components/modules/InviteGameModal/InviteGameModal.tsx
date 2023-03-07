@@ -85,7 +85,7 @@ const InviteGameModal = ({ onClose, inviteUser }: Props) => {
   return (
     <ConfirmModal
       title="게임신청"
-      onClose={onClose}
+      onClose={onNoConfirm}
       width="50%"
       height="90%"
       titleHeight="10%"
