@@ -3,6 +3,7 @@ import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import blockUsersState from "../../../state/BlockUsersState";
 import GameSocket from "../../../state/GameSocket";
+import { SocketContext } from "../../../utils/ChatSocket";
 import ChatListItem from "../ChatListItem";
 
 interface Props {
@@ -61,6 +62,8 @@ const GameChatList = ({ ...rest }: Props) => {
   const [list, setList] = useState<IMessage[]>([]);
   const blockUsers = useRecoilValue(blockUsersState);
   const socket = useContext(GameSocket);
+  const chatSocket = useContext(SocketContext);
+
   useEffect(() => {
     const newMessage = (newMsg: IMessage) => {
       for (const user of blockUsers) {
@@ -69,14 +72,16 @@ const GameChatList = ({ ...rest }: Props) => {
       setList((prevList) => [...prevList, newMsg]);
     };
     socket.socket.on("message", newMessage);
-    socket.socket.on("whisper", newMessage);
+    chatSocket.socket.on("whisper", newMessage);
     socket.socket.on("systemMsg", newMessage);
+
     return () => {
       socket.socket.off("message", newMessage);
-      socket.socket.off("whisper", newMessage);
+      chatSocket.socket.off("whisper", newMessage);
       socket.socket.off("systemMsg", newMessage);
     };
   }, [blockUsers]);
+
   const scrollRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (scrollRef.current)
