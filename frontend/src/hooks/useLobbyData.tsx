@@ -43,23 +43,11 @@ const useLobbyData = () => {
   }, [myInfo]);
   //온라인 유저 소켓 이벤트
   const addOnlineUser = (user: IUser) => {
-    onlineUsers.find((u) => u.userId == user.userId) &&
-      user.userId &&
-      deleteOnlineUser(user.userId);
     setOnlineUsers((prev) => [...prev, user]);
   };
   const deleteOnlineUser = (userId: number) => {
-    if (!onlineUsers) return;
     setOnlineUsers((prev) => prev.filter((user) => user.userId != userId));
   };
-  useEffect(() => {
-    socket.socket.on("addOnlineUser", (user) => addOnlineUser(user));
-    socket.socket.on("deleteOnlineUser", (userId) => deleteOnlineUser(userId));
-    return () => {
-      socket.socket.off("addOnlineUser");
-      socket.socket.off("deleteOnlineUser");
-    };
-  }, [onlineUsers]);
 
   const setLobbyData = async () => {
     const info = JSON.parse(getDecodedCookie());
@@ -72,6 +60,9 @@ const useLobbyData = () => {
     setChatRoomList(await getChatRoomListAPI());
     setGameRoomList(await getGameRoomListAPI());
     setGameBoardState(await getGameBoardConfigAPI());
+
+    socket.socket.on("addOnlineUser", (user) => addOnlineUser(user));
+    socket.socket.on("deleteOnlineUser", (userId) => deleteOnlineUser(userId));
   };
 
   const getLobbyData = () => {
