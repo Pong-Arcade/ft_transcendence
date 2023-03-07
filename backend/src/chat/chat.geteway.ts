@@ -54,11 +54,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Namespace;
   async handleConnection(@ConnectedSocket() socket: Socket) {
     this.logger.log(`Called ${this.handleConnection.name}`);
-    const token = socket.handshake?.auth?.token;
-    if (!token) {
-      return;
-    }
     try {
+      const token = socket.handshake.auth.token;
       this.jwtService.verify(token);
     } catch (err) {
       const error = new UnauthorizedException();
