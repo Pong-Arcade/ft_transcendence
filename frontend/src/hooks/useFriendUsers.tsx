@@ -4,12 +4,15 @@ import {
   deleteFriendUsersAPI,
   getFriendUsersAPI,
 } from "../api/users";
+import blockUsersState from "../state/BlockUsersState";
 import errorState from "../state/ErrorState";
 import friendUsersState from "../state/FriendUsersState";
 
 const useFriendUsers = (userId: number) => {
   const setError = useSetRecoilState(errorState);
   const setFriendUsers = useSetRecoilState(friendUsersState);
+  const setBlockUsers = useSetRecoilState(blockUsersState);
+
 
   const onAddFriend = async () => {
     try {
@@ -17,6 +20,7 @@ const useFriendUsers = (userId: number) => {
 
       if (response.status === 200) {
         const newFriendUsers = await getFriendUsersAPI();
+        setBlockUsers((prev) => prev.filter((user) => user.userId !== userId));
         setFriendUsers(newFriendUsers);
       }
     } catch (error) {
