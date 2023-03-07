@@ -78,7 +78,7 @@ export const acceptInviteChatRoomAPI = async (roomId: number) => {
 };
 
 export const rejectInviteChatRoomAPI = async (roomId: number) => {
-  const response = await deleteRequest(`chat-rooms/reject/${roomId}`);
+  const response = await deleteRequest(`chat-rooms/invite/reject/${roomId}`);
   return response;
 };
 
