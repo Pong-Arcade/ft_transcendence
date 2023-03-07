@@ -26,6 +26,7 @@ const chatRoomGameEvent = ({
 
   useEffect(() => {
     socket.on("inviteGameRoom", (user: IUser) => {
+      console.log(user);
       setInviteUser(user);
       onInviteGameModalOpen();
     });

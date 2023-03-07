@@ -43,8 +43,12 @@ const useLobbyData = () => {
   }, [myInfo]);
   //온라인 유저 소켓 이벤트
   const addOnlineUser = (user: IUser) => {
-    setOnlineUsers((prev) => [...prev, user]);
+    setOnlineUsers((prev) => {
+      const newList = prev.filter((u) => u.userId !== user.userId);
+      return [...newList, user];
+    });
   };
+
   const deleteOnlineUser = (userId: number) => {
     setOnlineUsers((prev) => prev.filter((user) => user.userId != userId));
   };
