@@ -331,10 +331,22 @@ export class GameGateway implements OnGatewayDisconnect {
       .in(inviteeSocketInfo.gameSocketId)
       .emit('inviteGameRoom', await this.userService.getUserDetail(userId));
 
-    // 1분 후 초대장이 남아있다면 초대장을 삭제
+    // 15초 후 초대장이 남아있다면 초대장을 삭제
     setTimeout(() => {
       this.gameRoomService.deleteInvitationById(invitation);
-    }, 1000 * 60);
+      const inviterSocketInfo =
+        this.statusService.getUserSocketInfoByUserId(userId);
+
+      // 초대한 사람에게 시간초과 알림
+      this.server
+        .in(inviterSocketInfo.gameSocketId)
+        .emit('rejectInviteGameRoom');
+
+      // 초대받은 사람에게 시간초과 알림
+      this.server
+        .in(inviteeSocketInfo.gameSocketId)
+        .emit('timeoutInviteGameRoom');
+    }, 1000 * 15);
   }
 
   @OnEvent('gameroom:invite:accept')
