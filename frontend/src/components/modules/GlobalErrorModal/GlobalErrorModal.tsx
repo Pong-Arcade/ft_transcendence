@@ -7,6 +7,7 @@ import Button from "../../atoms/Button";
 import Modal from "../../atoms/Modal";
 import ModalWrapper from "../../atoms/ModalWrapper";
 import Typography from "../../atoms/Typography";
+import InternalServerErrorModal from "../InternalServerErrorModal";
 import ModalTitle from "../ModalTitle";
 import UnauthorizedModal from "../UnauthorizedModal";
 
@@ -53,6 +54,14 @@ const GlobalErrorModal = ({ errors }: Props) => {
 
   if (errors.error.response?.status === 401) {
     return <UnauthorizedModal />;
+  }
+
+  if (errors.error.response?.status === 500) {
+    return (
+      <InternalServerErrorModal
+        message={errors.error.response?.data.message as string}
+      />
+    );
   }
   const status = errors.error.response?.status || (errors.isChangePage && 404);
   const message = errors.error.response?.data.message || errors.error;
