@@ -74,8 +74,6 @@ export class GameGateway implements OnGatewayDisconnect {
       socket.disconnect(true);
       return;
     }
-    //게임방 소켓 연결 직후 게임 스크린 정보 전달(폐기예정)
-    //this.eventEmitter.emit('gameroom:config', socket);
   }
 
   handleDisconnect(socket) {
