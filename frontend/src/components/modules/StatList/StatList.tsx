@@ -83,12 +83,12 @@ const StatList = ({ list }: Props) => {
                 {myScore} : {opponentScore}
               </Field>
               <Field win={matchResult === "WIN"}>
-                {Math.floor(matchTime / 1000 / 60)}분 {(matchTime / 1000) % 60}
+                {Math.floor(matchTime / 1000 / 60)}분 {Math.floor((matchTime / 1000) % 60)}
                 초
               </Field>
               <TimeField>
                 <Field win={matchResult === "WIN"}>
-                  {beginDate.split("T")[0]}
+                  {beginDate.split("T")[0]};
                 </Field>
                 <Field win={matchResult === "WIN"}>
                   {beginDate.split("T")[1].split(".")[0]}
