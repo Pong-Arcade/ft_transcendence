@@ -44,11 +44,12 @@ import { APP_FILTER } from '@nestjs/core';
     UtilsModule,
     AdminUIModule,
   ],
-  providers: [
-    {
-      provide: APP_FILTER,
-      useClass: GlobalExceptionFilter,
-    },
-  ],
+  // FIXME: 제대로 동작하지 않음. 수정 필요
+  // providers: [
+  //   {
+  //     provide: APP_FILTER,
+  //     useClass: GlobalExceptionFilter,
+  //   },
+  // ],
 })
 export class AppModule {}
