@@ -55,10 +55,10 @@ const lobbyGameEvent = () => {
     });
 
     gameSocket.socket.on("connect_unauth_error", (err) => {
-      setError({ isError: true, error: err.message });
+      setError({ isError: true, error: { response: { status: 401 } } });
     });
     chatSocket.socket.on("connect_unauth_error", (err) => {
-      setError({ isError: true, error: err.message });
+      setError({ isError: true, error: { response: { status: 401 } } });
     });
 
     return () => {

@@ -81,10 +81,10 @@ const ChatRoom = () => {
 
   useEffect(() => {
     gameSocket.socket.on("connect_unauth_error", (err) => {
-      setError({ isError: true, error: err.message });
+      setError({ isError: true, error: { response: { status: 401 } } });
     });
     socket.socket.on("connect_unauth_error", (err) => {
-      setError({ isError: true, error: err.message });
+      setError({ isError: true, error: { response: { status: 401 } } });
     });
     return () => {
       gameSocket.socket.off("connect_unauth_error");
