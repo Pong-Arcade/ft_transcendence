@@ -91,8 +91,6 @@ export class UserController {
     @Param('user_id', ParseIntPipe) userId: number,
   ): Promise<UserDetailResponseDto> {
     this.logger.log(`Called ${this.getUserDetail.name}`);
-    let test;
-    test.test;
     return await this.userService.getUserDetail(userId);
   }
 
