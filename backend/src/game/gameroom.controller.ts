@@ -289,7 +289,7 @@ export class GameRoomController {
     if (
       !this.gameRoomService.isOnThatGameRoom(gameroomInfo.roomId, user.userId)
     ) {
-      throw new ConflictException('해당 게임방에 입장하지 않았습니다.');
+      return;
     }
 
     // 3. 게임방 퇴장
@@ -488,7 +488,7 @@ export class GameRoomController {
 
     // 2. 관전자로 입장한 유저인지 확인
     if (!gameroomInfo.spectatorUsers.includes(user.userId)) {
-      throw new ConflictException('관전자가 아닙니다.');
+      return;
     }
 
     // 3. 게임방 관전 종료

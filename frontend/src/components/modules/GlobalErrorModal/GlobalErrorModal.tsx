@@ -65,7 +65,7 @@ const GlobalErrorModal = ({ errors }: Props) => {
   }
 
   const status = (errors.isChangePage && 404) || errors.error.response?.status;
-  const message = errors.error.response?.data.message || errors.error.message;
+  const message = errors.error.response?.data.message || errors.error;
 
   return (
     <ModalWrapper>
