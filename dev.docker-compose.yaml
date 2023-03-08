@@ -1,16 +1,30 @@
 version: "3"
 
 services:
-  nginx:
-    image: nginx:latest
+  nginx_dev:
+    image: nginx_dev
     container_name: nginx_dev
-    volumes:
-      - ./nginx/:/etc/nginx/conf.d/
+    build:
+      context: .
+      dockerfile: ./nginx/Dockerfile.dev
     ports:
       - "80:80"
     restart: always
     networks:
-      - pingpong
+      - pong_arcade
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    ports:
+      - "5433:5432"
+    env_file:
+      - ./postgres/postgres.env
+    restart: always
+    networks:
+      - pong_arcade
+    volumes:
+      - ./postgres/:/docker-entrypoint-initdb.d/
 
   backend_dev:
     image: backend_dev
@@ -26,7 +40,7 @@ services:
       - /backend/dist
     restart: always
     networks:
-      - pingpong
+      - pong_arcade
 
   frontend_dev:
     image: frontend_dev
@@ -43,8 +57,8 @@ services:
       - /frontend/build
     restart: always
     networks:
-      - pingpong
+      - pong_arcade
 
 networks:
-  pingpong:
+  pong_arcade:
     driver: bridge

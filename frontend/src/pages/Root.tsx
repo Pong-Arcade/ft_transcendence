@@ -1,15 +1,28 @@
-import React, { useEffect, useState } from "react";
-import { matchPath, Outlet, useLocation } from "react-router-dom";
+import { Outlet } from "react-router-dom";
+import { useRecoilValue } from "recoil";
+import styled from "styled-components";
+import GlobalErrorModal from "../components/modules/GlobalErrorModal";
+import errorState from "../state/ErrorState";
+
+const RootStyled = styled.div`
+  background-color: ${(props) => props.theme.colors.chineseWhite};
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
 
 const Root = () => {
-  const [isLogin, setIsLogin] = useState(false);
+  const error = useRecoilValue(errorState);
 
   return (
-    <div>
-      <h1>Root file</h1>
-      {/* <Outlet context={[isLogin, setIsLogin]} /> */}
-      <Outlet />
-    </div>
+    <>
+      <RootStyled>
+        <Outlet />
+      </RootStyled>
+      {error.isError && <GlobalErrorModal errors={error}></GlobalErrorModal>}
+    </>
   );
 };
 
