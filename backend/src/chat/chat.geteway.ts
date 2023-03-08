@@ -140,7 +140,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       type: EMessageType.MESSAGE,
       roomId: room.roomId,
     };
-    if (msg.msg.length >= 64) {
+    if (msg.msg.split(':')[1].length > 64) {
       message.content = '64자 이상으로 입력할 수 없습니다.';
       message.type = EMessageType.SYSTEMMSG;
       this.server.in(_.id).emit('systemMsg', message);
