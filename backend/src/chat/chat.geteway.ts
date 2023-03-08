@@ -7,9 +7,9 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { User } from '../status/status.entity';
-import { Room } from '../chat/chatroom.entity';
+import { Room } from './chatroom.entity';
 import { Namespace, Socket } from 'socket.io';
-import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
+import { OnEvent } from '@nestjs/event-emitter';
 import { MockRepository } from 'src/mock/mock.repository';
 import { ChatroomCreateRequestDto } from 'src/dto/request/chatroom.create.request.dto';
 import { UserService } from 'src/user/user.service';
@@ -42,7 +42,6 @@ enum EMessageType {
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private logger = new Logger(ChatGateway.name);
   mock = new MockRepository();
-  eventEmitter = new EventEmitter2();
   muteUsers = new Array<number>();
 
   constructor(
@@ -108,7 +107,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       if (user.socketId !== client.id) {
         const gameId = user.gameSocketId;
         const chatId = user.socketId;
-        this.handleDisconnect({ id: user.socketId });
+        await this.handleDisconnect({ id: user.socketId });
         user = new User(info.userId, info.userName);
         user.gameSocketId = gameId;
         this.server.to(chatId).emit('otherLogin');
@@ -303,10 +302,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     });
   }
   @OnEvent('chatroom:invite:accept')
-  acceptInviteChatRoom(roomId: number, userId: number) {
+  async acceptInviteChatRoom(roomId: number, userId: number) {
     const room = rooms.get(roomId);
     if (!room) return;
-    this.joinChatRoom(roomId, userId);
+    await this.joinChatRoom(roomId, userId);
     room.invitedUsers = room.invitedUsers.filter((id) => id != userId);
   }
 
