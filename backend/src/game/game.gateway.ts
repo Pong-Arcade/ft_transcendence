@@ -225,6 +225,7 @@ export class GameGateway implements OnGatewayDisconnect {
     const userSocketInfo = this.statusService.getUserSocketInfoByUserId(
       user.userId,
     );
+    if (!userSocketInfo) return;
     userSocketInfo.location = -roomId;
     this.chatGateway.server.in(userSocketInfo.socketId).socketsLeave('lobby');
 
