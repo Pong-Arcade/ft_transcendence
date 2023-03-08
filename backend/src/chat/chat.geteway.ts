@@ -76,19 +76,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       // Leave chatroom
       if (user.location > 0) {
         const chatRoom = rooms.get(user.location);
-        const userIndex = chatRoom.users.indexOf(userId);
-        if (userIndex !== -1) {
-          chatRoom.users.splice(userIndex, 1);
-          this.server
-            .to(`chatroom${user.location}`)
-            .emit('leaveChatRoom', userId);
-        }
+        this.leaveChatRoom(chatRoom.roomId, userId);
       }
       // Disconnect from game room
       else {
         this.gameRoomService.disconnectUser(user);
       }
-
       // Delete the user
       users.delete(userId);
       this.mock.deleteOnlineUser(userId);
@@ -128,7 +121,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     users.set(info.userId, user);
 
     // 로비 채팅방에 유저 추가
-    //client.join('lobby');
     this.mock.patchOnlineUser(info.userId);
     this.server.to('lobby').emit('addOnlineUser', {
       userId: info.userId,
@@ -160,10 +152,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       if (this.muteUsers.find((value) => value == msg.userId)) {
         return;
       }
-      this.server
-        .to(`chatroom${message.roomId}`)
-        //.broadcast.emit('message', msg.msg);
-        .emit('message', message);
+      this.server.to(`chatroom${message.roomId}`).emit('message', message);
     }
   }
 
