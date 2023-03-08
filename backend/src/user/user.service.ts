@@ -71,16 +71,15 @@ export class UserService {
 
     const userSocketInfo = users.get(userId);
     let userStatus = UserStatus.OFFLINE;
-    if (!userSocketInfo)
-      return { ...userDto, status: userStatus } as UserDetailResponseDto;
-    if (userSocketInfo.location === 0) {
-      userStatus = UserStatus.LOBBY;
-    } else if (userSocketInfo.location < 0) {
-      userStatus = UserStatus.GAME;
-    } else if (userSocketInfo.location > 0) {
-      userStatus = UserStatus.CHAT;
+    if (userSocketInfo) {
+      if (userSocketInfo.location === 0) {
+        userStatus = UserStatus.LOBBY;
+      } else if (userSocketInfo.location < 0) {
+        userStatus = UserStatus.GAME;
+      } else if (userSocketInfo.location > 0) {
+        userStatus = UserStatus.CHAT;
+      }
     }
-
     return {
       ...userDto,
       status: userStatus,
