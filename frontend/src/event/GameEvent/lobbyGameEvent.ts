@@ -51,7 +51,6 @@ const lobbyGameEvent = () => {
     });
     gameSocket.socket.on("gameRoomMatched", (gameRoom: IGameRoom) => {
       setGameRoomState(gameRoom);
-      console.log("room matched");
       navigate(`/game-rooms/${gameRoom.roomId}}`);
     });
 

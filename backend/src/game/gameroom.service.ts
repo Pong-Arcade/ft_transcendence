@@ -7,6 +7,7 @@ import { MatchType } from 'src/enum/match.type.enum';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { User } from 'src/status/status.entity';
 import { StatusService } from 'src/status/status.service';
+import { UserDto } from 'src/dto/user.dto';
 
 export let invitations: Invitation[] = [];
 export const gameRooms = new Map<number, GameRoom>();
@@ -487,5 +488,27 @@ export class GameRoomService {
       return users;
     }
     return [];
+  }
+
+  isRedUser(roomId: number, userId: number): boolean {
+    this.logger.debug(`Called ${this.isRedUser.name}`);
+    const room = gameRooms.get(roomId);
+    if (room) {
+      if (room.redUser?.userId === userId) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  isBlueUser(roomId: number, userId: number): boolean {
+    this.logger.debug(`Called ${this.isBlueUser.name}`);
+    const room = gameRooms.get(roomId);
+    if (room) {
+      if (room.blueUser?.userId === userId) {
+        return true;
+      }
+    }
+    return false;
   }
 }

@@ -60,7 +60,6 @@ const ChatRoom = () => {
     browserMoveRef.current = false;
 
     if (chatRoom.roomId === -1) {
-      console.log(chatRoom);
       setError({
         isError: true,
         error: "해당 방이 없습니다",

@@ -41,7 +41,6 @@ const TeamSpan = styled.span<{ fontColor: string }>`
 
 const GameFinish = ({ scoreRef, redUser, blueUser, onClose }: Props) => {
   const score = scoreRef.current;
-
   return (
     <ModalWrapper onClose={onClose}>
       <Modal width="50%" height="50%" backgroundColor="#03a9f4">

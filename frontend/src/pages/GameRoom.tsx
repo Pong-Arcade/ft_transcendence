@@ -143,7 +143,6 @@ const GameRoom = () => {
     browserMoveRef.current = true;
     window.addEventListener("beforeunload", preventClose);
     const unlisten = browserHistory.listen(async ({ location, action }) => {
-      console.log(location);
       if (action === "POP") {
         try {
           const gameId = Number(params.gameId);

@@ -271,7 +271,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     //gameInstance 종료 이벤트
     if (room.status === GameRoomStatus.ON_GAME) {
-      await this.eventEmitter.emitAsync('gameroom:finish', roomId);
+      await this.eventEmitter.emitAsync('gameroom:finish', roomId, userId);
     }
     if (user.userId === room.redUser.userId) {
       this.server.in(`gameroom-${room.roomId}`).emit('destructGameRoom');
@@ -615,7 +615,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @OnEvent('gameroom:finish')
-  async onGameFinish(roomId: number) {
+  async onGameFinish(roomId: number, userId?: number) {
     this.logger.log(`Called ${this.onGameFinish.name}`);
     const room = this.gameRoomService.getGameRoomInfo(roomId);
     // 유저를 unready 상태로 변경
@@ -636,6 +636,17 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       endDate: gameResult.endDate,
       matchType: room.type,
     };
+    if (userId) {
+      if (this.gameRoomService.isRedUser(roomId, userId)) {
+        matchHistory.redScore = -1;
+      } else if (this.gameRoomService.isBlueUser(roomId, userId)) {
+        matchHistory.blueScore = -1;
+      }
+      this.server.in(`gameroom-${room.roomId}`).emit(InGameEvent.SCORE, {
+        redScore: matchHistory.redScore,
+        blueScore: matchHistory.blueScore,
+      });
+    }
     await this.statService.createMatchHistory(matchHistory);
   }
 
