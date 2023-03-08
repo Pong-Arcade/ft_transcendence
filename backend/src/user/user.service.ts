@@ -4,6 +4,7 @@ import {
   Inject,
   Injectable,
   Logger,
+  NotFoundException,
 } from '@nestjs/common';
 import { UserDto } from 'src/dto/user.dto';
 import { IUserRepository } from './repository/user.repository.interface';
@@ -65,6 +66,7 @@ export class UserService {
   async getUserDetail(userId: number): Promise<UserDetailResponseDto> {
     this.logger.debug(`Called ${this.getUserDetail.name}`);
     const userDto: UserDto = await this.getUserInfo(userId);
+    if (!userDto) throw new NotFoundException('유저가 존재하지 않습니다.');
     const [ladderInfo, normalInfo] = await this.statService.getUserGameStat(
       userId,
     );
