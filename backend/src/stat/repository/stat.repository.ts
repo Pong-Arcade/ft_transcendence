@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { Logger, NotFoundException } from '@nestjs/common';
 import { IStatRepository } from './stat.repository.interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import MatchHistory from 'src/entity/match.history.entity';
@@ -163,6 +163,9 @@ export class StatRepository implements IStatRepository {
       ])
       .where('ladder_stat.userId = :userId', { userId })
       .getRawOne();
+    if (!result) {
+      throw new NotFoundException('해당 유저의 래더 게임 전적이 없습니다.');
+    }
     return {
       matchType: MatchType.LADDER,
       winCount: result.wincount,
@@ -185,6 +188,9 @@ export class StatRepository implements IStatRepository {
       ])
       .where('normal_stat.userId = :userId', { userId })
       .getRawOne();
+    if (!result) {
+      throw new NotFoundException('해당 유저의 일반 게임 전적이 없습니다.');
+    }
     return {
       matchType: MatchType.NORMAL,
       winCount: result.wincount,

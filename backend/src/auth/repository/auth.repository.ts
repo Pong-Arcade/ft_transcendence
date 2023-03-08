@@ -9,7 +9,6 @@ import LadderStat from 'src/entity/ladder.stat.entity';
 import { TwoFactorAuth } from 'src/entity/two.factor.auth.entity';
 import { UserAuthDto } from 'src/dto/user.auth.dto';
 import { v4 as uuid } from 'uuid';
-import * as uuid62 from 'uuid62';
 
 export class AuthRepository implements IAuthRepository {
   private logger = new Logger(AuthRepository.name);
@@ -21,46 +20,12 @@ export class AuthRepository implements IAuthRepository {
   ) {}
 
   /**
-   * 유저가 존재하지 않으면 유저를 추가한다.
-   * NormalStat과 LadderStat도 함께 생성한다.
+   * 새로운 유저를 생성합니다.
+   * 해당 유저의 normal/ladder 전적과 2차 인증 정보도 생성합니다.
    * @param user
    */
-  async addUserIfNotExists(user: UserDto): Promise<[UserAuthDto, boolean]> {
-    this.logger.debug(`Called ${this.addUserIfNotExists.name}`);
-    const find = await this.userRepository.findOne({
-      where: { userId: user.userId },
-      relations: {
-        twoFactorAuth: true,
-      },
-      select: {
-        userId: true,
-        nickname: true,
-        avatarUrl: true,
-        email: true,
-        firstLogin: true,
-        twoFactorAuth: {
-          is2FA: true,
-          access: true,
-        },
-      },
-    });
-
-    if (find) {
-      return [
-        {
-          userId: find.userId,
-          nickname: find.nickname,
-          avatarUrl: find.avatarUrl,
-          email: find.email,
-          firstLogin: find.firstLogin,
-          is2FA: find.twoFactorAuth.is2FA,
-          access: find.twoFactorAuth.access,
-        },
-        false,
-      ];
-    }
-
-    user.nickname = uuid62.v4();
+  async addNewUser(user: UserDto): Promise<UserAuthDto> {
+    this.logger.debug(`Called ${this.addNewUser.name}`);
     const firstLogin = new Date();
     // Start transaction
     this.userRepository.manager.transaction(
@@ -94,27 +59,62 @@ export class AuthRepository implements IAuthRepository {
       },
     );
 
-    return [
-      {
-        userId: user.userId,
-        nickname: user.nickname,
-        avatarUrl: user.avatarUrl,
-        email: user.email,
-        firstLogin,
-        is2FA: false,
-      },
-      true,
-    ];
+    return {
+      userId: user.userId,
+      nickname: user.nickname,
+      avatarUrl: user.avatarUrl,
+      email: user.email,
+      firstLogin,
+      is2FA: false,
+      access: null,
+    };
   }
 
-  async checkUserExists(userId: number): Promise<boolean> {
+  async getUserAuthInfoById(userId: number): Promise<UserAuthDto> {
+    this.logger.debug(`Called ${this.getUserAuthInfoById.name}`);
     if (!userId) {
-      return false;
+      return null;
     }
     const find = await this.userRepository.findOne({
       where: { userId },
+      relations: {
+        twoFactorAuth: true,
+      },
+      select: {
+        userId: true,
+        nickname: true,
+        avatarUrl: true,
+        email: true,
+        firstLogin: true,
+        twoFactorAuth: {
+          is2FA: true,
+          access: true,
+        },
+      },
     });
-    return find ? true : false;
+    if (!find) {
+      return null;
+    }
+    return {
+      userId: find.userId,
+      nickname: find.nickname,
+      avatarUrl: find.avatarUrl,
+      email: find.email,
+      firstLogin: find.firstLogin,
+      is2FA: find.twoFactorAuth.is2FA,
+      access: find.twoFactorAuth.access,
+    };
+  }
+
+  async findUserByNickname(nickname: string): Promise<boolean> {
+    this.logger.debug(`Called ${this.findUserByNickname.name}`);
+    const find = await this.userRepository.findOne({
+      where: { nickname },
+    });
+    if (!find) {
+      return false;
+    }
+    return true;
   }
 
   async enroll2FA(userId: number): Promise<void> {

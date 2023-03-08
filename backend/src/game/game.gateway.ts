@@ -1,5 +1,6 @@
 import { Inject, Logger, UnauthorizedException } from '@nestjs/common';
 import {
+  OnGatewayConnection,
   OnGatewayDisconnect,
   SubscribeMessage,
   WebSocketGateway,
@@ -47,7 +48,7 @@ enum EMessageType {
 @WebSocketGateway({
   namespace: 'socket/game',
 })
-export class GameGateway implements OnGatewayDisconnect {
+export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Namespace;
   private logger = new Logger(GameGateway.name);
   //
@@ -74,8 +75,6 @@ export class GameGateway implements OnGatewayDisconnect {
       socket.disconnect(true);
       return;
     }
-    //게임방 소켓 연결 직후 게임 스크린 정보 전달(폐기예정)
-    //this.eventEmitter.emit('gameroom:config', socket);
   }
 
   handleDisconnect(socket) {
@@ -125,7 +124,7 @@ export class GameGateway implements OnGatewayDisconnect {
       roomId: room.roomId,
     };
 
-    if (msg.msg.length >= 64) {
+    if (msg.msg.split(':')[1].length > 64) {
       message.content = '64자 이상으로 입력할 수 없습니다.';
       message.type = EMessageType.SYSTEMMSG;
       this.server.in(userSocketInfo.gameSocketId).emit('systemMsg', message);
@@ -146,7 +145,7 @@ export class GameGateway implements OnGatewayDisconnect {
     if (!userSocketInfo) {
       return;
     }
-    if (msg.msg.length >= 64) {
+    if (msg.msg.length > 64) {
       const message: IMessage = {
         fromId: msg.fromId,
         content: '64자 이상으로 입력할 수 없습니다.',
@@ -225,6 +224,7 @@ export class GameGateway implements OnGatewayDisconnect {
     const userSocketInfo = this.statusService.getUserSocketInfoByUserId(
       user.userId,
     );
+    if (!userSocketInfo) return;
     userSocketInfo.location = -roomId;
     this.chatGateway.server.in(userSocketInfo.socketId).socketsLeave('lobby');
 
@@ -276,6 +276,7 @@ export class GameGateway implements OnGatewayDisconnect {
     if (user.userId === room.redUser.userId) {
       this.server.in(`gameroom-${room.roomId}`).emit('destructGameRoom');
       for (const user of this.gameRoomService.getAllGameRoomUsers(roomId)) {
+        if (!user) continue;
         this.server
           .in(user.gameSocketId)
           .socketsLeave(`gameroom-${room.roomId}`);
@@ -417,9 +418,6 @@ export class GameGateway implements OnGatewayDisconnect {
     this.gameRoomService.deleteInvitaionByInviteeId(userId);
 
     this.gameRoomService.createGameRoom(roomId, gameRoom);
-
-    // 로비에 있는 유저들에게 게임방이 생성되었다는 메시지를 보냅니다. => gameroom:create 이벤트에서 처리 중
-    // this.chatGateway.server.in('lobby').emit('addGameRoom', gameRoom);
   }
 
   @OnEvent('gameroom:invite:reject')
@@ -587,9 +585,6 @@ export class GameGateway implements OnGatewayDisconnect {
     this.server.in(`gameroom-${roomId}`).emit('gameRoomMatched', gameRoom);
 
     this.gameRoomService.createGameRoom(roomId, gameRoom);
-
-    // 로비에 있는 유저들에게 게임방이 생성되었다는 메시지를 보냅니다. => gameroom:create 이벤트에서 처리 중
-    // this.chatGateway.server.in('lobby').emit('addGameRoom', gameRoom);
   }
 
   @OnEvent('gameroom:start')

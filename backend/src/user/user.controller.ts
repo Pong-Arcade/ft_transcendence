@@ -84,7 +84,8 @@ export class UserController {
   })
   @ApiResponse({
     status: 404,
-    description: '존재하지 않는 유저입니다.',
+    description:
+      '존재하지 않는 유저이거나 래더/일반 게임 전적이 존재하지 않습니다.',
   })
   @Get(':user_id')
   async getUserDetail(

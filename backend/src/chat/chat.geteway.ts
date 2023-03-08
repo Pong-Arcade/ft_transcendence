@@ -7,9 +7,9 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { User } from '../status/status.entity';
-import { Room } from '../chat/chatroom.entity';
+import { Room } from './chatroom.entity';
 import { Namespace, Socket } from 'socket.io';
-import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
+import { OnEvent } from '@nestjs/event-emitter';
 import { MockRepository } from 'src/mock/mock.repository';
 import { ChatroomCreateRequestDto } from 'src/dto/request/chatroom.create.request.dto';
 import { UserService } from 'src/user/user.service';
@@ -42,7 +42,6 @@ enum EMessageType {
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private logger = new Logger(ChatGateway.name);
   mock = new MockRepository();
-  eventEmitter = new EventEmitter2();
   muteUsers = new Array<number>();
 
   constructor(
@@ -76,19 +75,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       // Leave chatroom
       if (user.location > 0) {
         const chatRoom = rooms.get(user.location);
-        const userIndex = chatRoom.users.indexOf(userId);
-        if (userIndex !== -1) {
-          chatRoom.users.splice(userIndex, 1);
-          this.server
-            .to(`chatroom${user.location}`)
-            .emit('leaveChatRoom', userId);
-        }
+        this.leaveChatRoom(chatRoom.roomId, userId);
       }
       // Disconnect from game room
       else {
         this.gameRoomService.disconnectUser(user);
       }
-
       // Delete the user
       users.delete(userId);
       this.mock.deleteOnlineUser(userId);
@@ -115,7 +107,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       if (user.socketId !== client.id) {
         const gameId = user.gameSocketId;
         const chatId = user.socketId;
-        this.handleDisconnect({ id: user.socketId });
+        await this.handleDisconnect({ id: user.socketId });
         user = new User(info.userId, info.userName);
         user.gameSocketId = gameId;
         this.server.to(chatId).emit('otherLogin');
@@ -128,7 +120,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     users.set(info.userId, user);
 
     // 로비 채팅방에 유저 추가
-    //client.join('lobby');
     this.mock.patchOnlineUser(info.userId);
     this.server.to('lobby').emit('addOnlineUser', {
       userId: info.userId,
@@ -148,7 +139,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       type: EMessageType.MESSAGE,
       roomId: room.roomId,
     };
-    if (msg.msg.length >= 64) {
+    if (msg.msg.split(':')[1].length > 64) {
       message.content = '64자 이상으로 입력할 수 없습니다.';
       message.type = EMessageType.SYSTEMMSG;
       this.server.in(_.id).emit('systemMsg', message);
@@ -160,10 +151,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       if (this.muteUsers.find((value) => value == msg.userId)) {
         return;
       }
-      this.server
-        .to(`chatroom${message.roomId}`)
-        //.broadcast.emit('message', msg.msg);
-        .emit('message', message);
+      this.server.to(`chatroom${message.roomId}`).emit('message', message);
     }
   }
 
@@ -314,10 +302,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     });
   }
   @OnEvent('chatroom:invite:accept')
-  acceptInviteChatRoom(roomId: number, userId: number) {
+  async acceptInviteChatRoom(roomId: number, userId: number) {
     const room = rooms.get(roomId);
     if (!room) return;
-    this.joinChatRoom(roomId, userId);
+    await this.joinChatRoom(roomId, userId);
     room.invitedUsers = room.invitedUsers.filter((id) => id != userId);
   }
 

@@ -3,20 +3,25 @@ import { UserDto } from 'src/dto/user.dto';
 
 export interface IAuthRepository {
   /**
-   * 유저가 존재하지 않는다면 유저를 추가합니다.
-   * 유저가 기존에 존재했었다면 true를 반환합니다.
-   * 신규로 유저가 추가되었다면 false를 반환합니다.
+   * 새로운 유저를 생성합니다.
+   * 해당 유저의 normal/ladder 전적과 2차 인증 정보도 생성합니다.
    * @param user
    */
-  addUserIfNotExists(user: UserDto): Promise<[UserAuthDto, boolean]>;
+  addNewUser(user: UserDto): Promise<UserAuthDto>;
 
   /**
-   * 유저가 존재하는지 확인합니다.
-   * 존재한다면 true를 반환합니다.
-   * 존재하지 않는다면 false를 반환합니다.
+   * 유저의 ID로 인증 정보를 조회합니다.
+   * 유저가 존재한다면 유저의 인증 정보를 반환합니다.
+   * 존재하지 않는다면 null을 반환합니다.
    * @param userId
    */
-  checkUserExists(userId: number): Promise<boolean>;
+  getUserAuthInfoById(userId: number): Promise<UserAuthDto>;
+
+  /**
+   * 유저의 닉네임으로 인증 정보를 조회합니다.
+   * 유저가 존재한다면 true, 존재하지 않는다면 false를 반환합니다.
+   */
+  findUserByNickname(nickname: string): Promise<boolean>;
 
   /**
    * 2FA를 등록합니다.
