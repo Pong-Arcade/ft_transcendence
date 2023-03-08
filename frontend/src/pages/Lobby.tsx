@@ -105,6 +105,7 @@ const Lobby = () => {
         isChangePage: true,
       });
     });
+
     return () => {
       socket.socket.off("inviteChatRoom");
       socket.socket.off("otherLogin");

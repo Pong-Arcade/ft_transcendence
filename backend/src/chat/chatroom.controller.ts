@@ -179,7 +179,7 @@ export class ChatroomController {
     // 1. 해당 채팅방 정보 확인
     const chatroomInfo = this.chatroomService.getChatroomInfo(roomId);
     if (!chatroomInfo) {
-      throw new NotFoundException('존재하지 않는 채팅방입니다.');
+      return;
     }
 
     // 2. 해당 채팅방에 입장중인 유저인지 확인

@@ -1,8 +1,14 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { createBrowserHistory } from "history";
+import { useEffect, useRef } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
-import { leaveGameRoomAPI, leaveGameSpectatorAPI } from "../api/room";
+import {
+  joinGamePlayerAPI,
+  joinGameSpectatorAPI,
+  leaveGameRoomAPI,
+  leaveGameSpectatorAPI,
+} from "../api/room";
 import Avatar from "../components/atoms/Avatar";
 import Board from "../components/atoms/Board";
 import Button from "../components/atoms/Button";
@@ -57,6 +63,7 @@ const UserProfile = styled(Button).attrs({
   align-items: center;
 `;
 
+const browserHistory = createBrowserHistory();
 const GameRoom = () => {
   const {
     isOpenMenu,
@@ -88,12 +95,27 @@ const GameRoom = () => {
       )
         await leaveGameRoomAPI(roomId);
       else await leaveGameSpectatorAPI(roomId);
-      setGameState({
-        roomId: -1,
-        redUser: {},
-        blueUser: {},
-      });
-      navigate("/lobby");
+    } catch (error) {
+      setError({ isError: true, error });
+    }
+
+    setGameState({
+      roomId: -1,
+      redUser: {},
+      blueUser: {},
+    });
+    browserMoveRef.current = false;
+    navigate("/lobby");
+  };
+
+  const onClickBackButton = async () => {
+    try {
+      if (
+        myInfo.userId === redUser.userId ||
+        myInfo.userId === blueUser?.userId
+      )
+        await leaveGameRoomAPI(roomId);
+      else await leaveGameSpectatorAPI(roomId);
     } catch (error) {
       setError({ isError: true, error });
     }
@@ -110,13 +132,46 @@ const GameRoom = () => {
     setGameFinish,
   } = gameStartEvent(roomId);
 
+  const preventClose = (e: BeforeUnloadEvent) => {
+    e.preventDefault();
+    e.returnValue = "";
+  };
+
+  const params = useParams();
+  const browserMoveRef = useRef(true);
   useEffect(() => {
-    if (roomId === -1)
+    browserMoveRef.current = true;
+    window.addEventListener("beforeunload", preventClose);
+    const unlisten = browserHistory.listen(async ({ location, action }) => {
+      console.log(location);
+      if (action === "POP") {
+        try {
+          const gameId = Number(params.gameId);
+          if (
+            myInfo.userId === redUser?.userId ||
+            myInfo.userId === blueUser?.userId
+          )
+            await joinGamePlayerAPI(gameId);
+          else await joinGameSpectatorAPI(gameId);
+        } catch (error) {
+          setError({ isError: true, error });
+        }
+      }
+    });
+    if (roomId === -1) {
       setError({
         isError: true,
         error: "해당 방이 없습니다",
         isChangePage: true,
       });
+    }
+    return () => {
+      window.removeEventListener("beforeunload", preventClose);
+      if (browserMoveRef.current) {
+        onClickBackButton();
+      }
+      unlisten();
+    };
   }, []);
 
   return (

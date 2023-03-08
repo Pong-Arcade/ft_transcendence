@@ -63,7 +63,8 @@ const GlobalErrorModal = ({ errors }: Props) => {
       />
     );
   }
-  const status = errors.error.response?.status || (errors.isChangePage && 404);
+
+  const status = (errors.isChangePage && 404) || errors.error.response?.status;
   const message = errors.error.response?.data.message || errors.error.message;
 
   return (

@@ -26,7 +26,7 @@ const GameRoomTitle = styled(Board).attrs((props) => {
 
 const GameRoomUsers = styled(Board)`
   display: grid;
-  grid-template: 1fr / 3fr 1fr 3fr;
+  grid-template: 1fr / minmax(42%, 3fr) 1fr minmax(42%, 3fr);
 `;
 
 const GameRoomStatus = styled(Board).attrs({
@@ -49,7 +49,14 @@ const GameUserNickname = styled(Board).attrs({
   borderRadius: true,
 })`
   height: 15%;
+  width: 100%;
   background-color: ${(props) => props.theme.background.middle};
+`;
+
+const NicknameTypography = styled(Typography).attrs({
+  fontSize: "1.5rem",
+})`
+  width: 100%;
 `;
 
 const LobbyGameRoomItem = ({ item, onItemClick }: IPaginationItem) => {
@@ -70,13 +77,17 @@ const LobbyGameRoomItem = ({ item, onItemClick }: IPaginationItem) => {
       <GameRoomUsers>
         <GameUser>
           <GameUserAvatar src={redUser.avatarUrl} />
-          <GameUserNickname>{redUser.nickname}</GameUserNickname>
+          <GameUserNickname>
+            <NicknameTypography>{redUser.nickname}</NicknameTypography>
+          </GameUserNickname>
         </GameUser>
 
         <Typography fontSize="3rem">vs</Typography>
         <GameUser>
           <GameUserAvatar src={blueUser?.avatarUrl} />
-          <GameUserNickname>{blueUser?.nickname}</GameUserNickname>
+          <GameUserNickname>
+            <NicknameTypography>{blueUser?.nickname}</NicknameTypography>
+          </GameUserNickname>
         </GameUser>
       </GameRoomUsers>
       <GameRoomStatus>

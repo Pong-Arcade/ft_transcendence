@@ -1,4 +1,10 @@
-import { MouseEvent, useContext, useEffect, useState } from "react";
+import {
+  MouseEvent,
+  MutableRefObject,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import styled from "styled-components";
 import useModal from "../../../hooks/useModal";
 import Button from "../../atoms/Button";
@@ -26,6 +32,7 @@ interface Props {
   onClose: () => void;
   userId: number;
   name: string;
+  browserMoveRef: MutableRefObject<boolean>;
 }
 
 interface MenuStyledProps {
@@ -84,6 +91,7 @@ const GeneralMenu = ({
   name,
   top,
   left,
+  browserMoveRef,
   ...rest
 }: Props) => {
   const {
@@ -151,6 +159,7 @@ const GeneralMenu = ({
     onInviteGameModalOpen,
     onInviteRejectModalOpen,
     onInviteGameModalClose,
+    browserMoveRef,
   });
 
   const onClick = (e: MouseEvent<HTMLButtonElement>) => {

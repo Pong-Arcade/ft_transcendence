@@ -9,7 +9,7 @@ import infoState from "../state/InfoState";
 import styled from "styled-components";
 import Typography from "../components/atoms/Typography";
 import Board from "../components/atoms/Board";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { SocketContext } from "../utils/ChatSocket";
 import errorState from "../state/ErrorState";
 import GameSocket from "../state/GameSocket";
@@ -49,13 +49,24 @@ const ChatRoom = () => {
   const setError = useSetRecoilState(errorState);
   const gameSocket = useContext(GameSocket);
 
+  const preventClose = (e: BeforeUnloadEvent) => {
+    e.preventDefault();
+    e.returnValue = "";
+  };
+
+  const browserMoveRef = useRef(false);
   useEffect(() => {
-    if (chatRoom.roomId === -1)
+    window.addEventListener("beforeunload", preventClose);
+    browserMoveRef.current = false;
+
+    if (chatRoom.roomId === -1) {
+      console.log(chatRoom);
       setError({
         isError: true,
         error: "해당 방이 없습니다",
         isChangePage: true,
       });
+    }
 
     socket.socket.on("updateChatRoom", (title) =>
       setChatRoom({
@@ -76,6 +87,7 @@ const ChatRoom = () => {
     return () => {
       socket.socket.off("updateChatRoom");
       socket.socket.off("otherLogin");
+      window.removeEventListener("beforeunload", preventClose);
     };
   }, []);
 
@@ -101,8 +113,8 @@ const ChatRoom = () => {
         </TitleTypography>
       </TitleWrapper>
       {myInfo.userId === chatRoom.mastUserId && <ChatRoomPasswordModify />}
-      <ChatRoomUserList />
-      <ChatRoomButtonGroup />
+      <ChatRoomUserList browserMoveRef={browserMoveRef} />
+      <ChatRoomButtonGroup browserMoveRef={browserMoveRef} />
     </ChatRoomTemplate>
   );
 };
