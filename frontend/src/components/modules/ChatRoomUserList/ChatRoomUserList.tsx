@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { MutableRefObject, useContext, useEffect, useState } from "react";
 // import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import useMenu from "../../../hooks/useMenu";
@@ -26,7 +26,10 @@ const ChatRoomUserListStyled = styled(Board).attrs({
   justifyContent: "space-between",
 })``;
 
-const ChatRoomUserList = () => {
+interface Props {
+  browserMoveRef: MutableRefObject<boolean>;
+}
+const ChatRoomUserList = ({ browserMoveRef }: Props) => {
   const {
     isOpenMenu,
     onOpenMenu,
@@ -120,6 +123,7 @@ const ChatRoomUserList = () => {
           onClose={onCloseMenu}
           userId={id}
           name={name}
+          browserMoveRef={browserMoveRef}
         />
       )}
 

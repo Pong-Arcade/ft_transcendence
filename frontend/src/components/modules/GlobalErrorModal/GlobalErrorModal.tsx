@@ -54,8 +54,8 @@ const GlobalErrorModal = ({ errors }: Props) => {
   if (errors.error.response?.status === 401) {
     return <UnauthorizedModal />;
   }
-  const status = errors.error.response?.status || (errors.isChangePage && 404);
-  const message = errors.error.response?.data.message || errors.error;
+  const status = (errors.isChangePage && 404) || errors.error.response?.status;
+  const message = errors.error.response?.data.message || errors.error.message;
 
   return (
     <ModalWrapper>
