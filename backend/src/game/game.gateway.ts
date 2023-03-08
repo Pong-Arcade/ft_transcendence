@@ -1,5 +1,6 @@
 import { Inject, Logger, UnauthorizedException } from '@nestjs/common';
 import {
+  OnGatewayConnection,
   OnGatewayDisconnect,
   SubscribeMessage,
   WebSocketGateway,
@@ -47,7 +48,7 @@ enum EMessageType {
 @WebSocketGateway({
   namespace: 'socket/game',
 })
-export class GameGateway implements OnGatewayDisconnect {
+export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Namespace;
   private logger = new Logger(GameGateway.name);
   //
@@ -123,7 +124,7 @@ export class GameGateway implements OnGatewayDisconnect {
       roomId: room.roomId,
     };
 
-    if (msg.msg.length >= 64) {
+    if (msg.msg.split(':')[1].length > 64) {
       message.content = '64자 이상으로 입력할 수 없습니다.';
       message.type = EMessageType.SYSTEMMSG;
       this.server.in(userSocketInfo.gameSocketId).emit('systemMsg', message);
@@ -144,7 +145,7 @@ export class GameGateway implements OnGatewayDisconnect {
     if (!userSocketInfo) {
       return;
     }
-    if (msg.msg.length >= 64) {
+    if (msg.msg.length > 64) {
       const message: IMessage = {
         fromId: msg.fromId,
         content: '64자 이상으로 입력할 수 없습니다.',
