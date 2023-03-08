@@ -506,12 +506,25 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     ) {
       // 1초 간격으로 총 3번 이벤트를 발생시킵니다.
       let timeLimit = 3;
+      room.status = GameRoomStatus.ON_COUNT_DOWN;
       const interval = setInterval(() => {
         if (timeLimit === 0) {
           this.server.in(`gameroom-${roomId}`).emit('startGame');
+          clearInterval(interval);
+          if (this.gameRoomService.getGameRoomUserCount(roomId) != 2) {
+            this.server.in(`gameroom-${roomId}`).emit('readyTick', timeLimit);
+            if (room?.redUser) {
+              this.eventEmitter.emit(
+                'gameroom:unready',
+                roomId,
+                room.redUser?.userId,
+              );
+            }
+            this.server.in(`gameroom-${roomId}`).emit('finish', timeLimit);
+            return;
+          }
           this.eventEmitter.emit('gameroom:start', roomId);
           room.status = GameRoomStatus.ON_GAME;
-          clearInterval(interval);
         }
         this.server.in(`gameroom-${roomId}`).emit('readyTick', timeLimit);
         --timeLimit;

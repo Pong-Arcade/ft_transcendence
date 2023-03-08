@@ -50,7 +50,7 @@ const GameFinish = ({ scoreRef, redUser, blueUser, onClose }: Props) => {
             {score.redScore > score.blueScore
               ? redUser.nickname
               : blueUser.nickname}{" "}
-            승리
+            {score.redScore === score.blueScore ? "무승부" : "승리"}
           </Typography>
           <ScoreTypography fontSize="6rem">
             <TeamSpan fontColor="red">(RED)</TeamSpan>

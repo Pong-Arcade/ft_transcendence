@@ -195,11 +195,9 @@ export class GameInstance {
 
   private calcNextBall() {
     let nextBallX: number =
-      this.state.ball.x +
-      (this.ballVelocity * this.ballDx) / this.info.fps;
+      this.state.ball.x + (this.ballVelocity * this.ballDx) / this.info.fps;
     let nextBallY: number =
-      this.state.ball.y +
-      (this.ballVelocity * this.ballDy) / this.info.fps;
+      this.state.ball.y + (this.ballVelocity * this.ballDy) / this.info.fps;
     let tempBallDx: number = this.ballDx;
     let tempBallDy: number = this.ballDy;
     const ballSize = this.info.ball.size;
