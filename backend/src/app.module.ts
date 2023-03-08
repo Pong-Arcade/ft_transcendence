@@ -1,6 +1,4 @@
 import { CacheModule, Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import configuration from './config/configuration';
@@ -16,6 +14,8 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { UtilsModule } from './utils/utils.module';
 import { AdminUIModule } from './socketAdminUI/adminUI.module';
+import { GlobalExceptionFilter } from './global.exception.filter';
+import { APP_FILTER } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -44,7 +44,11 @@ import { AdminUIModule } from './socketAdminUI/adminUI.module';
     UtilsModule,
     AdminUIModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    {
+      provide: APP_FILTER,
+      useClass: GlobalExceptionFilter,
+    },
+  ],
 })
 export class AppModule {}
