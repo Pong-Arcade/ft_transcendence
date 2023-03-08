@@ -373,15 +373,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       ...(await this.userService.getUserInfo(inviterId)),
       gameUserStatus: GameRoomUserStatus.UN_READY,
     };
-    const gameRoom = new GameRoom(
-      roomId,
-      redUser,
-      GameRoomMode.NORMAL,
-      invitation.matchType,
-      10,
-      'Quickplay Arena',
-      5,
-    );
 
     // 초대한 유저가 채팅방에 입장한 상태라면, 채팅방을 나간다.
     this.eventEmitter.emit(
@@ -391,9 +382,17 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     );
 
     // 게임방 생성
-    await this.eventEmitter.emitAsync('gameroom:create', redUser, gameRoom);
+    await this.eventEmitter.emitAsync('gameroom:create', redUser, {
+      mode: GameRoomMode.NORMAL,
+      type: invitation.matchType,
+      winScore: 10,
+      title: 'Quickplay Arena',
+      maxSpectatorCount: 5,
+    } as GameRoomCreateRequestDto);
     // 초대보낸 유저가 게임방에 입장한다.
     this.eventEmitter.emit('gameroom:join', roomId, redUser);
+
+    const gameRoom = this.gameRoomService.getGameRoomInfo(roomId);
 
     // 블루 유저를 게임방에 넣어줍니다.
     gameRoom.blueUser = {
@@ -441,6 +440,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async joinSpectator(roomId: number, userId: number) {
     this.logger.log(`Called ${this.joinSpectator.name}`);
     const userSocketInfo = this.statusService.getUserSocketInfoByUserId(userId);
+    if (!userSocketInfo) return;
     userSocketInfo.location = -roomId;
     this.chatGateway.server.in(userSocketInfo.socketId).socketsLeave('lobby');
     this.server
@@ -559,20 +559,18 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       ...(await this.userService.getUserInfo(redUserId)),
       gameUserStatus: GameRoomUserStatus.UN_READY,
     };
-    const gameRoom = new GameRoom(
-      roomId,
-      redUser,
-      GameRoomMode.NORMAL,
-      matchType,
-      10,
-      'Quickplay Arena',
-      5,
-    );
-    // 게임방 생성
 
-    await this.eventEmitter.emitAsync('gameroom:create', redUser, gameRoom);
+    await this.eventEmitter.emitAsync('gameroom:create', redUser, {
+      mode: GameRoomMode.NORMAL,
+      type: matchType,
+      winScore: 10,
+      title: 'Quickplay Arena',
+      maxSpectatorCount: 5,
+    } as GameRoomCreateRequestDto);
     // 게임방에 입장
     this.eventEmitter.emit('gameroom:join', roomId, redUser);
+
+    const gameRoom = this.gameRoomService.getGameRoomInfo(roomId);
 
     // 블루 유저를 게임방에 넣어줍니다.
     gameRoom.blueUser = {
