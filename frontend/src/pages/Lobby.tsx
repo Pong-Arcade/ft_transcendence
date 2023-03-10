@@ -20,7 +20,9 @@ import ChatInviteModal from "../components/modules/ChatInviteModal";
 import lobbyChatEvent from "../event/ChatEvent/lobbyChatEvent";
 import lobbyGameEvent from "../event/GameEvent/lobbyGameEvent";
 import { SocketContext } from "../utils/ChatSocket";
-
+import { createBrowserHistory } from "history";
+import { checkLocationAPI } from "../api/users";
+import { history } from "../utils/history";
 const UserWrapper = styled(Board).attrs({
   width: "25%",
   height: "98%",
@@ -84,6 +86,17 @@ const Lobby = () => {
   } = useModal({});
 
   useEffect(() => {
+    return history.listen(async (location) => {
+      if (history.action === "POP") {
+        let response = await checkLocationAPI(
+          myInfo.userId,
+          window.location.pathname
+        );
+      }
+    });
+  }, [history]);
+
+  useEffect(() => {
     (async () => {
       try {
         await setLobbyData();
@@ -105,7 +118,6 @@ const Lobby = () => {
         isChangePage: true,
       });
     });
-
     return () => {
       socket.socket.off("inviteChatRoom");
       socket.socket.off("otherLogin");
