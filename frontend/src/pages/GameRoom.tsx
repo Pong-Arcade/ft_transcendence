@@ -1,14 +1,9 @@
-import { createBrowserHistory } from "history";
-import { useEffect, useRef } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
-import {
-  joinGamePlayerAPI,
-  joinGameSpectatorAPI,
-  leaveGameRoomAPI,
-  leaveGameSpectatorAPI,
-} from "../api/room";
+import { leaveGameRoomAPI, leaveGameSpectatorAPI } from "../api/room";
+import { checkLocationAPI } from "../api/users";
 import Avatar from "../components/atoms/Avatar";
 import Board from "../components/atoms/Board";
 import Button from "../components/atoms/Button";
@@ -29,6 +24,7 @@ import useModal from "../hooks/useModal";
 import errorState from "../state/ErrorState";
 import gameRoomState from "../state/GameRoomState";
 import infoState from "../state/InfoState";
+import { history } from "../utils/history";
 
 const Wrapper = styled(Board).attrs({
   width: "24%",
@@ -63,7 +59,6 @@ const UserProfile = styled(Button).attrs({
   align-items: center;
 `;
 
-const browserHistory = createBrowserHistory();
 const GameRoom = () => {
   const {
     isOpenMenu,
@@ -87,6 +82,18 @@ const GameRoom = () => {
   const myInfo = useRecoilValue(infoState);
 
   const setError = useSetRecoilState(errorState);
+
+  useEffect(() => {
+    return history.listen(async (location) => {
+      if (history.action === "POP") {
+        const response = await checkLocationAPI(
+          myInfo.userId,
+          window.location.pathname
+        );
+        if (response) setGameState(response.data);
+      }
+    });
+  }, [history]);
   const onLeaveGameRoom = async () => {
     try {
       if (
@@ -95,27 +102,12 @@ const GameRoom = () => {
       )
         await leaveGameRoomAPI(roomId);
       else await leaveGameSpectatorAPI(roomId);
-    } catch (error) {
-      setError({ isError: true, error });
-    }
-
-    setGameState({
-      roomId: -1,
-      redUser: {},
-      blueUser: {},
-    });
-    browserMoveRef.current = false;
-    navigate("/lobby");
-  };
-
-  const onClickBackButton = async () => {
-    try {
-      if (
-        myInfo.userId === redUser.userId ||
-        myInfo.userId === blueUser?.userId
-      )
-        await leaveGameRoomAPI(roomId);
-      else await leaveGameSpectatorAPI(roomId);
+      setGameState({
+        roomId: -1,
+        redUser: {},
+        blueUser: {},
+      });
+      navigate("/lobby");
     } catch (error) {
       setError({ isError: true, error });
     }
@@ -137,41 +129,22 @@ const GameRoom = () => {
     e.returnValue = "";
   };
 
-  const params = useParams();
-  const browserMoveRef = useRef(true);
   useEffect(() => {
-    browserMoveRef.current = true;
     window.addEventListener("beforeunload", preventClose);
-    const unlisten = browserHistory.listen(async ({ location, action }) => {
-      if (action === "POP") {
-        try {
-          const gameId = Number(params.gameId);
-          if (
-            myInfo.userId === redUser?.userId ||
-            myInfo.userId === blueUser?.userId
-          )
-            await joinGamePlayerAPI(gameId);
-          else await joinGameSpectatorAPI(gameId);
-        } catch (error) {
-          setError({ isError: true, error });
-        }
-      }
-    });
-    if (roomId === -1) {
+
+    return () => {
+      window.removeEventListener("beforeunload", preventClose);
+    };
+  }, []);
+  useEffect(() => {
+    if (roomId === -1)
       setError({
         isError: true,
         error: "해당 방이 없습니다",
         isChangePage: true,
       });
-    }
-    return () => {
-      window.removeEventListener("beforeunload", preventClose);
-      if (browserMoveRef.current) {
-        onClickBackButton();
-      }
-      unlisten();
-    };
-  }, []);
+    else setError({ isError: false, error: "" });
+  }, [roomId, redUser, blueUser]);
 
   return (
     <>

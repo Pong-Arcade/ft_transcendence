@@ -38,6 +38,9 @@ import { existsSync, mkdirSync } from 'fs';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.auth.guard';
 import { v4 as uuid } from 'uuid';
 import { UserDetailResponseDto } from '../dto/response/user.detail.response.dto';
+import { users } from 'src/status/status.module';
+import { gameRooms } from 'src/game/gameroom.service';
+import { userCheckDto } from 'src/dto/user.check.dto';
 
 @ApiTags('Users')
 @ApiBearerAuth()
@@ -93,6 +96,71 @@ export class UserController {
   ): Promise<UserDetailResponseDto> {
     this.logger.log(`Called ${this.getUserDetail.name}`);
     return await this.userService.getUserDetail(userId);
+  }
+
+  @Post('/check/:userId/:location')
+  checkLocation(
+    @Param('userId', ParseIntPipe) userId: number,
+    @Param('location') location: string,
+    @Body('roomId') roomId?: number,
+  ): userCheckDto {
+    console.log(userId, location, roomId);
+    const user = users.get(userId);
+    let ret: { url: string; method: string; url2?: string; method2?: string } =
+      new userCheckDto();
+    // lobby
+    if (location.slice(0, 4) === 'lobb') {
+      ret.method = 'delete';
+      console.log('ret:', ret);
+      //채팅방에 있던 경우
+      if (user.location > 0) {
+        ret.url = `chat-rooms/leave/${user.location}`;
+        return ret;
+      }
+      const gameRoom = gameRooms.get(user.location * -1);
+      //게임방 관전자로 있던 경우
+      if (gameRoom.spectatorUsers.includes(userId))
+        ret.url = `game-rooms/spectate/leave/${user.location * -1}`;
+      //게임방 플레이어로 있던 경우
+      else ret.url = `game-rooms/leave/${user.location * -1}`;
+    } else if (location.slice(0, 4) === 'chat') {
+      if (user.location === 0) {
+        ret.url = `chat-rooms/join/${roomId}`;
+        ret.method = 'post';
+      } else if (user.location < 0) {
+        const gameRoom = gameRooms.get(user.location * -1);
+        if (gameRoom.spectatorUsers.includes(userId)) {
+          ret.url = `game-rooms/spectate/leave/${user.location * -1}`;
+          ret.method = 'delete';
+          ret.url2 = `chat-rooms/join/${roomId}`;
+          ret.method2 = 'post';
+        } else {
+          ret.url = `game-rooms/leave/${user.location * -1}`;
+          ret.method = 'delete';
+          ret.url2 = `chat-rooms/join/${roomId}`;
+          ret.method2 = 'post';
+        }
+      }
+    } else if (location.slice(0, 4) === 'game') {
+      console.log(gameRooms);
+      const gameRoom = gameRooms.get(Number(roomId));
+      console.log(gameRoom);
+      if (user.location == 0) {
+        ret.url = `game-rooms/spectator/join/${roomId}`;
+        ret.method = 'post';
+      } else if (user.location > 0) {
+        ret.url = `chat-rooms/leave/${user.location}`;
+        ret.method = 'delete';
+        console.log('1: ', ret);
+        ret.method2 = 'post';
+
+        console.log('2: ', ret);
+        if (gameRoom.blueUser) ret.url2 = `game-rooms/spectator/join/${roomId}`;
+        else ret.url2 = `game-rooms/join/${roomId}`;
+      }
+    }
+    console.log('return: ', ret);
+    return ret;
   }
 
   @ApiOperation({

@@ -1,4 +1,4 @@
-import { MutableRefObject, useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSetRecoilState } from "recoil";
 import {
@@ -12,14 +12,12 @@ interface IChatRoomGameEvent {
   onInviteGameModalOpen: () => void;
   onInviteRejectModalOpen: () => void;
   onInviteGameModalClose: () => void;
-  browserMoveRef: MutableRefObject<boolean>;
 }
 
 const chatRoomGameEvent = ({
   onInviteGameModalOpen,
   onInviteRejectModalOpen,
   onInviteGameModalClose,
-  browserMoveRef,
 }: IChatRoomGameEvent) => {
   const { socket } = useContext(GameSocket);
   const [inviteUser, setInviteUser] = useState<IUser>({});
@@ -28,12 +26,12 @@ const chatRoomGameEvent = ({
 
   useEffect(() => {
     socket.on("inviteGameRoom", (user: IUser) => {
+      console.log(user);
       setInviteUser(user);
       onInviteGameModalOpen();
     });
 
     socket.on("gameRoomMatched", (gameRoom: IGameRoom) => {
-      browserMoveRef.current = true;
       setGameRoomState(gameRoom);
       navigate(`/game-rooms/${gameRoom.roomId}`);
     });

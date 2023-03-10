@@ -66,7 +66,9 @@ export const muteChatRoomAPI = async (roomId: number, userId: number) => {
 };
 
 export const unmuteChatRoomAPI = async (roomId: number, userId: number) => {
-  const response = await patchRequest(`chat-rooms/unmute/${roomId}/${userId}`);
+  const response = await patchRequest(
+    `chat-rooms/unmute/${roomId}/${userId}`
+  );
   return response;
 };
 

@@ -1,4 +1,4 @@
-import { MutableRefObject, useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 // import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import useMenu from "../../../hooks/useMenu";
@@ -26,10 +26,7 @@ const ChatRoomUserListStyled = styled(Board).attrs({
   justifyContent: "space-between",
 })``;
 
-interface Props {
-  browserMoveRef: MutableRefObject<boolean>;
-}
-const ChatRoomUserList = ({ browserMoveRef }: Props) => {
+const ChatRoomUserList = () => {
   const {
     isOpenMenu,
     onOpenMenu,
@@ -56,7 +53,9 @@ const ChatRoomUserList = ({ browserMoveRef }: Props) => {
   const navigate = useNavigate();
   const myInfo = useRecoilValue(infoState);
   const chatRoom = useRecoilValue(chatRoomState);
-
+  useEffect(() => {
+    setUserList(chatRoom.users);
+  }, [chatRoom]);
   useEffect(() => {
     if (!userList) {
       const users: IUser[] = chatRoom.users;
@@ -77,14 +76,14 @@ const ChatRoomUserList = ({ browserMoveRef }: Props) => {
     socket.socket.on("banChatRoom", () => {
       navigate(`/lobby`);
     });
-    socket.socket.on("addAdmin", (userId) => {
+    socket.socket.on("addAdmin", (userId: number) => {
       setUserList(
         userList?.map((user) =>
           user.userId == userId ? { ...user, mode: userMode.ADMIN } : user
         )
       );
     });
-    socket.socket.on("deleteAdmin", (userId) => {
+    socket.socket.on("deleteAdmin", (userId: number) => {
       setUserList(
         userList?.map((user) =>
           user.userId == userId ? { ...user, mode: userMode.NORMAL } : user
@@ -123,7 +122,6 @@ const ChatRoomUserList = ({ browserMoveRef }: Props) => {
           onClose={onCloseMenu}
           userId={id}
           name={name}
-          browserMoveRef={browserMoveRef}
         />
       )}
 
