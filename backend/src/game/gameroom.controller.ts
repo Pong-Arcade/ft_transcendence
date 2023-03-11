@@ -121,7 +121,7 @@ export class GameRoomController {
       !this.gameRoomService.isInLadderQuickMatchQueue(user.userId) &&
       !this.gameRoomService.isInNormalQuickMatchQueue(user.userId)
     ) {
-      return;
+      throw new ConflictException('빠른 대전 신청을 하지 않은 유저입니다.');
     }
 
     // 2. 빠른 대전 신청 취소 처리
@@ -228,7 +228,7 @@ export class GameRoomController {
     // 1. 해당 게임방 정보 확인
     const gameroomInfo = this.gameRoomService.getGameRoomInfo(roomId);
     if (!gameroomInfo) {
-      throw new NotFoundException('존재하지 않는 게임방입니다.');
+      throw new NotFoundException('존재하지 않는 채팅방입니다.');
     }
     // 2. 이미 게임방에 입장한 유저인지 확인
     if (
@@ -282,7 +282,7 @@ export class GameRoomController {
     // 1. 해당 게임방 정보 확인
     const gameroomInfo = this.gameRoomService.getGameRoomInfo(roomId);
     if (!gameroomInfo) {
-      return;
+      throw new NotFoundException('존재하지 않는 게임방입니다.');
     }
 
     // 2. 해당 게임방에 입장한 유저인지 확인
@@ -483,7 +483,7 @@ export class GameRoomController {
     // 1. 해당 게임방 정보 확인
     const gameroomInfo = this.gameRoomService.getGameRoomInfo(roomId);
     if (!gameroomInfo) {
-      return;
+      throw new NotFoundException('존재하지 않는 게임방입니다.');
     }
 
     // 2. 관전자로 입장한 유저인지 확인

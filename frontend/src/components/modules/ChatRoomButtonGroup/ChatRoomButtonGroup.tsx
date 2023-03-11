@@ -1,13 +1,9 @@
-import { createBrowserHistory } from "history";
-import { MutableRefObject, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
-import { joinChatRoomAPI, leaveChatRoomAPI } from "../../../api/room";
+import { leaveChatRoomAPI } from "../../../api/room";
 import useModal from "../../../hooks/useModal";
-import chatRoomState from "../../../state/ChatRoomState";
 import errorState from "../../../state/ErrorState";
-import infoState from "../../../state/InfoState";
 import Button from "../../atoms/Button";
 import ButtonGroup from "../ButtonGroup";
 import ExitConfirmModal from "../ExitConfirmModal";
@@ -19,16 +15,8 @@ const ChatRoomButton = styled(Button).attrs({
   width: "30vw",
 })``;
 
-interface Props {
-  browserMoveRef: MutableRefObject<boolean>;
-}
-
-const browserHistory = createBrowserHistory();
-
-const ChatRoomButtonGroup = ({ browserMoveRef }: Props) => {
-  const setChatRoom = useSetRecoilState(chatRoomState);
+const ChatRoomButtonGroup = () => {
   const setError = useSetRecoilState(errorState);
-  const myInfo = useRecoilValue(infoState);
   const {
     isModalOpen: isConfirmOpen,
     onModalOpen: onConfirmOpen,
@@ -42,38 +30,6 @@ const ChatRoomButtonGroup = ({ browserMoveRef }: Props) => {
   const navigate = useNavigate();
   const params = useParams();
 
-  const onLeaveChatRoom = () => {
-    navigate("/lobby");
-    setChatRoom({ roomId: -1, title: "", mastUserId: -1, users: [] });
-  };
-
-  const onClickBackButton = async () => {
-    try {
-      await leaveChatRoomAPI(Number(params.chatId));
-      setChatRoom((prev) => ({
-        ...prev,
-        users: prev.users.filter((user) => user.userId !== myInfo.userId),
-      }));
-    } catch (error) {
-      setError({ isError: true, error });
-    }
-  };
-
-  useEffect(() => {
-    const unlisten = browserHistory.listen(async ({ location, action }) => {
-      if (action === "POP") {
-        try {
-          await joinChatRoomAPI(Number(params.chatId));
-        } catch (error) {
-          setError({ isError: true, error, isChangePage: true });
-        }
-      }
-    });
-    return () => {
-      if (!browserMoveRef.current) onClickBackButton();
-      unlisten();
-    };
-  }, []);
   return (
     <>
       <ButtonGroup height="7%" width="100%" backgroundColor="secondary">
@@ -84,7 +40,14 @@ const ChatRoomButtonGroup = ({ browserMoveRef }: Props) => {
       {isConfirmOpen && (
         <ExitConfirmModal
           onClose={onConfirmClose}
-          onYesConfirm={onLeaveChatRoom}
+          onYesConfirm={async () => {
+            try {
+              await leaveChatRoomAPI(Number(params.chatId));
+              navigate("/lobby");
+            } catch (error) {
+              setError({ isError: true, error });
+            }
+          }}
           onNoConfirm={() => onConfirmClose()}
         />
       )}

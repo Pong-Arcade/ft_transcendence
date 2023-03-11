@@ -9,10 +9,14 @@ import infoState from "../state/InfoState";
 import styled from "styled-components";
 import Typography from "../components/atoms/Typography";
 import Board from "../components/atoms/Board";
-import { useContext, useEffect, useRef } from "react";
+import { useContext, useEffect } from "react";
 import { SocketContext } from "../utils/ChatSocket";
 import errorState from "../state/ErrorState";
 import GameSocket from "../state/GameSocket";
+import { createBrowserHistory } from "history";
+import { checkLocationAPI } from "../api/users";
+import { useParams } from "react-router-dom";
+import { history } from "../utils/history";
 
 const TitleTypography = styled(Typography).attrs({
   fontSize: "2.5rem",
@@ -53,11 +57,19 @@ const ChatRoom = () => {
     e.preventDefault();
     e.returnValue = "";
   };
-
-  const browserMoveRef = useRef(false);
+  useEffect(() => {
+    return history.listen(async (location) => {
+      if (history.action === "POP") {
+        const response = await checkLocationAPI(
+          myInfo.userId,
+          window.location.pathname
+        );
+        if (response) setChatRoom(response.data);
+      }
+    });
+  }, [history]);
   useEffect(() => {
     window.addEventListener("beforeunload", preventClose);
-    browserMoveRef.current = false;
 
     if (chatRoom.roomId === -1) {
       setError({
@@ -66,8 +78,10 @@ const ChatRoom = () => {
         isChangePage: true,
       });
     }
-
-    socket.socket.on("updateChatRoom", (title) =>
+    if (myInfo.userId === -1) {
+      setError({ isError: true, error: { response: { status: 401 } } });
+    }
+    socket.socket.on("updateChatRoom", (title: string) =>
       setChatRoom({
         roomId: chatRoom.roomId,
         mastUserId: chatRoom.mastUserId,
@@ -83,25 +97,31 @@ const ChatRoom = () => {
         isChangePage: true,
       });
     });
+    gameSocket.socket.on("connect_unauth_error", () => {
+      setError({ isError: true, error: { response: { status: 401 } } });
+    });
+    socket.socket.on("connect_unauth_error", () => {
+      setError({ isError: true, error: { response: { status: 401 } } });
+    });
     return () => {
       socket.socket.off("updateChatRoom");
       socket.socket.off("otherLogin");
       window.removeEventListener("beforeunload", preventClose);
-    };
-  }, []);
-
-  useEffect(() => {
-    gameSocket.socket.on("connect_unauth_error", (err) => {
-      setError({ isError: true, error: { response: { status: 401 } } });
-    });
-    socket.socket.on("connect_unauth_error", (err) => {
-      setError({ isError: true, error: { response: { status: 401 } } });
-    });
-    return () => {
       gameSocket.socket.off("connect_unauth_error");
       socket.socket.off("connect_unauth_error");
     };
   }, []);
+  useEffect(() => {
+    if (chatRoom.roomId === -1) {
+      setError({
+        isError: true,
+        error: "해당 방이 없습니다",
+        isChangePage: true,
+      });
+    } else {
+      setError({ isError: false, error: "" });
+    }
+  }, [chatRoom]);
 
   return (
     <ChatRoomTemplate>
@@ -112,8 +132,8 @@ const ChatRoom = () => {
         </TitleTypography>
       </TitleWrapper>
       {myInfo.userId === chatRoom.mastUserId && <ChatRoomPasswordModify />}
-      <ChatRoomUserList browserMoveRef={browserMoveRef} />
-      <ChatRoomButtonGroup browserMoveRef={browserMoveRef} />
+      <ChatRoomUserList />
+      <ChatRoomButtonGroup />
     </ChatRoomTemplate>
   );
 };

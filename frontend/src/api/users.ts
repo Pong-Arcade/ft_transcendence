@@ -10,6 +10,28 @@ export const getUserInfoAPI = async (userId: number) => {
   return response.data;
 };
 
+export const checkLocationAPI = async (userId: number, location: string) => {
+  console.log("1", location.split("/")[1]);
+  console.log("2", location.split("/")[2]);
+  let response = await postRequest(
+    `users/check/${userId}/${location.split("/")[1]}`,
+    { roomId: location.split("/")[2] }
+  );
+  console.log("response: ", response);
+  if (response.data.method == "post") {
+    response = await postRequest(response.data.url);
+    console.log(response);
+    return response;
+  } else if (response.data.method == "delete") {
+    await deleteRequest(response.data.url);
+    if (response.data.method2 == "post") {
+      response = await postRequest(response.data.url2);
+      console.log(response);
+    }
+    return response;
+  }
+};
+
 export const updateUserInfoAPI = async (
   nickname: string,
   avatarImage?: File

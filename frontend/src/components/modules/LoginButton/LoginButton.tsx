@@ -6,7 +6,6 @@ import Typography from "../../atoms/Typography";
 import { loginAPI } from "../../../api/auth";
 import FullSpinner from "../../atoms/FullSpinner";
 import useLoading from "../../../hooks/useLoading";
-import { createBrowserHistory } from "history";
 
 const LoginButtonStyled = styled(Board).attrs({
   width: "50%",
@@ -25,12 +24,8 @@ const ButtonStyled = styled(Button).attrs({
 `;
 
 const LoginButton = () => {
-  const browserHistory = createBrowserHistory();
   const { isLoading, startLoading } = useLoading({
-    afterStartLoading: () => {
-      browserHistory.push("/");
-      loginAPI();
-    },
+    afterStartLoading: () => loginAPI(),
   });
 
   return (

@@ -14,9 +14,11 @@ import {
 import { IUser } from "../components/modules/Pagination/Pagination";
 import blockUsersState from "../state/BlockUsersState";
 import chatRoomListState from "../state/ChatRoomListState";
+import chatRoomState from "../state/ChatRoomState";
 import friendUsersState from "../state/FriendUsersState";
 import gameBoardState from "../state/GameBoardState";
 import gameRoomListState from "../state/GameRoomListState";
+import gameRoomState from "../state/GameRoomState";
 import infoState from "../state/InfoState";
 import { SocketContext } from "../utils/ChatSocket";
 import { getDecodedCookie } from "../utils/cookie";
@@ -27,10 +29,11 @@ const useLobbyData = () => {
   const [blockUsers, setBlockUsers] = useRecoilState(blockUsersState);
   const [chatRoomList, setChatRoomList] = useRecoilState(chatRoomListState);
   const [gameRoomList, setGameRoomList] = useRecoilState(gameRoomListState);
+  const setChatRoom = useSetRecoilState(chatRoomState);
   const [myInfo, setMyInfo] = useRecoilState(infoState);
   const setGameBoardState = useSetRecoilState(gameBoardState);
   const socket = useContext(SocketContext);
-
+  const setGameState = useSetRecoilState(gameRoomState);
   //유저 정보 변경시 소켓 이벤트
   useEffect(() => {
     if (socket.userId === myInfo.userId && socket.userName === myInfo.nickname)
@@ -52,7 +55,12 @@ const useLobbyData = () => {
 
   const setLobbyData = async () => {
     const info = JSON.parse(getDecodedCookie());
-
+    setGameState({
+      roomId: -1,
+      redUser: {},
+      blueUser: {},
+    });
+    setChatRoom({ roomId: -1, title: "", mastUserId: -1, users: [] });
     setMyInfo(await getUserInfoAPI(info.userId));
     setOnlineUsers(await getOnlineUsersAPI());
     setFriendUsers(await getFriendUsersAPI());
