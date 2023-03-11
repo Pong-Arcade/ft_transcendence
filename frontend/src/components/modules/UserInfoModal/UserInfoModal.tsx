@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
@@ -8,7 +8,9 @@ import useFriendUsers from "../../../hooks/useFriendUsers";
 import useModal from "../../../hooks/useModal";
 import errorState from "../../../state/ErrorState";
 import friendUsersState from "../../../state/FriendUsersState";
+import GameSocket from "../../../state/GameSocket";
 import infoState from "../../../state/InfoState";
+import { SocketContext } from "../../../utils/ChatSocket";
 import { removeJWT } from "../../../utils/token";
 import Avatar from "../../atoms/Avatar";
 import Board from "../../atoms/Board";
@@ -174,9 +176,15 @@ const UserInfoModal = ({ onClose, userId }: Props) => {
   const isFriend = friendUsers.find((user) => user.userId === userId);
   const navigate = useNavigate();
 
+  const socket = useContext(SocketContext);
+  const gameSocket = useContext(GameSocket);
+
   const onEnroll2FA = async () => {
     try {
       await enroll2FAAPI();
+
+      socket.socket.close();
+      gameSocket.socket.close();
       removeJWT();
       navigate("/");
     } catch (error) {
