@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { MAX_TITLE_LENGTH, MAX_USER_NUMBER } from "./useChatRoomForm";
+import { MAX_TITLE_LENGTH } from "./useChatRoomForm";
 
 export enum EGameRoomFormValues {
   MODE = "mode",
@@ -67,6 +67,8 @@ function useGameRoomForm({ onSubmit }: IUseGameRoomForm) {
 
 const MIN_WINSCORE_NUMBER = 1;
 const MAX_WINSCORE_NUMBER = 10;
+const MAX_USER_NUMBER = 5;
+
 const GameRoomFormValidator = ({
   mode,
   title,

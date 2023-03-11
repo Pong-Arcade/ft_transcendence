@@ -103,12 +103,12 @@ const CreateGameRoomModal = ({ title, onClose }: Props) => {
             </ModalInputWrapper>
             <ModalInputWrapper>
               <LabledInput
-                title="최대인원"
+                title="최대관전인원"
                 name={EGameRoomFormValues.MAX_SPECTATOR_COUNT}
                 value={values.maxSpectatorCount}
                 onChange={onChangeForm}
                 type="number"
-                placeholder="2 ~ 10 숫자만 입력하세요"
+                placeholder="2 ~ 5 숫자만 입력하세요"
               />
             </ModalInputWrapper>
           </ModalInputListWrapper>
